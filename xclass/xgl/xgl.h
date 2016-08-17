@@ -52,8 +52,8 @@
 #include "matrix_transform.hpp"
 #include "type_ptr.hpp"
 
-#include <soil.h>
-#include <ft2build.h>
+#include "soil.h"
+#include "ft2build.h"
 #include FT_FREETYPE_H
 
 #include "xutils.h"
