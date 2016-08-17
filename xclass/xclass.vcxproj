@@ -1,0 +1,254 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{AC4080D2-1C42-4812-943D-79CA13A1D86C}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>xclass</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(ProjectDir);$(ProjectDir)\xgl;$(ProjectDir)\xgl\glm\gtc;$(ProjectDir)\xgl\glm;$(ProjectDir)\include\freetype2;$(ProjectDir)\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(ProjectDir);$(ProjectDir)\xgl;$(ProjectDir)\xgl\glm\gtc;$(ProjectDir)\xgl\glm;$(ProjectDir)\include\freetype2;$(ProjectDir)\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(ProjectDir);$(ProjectDir)\xgl;$(ProjectDir)\xgl\glm\gtc;$(ProjectDir)\xgl\glm;$(ProjectDir)\include\freetype2;$(ProjectDir)\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(ProjectDir);$(ProjectDir)\xgl;$(ProjectDir)\xgl\glm\gtc;$(ProjectDir)\xgl\glm;$(ProjectDir)\include\freetype2;$(ProjectDir)\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;GLEW_STATIC;XML_STATIC;_LIB;_USE_MATH_DEFINES;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <PreBuildEvent>
+      <Command>msbuild 3rdParty\3rdPartyCopy.proj</Command>
+    </PreBuildEvent>
+    <Lib>
+      <OutputFile>$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+    <PostBuildEvent>
+      <Command>echo $(ProjectDir) &amp;&amp; msbuild /p:PlatformTarget=$(PlatformTarget)  /p:Configuration=$(Configuration) xclass-copy.proj</Command>
+    </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>
+      </Command>
+    </PreLinkEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;GLEW_STATIC;XML_STATIC;_LIB;_USE_MATH_DEFINES;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <PreBuildEvent>
+      <Command>msbuild 3rdParty\3rdPartyCopy.proj</Command>
+    </PreBuildEvent>
+    <Lib>
+      <OutputFile>$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+    <PostBuildEvent>
+      <Command>echo $(ProjectDir) &amp;&amp; msbuild /p:PlatformTarget=$(PlatformTarget)  /p:Configuration=$(Configuration) xclass-copy.proj</Command>
+    </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>
+      </Command>
+    </PreLinkEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;GLEW_STATIC;XML_STATIC;_LIB;_USE_MATH_DEFINES;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <PreBuildEvent>
+      <Command>msbuild 3rdParty\3rdPartyCopy.proj</Command>
+    </PreBuildEvent>
+    <Lib>
+      <OutputFile>$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+    <PostBuildEvent>
+      <Command>echo $(ProjectDir) &amp;&amp; msbuild /p:PlatformTarget=$(PlatformTarget)  /p:Configuration=$(Configuration) xclass-copy.proj</Command>
+    </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>
+      </Command>
+    </PreLinkEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;GLEW_STATIC;XML_STATIC;_LIB;_USE_MATH_DEFINES;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <PreBuildEvent>
+      <Command>msbuild 3rdParty\3rdPartyCopy.proj</Command>
+    </PreBuildEvent>
+    <Lib>
+      <OutputFile>$(ProjectDir)\lib\$(PlatformTarget)\$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+    <PostBuildEvent>
+      <Command>echo $(ProjectDir) &amp;&amp; msbuild /p:PlatformTarget=$(PlatformTarget)  /p:Configuration=$(Configuration) xclass-copy.proj</Command>
+    </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>
+      </Command>
+    </PreLinkEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="3rdParty\soil\src\image_DXT.h" />
+    <ClInclude Include="3rdParty\soil\src\image_helper.h" />
+    <ClInclude Include="3rdParty\soil\src\SOIL.h" />
+    <ClInclude Include="3rdParty\soil\src\stbi_DDS_aug.h" />
+    <ClInclude Include="3rdParty\soil\src\stbi_DDS_aug_c.h" />
+    <ClInclude Include="3rdParty\soil\src\stb_image_aug.h" />
+    <ClInclude Include="xconfig.h" />
+    <ClInclude Include="xgl\glew.h" />
+    <ClInclude Include="xgl\glxew.h" />
+    <ClInclude Include="xgl\wglew.h" />
+    <ClInclude Include="xgl\xgl.h" />
+    <ClInclude Include="xgl\xglbuffer.h" />
+    <ClInclude Include="xgl\xglcamera.h" />
+    <ClInclude Include="xgl\xglexcept.h" />
+    <ClInclude Include="xgl\xglfont.h" />
+    <ClInclude Include="xgl\xgllight.h" />
+    <ClInclude Include="xgl\xglmaterial.h" />
+    <ClInclude Include="xgl\xglobject.h" />
+    <ClInclude Include="xgl\xglprimitives.h" />
+    <ClInclude Include="xgl\xglprojector.h" />
+    <ClInclude Include="xgl\xglshader.h" />
+    <ClInclude Include="xgl\xglshapes.h" />
+    <ClInclude Include="xgl\xgluniform.h" />
+    <ClInclude Include="xinput.h" />
+    <ClInclude Include="xthread.h" />
+    <ClInclude Include="xutils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="3rdParty\soil\src\image_DXT.c" />
+    <ClCompile Include="3rdParty\soil\src\image_helper.c" />
+    <ClCompile Include="3rdParty\soil\src\SOIL.c" />
+    <ClCompile Include="3rdParty\soil\src\stb_image_aug.c" />
+    <ClCompile Include="xconfig.cpp" />
+    <ClCompile Include="xgl\glew.c" />
+    <ClCompile Include="xgl\xgl.cpp" />
+    <ClCompile Include="xgl\xglbuffer.cpp" />
+    <ClCompile Include="xgl\xglcamera.cpp" />
+    <ClCompile Include="xgl\xglfont.cpp" />
+    <ClCompile Include="xgl\xgllight.cpp" />
+    <ClCompile Include="xgl\xglmaterial.cpp" />
+    <ClCompile Include="xgl\xglobject.cpp" />
+    <ClCompile Include="xgl\xglprojector.cpp" />
+    <ClCompile Include="xgl\xglshader.cpp" />
+    <ClCompile Include="xgl\xglshapes.cpp" />
+    <ClCompile Include="xgl\xgluniform.cpp" />
+    <ClCompile Include="xinput.cpp" />
+    <ClCompile Include="xutils.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="3rdParty\3rdPartyCopy.proj" />
+    <None Include="xclass-copy.proj">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
