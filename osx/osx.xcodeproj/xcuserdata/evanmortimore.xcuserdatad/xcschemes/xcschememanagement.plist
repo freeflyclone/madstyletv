@@ -4,11 +4,6 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>threads.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>1</integer>
-		</dict>
 		<key>xclass.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -17,6 +12,11 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>591997451D63F05D003F62FF</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>593B607E1D32E61700448415</key>
 		<dict>
 			<key>primary</key>
