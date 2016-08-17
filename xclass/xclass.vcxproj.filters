@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="xgl">
+      <UniqueIdentifier>{4cbb1738-b7f9-42df-84e0-6b0d484f2ea0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="xgl\Header Files">
+      <UniqueIdentifier>{a7ec91cd-caca-4c35-b482-039a3088c892}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="xgl\Source Files">
+      <UniqueIdentifier>{014303e8-b333-40aa-89ae-157230da1ea7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="soil">
+      <UniqueIdentifier>{b3246d5c-2277-4ae3-b74f-c1f2d707d3d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="soil\Source Files">
+      <UniqueIdentifier>{7d2a847b-7b3b-4a80-a609-46538f85332b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="soil\Header Files">
+      <UniqueIdentifier>{7886dd52-f20b-46f2-b715-0abb4b2fd6b2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="xthread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xutils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xgl\glew.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xgl\glxew.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xgl\wglew.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xgl\xgl.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xgl\xglbuffer.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xgl\xglcamera.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xgl\xglexcept.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xgl\xglfont.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xgl\xgllight.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xgl\xglmaterial.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xgl\xglobject.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xgl\xglprimitives.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xgl\xglprojector.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xgl\xglshader.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xgl\xglshapes.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xgl\xgluniform.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xconfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\soil\src\image_DXT.h">
+      <Filter>soil\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\soil\src\image_helper.h">
+      <Filter>soil\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\soil\src\SOIL.h">
+      <Filter>soil\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\soil\src\stb_image_aug.h">
+      <Filter>soil\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\soil\src\stbi_DDS_aug.h">
+      <Filter>soil\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\soil\src\stbi_DDS_aug_c.h">
+      <Filter>soil\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xinput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="xutils.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xgl\xglbuffer.cpp">
+      <Filter>xgl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xgl\xglcamera.cpp">
+      <Filter>xgl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xgl\xglfont.cpp">
+      <Filter>xgl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xgl\xgllight.cpp">
+      <Filter>xgl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xgl\xglmaterial.cpp">
+      <Filter>xgl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xgl\xglobject.cpp">
+      <Filter>xgl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xgl\xglprojector.cpp">
+      <Filter>xgl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xgl\xglshader.cpp">
+      <Filter>xgl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xgl\xglshapes.cpp">
+      <Filter>xgl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xgl\xgluniform.cpp">
+      <Filter>xgl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xconfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\soil\src\image_DXT.c">
+      <Filter>soil\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\soil\src\image_helper.c">
+      <Filter>soil\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\soil\src\SOIL.c">
+      <Filter>soil\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\soil\src\stb_image_aug.c">
+      <Filter>soil\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xgl\xgl.cpp">
+      <Filter>xgl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xgl\glew.c">
+      <Filter>xgl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xinput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="3rdParty\3rdPartyCopy.proj" />
+    <None Include="xclass-copy.proj" />
+  </ItemGroup>
+</Project>

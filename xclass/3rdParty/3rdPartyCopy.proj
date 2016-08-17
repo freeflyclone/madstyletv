@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" InitialTargets="3rdParty">
+
+  <ItemGroup>
+    <ExpatIncludes Include="expat\include\*.h" />
+    <FreetypeIncludes Include="freetype\include\**\*.h"/>
+    <SOILIncludes Include="soil\src\*.h"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ExpatLib64 Include="expat\lib64\expat.lib" />
+    <ExpatLib32 Include="expat\lib32\expat.lib" />
+    <FreetypeLib64 Include="freetype\lib64\freetype.lib" />
+    <FreetypeLib32 Include="freetype\lib32\freetype.lib" />
+  </ItemGroup>
+
+  <Target Name="3rdParty">
+    <Copy SourceFiles="@(ExpatIncludes)" DestinationFolder="..\include" />
+    <Copy SourceFiles="@(FreetypeIncludes)" DestinationFiles="@(FreetypeIncludes->'..\include\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(SOILIncludes)" DestinationFiles="@(SOILIncludes->'..\include\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(ExpatLib64)" DestinationFolder="..\lib\x64" />
+    <Copy SourceFiles="@(ExpatLib32)" DestinationFolder="..\lib\x86" />
+    <Copy SourceFiles="@(FreetypeLib64)" DestinationFolder="..\lib\x64" />
+    <Copy SourceFiles="@(FreetypeLib32)" DestinationFolder="..\lib\x86" />
+  </Target>
+
+</Project>

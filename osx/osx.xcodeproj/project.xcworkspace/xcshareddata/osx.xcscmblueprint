@@ -1,0 +1,25 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "617687f7-2fb9-4227-95e5-eff53fe23c4e",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+    "617687f7-2fb9-4227-95e5-eff53fe23c4e" : {
+
+    }
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "617687f7-2fb9-4227-95e5-eff53fe23c4e" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "88828234-AAB4-4985-B8F3-0511FD41963F",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "617687f7-2fb9-4227-95e5-eff53fe23c4e" : "madstyle\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "osx",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "osx\/osx.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/madstyle.tv\/svn",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Subversion",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "617687f7-2fb9-4227-95e5-eff53fe23c4e"
+    }
+  ]
+}
