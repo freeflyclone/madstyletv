@@ -22,17 +22,11 @@
 		5919975D1D63F261003F62FF /* xgluniform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5919973A1D63F00D003F62FF /* xgluniform.cpp */; };
 		5919975E1D63F2AB003F62FF /* xclass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 591996171D63F00D003F62FF /* xclass.cpp */; };
 		5919975F1D63F2AB003F62FF /* xconfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5919961B1D63F00D003F62FF /* xconfig.cpp */; };
-		591997601D63F2AB003F62FF /* glew.c in Sources */ = {isa = PBXBuildFile; fileRef = 5919961E1D63F00D003F62FF /* glew.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		5919959D1D63F00D003F62FF /* 3rdPartyCopy.proj */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = 3rdPartyCopy.proj; sourceTree = "<group>"; };
 		591995A01D63F00D003F62FF /* expat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = expat.h; sourceTree = "<group>"; };
 		591995A11D63F00D003F62FF /* expat_external.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = expat_external.h; sourceTree = "<group>"; };
-		591995A41D63F00D003F62FF /* expat.lib */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = expat.lib; sourceTree = "<group>"; };
-		591995A61D63F00D003F62FF /* expat.pc */ = {isa = PBXFileReference; lastKnownFileType = text; path = expat.pc; sourceTree = "<group>"; };
-		591995A81D63F00D003F62FF /* expat.lib */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = expat.lib; sourceTree = "<group>"; };
-		591995AA1D63F00D003F62FF /* expat.pc */ = {isa = PBXFileReference; lastKnownFileType = text; path = expat.pc; sourceTree = "<group>"; };
 		591995B01D63F00D003F62FF /* ftconfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ftconfig.h; sourceTree = "<group>"; };
 		591995B11D63F00D003F62FF /* ftheader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ftheader.h; sourceTree = "<group>"; };
 		591995B21D63F00D003F62FF /* ftmodule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ftmodule.h; sourceTree = "<group>"; };
@@ -84,12 +78,6 @@
 		591995E01D63F00D003F62FF /* tttags.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tttags.h; sourceTree = "<group>"; };
 		591995E11D63F00D003F62FF /* ttunpat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ttunpat.h; sourceTree = "<group>"; };
 		591995E21D63F00D003F62FF /* ft2build.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ft2build.h; sourceTree = "<group>"; };
-		591995E61D63F00D003F62FF /* freetype-config-minsizerel.cmake */ = {isa = PBXFileReference; lastKnownFileType = text; path = "freetype-config-minsizerel.cmake"; sourceTree = "<group>"; };
-		591995E71D63F00D003F62FF /* freetype-config.cmake */ = {isa = PBXFileReference; lastKnownFileType = text; path = "freetype-config.cmake"; sourceTree = "<group>"; };
-		591995E81D63F00D003F62FF /* freetype.lib */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = freetype.lib; sourceTree = "<group>"; };
-		591995EC1D63F00D003F62FF /* freetype-config-minsizerel.cmake */ = {isa = PBXFileReference; lastKnownFileType = text; path = "freetype-config-minsizerel.cmake"; sourceTree = "<group>"; };
-		591995ED1D63F00D003F62FF /* freetype-config.cmake */ = {isa = PBXFileReference; lastKnownFileType = text; path = "freetype-config.cmake"; sourceTree = "<group>"; };
-		591995EE1D63F00D003F62FF /* freetype.lib */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = freetype.lib; sourceTree = "<group>"; };
 		591995F01D63F00D003F62FF /* field_128_cube.dds */ = {isa = PBXFileReference; lastKnownFileType = file; path = field_128_cube.dds; sourceTree = "<group>"; };
 		591995F11D63F00D003F62FF /* img_cheryl.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = img_cheryl.jpg; sourceTree = "<group>"; };
 		591995F21D63F00D003F62FF /* img_test.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = img_test.bmp; sourceTree = "<group>"; };
@@ -118,15 +106,7 @@
 		5919960D1D63F00D003F62FF /* targetver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = targetver.h; sourceTree = "<group>"; };
 		5919960E1D63F00D003F62FF /* test_rect.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_rect.png; sourceTree = "<group>"; };
 		5919960F1D63F00D003F62FF /* ReadMe.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ReadMe.txt; sourceTree = "<group>"; };
-		591996121D63F00D003F62FF /* ReadMe.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ReadMe.txt; sourceTree = "<group>"; };
-		591996131D63F00D003F62FF /* threads.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = threads.cpp; sourceTree = "<group>"; };
-		591996141D63F00D003F62FF /* threads.vcxproj */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = threads.vcxproj; sourceTree = "<group>"; };
-		591996151D63F00D003F62FF /* threads.vcxproj.filters */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = threads.vcxproj.filters; sourceTree = "<group>"; };
-		591996161D63F00D003F62FF /* xclass-copy.proj */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "xclass-copy.proj"; sourceTree = "<group>"; };
 		591996171D63F00D003F62FF /* xclass.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = xclass.cpp; sourceTree = "<group>"; };
-		591996181D63F00D003F62FF /* xclass.sln */ = {isa = PBXFileReference; lastKnownFileType = text; path = xclass.sln; sourceTree = "<group>"; };
-		591996191D63F00D003F62FF /* xclass.vcxproj */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = xclass.vcxproj; sourceTree = "<group>"; };
-		5919961A1D63F00D003F62FF /* xclass.vcxproj.filters */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = xclass.vcxproj.filters; sourceTree = "<group>"; };
 		5919961B1D63F00D003F62FF /* xconfig.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = xconfig.cpp; sourceTree = "<group>"; };
 		5919961C1D63F00D003F62FF /* xconfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xconfig.h; sourceTree = "<group>"; };
 		5919961E1D63F00D003F62FF /* glew.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = glew.c; sourceTree = "<group>"; };
@@ -436,12 +416,7 @@
 			children = (
 				5919959C1D63F00D003F62FF /* 3rdParty */,
 				5919960F1D63F00D003F62FF /* ReadMe.txt */,
-				591996101D63F00D003F62FF /* tests */,
-				591996161D63F00D003F62FF /* xclass-copy.proj */,
 				591996171D63F00D003F62FF /* xclass.cpp */,
-				591996181D63F00D003F62FF /* xclass.sln */,
-				591996191D63F00D003F62FF /* xclass.vcxproj */,
-				5919961A1D63F00D003F62FF /* xclass.vcxproj.filters */,
 				5919961B1D63F00D003F62FF /* xconfig.cpp */,
 				5919961C1D63F00D003F62FF /* xconfig.h */,
 				5919961D1D63F00D003F62FF /* xgl */,
@@ -459,7 +434,6 @@
 		5919959C1D63F00D003F62FF /* 3rdParty */ = {
 			isa = PBXGroup;
 			children = (
-				5919959D1D63F00D003F62FF /* 3rdPartyCopy.proj */,
 				5919959E1D63F00D003F62FF /* expat */,
 				591995AB1D63F00D003F62FF /* freetype */,
 				591995EF1D63F00D003F62FF /* soil */,
@@ -472,8 +446,6 @@
 			children = (
 				5919959F1D63F00D003F62FF /* include */,
 				591995A21D63F00D003F62FF /* lib */,
-				591995A31D63F00D003F62FF /* lib32 */,
-				591995A71D63F00D003F62FF /* lib64 */,
 			);
 			path = expat;
 			sourceTree = "<group>";
@@ -494,46 +466,10 @@
 			path = lib;
 			sourceTree = "<group>";
 		};
-		591995A31D63F00D003F62FF /* lib32 */ = {
-			isa = PBXGroup;
-			children = (
-				591995A41D63F00D003F62FF /* expat.lib */,
-				591995A51D63F00D003F62FF /* pkgconfig */,
-			);
-			path = lib32;
-			sourceTree = "<group>";
-		};
-		591995A51D63F00D003F62FF /* pkgconfig */ = {
-			isa = PBXGroup;
-			children = (
-				591995A61D63F00D003F62FF /* expat.pc */,
-			);
-			path = pkgconfig;
-			sourceTree = "<group>";
-		};
-		591995A71D63F00D003F62FF /* lib64 */ = {
-			isa = PBXGroup;
-			children = (
-				591995A81D63F00D003F62FF /* expat.lib */,
-				591995A91D63F00D003F62FF /* pkgconfig */,
-			);
-			path = lib64;
-			sourceTree = "<group>";
-		};
-		591995A91D63F00D003F62FF /* pkgconfig */ = {
-			isa = PBXGroup;
-			children = (
-				591995AA1D63F00D003F62FF /* expat.pc */,
-			);
-			path = pkgconfig;
-			sourceTree = "<group>";
-		};
 		591995AB1D63F00D003F62FF /* freetype */ = {
 			isa = PBXGroup;
 			children = (
 				591995AC1D63F00D003F62FF /* include */,
-				591995E31D63F00D003F62FF /* lib32 */,
-				591995E91D63F00D003F62FF /* lib64 */,
 			);
 			path = freetype;
 			sourceTree = "<group>";
@@ -620,58 +556,6 @@
 			path = config;
 			sourceTree = "<group>";
 		};
-		591995E31D63F00D003F62FF /* lib32 */ = {
-			isa = PBXGroup;
-			children = (
-				591995E41D63F00D003F62FF /* cmake */,
-				591995E81D63F00D003F62FF /* freetype.lib */,
-			);
-			path = lib32;
-			sourceTree = "<group>";
-		};
-		591995E41D63F00D003F62FF /* cmake */ = {
-			isa = PBXGroup;
-			children = (
-				591995E51D63F00D003F62FF /* freetype */,
-			);
-			path = cmake;
-			sourceTree = "<group>";
-		};
-		591995E51D63F00D003F62FF /* freetype */ = {
-			isa = PBXGroup;
-			children = (
-				591995E61D63F00D003F62FF /* freetype-config-minsizerel.cmake */,
-				591995E71D63F00D003F62FF /* freetype-config.cmake */,
-			);
-			path = freetype;
-			sourceTree = "<group>";
-		};
-		591995E91D63F00D003F62FF /* lib64 */ = {
-			isa = PBXGroup;
-			children = (
-				591995EA1D63F00D003F62FF /* cmake */,
-				591995EE1D63F00D003F62FF /* freetype.lib */,
-			);
-			path = lib64;
-			sourceTree = "<group>";
-		};
-		591995EA1D63F00D003F62FF /* cmake */ = {
-			isa = PBXGroup;
-			children = (
-				591995EB1D63F00D003F62FF /* freetype */,
-			);
-			path = cmake;
-			sourceTree = "<group>";
-		};
-		591995EB1D63F00D003F62FF /* freetype */ = {
-			isa = PBXGroup;
-			children = (
-				591995EC1D63F00D003F62FF /* freetype-config-minsizerel.cmake */,
-				591995ED1D63F00D003F62FF /* freetype-config.cmake */,
-			);
-			path = freetype;
-			sourceTree = "<group>";
-		};
 		591995EF1D63F00D003F62FF /* soil */ = {
 			isa = PBXGroup;
 			children = (
@@ -736,25 +620,6 @@
 				5919960C1D63F00D003F62FF /* SOIL.bi */,
 			);
 			path = FreeBasic;
-			sourceTree = "<group>";
-		};
-		591996101D63F00D003F62FF /* tests */ = {
-			isa = PBXGroup;
-			children = (
-				591996111D63F00D003F62FF /* threads */,
-			);
-			path = tests;
-			sourceTree = "<group>";
-		};
-		591996111D63F00D003F62FF /* threads */ = {
-			isa = PBXGroup;
-			children = (
-				591996121D63F00D003F62FF /* ReadMe.txt */,
-				591996131D63F00D003F62FF /* threads.cpp */,
-				591996141D63F00D003F62FF /* threads.vcxproj */,
-				591996151D63F00D003F62FF /* threads.vcxproj.filters */,
-			);
-			path = threads;
 			sourceTree = "<group>";
 		};
 		5919961D1D63F00D003F62FF /* xgl */ = {
@@ -1161,7 +1026,6 @@
 			files = (
 				5919975E1D63F2AB003F62FF /* xclass.cpp in Sources */,
 				5919975F1D63F2AB003F62FF /* xconfig.cpp in Sources */,
-				591997601D63F2AB003F62FF /* glew.c in Sources */,
 				591997531D63F261003F62FF /* xgl.cpp in Sources */,
 				591997541D63F261003F62FF /* xglbuffer.cpp in Sources */,
 				591997551D63F261003F62FF /* xglcamera.cpp in Sources */,
@@ -1184,9 +1048,9 @@
 		5919974F1D63F05D003F62FF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++1y";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -1224,17 +1088,19 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				"OTHER_CFLAGS[arch=*]" = "-I";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
 			};
 			name = Debug;
 		};
 		591997501D63F05D003F62FF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++1y";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -1267,6 +1133,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
 			};
 			name = Release;
 		};
@@ -1292,6 +1159,7 @@
 				591997501D63F05D003F62FF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		595FA11B1D32E1300005D056 /* Build configuration list for PBXProject "osx" */ = {
 			isa = XCConfigurationList;
