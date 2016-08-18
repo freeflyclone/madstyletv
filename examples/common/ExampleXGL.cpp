@@ -1,25 +1,25 @@
-#include "WinXGL.h"
+#include "ExampleXGL.h"
 
-WinXGL::WinXGL() {
+ExampleXGL::ExampleXGL() {
 	XGLShape *shape;
 
 	// Initialize the Camera matrix
 	glm::vec3 position(30, 50, 30);
 	camera.Set(position, glm::normalize(position*-1.0f), { 0, 0, 1 });
 	camera.Set();
-	camera.SetTheFunk(std::bind(&WinXGL::CameraTracker, this, _1));
+	camera.SetTheFunk(std::bind(&ExampleXGL::CameraTracker, this, _1));
 
 	// add mouse event handling (XInput class)
-	AddMouseFunc(std::bind(&WinXGL::MouseFunc, this, _1, _2, _3));
+	AddMouseFunc(std::bind(&ExampleXGL::MouseFunc, this, _1, _2, _3));
 
 	// add key event handling (XInput class)
-	AddKeyFunc(std::make_pair('A','Z'), std::bind(&WinXGL::KeyFunc, this, _1, _2));
+	AddKeyFunc(std::make_pair('A','Z'), std::bind(&ExampleXGL::KeyFunc, this, _1, _2));
 
 
 	AddShape("shaders/simple", [&](){ shape = new XYPlaneGrid(); return shape; });
 }
 
-void WinXGL::CameraTracker(XGLCamera *c){
+void ExampleXGL::CameraTracker(XGLCamera *c){
 	glm::float32 speed = 0.6f;
 
 	if (kt.f)
@@ -67,11 +67,11 @@ void WinXGL::CameraTracker(XGLCamera *c){
 	}
 }
 
-void WinXGL::MouseFunc(int x, int y, int flags){
+void ExampleXGL::MouseFunc(int x, int y, int flags){
 	mt.Event(x, y, flags);
 }
 
-void WinXGL::KeyFunc(int key, int flags){
+void ExampleXGL::KeyFunc(int key, int flags){
 	const bool isDown = (flags & 0x8000) == 0;
 	const bool isRepeat = (flags & 0x4000) != 0;
 
@@ -97,11 +97,11 @@ void WinXGL::KeyFunc(int key, int flags){
 	}
 }
 
-void WinXGL::Display() {
+void ExampleXGL::Display() {
 	XGL::Display();
 }
 
-void WinXGL::Reshape(int w, int h) {
+void ExampleXGL::Reshape(int w, int h) {
 	projector.Reshape(w, h);
 	Display();
 }

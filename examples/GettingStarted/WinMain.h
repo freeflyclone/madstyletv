@@ -1,6 +1,6 @@
 #pragma once
 
 #include "resource.h"
-#include "WinXGL.h"
+#include "ExampleXGL.h"
 
 void CreateOpenGLContext(HWND hWnd);
