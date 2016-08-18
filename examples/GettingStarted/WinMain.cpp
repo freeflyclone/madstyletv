@@ -184,7 +184,7 @@ void SetGlobalWorkingDirectoryName()
 	TCHAR *buff = new TCHAR[sizeNeeded];
 
 	if ((size = GetCurrentDirectory(sizeNeeded, buff)) != sizeNeeded - 1)
-		throexglException("GetCurrentDirectory() unexpectedly failed. " + std::to_string(size) + " vs " + std::to_string(sizeNeeded));
+		throwXGLException("GetCurrentDirectory() unexpectedly failed. " + std::to_string(size) + " vs " + std::to_string(sizeNeeded));
 
 #ifdef UNICODE
 	std::wstring wstr(buff);
