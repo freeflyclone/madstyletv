@@ -3,20 +3,23 @@
 ** All rights reserved. (for now)
 **
 ** Description:
-**	OS-specific (in this case Windows) application wrapper for xclass,
-**  XGL, and XInput application example.
+**	Generic application wrapper for xclass, XGL, and XInput application 
+**  example.
 **
-**  Objective is a thin glue layer between Windows stuff (OpenGL context
-**  and input device events (keyboard,mouse)) and the XGL Framework.
+**  Objective is a thin glue layer between OS-specific items with their
+**  corresponding XGL counter parts.  (OpenGL context and input device events
+**  (keyboard,mouse)) and the XGL Framework.  This is the generic side,
+**  all application code relating to using OpenGL and the XGL framework
+**  should be contained herein.
 *****************************************************************************/
 #pragma once
 #include "xgl.h"
 #include "xinput.h"
 #include "InputTrackers.h"
 
-class WinXGL : public XGL, public XInput {
+class ExampleXGL : public XGL, public XInput {
 public:
-	WinXGL();
+	ExampleXGL();
 	virtual void Display();
 	void Reshape(int w, int h);
 

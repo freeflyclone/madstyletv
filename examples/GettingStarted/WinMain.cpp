@@ -18,7 +18,7 @@ TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 
 // the derived (from XGL) OpenGL class for Windows native C++
-WinXGL *wxgl;
+ExampleXGL *exgl;
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -64,8 +64,8 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		if (msg.message == WM_QUIT)
 			break;
 
-		if (wxgl) {
-			wxgl->Display();
+		if (exgl) {
+			exgl->Display();
 			SwapBuffers(hdc);
 		}
 	}
@@ -184,7 +184,7 @@ void SetGlobalWorkingDirectoryName()
 	TCHAR *buff = new TCHAR[sizeNeeded];
 
 	if ((size = GetCurrentDirectory(sizeNeeded, buff)) != sizeNeeded - 1)
-		throwXGLException("GetCurrentDirectory() unexpectedly failed. " + std::to_string(size) + " vs " + std::to_string(sizeNeeded));
+		throexglException("GetCurrentDirectory() unexpectedly failed. " + std::to_string(size) + " vs " + std::to_string(sizeNeeded));
 
 #ifdef UNICODE
 	std::wstring wstr(buff);
@@ -222,7 +222,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow) {
 	   // try to create a new XGL based object, and hopefully find out why
 	   // if doing so failed.
 	   try {
-		   wxgl = new WinXGL();
+		   exgl = new ExampleXGL();
 	   }
 	   catch (XGLException e) {
 		   MessageBoxA(NULL, e.what(), "Well that didn't work out", MB_OK);
@@ -232,7 +232,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow) {
 	   // Initialize the projection matrix according to initial window size;
 	   RECT rect;
 	   GetClientRect(hWnd, &rect);
-	   wxgl->Reshape(rect.right - rect.left, rect.bottom - rect.top);
+	   exgl->Reshape(rect.right - rect.left, rect.bottom - rect.top);
 
    } // --- end XGL setup ---
 
@@ -260,7 +260,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case WM_KEYUP:
 		case WM_SYSKEYDOWN:
 		case WM_SYSKEYUP:
-			wxgl->KeyEvent((int)wParam, HIWORD(lParam));
+			exgl->KeyEvent((int)wParam, HIWORD(lParam));
 			break;
 
 		case WM_LBUTTONDOWN:
@@ -270,7 +270,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case WM_RBUTTONDOWN:
 		case WM_RBUTTONUP:
 		case WM_MOUSEMOVE:
-			wxgl->MouseEvent(LOWORD(lParam), HIWORD(lParam), (int)wParam);
+			exgl->MouseEvent(LOWORD(lParam), HIWORD(lParam), (int)wParam);
 			break;
 
 		case WM_ERASEBKGND:
@@ -279,7 +279,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		case WM_SIZE:
 			retVal = TRUE;
-			wxgl->Reshape(LOWORD(lParam), HIWORD(lParam));
+			exgl->Reshape(LOWORD(lParam), HIWORD(lParam));
 			break;
 
 		case WM_DESTROY:
