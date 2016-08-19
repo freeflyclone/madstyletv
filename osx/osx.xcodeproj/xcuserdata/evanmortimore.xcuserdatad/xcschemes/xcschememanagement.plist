@@ -11,8 +11,6 @@
 		</dict>
 		<key>xclass.xcscheme</key>
 		<dict>
-			<key>isShown</key>
-			<false/>
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
@@ -24,22 +22,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>593B607E1D32E61700448415</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>595FA1211D32E17C0005D056</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>598A6CEA1D6636CA005BC5D9</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>59E575C31D64032E0093ADFE</key>
 		<dict>
 			<key>primary</key>
 			<true/>
