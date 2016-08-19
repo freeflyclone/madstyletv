@@ -42,6 +42,16 @@
 		599FCC7F1D667F0400C57873 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FCC7E1D667F0400C57873 /* libbz2.a */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		594109BD1D66AD8E0033C67F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 595FA1181D32E1300005D056 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 591997451D63F05D003F62FF;
+			remoteInfo = xclass;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		591995A01D63F00D003F62FF /* expat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = expat.h; sourceTree = "<group>"; };
 		591995A11D63F00D003F62FF /* expat_external.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = expat_external.h; sourceTree = "<group>"; };
@@ -1142,6 +1152,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				594109BE1D66AD8E0033C67F /* PBXTargetDependency */,
 			);
 			name = Example01;
 			productName = Example01;
@@ -1252,6 +1263,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		594109BE1D66AD8E0033C67F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 591997451D63F05D003F62FF /* xclass */;
+			targetProxy = 594109BD1D66AD8E0033C67F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		598A6CF51D6636CA005BC5D9 /* MainMenu.xib */ = {

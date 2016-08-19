@@ -17,7 +17,7 @@
 #elif __APPLE__
 #include "TargetConditionals.h"
 #if TARGET_OS_MAC
-#define FONT_NAME "/Library/Fonts/Hannotate.ttc"
+#define FONT_NAME "/Library/Fonts/Arial.ttf"
 #endif
 #elif __linux__
 #endif
