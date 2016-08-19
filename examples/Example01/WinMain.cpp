@@ -193,6 +193,8 @@ void SetGlobalWorkingDirectoryName()
 	currentWorkingDir = std::string(buff);
 #endif
 	delete[] buff;
+
+	xprintf("Working Directory: %s", currentWorkingDir.c_str());
 }
 
 //------------------------------------------------------------------------------
