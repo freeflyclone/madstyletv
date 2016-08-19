@@ -14,17 +14,27 @@
 - (void)prepareOpenGL{
     GLint swapInt = 1;
     [[self openGLContext] setValues:&swapInt forParameter:NSOpenGLCPSwapInterval];
+    
+    CVDisplayLinkCreateWithActiveCGDisplays(&displayLink);
+
+    //CVDisplayLinkSetOutputCallback(displayLink, &displayLinkCallback, self);
+
+
 }
 
+static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp *now, const CVTimeStamp *outputTime, CVOptionFlags flagsIn, CVOptionFlags *flagsOut, void *displayLinkContext) {
+    
+    return kCVReturnSuccess;
+    
+}
 - (void)awakeFromNib {
     NSOpenGLPixelFormatAttribute attrs[] = {
         NSOpenGLPFADoubleBuffer,
-        NSOpenGLPFADepthSize, 24,
+        NSOpenGLPFADepthSize, 16,
+        NSOpenGLPFAColorSize, 32,
         NSOpenGLPFAOpenGLProfile,
         NSOpenGLProfileVersion3_2Core,
-        NSOpenGLPFASampleBuffers,1,
-        NSOpenGLPFASamples,4,
-        NSOpenGLPFASampleAlpha,1,
+        NSOpenGLPFAAccelerated,
         0
     };
     
@@ -54,7 +64,7 @@
         abort();
     }
     
-    NSTimer *renderTimer = [NSTimer timerWithTimeInterval:0.01 target:self selector:@selector(timerFired:) userInfo:nil repeats:YES];
+    NSTimer *renderTimer = [NSTimer timerWithTimeInterval:0.001 target:self selector:@selector(timerFired:) userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:renderTimer forMode:NSDefaultRunLoopMode];
     [[NSRunLoop currentRunLoop] addTimer:renderTimer forMode:NSEventTrackingRunLoopMode];
     
