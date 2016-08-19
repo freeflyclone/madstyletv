@@ -194,7 +194,11 @@ void SetGlobalWorkingDirectoryName()
 #endif
 	delete[] buff;
 
-	xprintf("Working Directory: %s", currentWorkingDir.c_str());
+	// this presumes that a VS Post-Build step copies the result of the build to $(SolutionDir)\bin
+	// it is further presumed that ALL OS specific build procedures will do the same.
+	// (also works if project's Debug property "working directory" is set to $(SolutionDir))
+	// So we got that going for us.
+	pathToAssets = currentWorkingDir.substr(0, currentWorkingDir.rfind("\\bin"));
 }
 
 //------------------------------------------------------------------------------

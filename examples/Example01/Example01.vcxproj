@@ -102,6 +102,9 @@
     <PreBuildEvent>
       <Command>echo $(SolutionDir)\xclass\lib\$(PlatformTarget)\$(Configuration)</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>copy  $(TargetPath) $(SolutionDir)\bin</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -119,6 +122,9 @@
     <PreBuildEvent>
       <Command>echo $(SolutionDir)\xclass\lib\$(PlatformTarget)\$(Configuration)</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>copy  $(TargetPath) $(SolutionDir)\bin</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -139,6 +145,9 @@
     <PreBuildEvent>
       <Command>echo $(SolutionDir)\xclass\lib\$(PlatformTarget)\$(Configuration)</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>copy  $(TargetPath) $(SolutionDir)\bin</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -159,6 +168,9 @@
     <PreBuildEvent>
       <Command>echo $(SolutionDir)\xclass\lib\$(PlatformTarget)\$(Configuration)</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>copy  $(TargetPath) $(SolutionDir)\bin</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

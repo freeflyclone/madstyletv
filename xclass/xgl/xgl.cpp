@@ -176,7 +176,8 @@ void XGL::Display() {
     clock += 1.0f;
 }
 
-void XGL::AddShape(std::string shaderName, XGLNewShapeLambda fn){
+void XGL::AddShape(std::string shName, XGLNewShapeLambda fn){
+	std::string shaderName = pathToAssets + "/" + shName;
     if (shaderMap.count(shaderName) == 0) {
         shaderMap.emplace(shaderName, new XGLShader());
         shaderMap[shaderName]->Compile(shaderName);
