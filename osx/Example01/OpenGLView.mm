@@ -53,6 +53,9 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     try {
         NSString *cwd = [[NSFileManager defaultManager] currentDirectoryPath];
         currentWorkingDir = std::string([cwd UTF8String]);
+
+        // "assets" are found in the root folder of the project for all OSes supported.
+        pathToAssets = currentWorkingDir.substr(0, currentWorkingDir.rfind("/osx"));
         
         exgl = new ExampleXGL();
     }
