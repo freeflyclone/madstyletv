@@ -45,11 +45,11 @@ bool XGLShaderComponent::Compile(std::string name, GLuint type)
     GL_CHECK("glShaderSource() failed");
 	glCompileShader(mShader);
     GL_CHECK("glCompileShader() failed");
-    InfoLog();
+    InfoLog(mFileName);
     return true;
 }
 
-void XGLShaderComponent::InfoLog() {
+void XGLShaderComponent::InfoLog(std::string fileName) {
 	char infoLog[8192];
 	GLint infoLogLength = sizeof(infoLog);
 	GLint status = 0;
@@ -57,7 +57,7 @@ void XGLShaderComponent::InfoLog() {
 
 	glGetShaderiv(mShader, GL_COMPILE_STATUS, &status);
 	if( status == GL_FALSE ) {
-		xprintf("Shader did NOT compile.\n\n");
+		xprintf("File: %s: Shader did NOT compile.\n",fileName.c_str());
 		glGetShaderInfoLog(mShader, infoLogLength, &nWritten, infoLog);
 		xprintf("%s\n\n", infoLog);
 	}

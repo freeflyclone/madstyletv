@@ -22,7 +22,7 @@ public:
 
     void TextFileRead();
     bool Compile(std::string name, GLuint type);
-    void InfoLog();
+    void InfoLog(std::string fileName);
 
     std::string mFileName;
     std::streamoff mSourceSize;
