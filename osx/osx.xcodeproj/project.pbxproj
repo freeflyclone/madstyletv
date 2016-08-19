@@ -1148,6 +1148,7 @@
 				598A6CE71D6636CA005BC5D9 /* Sources */,
 				598A6CE81D6636CA005BC5D9 /* Frameworks */,
 				598A6CE91D6636CA005BC5D9 /* Resources */,
+				59F299D71D67CBB800A9D732 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1220,6 +1221,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# runs in the folder madstyle/osx (same as .xcodeproj)\nif [ ! -d \"../xclass/lib/osx\" ]; then mkdir -p ../xclass/lib/osx; fi\nif [ ! -f \"../xclass/lib/osx/libfreetype.a\" ]; then cp ../xclass/3rdParty/freetype/lib/osx/libfreetype.a ../xclass/lib/osx; fi\nif [ ! -f \"../xclass/lib/osx/libexpat.a\" ]; then cp ../xclass/3rdParty/expat/lib/osx/libexpat.a ../xclass/lib/osx; fi\nif [ ! -f \"../xclass/lib/osx/libz.a\" ]; then cp ../xclass/3rdParty/zlib/lib/osx/libz.a ../xclass/lib/osx; fi\nif [ ! -f \"../xclass/lib/osx/libpng.a\" ]; then cp ../xclass/3rdParty/libpng/lib/osx/libpng.a ../xclass/lib/osx; fi\nif [ ! -f \"../xclass/lib/osx/libbz2.a\" ]; then cp ../xclass/3rdParty/bzip2/lib/osx/libbz2.a ../xclass/lib/osx; fi\n\n\n\n\n\n\n\n";
+		};
+		59F299D71D67CBB800A9D732 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export BUILD_RESULT=$CONFIGURATION/${PRODUCT_NAME}.app\ncp -R ${BUILD_RESULT} ../bin";
 		};
 /* End PBXShellScriptBuildPhase section */
 
