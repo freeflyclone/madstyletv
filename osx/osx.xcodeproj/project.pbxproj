@@ -1023,9 +1023,9 @@
 				599FCC6D1D66706600C57873 /* libfreetype.a */,
 				599FCC6B1D66704F00C57873 /* libexpat.a */,
 				599FCC691D66700800C57873 /* libz.a */,
-				59E5758F1D6400BF0093ADFE /* examples */,
-				5919959B1D63F00D003F62FF /* xclass */,
 				598A6CEC1D6636CA005BC5D9 /* Example01 */,
+				5919959B1D63F00D003F62FF /* xclass */,
+				59E5758F1D6400BF0093ADFE /* examples */,
 				595FA1231D32E17C0005D056 /* Products */,
 			);
 			sourceTree = "<group>";
