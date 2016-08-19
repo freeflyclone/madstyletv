@@ -1,6 +1,7 @@
 #include "xgl.h"
 
 std::string currentWorkingDir;
+std::string pathToAssets;
 
 void CheckError(const char *file, int line, std::string what){
     GLenum err = glGetError();

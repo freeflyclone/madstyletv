@@ -87,8 +87,10 @@ typedef std::vector<XGLLight> XGLLights;
 // define a type for passing a lambda that creates an XGLShape as an argument
 typedef std::function<XGLShape *()> XGLNewShapeLambda;
 
-// write code to set this before creating XGL instance, for XGLException messages
+// write code to set these before creating XGL instance, for XGLException messages
+// and to locate assets (ie: shaders) in the local filesystem
 extern std::string currentWorkingDir;
+extern std::string pathToAssets;
 
 // Manage a GL context, platform independently
 class XGL : public XGLObject
