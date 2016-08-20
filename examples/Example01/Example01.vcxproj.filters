@@ -41,10 +41,10 @@
     <ClCompile Include="..\common\ExampleXGL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BuildScene.cpp">
+    <ClCompile Include="..\common\WinMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\common\WinMain.cpp">
+    <ClCompile Include="Example01.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
