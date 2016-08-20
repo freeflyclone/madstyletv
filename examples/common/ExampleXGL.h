@@ -11,6 +11,8 @@
 **  (keyboard,mouse)) and the XGL Framework.  This is the generic side,
 **  all application code relating to using OpenGL and the XGL framework
 **  should be contained herein.
+**
+**  This provides basic camera manipulation via mouse and keyboard.
 *****************************************************************************/
 #pragma once
 #include "xgl.h"
@@ -20,7 +22,9 @@
 class ExampleXGL : public XGL, public XInput {
 public:
 	ExampleXGL();
-	virtual void Display();
+
+	void BuildScene();
+
 	void Reshape(int w, int h);
 
 	void MouseFunc(int x, int y, int flags);

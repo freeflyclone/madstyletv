@@ -4,19 +4,26 @@ ExampleXGL::ExampleXGL() {
 	XGLShape *shape;
 
 	// Initialize the Camera matrix
-	glm::vec3 position(30, 50, 30);
-	camera.Set(position, glm::normalize(position*-1.0f), { 0, 0, 1 });
-	camera.Set();
+	glm::vec3 cameraPosition(30, 50, 30);
+	glm::vec3 cameraDirection = glm::normalize(cameraPosition*-1.0f);
+	glm::vec3 cameraUp = { 0, 0, 1 };
+	camera.Set(cameraPosition, cameraDirection,	cameraUp);
+
+	// set a camera animation function, in this case a member function of this XGL-derived class
 	camera.SetTheFunk(std::bind(&ExampleXGL::CameraTracker, this, _1));
 
-	// add mouse event handling (XInput class)
+	// add mouse event handling (XInput class) function mapping
 	AddMouseFunc(std::bind(&ExampleXGL::MouseFunc, this, _1, _2, _3));
 
-	// add key event handling (XInput class)
+	// add key event handling (XInput class) function mapping
 	AddKeyFunc(std::make_pair('A','Z'), std::bind(&ExampleXGL::KeyFunc, this, _1, _2));
 
-
+	// add a default "ground" plane grid.
 	AddShape("shaders/simple", [&](){ shape = new XYPlaneGrid(); return shape; });
+
+	// Features of the framework are incrementally introduced by enhancing this function
+	// on a per example basis.
+	BuildScene();
 }
 
 void ExampleXGL::CameraTracker(XGLCamera *c){
@@ -95,10 +102,6 @@ void ExampleXGL::KeyFunc(int key, int flags){
 		case '-': kt.wd = false; break;
 		}
 	}
-}
-
-void ExampleXGL::Display() {
-	XGL::Display();
 }
 
 void ExampleXGL::Reshape(int w, int h) {
