@@ -41,15 +41,15 @@
     <ClCompile Include="..\common\ExampleXGL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BuildScene.cpp">
+    <ClCompile Include="..\common\WinMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\common\WinMain.cpp">
+    <ClCompile Include="Example02.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Example01.rc">
+    <ResourceCompile Include="Example02.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
@@ -57,7 +57,7 @@
     <Image Include="small.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Example01.ico">
+    <Image Include="Example02.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

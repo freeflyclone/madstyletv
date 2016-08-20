@@ -1,5 +1,5 @@
 /**************************************************************
-** For Example01: just demonstrate instantiation of a "ground"
+** Example01: just demonstrate instantiation of a "ground"
 ** plane and a single spere, with default camera manipulation
 ** via keyboard and mouse.
 **************************************************************/

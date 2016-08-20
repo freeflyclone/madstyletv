@@ -186,7 +186,7 @@
   <ItemGroup>
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\WinMain.cpp" />
-    <ClCompile Include="BuildScene.cpp" />
+    <ClCompile Include="Example02.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Example02.rc" />
