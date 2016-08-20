@@ -18,6 +18,7 @@
     CVDisplayLinkCreateWithActiveCGDisplays(&displayLink);
 
     //CVDisplayLinkSetOutputCallback(displayLink, &displayLinkCallback, self);
+    xprintf("prepareOpenGL\n");
 
 
 }
@@ -28,6 +29,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     
 }
 - (void)awakeFromNib {
+    xprintf("awakeFromNib()\n");
     NSOpenGLPixelFormatAttribute attrs[] = {
         NSOpenGLPFADoubleBuffer,
         NSOpenGLPFADepthSize, 16,
@@ -46,17 +48,22 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     NSString *cwd = [[NSFileManager defaultManager] currentDirectoryPath];
     currentWorkingDir = std::string([cwd UTF8String]);
     
+    
+    // "assets" are found in the root folder of the project for all OSes supported.
+    // assume we're running under the debugger...
+    pathToAssets = currentWorkingDir.substr(0, currentWorkingDir.rfind("/osx"));
+    
+    // if that didn't work out, assume we're running from PROJECT_DIR/bin
+    if (pathToAssets == currentWorkingDir)
+        pathToAssets = currentWorkingDir.substr(0, currentWorkingDir.rfind("/bin"));
+
+    xprintf("pathToAssets: %s", pathToAssets.c_str());
+    
     [self setPixelFormat:pf];
     [self setOpenGLContext:context];
     [self activateContext];
     
     try {
-        NSString *cwd = [[NSFileManager defaultManager] currentDirectoryPath];
-        currentWorkingDir = std::string([cwd UTF8String]);
-
-        // "assets" are found in the root folder of the project for all OSes supported.
-        pathToAssets = currentWorkingDir.substr(0, currentWorkingDir.rfind("/osx"));
-        
         exgl = new ExampleXGL();
     }
     catch (XGLException& e) {
