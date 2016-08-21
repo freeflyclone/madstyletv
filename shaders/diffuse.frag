@@ -6,7 +6,7 @@ layout (std140) uniform ShaderMatrixData {
 	mat4 model;
 };
 
-layout (std140) shared uniform LightData {
+layout (std140) uniform LightData {
 	vec3 pos;
 	vec3 color;
 };
