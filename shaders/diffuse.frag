@@ -11,11 +11,6 @@ layout (std140) uniform LightData {
 	vec3 color;
 };
 
-//uniform struct Light {
-//   vec3 position;
-//   vec3 intensities; //a.k.a the color of the light
-//} light;
-
 uniform sampler2D tex;
 uniform vec4 ambientColor;
 uniform vec4 diffuseColor;
