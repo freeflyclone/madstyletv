@@ -7,8 +7,8 @@ layout (std140) uniform ShaderMatrixData {
 };
 
 in vec3 vert;
-in vec3 vertNormal;
 in vec2 vertTexCoord;
+in vec3 vertNormal;
 in vec4 vertColor;
 
 out vec3 fragVert;
