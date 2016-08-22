@@ -73,7 +73,7 @@ XGL::XGL() : XGLObject("XGL") {
 		GL_CHECK("glBindBuffer() failed");
 
 		// for now, create one point light, for diffuse lighting shader development
-		XGLLight light = { { 20,15,10 },{ 1,1,1,1 } };
+		XGLLight light = { { 20,15,10 },{ 1,1,1 } };
 		lights.push_back(light);
 
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(light), &light, GL_DYNAMIC_DRAW);

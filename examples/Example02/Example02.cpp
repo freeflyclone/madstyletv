@@ -10,7 +10,7 @@ void ExampleXGL::BuildScene() {
 
 	AddShape("shaders/diffuse", [&](){ shape = new XGLTorus(3.0f, 1.0f, 32, 32); return shape; });
 	shape->SetColor(yellow);
-
+	/*
 	AddShape("shaders/diffuse", [&](){ shape = new XGLTorus(3.0f, 0.5f, 32, 32); return shape; });
 	shape->SetColor(blue);
 	shape->model = glm::translate(glm::mat4(), glm::vec3(10, 0, 0));
@@ -25,4 +25,6 @@ void ExampleXGL::BuildScene() {
 	shape->model = glm::translate(glm::mat4(), glm::vec3(20, 0, 0)) 
 				 * glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(0,1,0)) 
 				 * glm::scale(glm::mat4(), glm::vec3(2, 2, 2));
+
+	*/
 }

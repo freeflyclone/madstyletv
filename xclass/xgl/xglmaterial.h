@@ -10,12 +10,12 @@
 #ifndef XGLMATERIAL_H
 #define XGLMATERIAL_H
 
-const XGLColor black = { 0,0,0,1 };
-const XGLColor white = { 1,1,1,1 };
-const XGLColor red = { 1,0,0,1 };
-const XGLColor green = { 0,1,0,1 };
-const XGLColor blue = { 0,0,1,1 };
-const XGLColor yellow = { 1,1,0,1 };
+const XGLColor black = { 0,0,0 };
+const XGLColor white = { 1,1,1 };
+const XGLColor red = { 1,0,0 };
+const XGLColor green = { 0,1,0 };
+const XGLColor blue = { 0,0,1 };
+const XGLColor yellow = { 1,1,0 };
 
 class XGLMaterial : public XGLObject {
 public:
