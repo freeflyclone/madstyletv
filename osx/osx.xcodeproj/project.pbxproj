@@ -1436,9 +1436,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "$(SRCROOT)/common/Info.plist";
+				INFOPLIST_FILE = common/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
+					"../xclass/3rdParty/**",
+					"$(PROJECT_DIR)/Debug",
+				);
+				"LIBRARY_SEARCH_PATHS[arch=*]" = (
 					"../xclass/3rdParty/**",
 					"$(PROJECT_DIR)/Debug",
 				);
@@ -1486,13 +1490,16 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "$(SRCROOT)/common/Info.plist";
+				INFOPLIST_FILE = common/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
+					"../xclass/3rdParty/**",
+					"$(PROJECT_DIR)/Debug",
+				);
+				"LIBRARY_SEARCH_PATHS[arch=*]" = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Debug",
 				);
-				"LIBRARY_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/**";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.Example01;
