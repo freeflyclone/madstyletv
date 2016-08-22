@@ -40,6 +40,7 @@
 		599FCC7F1D667F0400C57873 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FCC7E1D667F0400C57873 /* libbz2.a */; };
 		59BEB3E31D6B7FBF00CD09FF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 59BEB3E21D6B7FBF00CD09FF /* AppDelegate.m */; };
 		59E566B91D6B6CC0007D0DD6 /* Example01.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59E566B81D6B6CC0007D0DD6 /* Example01.cpp */; };
+		59FDE3201D6B845200AE8BD0 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 59FDE31F1D6B845200AE8BD0 /* Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -432,7 +433,6 @@
 		598A6CEB1D6636CA005BC5D9 /* Example01.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example01.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		598A6CF31D6636CA005BC5D9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		598A6CF61D6636CA005BC5D9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		598A6CF81D6636CA005BC5D9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		599FCC4A1D6645B300C57873 /* ExampleXGL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExampleXGL.cpp; sourceTree = "<group>"; };
 		599FCC4B1D6645B300C57873 /* ExampleXGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExampleXGL.h; sourceTree = "<group>"; };
 		599FCC5C1D6651FA00C57873 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = lib64/libfreetype.a; sourceTree = "<group>"; };
@@ -445,6 +445,7 @@
 		59BEB3E21D6B7FBF00CD09FF /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = common/AppDelegate.m; sourceTree = SOURCE_ROOT; };
 		59E566B81D6B6CC0007D0DD6 /* Example01.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Example01.cpp; path = ../../examples/Example01/Example01.cpp; sourceTree = "<group>"; };
 		59E575911D6400BF0093ADFE /* InputTrackers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InputTrackers.h; sourceTree = "<group>"; };
+		59FDE31F1D6B845200AE8BD0 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = common/Info.plist; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1029,7 +1030,6 @@
 				59E566B81D6B6CC0007D0DD6 /* Example01.cpp */,
 				598A6CF31D6636CA005BC5D9 /* Assets.xcassets */,
 				598A6CF51D6636CA005BC5D9 /* MainMenu.xib */,
-				598A6CF81D6636CA005BC5D9 /* Info.plist */,
 			);
 			name = Example01;
 			path = ../osx/Example01;
@@ -1060,6 +1060,7 @@
 				5962D3841D6B80AB006BCD52 /* OpenGLView.mm */,
 				59BEB3E21D6B7FBF00CD09FF /* AppDelegate.m */,
 				59BEB3E11D6B7FAC00CD09FF /* AppDelegate.h */,
+				59FDE31F1D6B845200AE8BD0 /* Info.plist */,
 			);
 			name = "osx common";
 			sourceTree = "<group>";
@@ -1191,6 +1192,7 @@
 			files = (
 				598A6CF41D6636CA005BC5D9 /* Assets.xcassets in Resources */,
 				598A6CF71D6636CA005BC5D9 /* MainMenu.xib in Resources */,
+				59FDE3201D6B845200AE8BD0 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1434,7 +1436,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = Example01/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/common/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"../xclass/3rdParty/**",
@@ -1484,7 +1486,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = Example01/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/common/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
