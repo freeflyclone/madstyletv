@@ -22,7 +22,6 @@
 		5919975D1D63F261003F62FF /* xgluniform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5919973A1D63F00D003F62FF /* xgluniform.cpp */; };
 		5919975E1D63F2AB003F62FF /* xclass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 591996171D63F00D003F62FF /* xclass.cpp */; };
 		5919975F1D63F2AB003F62FF /* xconfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5919961B1D63F00D003F62FF /* xconfig.cpp */; };
-		598A6CEF1D6636CA005BC5D9 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 598A6CEE1D6636CA005BC5D9 /* AppDelegate.m */; };
 		598A6CF21D6636CA005BC5D9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 598A6CF11D6636CA005BC5D9 /* main.m */; };
 		598A6CF41D6636CA005BC5D9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 598A6CF31D6636CA005BC5D9 /* Assets.xcassets */; };
 		598A6CF71D6636CA005BC5D9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 598A6CF51D6636CA005BC5D9 /* MainMenu.xib */; };
@@ -40,6 +39,7 @@
 		599FCC6E1D66706600C57873 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FCC6D1D66706600C57873 /* libfreetype.a */; };
 		599FCC7D1D667CCB00C57873 /* libpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FCC7C1D667CCB00C57873 /* libpng.a */; };
 		599FCC7F1D667F0400C57873 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FCC7E1D667F0400C57873 /* libbz2.a */; };
+		59BEB3E31D6B7FBF00CD09FF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 59BEB3E21D6B7FBF00CD09FF /* AppDelegate.m */; };
 		59E566B91D6B6CC0007D0DD6 /* Example01.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59E566B81D6B6CC0007D0DD6 /* Example01.cpp */; };
 /* End PBXBuildFile section */
 
@@ -428,8 +428,6 @@
 		591997411D63F00D003F62FF /* xutils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xutils.h; sourceTree = "<group>"; };
 		591997461D63F05D003F62FF /* libxclass.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libxclass.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		598A6CEB1D6636CA005BC5D9 /* Example01.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example01.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		598A6CED1D6636CA005BC5D9 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		598A6CEE1D6636CA005BC5D9 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		598A6CF11D6636CA005BC5D9 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		598A6CF31D6636CA005BC5D9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		598A6CF61D6636CA005BC5D9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
@@ -444,6 +442,8 @@
 		599FCC6D1D66706600C57873 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../xclass/lib/osx/libfreetype.a; sourceTree = "<group>"; };
 		599FCC7C1D667CCB00C57873 /* libpng.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng.a; path = ../xclass/lib/osx/libpng.a; sourceTree = "<group>"; };
 		599FCC7E1D667F0400C57873 /* libbz2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbz2.a; path = ../xclass/lib/osx/libbz2.a; sourceTree = "<group>"; };
+		59BEB3E11D6B7FAC00CD09FF /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = common/AppDelegate.h; sourceTree = SOURCE_ROOT; };
+		59BEB3E21D6B7FBF00CD09FF /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = common/AppDelegate.m; sourceTree = SOURCE_ROOT; };
 		59E566B81D6B6CC0007D0DD6 /* Example01.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Example01.cpp; path = ../../examples/Example01/Example01.cpp; sourceTree = "<group>"; };
 		59E575911D6400BF0093ADFE /* InputTrackers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InputTrackers.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1028,8 +1028,6 @@
 			isa = PBXGroup;
 			children = (
 				59E566B81D6B6CC0007D0DD6 /* Example01.cpp */,
-				598A6CED1D6636CA005BC5D9 /* AppDelegate.h */,
-				598A6CEE1D6636CA005BC5D9 /* AppDelegate.m */,
 				598A6CF31D6636CA005BC5D9 /* Assets.xcassets */,
 				598A6CF51D6636CA005BC5D9 /* MainMenu.xib */,
 				598A6CF81D6636CA005BC5D9 /* Info.plist */,
@@ -1057,6 +1055,15 @@
 			name = lib;
 			sourceTree = "<group>";
 		};
+		59BEB3E01D6B7F4C00CD09FF /* osx common */ = {
+			isa = PBXGroup;
+			children = (
+				59BEB3E21D6B7FBF00CD09FF /* AppDelegate.m */,
+				59BEB3E11D6B7FAC00CD09FF /* AppDelegate.h */,
+			);
+			name = "osx common";
+			sourceTree = "<group>";
+		};
 		59E420DA1D6B781400EE74D6 /* Prebuilt LIbs */ = {
 			isa = PBXGroup;
 			children = (
@@ -1072,6 +1079,7 @@
 		59E5758F1D6400BF0093ADFE /* examples */ = {
 			isa = PBXGroup;
 			children = (
+				59BEB3E01D6B7F4C00CD09FF /* osx common */,
 				598A6CEC1D6636CA005BC5D9 /* Example01 */,
 				59E575901D6400BF0093ADFE /* common */,
 			);
@@ -1250,8 +1258,8 @@
 			files = (
 				599FCC601D6654EB00C57873 /* ExampleXGL.cpp in Sources */,
 				598A6CF21D6636CA005BC5D9 /* main.m in Sources */,
+				59BEB3E31D6B7FBF00CD09FF /* AppDelegate.m in Sources */,
 				598A6CFD1D66385F005BC5D9 /* OpenGLView.h in Sources */,
-				598A6CEF1D6636CA005BC5D9 /* AppDelegate.m in Sources */,
 				598A6CFF1D663AE5005BC5D9 /* OpenGLView.mm in Sources */,
 				59E566B91D6B6CC0007D0DD6 /* Example01.cpp in Sources */,
 			);
