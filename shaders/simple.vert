@@ -7,8 +7,8 @@ layout (std140) uniform ShaderMatrixData {
 };
 
 in  vec3 in_Position;
-in  vec3 in_Normal;
 in  vec2 in_TexCoord;
+in  vec3 in_Normal;
 in  vec4 in_Color;
 
 out vec4 ex_Color;
