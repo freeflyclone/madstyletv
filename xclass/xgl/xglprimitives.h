@@ -24,15 +24,15 @@
 #define XGLPRIMITIVES_H
 
 typedef glm::vec3 XGLVertex;
-typedef glm::vec3 XGLNormal;
-typedef glm::vec4 XGLColor;
 typedef glm::vec2 XGLTexCoord;
+typedef glm::vec3 XGLNormal;
+typedef glm::vec3 XGLColor;
 
 struct XGLVertexAttributes {
     XGLVertex v;
-    XGLNormal n;
     XGLTexCoord t;
-    XGLColor c;
+	XGLNormal n;
+	XGLColor c;
 };
 
 struct XGLMaterials

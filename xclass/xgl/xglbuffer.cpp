@@ -103,11 +103,11 @@ void XGLBuffer::Load(std::vector<XGLVertexAttributes> va, std::vector<XGLIndex> 
     // Vertex coords
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(XGLVertexAttributes), 0);
     GL_CHECK("glVertexAttribPointer() failed");
-    // vertex normals
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(XGLVertexAttributes), reinterpret_cast<void *>(sizeof(XGLVertex)));
-    GL_CHECK("glVertexAttribPointer() failed");
-    // vertex texCoords
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_TRUE, sizeof(XGLVertexAttributes), reinterpret_cast<void *>(sizeof(XGLVertex) + sizeof(XGLNormal)));
+	// vertex texCoords
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_TRUE, sizeof(XGLVertexAttributes), reinterpret_cast<void *>(sizeof(XGLVertex)));
+	GL_CHECK("glVertexAttribPointer() failed");
+	// vertex normals
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(XGLVertexAttributes), reinterpret_cast<void *>(sizeof(XGLVertex) + sizeof(XGLTexCoord)));
     GL_CHECK("glVertexAttribPointer() failed");
     // vertex colors
     glVertexAttribPointer(3, 4, GL_FLOAT, GL_TRUE, sizeof(XGLVertexAttributes), reinterpret_cast<void *>(sizeof(XGLVertex) + sizeof(XGLNormal) + sizeof(XGLTexCoord)));

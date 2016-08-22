@@ -70,7 +70,7 @@ XYPlaneGrid::XYPlaneGrid() {
 	SetName("XYPlaneGrid");
 	const float size = 100.0f;
 	const int gridIncrement = 10;
-	const XGLColor gridColor = { 0.5, 0, 0, 1 };
+	const XGLColor gridColor = { 0.5, 0, 0 };
 
 	for (int i = 0; i <= 100; i += gridIncrement) {
 		v.push_back({ { float(i), size, 0 }, {}, {}, gridColor });
@@ -94,9 +94,9 @@ void XYPlaneGrid::Draw(){
 
 
 XGLTriangle::XGLTriangle() {
-    v.push_back({ { -1, -1, 0 }, {}, {}, { 1, 0, 0,1 } });
-    v.push_back({ { 1, -1, 0 }, {}, {}, { 0, 1, 0, 1 } });
-    v.push_back({ { 0, 1.4142, 0 }, {}, {}, { 0, 0, 1, 1 } });
+    v.push_back({ { -1, -1, 0 }, {}, {}, { 1, 0, 0 } });
+    v.push_back({ { 1, -1, 0 }, {}, {}, { 0, 1, 0 } });
+    v.push_back({ { 0, 1.4142, 0 }, {}, {}, { 0, 0, 1 } });
 
     b.Load(v);
 }
@@ -108,16 +108,15 @@ void XGLTriangle::Draw(){
 
 XGLCube::XGLCube() {
 	SetName("XGLCube");
-	const XGLColor white = { 1, 1, 1, 1 };
 
-	v.push_back({ { -1.0, -1.0, -1.0 },{-1.0,-1.0,-1.0 },{}, white });
-	v.push_back({ { -1.0, 1.0, -1.0 },{-1.0, 1.0, -1.0 },{}, white });
-	v.push_back({ { 1.0, -1.0, -1.0 },{1.0,-1.0,-1.0 },{}, white });
-	v.push_back({ { 1.0, 1.0, -1.0 },{1.0,1.0,-1.0 },{}, white });
-	v.push_back({ { -1.0, -1.0, 1.0 },{-1.0,-1.0,1.0 },{}, white });
-	v.push_back({ { -1.0, 1.0, 1.0 },{-1.0,1.0,1.0 },{}, white });
-	v.push_back({ { 1.0, -1.0, 1.0 },{1.0,-1.0,1.0 },{}, white });
-	v.push_back({ { 1.0, 1.0, 1.0 },{1.0,1.0,1.0 },{}, white });
+	v.push_back({ { -1.0, -1.0, -1.0 }, {}, { -1.0, -1.0, -1.0 }, white });
+	v.push_back({ { -1.0, 1.0, -1.0 }, {}, { -1.0, 1.0, -1.0 }, white });
+	v.push_back({ { 1.0, -1.0, -1.0 }, {}, { 1.0, -1.0, -1.0 }, white });
+	v.push_back({ { 1.0, 1.0, -1.0 }, {}, { 1.0, 1.0, -1.0 }, white });
+	v.push_back({ { -1.0, -1.0, 1.0 }, {}, { -1.0, -1.0, 1.0 }, white });
+	v.push_back({ { -1.0, 1.0, 1.0 }, {}, { -1.0, 1.0, 1.0 }, white });
+	v.push_back({ { 1.0, -1.0, 1.0 }, {}, { 1.0, -1.0, 1.0 }, white });
+	v.push_back({ { 1.0, 1.0, 1.0 }, {}, { 1.0, 1.0, 1.0 }, white });
 
 	idx.push_back(0);
 	idx.push_back(1);
@@ -147,7 +146,6 @@ XGLSphere::XGLSphere(float r, int n) : radius(r), nSegments(n), visualizeNormals
 	int i, j;
 	float twoPi = (2 * (float)PI);
 	XGLVertexAttributes vrtx;
-	XGLColor white = { 1,1,1,1 };
 
 	for (j = 0; j <nSegments; j++) {
 		for (i = 0; i < nSegments; i++) {
@@ -209,7 +207,6 @@ XGLCapsule::XGLCapsule(float r, float l, int n) : radius(r), length(l), nSegment
 	float twoPi = (2 * (float)PI);
 	float pi = (float)PI;
 	XGLVertexAttributes vrtx;
-	XGLColor white = { 1,1,1,1 };
 	float angleStep = pi / float(nSegments);
 	float angleStep2 = pi / float(nSegments);
 	int totalSegments = nSegments * 2;
@@ -354,7 +351,7 @@ XGLTorus::XGLTorus(float rMaj, float rMin, int nMaj, int nMin) :
             vrtx.v = { x, y, z };
             vrtx.n = { nx, ny, nz };
             vrtx.t = { 0.0f, 0.0f };
-            vrtx.c = { 1, 1, 1, 1 };
+            vrtx.c = { 1, 1, 1 };
             v.push_back(vrtx);
         }
     }
@@ -393,8 +390,8 @@ XGLTorus::XGLTorus(float rMaj, float rMin, int nMaj, int nMin) :
         xprintf("There are %d vertices\n", nv);
 
         for (int i = 0; i < nv; i++){
-            XGLVertexAttributes tv = { { v[i].v.x, v[i].v.y, v[i].v.z }, {}, {}, { 255, 255, 255, 255 } };
-            XGLVertexAttributes tn = { { v[i].n.x, v[i].n.y, v[i].n.z }, {}, {}, { 255, 255, 255, 255 } };
+            XGLVertexAttributes tv = { { v[i].v.x, v[i].v.y, v[i].v.z }, {}, {}, white };
+            XGLVertexAttributes tn = { { v[i].n.x, v[i].n.y, v[i].n.z }, {}, {}, white };
             XGLVertexAttributes tvn;
 
             tvn.v.x = tv.v.x + tn.v.x;
@@ -485,7 +482,6 @@ XGLSphere2::XGLSphere2(float r, int n) : radius(r), nSegments(n), visualizeNorma
 	float twoPi = (2 * (float)PI);
 	float pi = (float)PI;
 	XGLVertexAttributes vrtx;
-	XGLColor white = { 1,1,1,1 };
 	int nPoints = nSegments+1;
 	float angleStep = pi / float(nSegments);
 	float angleStep2 = pi / float(nSegments);
