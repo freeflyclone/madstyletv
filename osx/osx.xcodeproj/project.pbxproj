@@ -1657,7 +1657,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.Example01;
+				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.Example02;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
@@ -1710,7 +1710,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.Example01;
+				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.Example02;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
