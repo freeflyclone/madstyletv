@@ -22,11 +22,10 @@
 		5919975D1D63F261003F62FF /* xgluniform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5919973A1D63F00D003F62FF /* xgluniform.cpp */; };
 		5919975E1D63F2AB003F62FF /* xclass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 591996171D63F00D003F62FF /* xclass.cpp */; };
 		5919975F1D63F2AB003F62FF /* xconfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5919961B1D63F00D003F62FF /* xconfig.cpp */; };
-		598A6CF21D6636CA005BC5D9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 598A6CF11D6636CA005BC5D9 /* main.m */; };
+		5962D3851D6B80AB006BCD52 /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3841D6B80AB006BCD52 /* OpenGLView.mm */; };
+		5962D3891D6B81D8006BCD52 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3881D6B81D8006BCD52 /* main.m */; };
 		598A6CF41D6636CA005BC5D9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 598A6CF31D6636CA005BC5D9 /* Assets.xcassets */; };
 		598A6CF71D6636CA005BC5D9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 598A6CF51D6636CA005BC5D9 /* MainMenu.xib */; };
-		598A6CFD1D66385F005BC5D9 /* OpenGLView.h in Sources */ = {isa = PBXBuildFile; fileRef = 598A6CFC1D66385F005BC5D9 /* OpenGLView.h */; };
-		598A6CFF1D663AE5005BC5D9 /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 598A6CFE1D663AE5005BC5D9 /* OpenGLView.mm */; };
 		599FCC4D1D6645B300C57873 /* ExampleXGL.h in Headers */ = {isa = PBXBuildFile; fileRef = 599FCC4B1D6645B300C57873 /* ExampleXGL.h */; };
 		599FCC5B1D66508D00C57873 /* libxclass.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 591997461D63F05D003F62FF /* libxclass.a */; };
 		599FCC601D6654EB00C57873 /* ExampleXGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 599FCC4A1D6645B300C57873 /* ExampleXGL.cpp */; };
@@ -427,13 +426,13 @@
 		591997401D63F00D003F62FF /* xutils.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = xutils.c; sourceTree = "<group>"; };
 		591997411D63F00D003F62FF /* xutils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xutils.h; sourceTree = "<group>"; };
 		591997461D63F05D003F62FF /* libxclass.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libxclass.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5962D3831D6B80AB006BCD52 /* OpenGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OpenGLView.h; path = common/OpenGLView.h; sourceTree = SOURCE_ROOT; };
+		5962D3841D6B80AB006BCD52 /* OpenGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenGLView.mm; path = common/OpenGLView.mm; sourceTree = SOURCE_ROOT; };
+		5962D3881D6B81D8006BCD52 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = common/main.m; sourceTree = SOURCE_ROOT; };
 		598A6CEB1D6636CA005BC5D9 /* Example01.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example01.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		598A6CF11D6636CA005BC5D9 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		598A6CF31D6636CA005BC5D9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		598A6CF61D6636CA005BC5D9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		598A6CF81D6636CA005BC5D9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		598A6CFC1D66385F005BC5D9 /* OpenGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenGLView.h; sourceTree = "<group>"; };
-		598A6CFE1D663AE5005BC5D9 /* OpenGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenGLView.mm; sourceTree = "<group>"; };
 		599FCC4A1D6645B300C57873 /* ExampleXGL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExampleXGL.cpp; sourceTree = "<group>"; };
 		599FCC4B1D6645B300C57873 /* ExampleXGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExampleXGL.h; sourceTree = "<group>"; };
 		599FCC5C1D6651FA00C57873 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = lib64/libfreetype.a; sourceTree = "<group>"; };
@@ -1031,9 +1030,6 @@
 				598A6CF31D6636CA005BC5D9 /* Assets.xcassets */,
 				598A6CF51D6636CA005BC5D9 /* MainMenu.xib */,
 				598A6CF81D6636CA005BC5D9 /* Info.plist */,
-				598A6CF01D6636CA005BC5D9 /* Supporting Files */,
-				598A6CFC1D66385F005BC5D9 /* OpenGLView.h */,
-				598A6CFE1D663AE5005BC5D9 /* OpenGLView.mm */,
 			);
 			name = Example01;
 			path = ../osx/Example01;
@@ -1042,9 +1038,10 @@
 		598A6CF01D6636CA005BC5D9 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				598A6CF11D6636CA005BC5D9 /* main.m */,
+				5962D3881D6B81D8006BCD52 /* main.m */,
 			);
 			name = "Supporting Files";
+			path = ../osx/Example01;
 			sourceTree = "<group>";
 		};
 		599FCC5F1D6653E500C57873 /* lib */ = {
@@ -1058,6 +1055,9 @@
 		59BEB3E01D6B7F4C00CD09FF /* osx common */ = {
 			isa = PBXGroup;
 			children = (
+				598A6CF01D6636CA005BC5D9 /* Supporting Files */,
+				5962D3831D6B80AB006BCD52 /* OpenGLView.h */,
+				5962D3841D6B80AB006BCD52 /* OpenGLView.mm */,
 				59BEB3E21D6B7FBF00CD09FF /* AppDelegate.m */,
 				59BEB3E11D6B7FAC00CD09FF /* AppDelegate.h */,
 			);
@@ -1256,11 +1256,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5962D3891D6B81D8006BCD52 /* main.m in Sources */,
 				599FCC601D6654EB00C57873 /* ExampleXGL.cpp in Sources */,
-				598A6CF21D6636CA005BC5D9 /* main.m in Sources */,
+				5962D3851D6B80AB006BCD52 /* OpenGLView.mm in Sources */,
 				59BEB3E31D6B7FBF00CD09FF /* AppDelegate.m in Sources */,
-				598A6CFD1D66385F005BC5D9 /* OpenGLView.h in Sources */,
-				598A6CFF1D663AE5005BC5D9 /* OpenGLView.mm in Sources */,
 				59E566B91D6B6CC0007D0DD6 /* Example01.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
