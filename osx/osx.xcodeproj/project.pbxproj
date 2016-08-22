@@ -40,6 +40,7 @@
 		599FCC6E1D66706600C57873 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FCC6D1D66706600C57873 /* libfreetype.a */; };
 		599FCC7D1D667CCB00C57873 /* libpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FCC7C1D667CCB00C57873 /* libpng.a */; };
 		599FCC7F1D667F0400C57873 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FCC7E1D667F0400C57873 /* libbz2.a */; };
+		59E566B91D6B6CC0007D0DD6 /* Example01.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59E566B81D6B6CC0007D0DD6 /* Example01.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -443,6 +444,7 @@
 		599FCC6D1D66706600C57873 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../xclass/lib/osx/libfreetype.a; sourceTree = "<group>"; };
 		599FCC7C1D667CCB00C57873 /* libpng.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng.a; path = ../xclass/lib/osx/libpng.a; sourceTree = "<group>"; };
 		599FCC7E1D667F0400C57873 /* libbz2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbz2.a; path = ../xclass/lib/osx/libbz2.a; sourceTree = "<group>"; };
+		59E566B81D6B6CC0007D0DD6 /* Example01.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Example01.cpp; path = ../../examples/Example01/Example01.cpp; sourceTree = "<group>"; };
 		59E575911D6400BF0093ADFE /* InputTrackers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InputTrackers.h; sourceTree = "<group>"; };
 		59E575951D6400BF0093ADFE /* GettingStarted.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = GettingStarted.ico; sourceTree = "<group>"; };
 		59E575961D6400BF0093ADFE /* GettingStarted.rc */ = {isa = PBXFileReference; lastKnownFileType = text; path = GettingStarted.rc; sourceTree = "<group>"; };
@@ -1042,6 +1044,7 @@
 		598A6CEC1D6636CA005BC5D9 /* Example01 */ = {
 			isa = PBXGroup;
 			children = (
+				59E566B81D6B6CC0007D0DD6 /* Example01.cpp */,
 				598A6CED1D6636CA005BC5D9 /* AppDelegate.h */,
 				598A6CEE1D6636CA005BC5D9 /* AppDelegate.m */,
 				598A6CF31D6636CA005BC5D9 /* Assets.xcassets */,
@@ -1273,6 +1276,7 @@
 				598A6CFD1D66385F005BC5D9 /* OpenGLView.h in Sources */,
 				598A6CEF1D6636CA005BC5D9 /* AppDelegate.m in Sources */,
 				598A6CFF1D663AE5005BC5D9 /* OpenGLView.mm in Sources */,
+				59E566B91D6B6CC0007D0DD6 /* Example01.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1448,7 +1452,10 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = Example01/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = "../xclass/3rdParty/**";
+				LIBRARY_SEARCH_PATHS = (
+					"../xclass/3rdParty/**",
+					"$(PROJECT_DIR)/Debug",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1495,6 +1502,10 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = Example01/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Debug",
+				);
 				"LIBRARY_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/**";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
