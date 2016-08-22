@@ -1020,11 +1020,7 @@
 		595FA1171D32E1300005D056 = {
 			isa = PBXGroup;
 			children = (
-				599FCC7E1D667F0400C57873 /* libbz2.a */,
-				599FCC7C1D667CCB00C57873 /* libpng.a */,
-				599FCC6D1D66706600C57873 /* libfreetype.a */,
-				599FCC6B1D66704F00C57873 /* libexpat.a */,
-				599FCC691D66700800C57873 /* libz.a */,
+				59E420DA1D6B781400EE74D6 /* Prebuilt LIbs */,
 				598A6CEC1D6636CA005BC5D9 /* Example01 */,
 				5919959B1D63F00D003F62FF /* xclass */,
 				59E5758F1D6400BF0093ADFE /* examples */,
@@ -1071,6 +1067,18 @@
 				599FCC5C1D6651FA00C57873 /* libfreetype.a */,
 			);
 			name = lib;
+			sourceTree = "<group>";
+		};
+		59E420DA1D6B781400EE74D6 /* Prebuilt LIbs */ = {
+			isa = PBXGroup;
+			children = (
+				599FCC691D66700800C57873 /* libz.a */,
+				599FCC6B1D66704F00C57873 /* libexpat.a */,
+				599FCC6D1D66706600C57873 /* libfreetype.a */,
+				599FCC7C1D667CCB00C57873 /* libpng.a */,
+				599FCC7E1D667F0400C57873 /* libbz2.a */,
+			);
+			name = "Prebuilt LIbs";
 			sourceTree = "<group>";
 		};
 		59E5758F1D6400BF0093ADFE /* examples */ = {
