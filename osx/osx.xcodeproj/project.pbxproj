@@ -40,7 +40,6 @@
 		599FCC6E1D66706600C57873 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FCC6D1D66706600C57873 /* libfreetype.a */; };
 		599FCC7D1D667CCB00C57873 /* libpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FCC7C1D667CCB00C57873 /* libpng.a */; };
 		599FCC7F1D667F0400C57873 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FCC7E1D667F0400C57873 /* libbz2.a */; };
-		59C33AF71D691A5400885488 /* Example01.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59C33AF61D691A5400885488 /* Example01.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -439,13 +438,24 @@
 		599FCC4A1D6645B300C57873 /* ExampleXGL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExampleXGL.cpp; sourceTree = "<group>"; };
 		599FCC4B1D6645B300C57873 /* ExampleXGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExampleXGL.h; sourceTree = "<group>"; };
 		599FCC5C1D6651FA00C57873 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = lib64/libfreetype.a; sourceTree = "<group>"; };
-		599FCC691D66700800C57873 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = ../../xclass/lib/osx/libz.a; sourceTree = "<group>"; };
-		599FCC6B1D66704F00C57873 /* libexpat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libexpat.a; path = ../../xclass/lib/osx/libexpat.a; sourceTree = "<group>"; };
-		599FCC6D1D66706600C57873 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../../xclass/lib/osx/libfreetype.a; sourceTree = "<group>"; };
-		599FCC7C1D667CCB00C57873 /* libpng.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng.a; path = ../../xclass/lib/osx/libpng.a; sourceTree = "<group>"; };
-		599FCC7E1D667F0400C57873 /* libbz2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbz2.a; path = ../../xclass/lib/osx/libbz2.a; sourceTree = "<group>"; };
-		59C33AF61D691A5400885488 /* Example01.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Example01.cpp; path = ../../examples/Example01/Example01.cpp; sourceTree = "<group>"; };
+		599FCC691D66700800C57873 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = ../xclass/lib/osx/libz.a; sourceTree = "<group>"; };
+		599FCC6B1D66704F00C57873 /* libexpat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libexpat.a; path = ../xclass/lib/osx/libexpat.a; sourceTree = "<group>"; };
+		599FCC6D1D66706600C57873 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../xclass/lib/osx/libfreetype.a; sourceTree = "<group>"; };
+		599FCC7C1D667CCB00C57873 /* libpng.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng.a; path = ../xclass/lib/osx/libpng.a; sourceTree = "<group>"; };
+		599FCC7E1D667F0400C57873 /* libbz2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbz2.a; path = ../xclass/lib/osx/libbz2.a; sourceTree = "<group>"; };
 		59E575911D6400BF0093ADFE /* InputTrackers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InputTrackers.h; sourceTree = "<group>"; };
+		59E575951D6400BF0093ADFE /* GettingStarted.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = GettingStarted.ico; sourceTree = "<group>"; };
+		59E575961D6400BF0093ADFE /* GettingStarted.rc */ = {isa = PBXFileReference; lastKnownFileType = text; path = GettingStarted.rc; sourceTree = "<group>"; };
+		59E575971D6400BF0093ADFE /* GettingStarted.vcxproj */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = GettingStarted.vcxproj; sourceTree = "<group>"; };
+		59E575981D6400BF0093ADFE /* GettingStarted.vcxproj.filters */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = GettingStarted.vcxproj.filters; sourceTree = "<group>"; };
+		59E575991D6400BF0093ADFE /* GettingStarted.vcxproj.user */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = GettingStarted.vcxproj.user; sourceTree = "<group>"; };
+		59E5759A1D6400BF0093ADFE /* ReadMe.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ReadMe.txt; sourceTree = "<group>"; };
+		59E5759B1D6400BF0093ADFE /* Resource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Resource.h; sourceTree = "<group>"; };
+		59E5759C1D6400BF0093ADFE /* small.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = small.ico; sourceTree = "<group>"; };
+		59E5759D1D6400BF0093ADFE /* stdafx.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stdafx.h; sourceTree = "<group>"; };
+		59E5759E1D6400BF0093ADFE /* targetver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = targetver.h; sourceTree = "<group>"; };
+		59E5759F1D6400BF0093ADFE /* WinMain.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WinMain.cpp; sourceTree = "<group>"; };
+		59E575A01D6400BF0093ADFE /* WinMain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WinMain.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1008,7 +1018,12 @@
 		595FA1171D32E1300005D056 = {
 			isa = PBXGroup;
 			children = (
-				598A6CEC1D6636CA005BC5D9 /* common */,
+				599FCC7E1D667F0400C57873 /* libbz2.a */,
+				599FCC7C1D667CCB00C57873 /* libpng.a */,
+				599FCC6D1D66706600C57873 /* libfreetype.a */,
+				599FCC6B1D66704F00C57873 /* libexpat.a */,
+				599FCC691D66700800C57873 /* libz.a */,
+				598A6CEC1D6636CA005BC5D9 /* Example01 */,
 				5919959B1D63F00D003F62FF /* xclass */,
 				59E5758F1D6400BF0093ADFE /* examples */,
 				595FA1231D32E17C0005D056 /* Products */,
@@ -1024,11 +1039,9 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		598A6CEC1D6636CA005BC5D9 /* common */ = {
+		598A6CEC1D6636CA005BC5D9 /* Example01 */ = {
 			isa = PBXGroup;
 			children = (
-				59C33AF81D691B6C00885488 /* lib */,
-				59C33AF61D691A5400885488 /* Example01.cpp */,
 				598A6CED1D6636CA005BC5D9 /* AppDelegate.h */,
 				598A6CEE1D6636CA005BC5D9 /* AppDelegate.m */,
 				598A6CF31D6636CA005BC5D9 /* Assets.xcassets */,
@@ -1038,7 +1051,6 @@
 				598A6CFC1D66385F005BC5D9 /* OpenGLView.h */,
 				598A6CFE1D663AE5005BC5D9 /* OpenGLView.mm */,
 			);
-			name = common;
 			path = Example01;
 			sourceTree = "<group>";
 		};
@@ -1058,22 +1070,11 @@
 			name = lib;
 			sourceTree = "<group>";
 		};
-		59C33AF81D691B6C00885488 /* lib */ = {
-			isa = PBXGroup;
-			children = (
-				599FCC691D66700800C57873 /* libz.a */,
-				599FCC6B1D66704F00C57873 /* libexpat.a */,
-				599FCC6D1D66706600C57873 /* libfreetype.a */,
-				599FCC7C1D667CCB00C57873 /* libpng.a */,
-				599FCC7E1D667F0400C57873 /* libbz2.a */,
-			);
-			name = lib;
-			sourceTree = "<group>";
-		};
 		59E5758F1D6400BF0093ADFE /* examples */ = {
 			isa = PBXGroup;
 			children = (
 				59E575901D6400BF0093ADFE /* common */,
+				59E575941D6400BF0093ADFE /* GettingStarted */,
 			);
 			name = examples;
 			path = ../examples;
@@ -1087,6 +1088,25 @@
 				59E575911D6400BF0093ADFE /* InputTrackers.h */,
 			);
 			path = common;
+			sourceTree = "<group>";
+		};
+		59E575941D6400BF0093ADFE /* GettingStarted */ = {
+			isa = PBXGroup;
+			children = (
+				59E575951D6400BF0093ADFE /* GettingStarted.ico */,
+				59E575961D6400BF0093ADFE /* GettingStarted.rc */,
+				59E575971D6400BF0093ADFE /* GettingStarted.vcxproj */,
+				59E575981D6400BF0093ADFE /* GettingStarted.vcxproj.filters */,
+				59E575991D6400BF0093ADFE /* GettingStarted.vcxproj.user */,
+				59E5759A1D6400BF0093ADFE /* ReadMe.txt */,
+				59E5759B1D6400BF0093ADFE /* Resource.h */,
+				59E5759C1D6400BF0093ADFE /* small.ico */,
+				59E5759D1D6400BF0093ADFE /* stdafx.h */,
+				59E5759E1D6400BF0093ADFE /* targetver.h */,
+				59E5759F1D6400BF0093ADFE /* WinMain.cpp */,
+				59E575A01D6400BF0093ADFE /* WinMain.h */,
+			);
+			path = GettingStarted;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1248,7 +1268,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				59C33AF71D691A5400885488 /* Example01.cpp in Sources */,
 				599FCC601D6654EB00C57873 /* ExampleXGL.cpp in Sources */,
 				598A6CF21D6636CA005BC5D9 /* main.m in Sources */,
 				598A6CFD1D66385F005BC5D9 /* OpenGLView.h in Sources */,
