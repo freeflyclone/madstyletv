@@ -83,10 +83,10 @@ bool XGLShader::Compile(std::string name) {
     GL_CHECK("glAttachShader(FRAGMENT) failed");
     glBindAttribLocation(shader, 0, "in_Position");
     GL_CHECK("glBindAttribLocation(\"in_Position\") failed");
-    glBindAttribLocation(shader, 1, "in_Normal");
+	glBindAttribLocation(shader, 1, "in_TexCoord");
+	GL_CHECK("glBindAttribLocation(\"in_TexCoord\") failed");
+	glBindAttribLocation(shader, 2, "in_Normal");
     GL_CHECK("glBindAttribLocation(\"in_Normal\") failed");
-    glBindAttribLocation(shader, 2, "in_TexCoord");
-    GL_CHECK("glBindAttribLocation(\"in_TexCoord\") failed");
     glBindAttribLocation(shader, 3, "in_Color");
     GL_CHECK("glBindAttribLocation(\"in_Color\") failed");
 
@@ -105,7 +105,7 @@ bool XGLShader::Compile(std::string name) {
     GL_CHECK("glGetProgramiv() failed");
     glGetProgramiv(shader, GL_INFO_LOG_LENGTH, &status);
     GL_CHECK("glGetProgramiv() failed");
-    
+
 	GLuint idx = glGetUniformBlockIndex(shader, "ShaderMatrixData");
 	GL_CHECK("glGetUniformBlockIndex() failed");
 	if (idx == GL_INVALID_INDEX) {
