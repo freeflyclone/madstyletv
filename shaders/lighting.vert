@@ -9,10 +9,12 @@ layout (std140) uniform ShaderMatrixData {
 in vec3 vert;
 in vec2 vertTexCoord;
 in vec3 vertNormal;
+in vec3 vertColor;
 
 out vec3 fragVert;
 out vec2 fragTexCoord;
 out vec3 fragNormal;
+out vec3 fragColor;
 
 void main() {
 	mat4 camera = projector * view;
@@ -20,6 +22,7 @@ void main() {
     fragTexCoord = vertTexCoord;
     fragNormal = vertNormal;
     fragVert = vert;
+	fragColor = vertColor;
     
     // Apply all matrix transformations to vert
     gl_Position = camera * model * vec4(vert, 1);

@@ -105,6 +105,11 @@ void ExampleXGL::KeyFunc(int key, int flags){
 }
 
 void ExampleXGL::Reshape(int w, int h) {
-	projector.Reshape(w, h);
-	Display();
+	try {
+		projector.Reshape(w, h);
+		Display();
+	}
+	catch (std::runtime_error e){
+		xprintf("Well that didn't work: %s\n", e.what());
+	}
 }

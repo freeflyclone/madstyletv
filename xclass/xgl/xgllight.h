@@ -15,6 +15,8 @@
 struct XGLLight {
     XGLVertex position;
     XGLColor diffuse;
+	float attenuation;
+	float ambientCoefficient;
 };
 
 #endif
