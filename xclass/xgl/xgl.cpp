@@ -109,7 +109,7 @@ XGL::XGL() : XGLObject("XGL") {
 
     font = std::make_shared<XGLFont>();
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 
 	glDepthFunc(GL_LESS);
 	glEnable(GL_DEPTH_TEST);
