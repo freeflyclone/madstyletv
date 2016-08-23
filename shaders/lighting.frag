@@ -1,7 +1,14 @@
 #version 150
 
-uniform mat4 model;
+//uniform mat4 model;
 uniform vec3 cameraPosition;
+
+layout (std140) uniform ShaderMatrixData {
+	mat4 projector;
+	mat4 view;
+	mat4 model;
+};
+
 
 // material settings
 uniform sampler2D materialTex;
