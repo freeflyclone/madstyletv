@@ -65,8 +65,13 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 			break;
 
 		if (exgl) {
-			exgl->Display();
-			SwapBuffers(hdc);
+			try {
+				exgl->Display();
+				SwapBuffers(hdc);
+			}
+			catch (std::runtime_error e) {
+				MessageBoxA(hWnd, e.what(), "Well that didn't work out", MB_OK);
+			}
 		}
 	}
 

@@ -8,7 +8,7 @@
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
-	AddShape("shaders/lighting", [&](){ shape = new XGLTorus(3.0f, 0.3f, 32, 32); return shape; });
+	AddShape("shaders/lighting", [&](){ shape = new XGLTorus(8.0f, 2.0f, 32, 32); return shape; });
 	shape->SetColor(yellow);
 
 /*

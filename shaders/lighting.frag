@@ -25,14 +25,16 @@ uniform struct Light {
 in vec2 fragTexCoord;
 in vec3 fragNormal;
 in vec3 fragVert;
+in vec3 fragColor;
 
 out vec4 finalColor;
 
 void main() {
     vec3 normal = normalize(transpose(inverse(mat3(model))) * fragNormal);
     vec3 surfacePos = vec3(model * vec4(fragVert, 1));
-    vec4 surfaceColor = texture(materialTex, fragTexCoord);
-    vec3 surfaceToLight = normalize(light.position - surfacePos);
+    //vec4 surfaceColor = texture(materialTex, fragTexCoord);
+    vec4 surfaceColor = vec4(fragColor, 1.0);
+	vec3 surfaceToLight = normalize(light.position - surfacePos);
     vec3 surfaceToCamera = normalize(cameraPosition - surfacePos);
     
     //ambient

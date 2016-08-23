@@ -73,7 +73,7 @@ XGL::XGL() : XGLObject("XGL") {
 		GL_CHECK("glBindBuffer() failed");
 
 		// for now, create one point light, for diffuse lighting shader development
-		XGLLight light = { { 20,15,10 },{ 1,1,1 } };
+		XGLLight light = { { 10,6,6 },{ 1,1,1 }, 0.5f, 0.005f };
 		lights.push_back(light);
 
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(light), &light, GL_DYNAMIC_DRAW);
@@ -153,6 +153,7 @@ void XGL::Display() {
 	// this should probably be done else where, once startup-order issues are resolved
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(shaderMatrix), (GLvoid *)&shaderMatrix, GL_DYNAMIC_DRAW);
 
+
     // iterate through all of the shaders...
 	XGLShapesMap::iterator perShader;
     // ... then iterate through all shapes associated with the current shader 
@@ -164,6 +165,10 @@ void XGL::Display() {
 		XGLShapeList *shapeList = perShader->second;
 		std::string name = perShader->first;
         shaderMap[name]->Use();
+		XGLShader *shader = shaderMap[name];
+
+		glUniform3fv(glGetUniformLocation(shader->shader, "cameraPosition"), 1, (GLfloat*)glm::value_ptr(camera.pos));
+		GL_CHECK("glUniform3fv() failed");
 
 		for (eachShape = shapeList->begin(); eachShape != shapeList->end(); eachShape++) {
 			shape = *eachShape;

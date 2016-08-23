@@ -128,6 +128,29 @@ bool XGLShader::Compile(std::string name) {
 		GL_CHECK("glUniformBlockBinding() failed");
 	}
 
+	glUseProgram(shader);
+
+	XGLLights lights = XGL::getInstance()->lights;
+	XGLLight light = lights.back();
+
+	glUniform3fv(glGetUniformLocation(shader, "light.position"), 1, (GLfloat*)glm::value_ptr(light.position));
+	GL_CHECK("glUniform3fv() failed");
+
+	glUniform3fv(glGetUniformLocation(shader, "light.intensities"), 1, (GLfloat*)glm::value_ptr(light.diffuse));
+	GL_CHECK("glUniform3fv() failed");
+
+	glUniform1f(glGetUniformLocation(shader, "light.attenuation"), light.attenuation);
+	GL_CHECK("glUniform3fv() failed");
+
+	glUniform1f(glGetUniformLocation(shader, "light.ambientCoefficient"), light.ambientCoefficient);
+	GL_CHECK("glUniform3fv() failed");
+
+	glUniform3fv(glGetUniformLocation(shader, "materialSpecularColor"), 1, (GLfloat*)glm::value_ptr(white));
+	GL_CHECK("glUniform3fv() failed");
+
+	glUniform1f(glGetUniformLocation(shader, "materialShininess"), 0.5f);
+	GL_CHECK("glUniform1f() failed");
+
 	//DebugPrintf("XGLShader::Compile(%s) shader #: %d\n", name.c_str(), shader);
     return true;
 }
