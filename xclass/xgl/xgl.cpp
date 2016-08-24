@@ -21,6 +21,14 @@ void CheckError(const char *file, int line, std::string what){
     }
 }
 
+void CheckStatus(const char *file, int line) {
+	GLenum err = glGetError();
+	if (err) {
+		const GLubyte *errString = gluErrorString(err);
+		xprintf("%s:%d - %s\n", file, line, errString);
+	}
+}
+
 static std::shared_ptr<XGL> instance(NULL);
 std::shared_ptr<XGL> XGL::getInstance() {
 	return instance;
