@@ -415,13 +415,15 @@ XGLTorus::XGLTorus(float rMaj, float rMin, int nMaj, int nMin) :
 }
 
 void XGLTorus::Draw() {
-    glDrawRangeElements(GL_TRIANGLE_STRIP, 0, nTotalIndices, nTorusIndices, XGLIndexType, 0);
-    GL_CHECK("glDrawRangeElements() failed");
-
+    //glDrawRangeElements(GL_TRIANGLE_STRIP, 0, nTotalIndices, nTorusIndices, XGLIndexType, 0);
+	glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
+	GL_CHECK("glDrawRangeElements() failed");
+	/*
     if (visualizeNormals){
         glDrawRangeElements(GL_LINES, nTorusIndices, nTotalIndices, nTotalIndices, XGLIndexType, 0);
         GL_CHECK("glDrawRangeElements failed()");
     }
+	*/
 }
 
 XGLIcoSphere::XGLIcoSphere() {
