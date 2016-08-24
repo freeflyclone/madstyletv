@@ -34,14 +34,16 @@ void XGLShaderComponent::TextFileRead() {
 bool XGLShaderComponent::Compile(std::string name, GLuint type)
 {
     char *sourceText;
-    mFileName = name + (const char *)((type==GL_VERTEX_SHADER)?".vert":".frag");
+	GLint sourceLength;
+	mFileName = name + (const char *)((type==GL_VERTEX_SHADER)?".vert":".frag");
 	TextFileRead();
 	
     sourceText = (char *)mSourceString.c_str();
+	sourceLength = (GLint)mSourceString.length();
  
 	mShader = glCreateShader(type);
     GL_CHECK("glCreateShader() failed");
-	glShaderSource(mShader, 1, (const GLchar **)&sourceText, NULL);
+	glShaderSource(mShader, 1, (const GLchar **)&sourceText, &sourceLength);
     GL_CHECK("glShaderSource() failed");
 	glCompileShader(mShader);
     GL_CHECK("glCompileShader() failed");
