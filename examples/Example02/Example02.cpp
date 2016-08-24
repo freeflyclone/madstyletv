@@ -31,7 +31,7 @@ void ExampleXGL::BuildScene() {
 	XInputKeyFunc renderMod = [&](int key, int flags) {
 		const bool isDown = (flags & 0x8000) == 0;
 		const bool isRepeat = (flags & 0x4000) != 0;
-		static bool wireFrameMode = FALSE;
+		static bool wireFrameMode = false;
 
 		if (isDown && !isRepeat){
 			wireFrameMode = wireFrameMode ? false : true;
