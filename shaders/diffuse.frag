@@ -1,4 +1,4 @@
-#version 150
+#version 330
 
 layout (std140) uniform ShaderMatrixData {
 	mat4 projector;
@@ -20,10 +20,10 @@ uniform sampler2D tex;
 uniform vec4 ambientColor;
 uniform vec4 diffuseColor;
 
+in vec3 fragVert;
 in vec2 fragTexCoord;
 in vec3 fragNormal;
-in vec3 fragVert;
-in vec4 fragColor;
+in vec3 fragColor;
 
 out vec4 finalColor;
 
@@ -49,5 +49,5 @@ void main() {
     //vec4 surfaceColor = texture(tex, fragTexCoord);
 
 
-    finalColor = (brightness * diffuseColor * fragColor) + (ambientColor * 0.1);
+    finalColor = (brightness * diffuseColor * vec4(fragColor, 1.0)) + (ambientColor * 0.1);
 }

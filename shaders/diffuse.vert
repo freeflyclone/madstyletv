@@ -1,4 +1,4 @@
-#version 150
+#version 330
 
 layout (std140) uniform ShaderMatrixData {
 	mat4 projector;
@@ -9,12 +9,12 @@ layout (std140) uniform ShaderMatrixData {
 in vec3 vert;
 in vec2 vertTexCoord;
 in vec3 vertNormal;
-in vec4 vertColor;
+in vec3 vertColor;
 
 out vec3 fragVert;
 out vec2 fragTexCoord;
 out vec3 fragNormal;
-out vec4 fragColor;
+out vec3 fragColor;
 
 void main() {
     // Pass some variables to the fragment shader
