@@ -32,8 +32,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     xprintf("awakeFromNib()\n");
     NSOpenGLPixelFormatAttribute attrs[] = {
         NSOpenGLPFADoubleBuffer,
-        NSOpenGLPFADepthSize, 16,
-        NSOpenGLPFAColorSize, 32,
+        NSOpenGLPFADepthSize, 24,
         NSOpenGLPFAOpenGLProfile,
         NSOpenGLProfileVersion3_2Core,
         NSOpenGLPFAAccelerated,
@@ -120,7 +119,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 - (void)drawRect:(NSRect)bounds {
     [self activateContext];
     
-    exgl->Display();
+    if (exgl != nil)
+        exgl->Display();
     
     [self flushContext];
 }
