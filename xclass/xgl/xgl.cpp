@@ -73,7 +73,7 @@ XGL::XGL() : XGLObject("XGL") {
 		GL_CHECK("glBindBuffer() failed");
 
 		// for now, create one point light, for diffuse lighting shader development
-		XGLLight light = { { 10,6,6 },{ 1,1,1 }, 0.5f, 0.005f };
+		XGLLight light = { { 10,6,16 },{ 1,1,1 }, 0.001f, 0.001f };
 		lights.push_back(light);
 
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(light), &light, GL_DYNAMIC_DRAW);
@@ -109,7 +109,7 @@ XGL::XGL() : XGLObject("XGL") {
 
     font = std::make_shared<XGLFont>();
 
-    glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	glDepthFunc(GL_LESS);
 	glEnable(GL_DEPTH_TEST);

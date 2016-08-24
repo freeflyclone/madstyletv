@@ -148,7 +148,7 @@ bool XGLShader::Compile(std::string name) {
 	glUniform3fv(glGetUniformLocation(shader, "materialSpecularColor"), 1, (GLfloat*)glm::value_ptr(white));
 	GL_CHECK("glUniform3fv() failed");
 
-	glUniform1f(glGetUniformLocation(shader, "materialShininess"), 0.5f);
+	glUniform1f(glGetUniformLocation(shader, "materialShininess"), 100.0f);
 	GL_CHECK("glUniform1f() failed");
 
 	//DebugPrintf("XGLShader::Compile(%s) shader #: %d\n", name.c_str(), shader);
