@@ -49,6 +49,7 @@ void XGLShape::Render(float clock) {
 
 void XGLShape::Render(glm::mat4 modelChain, float clock) {
 	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, sizeof(glm::mat4), (GLvoid *)&modelChain);
+	GL_CHECK("glBufferSubData() failed");
 
 	b.Bind();
 	m.Bind(b.program);

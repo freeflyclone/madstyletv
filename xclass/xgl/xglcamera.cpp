@@ -9,6 +9,7 @@ void XGLCamera::Set(bool doLookat){
 	if (doLookat) {
 		smd->view = glm::lookAt(pos, pos + front, up);
 		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(smd->projection), sizeof(smd->view), (GLvoid *)&smd->view);
+		GL_CHECK("glBufferSubData() failed.");
 	}
 }
 

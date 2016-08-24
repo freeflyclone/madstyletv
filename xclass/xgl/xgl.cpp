@@ -160,6 +160,7 @@ void XGL::Display() {
 	// set the projection,view,model,mvp matrices in the matrix UBO
 	// this should probably be done else where, once startup-order issues are resolved
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(shaderMatrix), (GLvoid *)&shaderMatrix, GL_DYNAMIC_DRAW);
+	GL_CHECK("glBufferData() failed");
 
 
     // iterate through all of the shaders...
