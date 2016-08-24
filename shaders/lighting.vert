@@ -1,4 +1,4 @@
-#version 150
+#version 330
 
 layout (std140) uniform ShaderMatrixData {
 	mat4 projector;
@@ -6,10 +6,10 @@ layout (std140) uniform ShaderMatrixData {
 	mat4 model;
 };
 
-in vec3 vert;
-in vec2 vertTexCoord;
-in vec3 vertNormal;
-in vec3 vertColor;
+layout(location=0) in vec3 vert;
+layout(location=1) in vec2 vertTexCoord;
+layout(location=2) in vec3 vertNormal;
+layout(location=3) in vec3 vertColor;
 
 out vec3 fragVert;
 out vec2 fragTexCoord;
