@@ -34,6 +34,7 @@ public:
     std::vector<GLuint> texIds;
     GLint program;
     GLfloat clock;
+	XGLShader *shader;
 };
 
 #endif

@@ -204,13 +204,14 @@ GLint XGLShader::Id() {
 GLint XGLShader::Attrib(std::string name) {
 	GLint attrib = glGetAttribLocation(programId, name.c_str());
 	if (attrib == -1)
-		throwXGLException("Vertex attribute not found: " + name);
+		throwXGLException("Vertex attribute '"+name+"' not found in '" + shaderName + "'");
+
 	return attrib;
 }
 
 GLint XGLShader::Uniform(std::string name) {
 	GLint uniform = glGetUniformLocation(programId, name.c_str());
 	if (uniform == -1)
-		throwXGLException("Shader uniform not found: " + name);
+		throwXGLException("Program uniform '" + name + "' not found in '" + shaderName + "'");
 	return uniform;
 }

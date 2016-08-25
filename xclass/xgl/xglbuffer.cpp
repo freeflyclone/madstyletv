@@ -11,7 +11,8 @@ XGLBuffer::XGLBuffer() :
     ibo(0),
     vao(0),
     vbo(0),
-    texId(0)
+    texId(0),
+	shader(NULL)
 {
     glGenVertexArrays(1, &vao);
     GL_CHECK("glGenVertexArrays() failed");
@@ -24,7 +25,8 @@ XGLBuffer::XGLBuffer() :
     // and then immediately bind it so setting of uniforms
     // will work
 	std::shared_ptr<XGL> xgl = XGL::getInstance();
-	program = xgl->GetShader()->Id();
+	shader = xgl->GetShader();
+	program = shader->Id();
 	Bind();
 }
 
