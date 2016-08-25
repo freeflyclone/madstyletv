@@ -178,7 +178,7 @@ void XGL::Display() {
         shaderMap[name]->Use();
 		XGLShader *shader = shaderMap[name];
 
-		glUniform3fv(glGetUniformLocation(shader->shader, "cameraPosition"), 1, (GLfloat*)glm::value_ptr(camera.pos));
+		glUniform3fv(glGetUniformLocation(shader->Id(), "cameraPosition"), 1, (GLfloat*)glm::value_ptr(camera.pos));
 		GL_CHECK("glUniform3fv() failed");
 
 		for (eachShape = shapeList->begin(); eachShape != shapeList->end(); eachShape++) {
@@ -224,7 +224,7 @@ void XGL::IterateShapesMap(){
     for (perShader = shapes.begin(); perShader != shapes.end(); perShader++) {
         std::string name = perShader->first;
         shader = shaderMap[name];
-		xprintf("XGL::IterateShapesMap(): '%s', shader->shader: %d\n", name.c_str(), shader->shader);
+		xprintf("XGL::IterateShapesMap(): '%s', shader->shader: %d\n", name.c_str(), shader->Id());
 
         for (perShape = perShader->second->begin(); perShape != perShader->second->end(); perShape++) {
             XGLShape *shape = *perShape;

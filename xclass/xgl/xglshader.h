@@ -42,11 +42,14 @@ public:
     void Use();
     void UnUse();
 
-    void AddUniform(std::string name);
+	std::string Name();
+	GLint Id();
+	GLint Attrib(std::string name);
+	GLint Uniform(std::string name);
 
-    GLint shader;
-//private:
-    std::string shaderName;
+private:
+	GLint programId;
+	std::string shaderName;
     XGLShaderComponent mVShader, mFShader;
 };
 

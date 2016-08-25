@@ -24,7 +24,7 @@ XGLBuffer::XGLBuffer() :
     // and then immediately bind it so setting of uniforms
     // will work
 	std::shared_ptr<XGL> xgl = XGL::getInstance();
-	program = xgl->GetShader()->shader;
+	program = xgl->GetShader()->Id();
 	Bind();
 }
 
