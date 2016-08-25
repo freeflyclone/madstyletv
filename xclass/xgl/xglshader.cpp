@@ -166,10 +166,12 @@ void XGLShader::InfoLog() {
     GL_CHECK("glValidateProgram() failed");
 	glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &infoLogLength);
     GL_CHECK("glGetProgramiv() failed");
-	if( infoLogLength ) {
+	if (infoLogLength <= sizeof(infoLog)) {
 		glGetProgramInfoLog(programId, infoLogLength, &nWritten, infoLog);
-		//xprintf("%s\n\n", infoLog);
+		xprintf("%s\n\n", infoLog);
 	}
+	else
+		xprintf("There's an info log, but it's too big!\n");
 }
 
 void XGLShader::Use() {
