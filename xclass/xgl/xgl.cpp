@@ -195,7 +195,7 @@ void XGL::Display() {
 void XGL::AddShape(std::string shName, XGLNewShapeLambda fn){
 	std::string shaderName = pathToAssets + "/" + shName;
     if (shaderMap.count(shaderName) == 0) {
-        shaderMap.emplace(shaderName, new XGLShader());
+        shaderMap.emplace(shaderName, new XGLShader(shName));
         shaderMap[shaderName]->Compile(shaderName);
     }
 

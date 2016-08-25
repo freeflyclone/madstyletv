@@ -33,7 +33,7 @@ public:
 class XGLShader
 {
 public:
-    XGLShader();
+    XGLShader(std::string name);
     ~XGLShader();
 
     bool Compile(std::string name);

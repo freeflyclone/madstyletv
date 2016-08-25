@@ -65,7 +65,7 @@ void XGLShaderComponent::InfoLog(std::string fileName) {
 	}
 }
 
-XGLShader::XGLShader() : programId(-1) {} 
+XGLShader::XGLShader(std::string n) : shaderName(n), programId(-1) {} 
 XGLShader::~XGLShader() { }
 
 bool XGLShader::Compile(std::string name) {
