@@ -95,9 +95,9 @@ void XYPlaneGrid::Draw(){
 
 
 XGLTriangle::XGLTriangle() {
-    v.push_back({ { -1, -1, 0 }, {}, {}, { 1, 0, 0 } });
-    v.push_back({ { 1, -1, 0 }, {}, {}, { 0, 1, 0 } });
-    v.push_back({ { 0, 1.4142, 0 }, {}, {}, { 0, 0, 1 } });
+    v.push_back({ { -10, 0, 0 }, {}, {}, { 1, 0, 0 } });
+    v.push_back({ { 10, 0, 0 }, {}, {}, { 0, 1, 0 } });
+    v.push_back({ { 0, 0, 14.12 }, {}, {}, { 0, 0, 1 } });
 
     b.Load(v);
 }
