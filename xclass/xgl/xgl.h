@@ -20,24 +20,28 @@
 #define XGL_H
 
 #ifdef _WIN32
-#include "glew.h"
-#include "wglew.h"
-#include <windows.h>
-// If we're compiling with Visual Studio 2015 (or greater)
-// add in the "legacy_stdio_definitions.lib" to avoid 
-// unresolved stdio externals.
-// I hate that this is here, but I didn't find a way to 
-// have the same check in the linker command stuff within
-// the IDE.
-#if _MSC_VER >= 1900
-#pragma comment(lib,"legacy_stdio_definitions")
+	#include "glew.h"
+	#include "wglew.h"
+	#include <windows.h>
+	// If we're compiling with Visual Studio 2015 (or greater)
+	// add in the "legacy_stdio_definitions.lib" to avoid 
+	// unresolved stdio externals.
+	// I hate that this is here, but I didn't find a way to 
+	// have the same check in the linker command stuff within
+	// the IDE.
+	#if _MSC_VER >= 1900
+		#pragma comment(lib,"legacy_stdio_definitions")
+	#endif
+#elseif _APPLE_
+	#include <OpenGL/gl3.h>
+	#define __gl_h_
+	#include <GLUT/glut.h>
+#else
+	#include "glxew.h"
+	#include "glew.h"
+	#include <GL/gl.h>
 #endif
 
-#else
-#include <OpenGL/gl3.h>
-#define __gl_h_
-#include <GLUT/glut.h>
-#endif
 
 #include <string>
 #include <memory>
@@ -52,7 +56,7 @@
 #include "matrix_transform.hpp"
 #include "type_ptr.hpp"
 
-#include "soil.h"
+#include "SOIL.h"
 #include "ft2build.h"
 #include FT_FREETYPE_H
 
