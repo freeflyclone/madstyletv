@@ -11,6 +11,7 @@ CPPFLAGS +=-std=c++14\
 	-I../xclass/3rdParty/soil/src \
 	-I../xclass/3rdParty/freetype/include/freetype2 \
 	-I../xclass \
+	-I../examples/common \
 	-D_GNU_SOURCE=1 \
 	-DGLEW_STATIC \
 	-Wno-writable-strings \
@@ -49,7 +50,7 @@ CSOURCES=${XGLDIR}/glew.c \
 	${XCLASSDIR}/3rdParty/soil/src/stb_image_aug.c \
 
 
-PROGRAMSOURCES=main.cpp
+PROGRAMSOURCES=main.cpp ../examples/common/ExampleXGL.cpp ../examples/Example01/Example01.cpp
 
 OBJS = $(patsubst %.cpp,%.o,${CPPSOURCES})
 OBJS += $(patsubst %.c,%.o,${CSOURCES})

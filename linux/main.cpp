@@ -5,12 +5,16 @@
 
 #include <xgl.h>
 
+#include "ExampleXGL.h"
+
+/*
 class ExampleXGL : public XGL {
 public:
 	ExampleXGL() { printf("ExampleXGL::ExampleXGL()\n"); }
 	virtual ~ExampleXGL() { printf("~ExampleXGL::ExampleXGL()\n"); }
 	virtual void Display() {};
 };
+*/
 
 int main(void) {
 	GLFWwindow *window;
@@ -41,6 +45,7 @@ int main(void) {
 		exit(-1);
 	}	
 
+	pathToAssets = "..";
 	ExampleXGL *exgl = new ExampleXGL();
 
 	while (!glfwWindowShouldClose(window)) {
