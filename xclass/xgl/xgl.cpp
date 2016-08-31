@@ -70,6 +70,7 @@ XGL::XGL() : XGLObject("XGL") {
     instance.reset(this);
     
     xprintf("OpenGL version: %s\n", glGetString(GL_VERSION));
+	glGetError();
 
 	QueryContext();
 
