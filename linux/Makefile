@@ -1,4 +1,3 @@
-PROGRAM=Example01
 LIB=libxclass.a
 XCLASSDIR=../xclass
 XGLDIR=../xclass/xgl
@@ -49,7 +48,7 @@ CSOURCES=${XGLDIR}/glew.c \
 	${XCLASSDIR}/3rdParty/soil/src/stb_image_aug.c \
 
 
-COMMON=main.cpp ../examples/common/ExampleXGL.cpp ../examples/Example01/Example01.cpp
+COMMON=main.cpp ../examples/common/ExampleXGL.cpp ../examples/Example02/Example02.cpp
 
 OBJS = $(patsubst %.cpp,%.o,${CPPSOURCES})
 OBJS += $(patsubst %.c,%.o,${CSOURCES})
@@ -63,14 +62,14 @@ LDFLAGS +=\
 
 LIBS=-lxclass -lglfw3 -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXinerama -lXcursor -lpthread -lexpat -lfreetype
 
-${PROGRAM}: ${COMMONOBJS} ${LIB}
-	${CXX} ${CPPFLAGS} ${COMMONOBJS} ${LDFLAGS} ${LIBS} -o ${PROGRAM}
+Example02: ${COMMONOBJS} ${LIB} 
+	${CXX} ${CPPFLAGS} ${COMMONOBJS} ${LDFLAGS} ${LIBS} -o $@
 
 ${LIB}: ${OBJS}
 	${AR} rcs ${LIB} $? 
 
 clean:
-	@-rm -rf ${PROGRAM}
+	@-rm -rf Example*
 	@-rm -rf ${COMMONOBJS}
 	@-rm -rf ${OBJS}
 	@-rm -rf ${LIB}
