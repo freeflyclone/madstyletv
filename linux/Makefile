@@ -1,8 +1,7 @@
-PROGRAM=xgl_test
+PROGRAM=Example01
 LIB=libxclass.a
 XCLASSDIR=../xclass
 XGLDIR=../xclass/xgl
-VPATH = ../xclass:../xclass/xgl
 
 CPPFLAGS +=-std=c++14\
 	-I../xclass/xgl \
@@ -50,12 +49,12 @@ CSOURCES=${XGLDIR}/glew.c \
 	${XCLASSDIR}/3rdParty/soil/src/stb_image_aug.c \
 
 
-PROGRAMSOURCES=main.cpp ../examples/common/ExampleXGL.cpp ../examples/Example01/Example01.cpp
+COMMON=main.cpp ../examples/common/ExampleXGL.cpp ../examples/Example01/Example01.cpp
 
 OBJS = $(patsubst %.cpp,%.o,${CPPSOURCES})
 OBJS += $(patsubst %.c,%.o,${CSOURCES})
 
-PROGRAMOBJS = $(patsubst %.cpp,%.o,${PROGRAMSOURCES})
+COMMONOBJS = $(patsubst %.cpp,%.o,${COMMON})
 
 LDFLAGS +=\
 	-L. \
@@ -64,13 +63,15 @@ LDFLAGS +=\
 
 LIBS=-lxclass -lglfw3 -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXinerama -lXcursor -lpthread -lexpat -lfreetype
 
-${PROGRAM}: ${PROGRAMOBJS} ${LIB}
-	${CXX} ${CPPFLAGS} ${PROGRAMOBJS} ${LDFLAGS} ${LIBS} -o ${PROGRAM}
+${PROGRAM}: ${COMMONOBJS} ${LIB}
+	${CXX} ${CPPFLAGS} ${COMMONOBJS} ${LDFLAGS} ${LIBS} -o ${PROGRAM}
 
 ${LIB}: ${OBJS}
 	${AR} rcs ${LIB} $? 
 
 clean:
+	@-rm -rf ${PROGRAM}
+	@-rm -rf ${COMMONOBJS}
 	@-rm -rf ${OBJS}
 	@-rm -rf ${LIB}
 
