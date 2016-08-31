@@ -34,6 +34,7 @@
 #else
 	#include <GL/gl.h>
 	#include <GL/glx.h>
+	#define APIENTRY
 #endif
 
 #include "SOIL.h"

@@ -20,6 +20,7 @@
 #define FONT_NAME "/Library/Fonts/Arial.ttf"
 #endif
 #elif __linux__
+#define FONT_NAME "/usr/share/fonts/truetype/freefont/FreeSerif.ttf"
 #endif
 
 class XGLFont {
