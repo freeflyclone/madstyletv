@@ -1,10 +1,9 @@
-#include <glew.h>
-#include <GLFW/glfw3.h>
-#include <GL/gl.h>
 #include <stdio.h>
 
-#include <xgl.h>
+#include <glew.h>
+#include <GLFW/glfw3.h>
 
+#include <xgl.h>
 #include <ExampleXGL.h>
 
 int main(void) {
@@ -17,10 +16,8 @@ int main(void) {
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+	window = glfwCreateWindow(640, 480, "Mad Style TV Example", NULL, NULL);
 	if (!window) {
 		printf("glfwCreateWindow() failed\n");
 		glfwTerminate();
@@ -40,7 +37,15 @@ int main(void) {
 	ExampleXGL *exgl = new ExampleXGL();
 
 	while (!glfwWindowShouldClose(window)) {
-		//glClear(GL_COLOR_BUFFER_BIT);
+		int width, height;
+
+		glfwGetFramebufferSize(window, &width, &height);
+		exgl->Reshape(width, height);
+
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		exgl->Display();
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
