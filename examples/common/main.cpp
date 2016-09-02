@@ -1,4 +1,5 @@
-// glfw-test.cpp : Defines the entry point for the console application.
+// main.cpp : Defines the entry point for the GLFW application.
+// The console window is immediately closed.
 #include <Windows.h>
 #include <stdio.h>
 
@@ -52,9 +53,12 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 }
 
 static void cursor_position_callback(GLFWwindow *window, double x, double y) {
-	int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
-	if (state == GLFW_PRESS)
-		exgl->MouseEvent((int)x, (int)y, 1);
+	int state = 0;
+	
+	state |= glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+	state |= glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) << 1;
+
+	exgl->MouseEvent((int)x, (int)y, state);
 }
 
 int main(void) {
