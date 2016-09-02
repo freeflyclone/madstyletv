@@ -32,7 +32,7 @@
 	#if _MSC_VER >= 1900
 		#pragma comment(lib,"legacy_stdio_definitions")
 	#endif
-#elseif _APPLE_
+#elif _APPLE_
 	#include <OpenGL/gl3.h>
 	#define __gl_h_
 	#include <GLUT/glut.h>
