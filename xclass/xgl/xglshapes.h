@@ -113,4 +113,14 @@ private:
     bool visualizeNormals;
 };
 
+class XGLTextureAtlas : public XGLShape {
+public:
+	std::shared_ptr<XGLFont> font;
+	XGLTextureAtlas();
+	virtual void Draw();
+private:
+	float gridCellWidth, gridCellHeight;
+	int gridXsize, gridYsize;
+};
+
 #endif // XGLSHAPES_H

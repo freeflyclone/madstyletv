@@ -551,3 +551,86 @@ void XGLSphere2::Draw() {
 	GL_CHECK("glDrawElements() failed");
 }
 
+XGLTextureAtlas::XGLTextureAtlas() : font(XGL::getInstance()->font) {
+	SetName("XGLTextureAtlas");
+//	XGLColor white = { 1, 1, 0, 1 };
+
+	gridCellWidth = 10.0f;
+	gridCellHeight = 10.0f;
+
+	float halfWidth = gridCellWidth / 2.0f;
+	float halfHeight = gridCellHeight / 2.0f;
+
+	int atlasPagesDiv2 = (font->atlasPageCount + 1) >> 1;
+	int factor;
+
+	for (factor = atlasPagesDiv2 - 1; factor >= 2; factor--)
+		if ((atlasPagesDiv2 % factor) == 0)
+			break;
+
+	if (factor == 0)
+		factor = 1;
+
+	gridXsize = (font->atlasPageCount + 1) / factor;
+	gridYsize = factor;
+
+	if (gridYsize > gridXsize) {
+		gridYsize = gridXsize;
+		gridYsize = factor;
+	}
+
+	int upperLeftX = -(gridXsize + 1) / 2;
+	int upperLeftY = (gridYsize + 1) / 2;
+
+	int i = 0;
+	for (int y = 0; y < gridYsize; y++) {
+		for (int x = 0; x < gridXsize; x++) {
+			float xPos = ((upperLeftX + x)*gridCellWidth) + halfWidth;
+			float yPos = ((upperLeftY - y)*gridCellHeight) - halfHeight;
+			float xScale = 1.0f;
+			float yScale = 1.0f;
+
+			if (font->atlasHeight > font->atlasWidth)
+				xScale *= (float)font->atlasWidth / (float)font->atlasHeight;
+			else
+				yScale *= (float)font->atlasHeight / (float)font->atlasWidth;
+
+			v.push_back({ { xPos - halfWidth*xScale, yPos - halfHeight*yScale, 0 }, { 0, 1 }, {}, white });
+			v.push_back({ { xPos - halfWidth*xScale, yPos + halfHeight*yScale, 0 }, { 0, 0 }, {}, white });
+			v.push_back({ { xPos + halfWidth*xScale, yPos - halfHeight*yScale, 0 }, { 1, 1 }, {}, white });
+			v.push_back({ { xPos + halfWidth*xScale, yPos + halfHeight*yScale, 0 }, { 1, 0 }, {}, white });
+
+			int index = i * 4;
+
+			idx.push_back(index + 0);
+			idx.push_back(index + 1);
+			idx.push_back(index + 2);
+			idx.push_back(index + 3);
+
+			b.AddTexture(FONT_NAME, font->atlasWidth, font->atlasHeight, 1, font->bitmapPages[i]);
+			i++;
+			if (i == font->atlasPageCount)
+				break;
+		}
+		if (i == font->atlasPageCount)
+			break;
+	}
+	b.Load(v, idx);
+}
+
+void XGLTextureAtlas::Draw() {
+	glEnable(GL_BLEND);
+	GL_CHECK("glEnable(GL_BLEND) failed");
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	GL_CHECK("glBlendFunc() failed");
+
+	for (unsigned int i = 0; i < font->atlasPageCount; i++) {
+		glBindTexture(GL_TEXTURE_2D, b.texIds[i]);
+		GL_CHECK("glBindTexture() failed");
+		glDrawElementsBaseVertex(GL_TRIANGLE_STRIP, 4, XGLIndexType, 0, i * 4);
+		GL_CHECK("glDrawElements() failed");
+	}
+
+	glDisable(GL_BLEND);
+	GL_CHECK("glDisable(GL_BLEND) failed");
+}
