@@ -160,7 +160,7 @@ void CreateOpenGLContext(HWND hWnd)
 	}
 	else {
 		// XGL is not coded for supporting less than full retained mode, so don't even try
-		MessageBox(hWnd, _T("Unable to initialize an OpenGL version 2.1 context.  Unable to continue."), _T("Well that didn't work out"), MB_ABORTRETRYIGNORE);
+		MessageBox(hWnd, _T("Unable to initialize an OpenGL version 3.2 context.  Unable to continue."), _T("Well that didn't work out"), MB_ABORTRETRYIGNORE);
 		exit(0);
 	}
 
