@@ -63,12 +63,12 @@ static void cursor_position_callback(GLFWwindow *window, double x, double y) {
 
 int main(void) {
 	GLFWwindow *window;
-
+	/*
 	if (!FreeConsole()) {
-		xprintf("Freeing the console failed: %d\n", GetLastError());
+		printf("Freeing the console failed: %d\n", GetLastError());
 		exit(0);
 	}
-
+	*/
 	if (!glfwInit()) {
 		printf("glfwInit() failed\n");
 		return -1;
@@ -77,7 +77,7 @@ int main(void) {
 	glfwSetErrorCallback(error_callback);
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 	glfwWindowHint(GLFW_SAMPLES, 8);
 
 	window = glfwCreateWindow(1280, 720, "Mad Style TV Example", NULL, NULL);
