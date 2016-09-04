@@ -13,7 +13,7 @@
 
 #ifdef WIN32
 //#define FONT_NAME "/windows/fonts/mingliub.ttc"
-#define FONT_NAME "/windows/fonts/YuGothic.ttf"
+#define FONT_NAME "/windows/fonts/Arial.ttf"
 #elif __APPLE__
 #include "TargetConditionals.h"
 #if TARGET_OS_MAC
