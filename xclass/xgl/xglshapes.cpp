@@ -553,7 +553,7 @@ void XGLSphere2::Draw() {
 
 XGLTextureAtlas::XGLTextureAtlas() : font(XGL::getInstance()->font) {
 	SetName("XGLTextureAtlas");
-//	XGLColor white = { 1, 1, 0, 1 };
+	XGLColor white = { 1, 1, 0 };
 
 	gridCellWidth = 10.0f;
 	gridCellHeight = 10.0f;
