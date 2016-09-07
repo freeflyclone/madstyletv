@@ -1,14 +1,13 @@
 /**************************************************************
-** Example04BuildScene.cpp
+** Example05BuildScene.cpp
 **
 ** Just to demonstrate instantiation of a "ground"
-** plane and an XGLTextureAtlas, with default camera manipulation
-** via keyboard and mouse.
+** plane and a single texture-mapped quad.
 **************************************************************/
 #include "ExampleXGL.h"
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
-
-	AddShape("shaders/textShader", [&](){ shape = new XGLTextureAtlas(); return shape; });
+	std::string imgPath = pathToAssets + "/assets/8bit.png";
+	AddShape("shaders/textShader", [&](){ shape = new XGLTexQuad(imgPath); return shape; });
 }
