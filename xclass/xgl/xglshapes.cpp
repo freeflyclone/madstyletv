@@ -634,3 +634,33 @@ void XGLTextureAtlas::Draw() {
 	glDisable(GL_BLEND);
 	GL_CHECK("glDisable(GL_BLEND) failed");
 }
+XGLTexQuad::XGLTexQuad(std::string fileName) {
+	SetName("XTexQuad");
+	const XGLColor white = { 1, 1, 1 };
+
+	v.push_back({ { -1.0, -1.0, 0 }, { 0, 1 }, {}, white });
+	v.push_back({ { -1.0, 1.0, 0 }, { 0, 0 }, {}, white });
+	v.push_back({ { 1.0, -1.0, 0 }, { 1, 1 }, {}, white });
+	v.push_back({ { 1.0, 1.0, 0 }, { 1, 0 }, {}, white });
+
+	idx.push_back(0);
+	idx.push_back(1);
+	idx.push_back(2);
+	idx.push_back(3);
+
+	b.AddTexture(fileName);
+	b.Load(v, idx);
+}
+
+void XGLTexQuad::Draw() {
+	glEnable(GL_BLEND);
+	GL_CHECK("glEnable(GL_BLEND) failed");
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	GL_CHECK("glBlendFunc() failed");
+
+	glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
+	GL_CHECK("glDrawElements() failed");
+
+	glDisable(GL_BLEND);
+	GL_CHECK("glDisable(GL_BLEND) failed");
+}

@@ -123,4 +123,12 @@ private:
 	int gridXsize, gridYsize;
 };
 
+class XGLTexQuad : public XGLShape{
+public:
+	XGLTexQuad(std::string fileName);
+	XGLTexQuad(std::string texName, int width, int height, int channels, GLubyte *img);
+	virtual void Draw();
+};
+
+
 #endif // XGLSHAPES_H
