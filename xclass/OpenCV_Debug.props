@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <IncludePath>$(OPENCV_DIR)\..\..\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(OPENCV_DIR)\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies>opencv_cd.lib3d$(OPENCV_VERSION)d.lib;opencv_contrib$(OPENCV_VERSION)d.lib;opencv_core$(OPENCV_VERSION)d.lib;opencv_features2d$(OPENCV_VERSION)d.lib;opencv_flann$(OPENCV_VERSION)d.lib;opencv_gpu$(OPENCV_VERSION)d.lib;opencv_highgui$(OPENCV_VERSION)d.lib;opencv_imgproc$(OPENCV_VERSION)d.lib;opencv_legacy$(OPENCV_VERSION)d.lib;opencv_ml$(OPENCV_VERSION)d.lib;opencv_nonfree$(OPENCV_VERSION)d.lib;opencv_objdetect$(OPENCV_VERSION)d.lib;opencv_ocl$(OPENCV_VERSION)d.lib;opencv_photo$(OPENCV_VERSION)d.lib;opencv_stitching$(OPENCV_VERSION)d.lib;opencv_superres$(OPENCV_VERSION)d.lib;opencv_ts$(OPENCV_VERSION)d.lib;opencv_video$(OPENCV_VERSION)d.lib;opencv_videostab$(OPENCV_VERSION)d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>
