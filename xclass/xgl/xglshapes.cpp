@@ -634,6 +634,7 @@ void XGLTextureAtlas::Draw() {
 	glDisable(GL_BLEND);
 	GL_CHECK("glDisable(GL_BLEND) failed");
 }
+
 XGLTexQuad::XGLTexQuad(std::string fileName) {
 	SetName("XTexQuad");
 	const XGLColor white = { 1, 1, 1 };
@@ -649,6 +650,24 @@ XGLTexQuad::XGLTexQuad(std::string fileName) {
 	idx.push_back(3);
 
 	b.AddTexture(fileName);
+	b.Load(v, idx);
+}
+
+XGLTexQuad::XGLTexQuad(std::string texName, int width, int height, int channels, GLubyte *img, bool flipColors) {
+	SetName("XTexQuad");
+	const XGLColor white = { 1, 1, 1 };
+
+	v.push_back({ { -1.0, -1.0, 0 }, { 0, 1 }, {}, white });
+	v.push_back({ { -1.0, 1.0, 0 }, { 0, 0 }, {}, white });
+	v.push_back({ { 1.0, -1.0, 0 }, { 1, 1 }, {}, white });
+	v.push_back({ { 1.0, 1.0, 0 }, { 1, 0 }, {}, white });
+
+	idx.push_back(0);
+	idx.push_back(1);
+	idx.push_back(2);
+	idx.push_back(3);
+
+	b.AddTexture(texName, width, height, channels, img, flipColors);
 	b.Load(v, idx);
 }
 
