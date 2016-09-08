@@ -149,7 +149,8 @@ void XGLBuffer::AddTexture(std::string texName){
     SOIL_free_image_data(img);
 }
 
-void XGLBuffer::AddTexture(std::string texName, int width, int height, int channels, GLubyte *img){
+void XGLBuffer::AddTexture(std::string texName, int width, int height, int channels, GLubyte *img, bool flipColors){
+	GLenum format = GL_RGBA;
     glGenTextures(1, &texId);
     GL_CHECK("glGenTextures() failed");
     glBindTexture(GL_TEXTURE_2D, texId);
@@ -178,7 +179,8 @@ void XGLBuffer::AddTexture(std::string texName, int width, int height, int chann
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RG, width, height, 0, GL_RG, GL_UNSIGNED_BYTE, img);
             break;
 		case 3:
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, img);
+			format = flipColors ? GL_BGR : GL_RGB;
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, format, GL_UNSIGNED_BYTE, img);
 			break;
 		case 4:
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, img);

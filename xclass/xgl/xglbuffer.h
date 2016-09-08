@@ -22,7 +22,7 @@ public:
     virtual void Unbind();
     virtual void Load(std::vector<XGLVertexAttributes> va, std::vector<XGLIndex> ib = {});
     virtual void AddTexture(std::string name);
-    virtual void AddTexture(std::string, int, int, int, GLubyte *);
+	virtual void AddTexture(std::string, int, int, int, GLubyte *, bool flipColors = false);
 
 	virtual XGLVertexAttributes *MapVertexBuffer();
 	virtual void UnmapVertexBuffer();
