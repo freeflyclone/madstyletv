@@ -2,8 +2,12 @@
 ** OpenCVTestBuildScene.cpp
 **
 ** Just to demonstrate instantiation of a "ground"
-** plane and a single triangle, with default camera manipulation
-** via keyboard and mouse.
+** plane and a single texture-mapped quad, along with
+** scaling, translating and rotating the quad using the GLM
+** functions, and doing those inside an animation callback.
+**
+** This is a copy of Example05, but utilizing OpenCV to load
+** the image instead.
 **************************************************************/
 #include "ExampleXGL.h"
 #include <opencv2/core/core.hpp>
@@ -16,13 +20,10 @@ void ExampleXGL::BuildScene() {
 	image = cv::imread(imgPath, cv::IMREAD_UNCHANGED);
 
 	if (!image.data) {
-		printf("imread() failed\n");
+		xprintf("imread() failed\n");
 		exit(-1);
 	}
 
-	xprintf("imread() succeeded: image is %d by %d, with %d channels.\n", image.cols, image.rows, image.channels());
-
-	//AddShape("shaders/tex", [&](){ shape = new XGLTexQuad(imgPath); return shape; });
 	AddShape("shaders/tex", [&](){ shape = new XGLTexQuad(imgPath, image.cols, image.rows, image.channels(), image.data, true); return shape; });
 
 	// have the upright texture scaled up and made 16:9 aspect, and orbiting the origin
@@ -41,6 +42,5 @@ void ExampleXGL::BuildScene() {
 		s->m.diffuseColor = blue;
 		s->b.Bind();
 	};
-	//transform(shape, 0.0f);
 	shape->SetTheFunk(transform);
 }

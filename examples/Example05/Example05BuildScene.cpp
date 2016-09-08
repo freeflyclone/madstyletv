@@ -4,7 +4,9 @@
 ** Just to demonstrate instantiation of a "ground"
 ** plane and a single texture-mapped quad, along with
 ** scaling, translating and rotating the quad using the GLM
-** functions.
+** functions, and doing those inside an animation callback.
+**
+** Overkill perhaps.
 **************************************************************/
 #include "ExampleXGL.h"
 
