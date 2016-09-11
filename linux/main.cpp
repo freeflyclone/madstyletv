@@ -29,6 +29,8 @@ static void cursor_position_callback(GLFWwindow *window, double x, double y) {
 	int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
 	if (state==GLFW_PRESS)
 		exgl->MouseEvent( (int)x, (int)y, 1);
+	else if (state==GLFW_RELEASE)
+		exgl->MouseEvent( (int)x, (int)y, 0);
 }
 
 int main(void) {
