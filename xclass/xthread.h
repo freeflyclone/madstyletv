@@ -7,7 +7,7 @@ class xthread {
 public:
 	xthread(std::string n) : name(n) {};
 
-	void Start(xthread& foo) {
+	void Start() {
 		t = std::thread(&xthread::Run, this);
 	}
 

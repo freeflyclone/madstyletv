@@ -39,10 +39,9 @@ public:
 	cv::VideoCapture cap;
 	cv::Mat frame[2];
 	int readFrame;
-	GLubyte imageBuffer[1920 * 1080 * 4];
 };
 
-CameraThread ct("CameraThread");
+CameraThread *pct;
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
@@ -75,11 +74,12 @@ void ExampleXGL::BuildScene() {
 		s->b.Bind();
 
 		//glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, imageBuffer);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ct.frame[0].cols, ct.frame[0].rows, 0, GL_BGR, GL_UNSIGNED_BYTE, ct.frame[ct.readFrame].data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pct->frame[0].cols, pct->frame[0].rows, 0, GL_BGR, GL_UNSIGNED_BYTE, pct->frame[pct->readFrame].data);
 		GL_CHECK("glGetTexImage() didn't work");
 		//xprintf("frame: %d by %d, %d channels\n", frame.cols, frame.rows, frame.channels());
 	};
 	shape->SetTheFunk(transform);
 
-	ct.Start(ct);
+	pct = new CameraThread("CameraThread");
+	pct->Start();
 }
