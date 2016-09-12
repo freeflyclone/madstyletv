@@ -1,13 +1,53 @@
+/*
+** xthread.h
+**
+** XClass object for managing threads in C++ 11.
+**
+** There is a non-obvious situation that must be dealt with
+** when using std::thread member variables AND attempting
+** to start them from the constructor of the containing class.
+**
+** Refer to: 
+**  https://rafalcieslak.wordpress.com/2014/05/16/c11-stdthreads-managed-by-a-designated-class/
+**
+** for details.  Basically: derived (from XThread) classes will not have valid vtable pointers
+** until AFTER the constructor runs.  To cope with that, a Start() method is used, to be called AFTER
+** the constructor has finished.  By doing so, the pure virtual Run() method will have been
+** set up in the vtable by the derived class constructor, and can then be referenced here in the
+** base class Start() method. Notice the move semantics in that function.
+**
+** The comments below are from the article referenced in the link above.
+*/
 #ifndef XTHREAD_H
 #define XTHREAD_H
 #include <string>
 #include <thread>
+#include <mutex>
+#include <condition_variable>
 
 class XThread {
 public:
-	XThread(std::string n) : name(n) {};
+	/*
+	** Explicitly using the default constructor to
+	** underline the fact that it does get called
+	*/
+	XThread(std::string n) : name(n), isRunning(false), t() {};
+
+	virtual ~XThread() {
+		if (t.joinable()) {
+			isRunning = false;
+			t.join();
+		}
+		else
+			isRunning = false;
+	}
+
+	bool IsRunning() { return isRunning; }
 
 	void Start() {
+		isRunning = true;
+
+		// This will start the thread. Notice move semantics!
 		t = std::thread(&XThread::Run, this);
 	}
 
@@ -21,6 +61,29 @@ public:
 private:
 	std::thread t;
 	std::string name;
+	bool isRunning;
 };
 
+class XSemaphore {
+public:
+	XSemaphore(int c = 0) : count(c) {};
+
+	void notify() {
+		std::unique_lock<std::mutex> lock(mutex);
+		count++;
+		cv.notify_one();
+	}
+
+	void wait() {
+		std::unique_lock<std::mutex> lock(mutex);
+		while (count == 0)
+			cv.wait(lock);
+		count--;
+	}
+
+	int count;
+
+	std::mutex mutex;
+	std::condition_variable cv;
+};
 #endif

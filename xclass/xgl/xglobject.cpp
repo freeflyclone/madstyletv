@@ -9,6 +9,7 @@ XGLObject::XGLObject(std::string n) {
 }
 
 XGLObject::~XGLObject() {
+	xprintf("XGLObject::~XGLObject(%s)\n", name.c_str());
 }
 
 void XGLObject::SetName(std::string n) {
