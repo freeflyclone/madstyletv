@@ -3,12 +3,12 @@
 #include <string>
 #include <thread>
 
-class xthread {
+class XThread {
 public:
-	xthread(std::string n) : name(n) {};
+	XThread(std::string n) : name(n) {};
 
 	void Start() {
-		t = std::thread(&xthread::Run, this);
+		t = std::thread(&XThread::Run, this);
 	}
 
 	virtual void Run() = 0;
