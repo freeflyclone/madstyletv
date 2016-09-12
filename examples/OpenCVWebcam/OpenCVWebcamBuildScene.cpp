@@ -15,9 +15,9 @@
 
 #include <xthread.h>
 
-class CameraThread : public xthread {
+class CameraThread : public XThread {
 public:
-	CameraThread(std::string n) : xthread(n), readFrame(0) {};
+	CameraThread(std::string n) : XThread(n), readFrame(0) {};
 
 	void Run() {
 		cap.open(0);
