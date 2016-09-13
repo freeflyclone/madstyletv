@@ -66,7 +66,7 @@ XGL::XGL(int *argcp, char **argv) {
 }
 #endif
 
-XGL::XGL() : XGLObject("XGL") {
+XGL::XGL() : XGLObject("XGL"), clock(0.0f) {
     instance.reset(this);
     
     xprintf("OpenGL version: %s\n", glGetString(GL_VERSION));
