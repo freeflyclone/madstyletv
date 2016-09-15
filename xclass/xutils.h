@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 
-#define printf xprintf
+//#define printf xprintf
 
 #ifdef __cplusplus
 
