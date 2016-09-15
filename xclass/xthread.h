@@ -74,32 +74,36 @@ public:
 	// Initially, this semaphore must be notify()'d before a wait() will be satisfied
 	XSemaphore(int c = 0) : count(c) {};
 
-	void notify() {
+	void notify(int n = 1) {
 		std::unique_lock<std::mutex> lock(mutex);
-		count++;
+		count += n;
 		cv.notify_one();
 	}
 
-	void wait() {
+	void wait(int n = 1) {
 		std::unique_lock<std::mutex> lock(mutex);
-		cv.wait(lock, [this]{ return (count > 0); });
+		waitNum = n;
+		cv.wait(lock, [this]{ return (count > waitNum); });
 
-		count--;
+		count -= waitNum;
 	}
 	
-	bool wait_for(int dlyInMillis) {
+	bool wait_for(int dlyInMillis, int n = 1) {
 		std::unique_lock<std::mutex> lock(mutex);
-		bool retVal = cv.wait_for(lock, std::chrono::milliseconds(dlyInMillis), [this] { return (count > 0); });
+		waitForNum = n;
+		bool retVal = cv.wait_for(lock, std::chrono::milliseconds(dlyInMillis), [this] { return (count >= waitForNum); });
 
 		// if retVal is true, it means we didn't time out.
 		if (retVal)
-			count--;
+			count -= waitForNum;
 
 		return retVal;
 	}
 
 private:
 	unsigned int count;
+	unsigned int waitNum;
+	unsigned int waitForNum;
 	std::mutex mutex;
 	std::condition_variable cv;
 };

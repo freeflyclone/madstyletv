@@ -1,3 +1,14 @@
+/**************************************************************
+** main.cpp
+**
+** ThreadsTest project.  Actually tests XThread, XSemaphore
+** and XCircularBuffer.
+**
+** Implements a Producer/Consumer pattern with a circular
+** buffer.  Both the Producer and Consumer run random number
+** sequences based on the same key. Thus the consumer can
+** verify the Producer's "random" data in the circular buffer.
+*************************************************************/
 #include <stdio.h>
 #include <xutils.h>
 #include <xthread.h>
@@ -13,7 +24,7 @@ public:
 		std::mt19937 e(rngSeed);
 		std::uniform_int_distribution<int> d;
 
-		std::mt19937 e2(0xDEADC0ED);
+		std::mt19937 e2(0xFEEDC0ED);
 		std::uniform_int_distribution<int> d2{ 1, 500 };
 
 		while (IsRunning()){
@@ -21,9 +32,6 @@ public:
 			int randomNumber = d(e);
 			int dly = d2(e2);
 			nWrite = pcb->Write((unsigned char *)&randomNumber, sizeof(randomNumber));
-			if (nWrite != sizeof(randomNumber))
-				printf("pcb->Write() returned: %d\n", nWrite);
-			//std::this_thread::sleep_for(std::chrono::duration<int, std::micro>(dly));
 		}
 	}
 
@@ -39,8 +47,8 @@ public:
 		std::mt19937 e(rngSeed);
 		std::uniform_int_distribution<int> d;
 
-		std::mt19937 e2(0xDEADC0ED);
-		std::uniform_int_distribution<int> d2{ 10, 50 };
+		std::mt19937 e2(0xC0EDBEEF);
+		std::uniform_int_distribution<int> d2{ 40, 80 };
 
 		while (IsRunning()){
 			int dly = d2(e2);
@@ -54,7 +62,6 @@ public:
 
 				if (randomNumber != producedNumber)
 					printf("Unexpected number read, %d vs %d\n", producedNumber, randomNumber);
-
 			}
 		}
 	}
@@ -64,26 +71,23 @@ public:
 };
 
 int main(int argc, char *argv[]) {
-	int seed = 0xC0EDFED0;
-	XCircularBuffer cb(32768);
+	try {
+		XCircularBuffer cb(0x10000);
+		Producer *p;
+		Consumer *c;
 
-	Producer *p = new Producer(&cb, seed);
-	Consumer *c = new Consumer(&cb, seed);
+		p = new Producer(&cb, 0xC0EDFED0);
+		c = new Consumer(&cb, 0xC0EDFED0);
 
-	c->Start();
-	p->Start();
+		p->Start();
+		c->Start();
 
-	std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(5000));
-
-	c->Stop();
-	std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1000));
-
-	p->Stop();
-
-	std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1000));
-
-	delete p;
-	delete c;
-
-	return 0;
+		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(2000));
+		
+		delete p;
+		delete c;
+	}
+	catch (std::runtime_error e) {
+		printf("Exception: %s\n", e.what());
+	}
 }
