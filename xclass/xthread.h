@@ -34,12 +34,9 @@ public:
 	XThread(std::string n) : name(n), isRunning(false), t() {};
 
 	virtual ~XThread() {
-		if (t.joinable()) {
-			isRunning = false;
+		isRunning = false;
+		if (t.joinable())
 			t.join();
-		}
-		else
-			isRunning = false;
 	}
 
 	bool IsRunning() { return isRunning; }
@@ -51,11 +48,19 @@ public:
 		t = std::thread(&XThread::Run, this);
 	}
 
+	void Stop() {
+		isRunning = false;
+	}
+
 	virtual void Run() = 0;
 
-	void WaitForJoin() {
-		if (t.joinable())
+	bool WaitForJoin() {
+		if (t.joinable()) {
 			t.join();
+			return true;
+		}
+		else 
+			return false;
 	}
 
 private:
@@ -66,6 +71,7 @@ private:
 
 class XSemaphore {
 public:
+	// Initially, this semaphore must be notify()'d before a wait() will be satisfied
 	XSemaphore(int c = 0) : count(c) {};
 
 	void notify() {
@@ -76,13 +82,24 @@ public:
 
 	void wait() {
 		std::unique_lock<std::mutex> lock(mutex);
-		while (count == 0)
-			cv.wait(lock);
+		cv.wait(lock, [this]{ return (count > 0); });
+
 		count--;
 	}
+	
+	bool wait_for(int dlyInMillis) {
+		std::unique_lock<std::mutex> lock(mutex);
+		bool retVal = cv.wait_for(lock, std::chrono::milliseconds(dlyInMillis), [this] { return (count > 0); });
 
-	int count;
+		// if retVal is true, it means we didn't time out.
+		if (retVal)
+			count--;
 
+		return retVal;
+	}
+
+private:
+	unsigned int count;
 	std::mutex mutex;
 	std::condition_variable cv;
 };
