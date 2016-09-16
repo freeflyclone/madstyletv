@@ -22,10 +22,12 @@
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
-#include "utils.h"
+#include <libavutil/imgutils.h>
+#include "xutils.h"
 };
 
-#include "xclasses.h"
+//#include "xclasses.h"
+#include "xthread.h"
 #include "xavexcept.h"
 
 // Multimedia sources possibly have more than one "stream" (audio/video for ex.)
@@ -59,7 +61,7 @@ public:
 	XAVSrc();
 	bool DecodeVideo(AVPacket *packet);
 	bool DecodeAudio(AVPacket *packet);
-	virtual void *Run();
+	virtual void Run();
 
 	XAVStream *VideoStream();
 	XAVStream *AudioStream();

@@ -4,10 +4,11 @@ XAVFile::XAVFile(const std::string url) :
 	XAVSrc(),
 	url(url)
 {
-	DebugPrintf("XAVFile::XAVFile(std::string): '%s'", url.c_str());
+	xprintf("XAVFile::XAVFile(std::string): '%s'\n", url.c_str());
 	XAVSrc::name = url;
+	int error;
 
-	if( (avformat_open_input(&pFormatCtx, name.c_str(), NULL, NULL)) != 0 )
+	if( (error = avformat_open_input(&pFormatCtx, name.c_str(), NULL, NULL)) != 0 )
 		throwXAVException("Couldn't open file: "+name);
 
 	if( avformat_find_stream_info(pFormatCtx,NULL) < 0) 
@@ -31,13 +32,15 @@ XAVFile::~XAVFile() {
 }
 
 int XAVFile::Read(uint8_t *buff, int size) {
+	return 0;
 }
 
 int XAVFile::Write(uint8_t *buff, int size) {
+	return 0;
 }
 
 int64_t XAVFile::Seek(int64_t offset, int whence) {
-	DebugPrintf("Seek not implemented yet: %ld, %d", offset, whence);
+	xprintf("Seek not implemented yet: %ld, %d", offset, whence);
 	return -1;
 }
 

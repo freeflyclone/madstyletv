@@ -22,12 +22,12 @@
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
-#include "utils.h"
+#include "xutils.h"
 };
 
-#include <rtmp.h>
-#include <rtmp_log.h>
-#include "xclasses.h"
+//#include <rtmp.h>
+//#include <rtmp_log.h>
+#include "xthread.h"
 #include "xavexcept.h"
 #include "xavsrc.h"
 
@@ -38,7 +38,7 @@ class XAV : public XThread
 public:
 	XAV();
 	void AddSrc(const std::shared_ptr<XAVSrc> src);
-	void *Run();
+	void Run();
 	std::shared_ptr<XAVSrc>GetSrc(int idx);
 
 	std::vector<std::shared_ptr<XAVSrc>> mSrcs;

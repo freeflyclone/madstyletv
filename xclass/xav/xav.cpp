@@ -12,7 +12,7 @@ void XAV::AddSrc(const std::shared_ptr<XAVSrc> src) {
 	mSrcs.push_back(src);
 }
 
-void *XAV::Run() {
+void XAV::Run() {
 	std::vector<std::shared_ptr<XAVSrc> >::iterator i;
 
 	for(i=mSrcs.begin(); i!= mSrcs.end(); i++) 

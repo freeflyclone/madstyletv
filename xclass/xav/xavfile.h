@@ -20,12 +20,12 @@
 
 
 extern "C" {
-#include "utils.h"
+#include "xutils.h"
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
 };
 
-#include "xclasses.h"
+#include "xthread.h"
 #include "xavexcept.h"
 #include "xavsrc.h"
 
