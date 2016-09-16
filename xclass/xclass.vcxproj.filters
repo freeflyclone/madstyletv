@@ -31,6 +31,15 @@
     <Filter Include="soil\Header Files">
       <UniqueIdentifier>{7886dd52-f20b-46f2-b715-0abb4b2fd6b2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="xav">
+      <UniqueIdentifier>{afb52064-5bc5-4a92-b214-05b0d77de59a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="xav\Header Files">
+      <UniqueIdentifier>{5b9eff41-673c-4e7e-bced-a57770dbd0e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="xav\Source Files">
+      <UniqueIdentifier>{da9e6da1-2a12-403a-88bb-c076ed1d0c37}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -120,6 +129,12 @@
     <ClInclude Include="xfifo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xav\xavsrc.h">
+      <Filter>xav\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xav\xavfile.h">
+      <Filter>xav\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xutils.c">
@@ -178,6 +193,12 @@
     </ClCompile>
     <ClCompile Include="xinput.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xav\xavsrc.cpp">
+      <Filter>xav\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xav\xavfile.cpp">
+      <Filter>xav\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -55,28 +55,32 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="ffmpeg.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="ffmpeg.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="ffmpeg.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="ffmpeg.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(ProjectDir);$(ProjectDir)\xgl;$(ProjectDir)\xgl\glm\gtc;$(ProjectDir)\xgl\glm;$(ProjectDir)\include\freetype2;$(ProjectDir)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);$(ProjectDir)\xav;$(ProjectDir)\xgl;$(ProjectDir)\xgl\glm\gtc;$(ProjectDir)\xgl\glm;$(ProjectDir)\include\freetype2;$(ProjectDir)\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(ProjectDir);$(ProjectDir)\xgl;$(ProjectDir)\xgl\glm\gtc;$(ProjectDir)\xgl\glm;$(ProjectDir)\include\freetype2;$(ProjectDir)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);$(ProjectDir)\xav;$(ProjectDir)\xgl;$(ProjectDir)\xgl\glm\gtc;$(ProjectDir)\xgl\glm;$(ProjectDir)\include\freetype2;$(ProjectDir)\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir);$(ProjectDir)\xgl;$(ProjectDir)\xgl\glm\gtc;$(ProjectDir)\xgl\glm;$(ProjectDir)\include\freetype2;$(ProjectDir)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);$(ProjectDir)\xav;$(ProjectDir)\xgl;$(ProjectDir)\xgl\glm\gtc;$(ProjectDir)\xgl\glm;$(ProjectDir)\include\freetype2;$(ProjectDir)\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir);$(ProjectDir)\xgl;$(ProjectDir)\xgl\glm\gtc;$(ProjectDir)\xgl\glm;$(ProjectDir)\include\freetype2;$(ProjectDir)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);$(ProjectDir)\xav;$(ProjectDir)\xgl;$(ProjectDir)\xgl\glm\gtc;$(ProjectDir)\xgl\glm;$(ProjectDir)\include\freetype2;$(ProjectDir)\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -200,6 +204,8 @@
     <ClInclude Include="3rdParty\soil\src\stbi_DDS_aug.h" />
     <ClInclude Include="3rdParty\soil\src\stbi_DDS_aug_c.h" />
     <ClInclude Include="3rdParty\soil\src\stb_image_aug.h" />
+    <ClInclude Include="xav\xavfile.h" />
+    <ClInclude Include="xav\xavsrc.h" />
     <ClInclude Include="xconfig.h" />
     <ClInclude Include="xcircularbuffer.h" />
     <ClInclude Include="xfifo.h" />
@@ -228,6 +234,8 @@
     <ClCompile Include="3rdParty\soil\src\image_helper.c" />
     <ClCompile Include="3rdParty\soil\src\SOIL.c" />
     <ClCompile Include="3rdParty\soil\src\stb_image_aug.c" />
+    <ClCompile Include="xav\xavfile.cpp" />
+    <ClCompile Include="xav\xavsrc.cpp" />
     <ClCompile Include="xconfig.cpp" />
     <ClCompile Include="xgl\glew.c" />
     <ClCompile Include="xgl\xgl.cpp" />

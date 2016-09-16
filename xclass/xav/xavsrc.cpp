@@ -1,9 +1,6 @@
 #include "xavsrc.h"
 
-XAVStream::XAVStream(AVCodecContext *ctx) :
-		freeBuffs(1,1),
-		usedBuffs(0,1)
-{
+XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(1) {
 	pCodecCtx = ctx;
 
 	pCodec=avcodec_find_decoder(pCodecCtx->codec_id);
@@ -14,17 +11,17 @@ XAVStream::XAVStream(AVCodecContext *ctx) :
 		throwXAVException("Failed to open codec");
 
 	if( pCodecCtx->codec_type == AVMEDIA_TYPE_VIDEO ) {
-		DebugPrintf("Found AVMEDIA_TYPE_VIDEO");
-		DebugPrintf("                   width: %d", pCodecCtx->width);
-		DebugPrintf("                  height: %d", pCodecCtx->height);
+		xprintf("Found AVMEDIA_TYPE_VIDEO\n");
+		xprintf("                   width: %d\n", pCodecCtx->width);
+		xprintf("                  height: %d\n", pCodecCtx->height);
 		pFrame = av_frame_alloc();
-		numBytes = avpicture_get_size(pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height) * 4;
+		numBytes = av_image_get_buffer_size(pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height,8) * 4;
 		buffer = (unsigned char *)av_malloc(numBytes*sizeof(unsigned char));
 
 		memset(buffer, 0, numBytes);
 
 		if( !pFrame || !buffer )
-			throwXAVException("error getting frame and/or buffer");
+			throwXAVException("error getting frame and/or buffer\n");
 	}
 	else if( pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO ) {
 		;
@@ -41,14 +38,14 @@ bool XAVStream::Decode(AVPacket *packet)
 	if( pCodecCtx->codec_type == AVMEDIA_TYPE_VIDEO ) {
 		avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, packet);
 		if( frameFinished ) {
-			freeBuffs.Acquire();
+			freeBuffs.wait_for(100);
 			int size = pCodecCtx->height * pFrame->linesize[0];
 			memcpy(buffer, pFrame->data[0], size);
 
 			// for 4:2:0
 			memcpy(buffer+size, pFrame->data[1], size/4);
 			memcpy(buffer+size + (size/4), pFrame->data[2], size/4);
-			usedBuffs.Release();
+			usedBuffs.notify();
 		}
 	}
 	else if( pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO ) {
@@ -58,20 +55,20 @@ bool XAVStream::Decode(AVPacket *packet)
 }
 
 unsigned char *XAVStream::GetBuffer() {
-	usedBuffs.Acquire();
+	usedBuffs.wait_for(100);
 	return buffer;
 }
 
 void XAVStream::ReleaseBuffer() {
-	freeBuffs.Release();
+	freeBuffs.notify();
 }
 
 void XAVStream::Acquire() {
-	freeBuffs.Acquire();
+	freeBuffs.wait_for(100);
 }
 
 void XAVStream::Release() {
-	usedBuffs.Release();
+	usedBuffs.notify();
 }
 
 XAVSrc::XAVSrc(const std::string name) :
@@ -79,7 +76,8 @@ XAVSrc::XAVSrc(const std::string name) :
 	mNumStreams(0),
 	mVideoStream(NULL),
 	mAudioStream(NULL),
-	pFormatCtx(NULL)
+	pFormatCtx(NULL),
+	XThread(name)
 {
 	if(avformat_open_input(&pFormatCtx, name.c_str(), NULL, NULL)!=0) {
 		throwXAVException("Couldn't open file: " + name);
@@ -114,23 +112,23 @@ XAVSrc::XAVSrc() :
 	mNumStreams(0),
 	mVideoStream(NULL),
 	mAudioStream(NULL),
-	pFormatCtx(NULL)
+	pFormatCtx(NULL),
+	XThread("XAVSrc")
 {
 }
 
-void *XAVSrc::Run()
+void XAVSrc::Run()
 {
 	while( av_read_frame(pFormatCtx, &packet) >= 0 )
 	{
 		mStreams[packet.stream_index]->Decode(&packet);
-		av_free_packet(&packet);
+		av_packet_unref(&packet);
 	}
 	while(IsRunning())
 	{
 		mVideoStream->Acquire();
 		mVideoStream->Release();
 	}
-	return NULL;
 }
 
 XAVStream *XAVSrc::VideoStream() {
