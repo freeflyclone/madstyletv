@@ -6,21 +6,13 @@
 
 #include <xavfile.h>
 
-class VideoFileThread : public XGLObject, public XThread {
+class VideoFileThread : public XGLObject {
 public:
-	VideoFileThread(std::string url) : XGLObject("VideoFileThread"), XThread("VideoFileThread") {
+	VideoFileThread(std::string url) : XGLObject("VideoFileThread") {
 		// first thing MUST be av_register_all()
 		av_register_all();
 		xavFile = new XAVFile(url);
-	}
-
-	void Run() {
 		xavFile->Start();
-
-		while (IsRunning()) {
-			xprintf("VideoFileThread::Run()\n");
-			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(500));
-		}
 	}
 
 	XAVFile *xavFile;
@@ -42,5 +34,14 @@ void ExampleXGL::BuildScene() {
 	shape->model = translate * rotate * scale;
 
 	pvft = new VideoFileThread(videoPath);
-	pvft->Start();
+
+	XGLShape::AnimaFunk transform = [&](XGLShape *s, float clock) {
+		s->b.Bind();
+		unsigned char *image;
+		image = pvft->xavFile->mVideoStream->GetBuffer();
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 960, 540, 0, GL_BGR, GL_UNSIGNED_BYTE, (GLvoid *)image);
+		GL_CHECK("glGetTexImage() didn't work");
+	};
+	shape->SetTheFunk(transform);
 }
