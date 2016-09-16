@@ -38,7 +38,7 @@ bool XAVStream::Decode(AVPacket *packet)
 	if( pCodecCtx->codec_type == AVMEDIA_TYPE_VIDEO ) {
 		avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, packet);
 		if( frameFinished ) {
-			freeBuffs.wait_for(100);
+			freeBuffs.wait_for(200);
 			int size = pCodecCtx->height * pFrame->linesize[0];
 			memcpy(buffer, pFrame->data[0], size);
 
@@ -55,7 +55,8 @@ bool XAVStream::Decode(AVPacket *packet)
 }
 
 unsigned char *XAVStream::GetBuffer() {
-	usedBuffs.wait_for(100);
+	usedBuffs.wait_for(200);
+	freeBuffs.notify();
 	return buffer;
 }
 
@@ -64,7 +65,7 @@ void XAVStream::ReleaseBuffer() {
 }
 
 void XAVStream::Acquire() {
-	freeBuffs.wait_for(100);
+	freeBuffs.wait_for(200);
 }
 
 void XAVStream::Release() {
