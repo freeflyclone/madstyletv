@@ -8,10 +8,26 @@
 #include <xfifo.h>
 
 typedef struct {
-	unsigned char b[960 * 810];
+	unsigned char b[1920 * 1620];
 } ImageBuff;
 
 ImageBuff ib;
+
+class HighPrecisionTimer {
+public:
+	HighPrecisionTimer() {
+		QueryPerformanceFrequency(&frequency);
+	};
+
+	unsigned int Count() {
+		LARGE_INTEGER count;
+		QueryPerformanceCounter(&count);
+		return (count.QuadPart * (unsigned int)1000000) / frequency.QuadPart;
+	}
+
+private:
+	LARGE_INTEGER frequency;
+};
 
 class VideoFileThread : public XGLObject , public XThread {
 public:
@@ -25,16 +41,24 @@ public:
 	void Run() {
 		while (IsRunning()) {
 			unsigned char *image;
+			unsigned int start = hpt.Count();
+			unsigned int end = start;
+			unsigned int diff = end - start;
 			image = xavFile->mVideoStream->GetBuffer();
 			memcpy(&imageBuff.b, image, sizeof(imageBuff));
 			ib = imageBuff;
-			//imageFifo.Put(imageBuff);
+			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
+			do {
+				end = hpt.Count();
+				diff = end - start;
+			} while (diff < 16667);
 		}
 	}
 
 	XAVFile *xavFile;
 	XFifo<ImageBuff> imageFifo;
 	ImageBuff imageBuff;
+	HighPrecisionTimer hpt;
 };
 
 VideoFileThread *pvft;
@@ -43,7 +67,7 @@ void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
 	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
-	std::string videoPath = pathToAssets + "/assets/CulturalPhenomenon.mp4";
+	std::string videoPath = pathToAssets + "/assets/2016-07-21 16-27-43.mp4";
 
 	AddShape("shaders/yuv", [&](){ shape = new XGLTexQuad(imgPath); return shape; });
 
@@ -55,10 +79,9 @@ void ExampleXGL::BuildScene() {
 	XGLShape::AnimaFunk transform = [&](XGLShape *s, float clock) {
 		if (pvft != NULL && pvft->IsRunning()) {
 			s->b.Bind();
-			//ib = pvft->imageFifo.Get();
 			unsigned char *image = ib.b;
 
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 960, 540, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)image);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920, 1080, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)image);
 			GL_CHECK("glGetTexImage() didn't work");
 		}
 	};
