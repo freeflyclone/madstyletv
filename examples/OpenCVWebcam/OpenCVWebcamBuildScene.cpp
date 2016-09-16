@@ -16,13 +16,10 @@
 #include <xthread.h>
 #include <xfifo.h>
 
-#define NUM_SLOTS 8
-
 class CameraThread : public XGLObject, public XThread {
 public:
-	CameraThread(std::string n) : XGLObject(n), XThread(n), slots(NUM_SLOTS), emptyCount(NUM_SLOTS), fullCount(0) {
+	CameraThread(std::string n) : XGLObject(n), XThread(n), matFifo(4) {
 		SetName(n);
-		readIdx = writeIdx = 0;
 	};
 
 	void Run() {
@@ -38,23 +35,18 @@ public:
 		cap.set(CV_CAP_PROP_FRAME_HEIGHT, 720);
 
 		while (IsRunning()) {
-			emptyCount.wait();
-			int idx = writeIdx & (slots - 1);
-			cap >> frame[idx];
-			writeIdx++;
-			fullCount.notify();
+			cap >> frame;
+			width = frame.cols;
+			height = frame.rows;
+			matFifo.Put(frame);
 		}
 	}
 
-	const int slots;
-	XSemaphore fullCount;
-	XSemaphore emptyCount;
-
-	int64 readIdx, writeIdx;
-
 	cv::VideoCapture cap;
-	cv::Mat frame[NUM_SLOTS];
-	int readFrame;
+	cv::Mat frame;
+
+	XFifo<cv::Mat> matFifo;
+	int width, height;
 };
 
 CameraThread *pct;
@@ -83,6 +75,8 @@ void ExampleXGL::BuildScene() {
 	// runs once per frame BEFORE the shape's geomentry is rendered.  A lot can
 	// be done here. Hint: scripting, physics(?)
 	XGLShape::AnimaFunk transform = [&](XGLShape *s, float clock) {
+		cv::Mat image;
+
 		if (clock > 0.0f) {
 			float sinFunc = sin(clock / 120.0f) * 10.0f;
 			float cosFunc = cos(clock / 120.0f) * 10.0f;
@@ -94,25 +88,18 @@ void ExampleXGL::BuildScene() {
 		s->b.Bind();
 
 		if (pct != NULL && pct->IsRunning()) {
-			/**/
-			while (pct->readIdx < (pct->writeIdx-1)) {
-				pct->fullCount.wait();
-				int idx = pct->readIdx & (pct->slots - 1);
+			while (pct->matFifo.Size()) {
+				image = pct->matFifo.Get();
 
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pct->frame[idx].cols, pct->frame[idx].rows, 0, GL_BGR, GL_UNSIGNED_BYTE, pct->frame[idx].data);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pct->width, pct->height, 0, GL_BGR, GL_UNSIGNED_BYTE, image.data);
 				GL_CHECK("glGetTexImage() didn't work");
-
-				pct->readIdx++;
-				pct->emptyCount.notify();
 			}
-			/**/
 		}
 	};
 	shape->SetTheFunk(transform);
 
 	pct = new CameraThread("CameraThread");
 
-	xprintf("emptyCount: %d, fullCount: %d\n", pct->emptyCount, pct->fullCount);
 	pct->Start();
 
 	AddChild(pct);
