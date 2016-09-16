@@ -26,7 +26,7 @@ void ExampleXGL::BuildScene() {
 	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
 	std::string videoPath = pathToAssets + "/assets/CulturalPhenomenon.mp4";
 
-	AddShape("shaders/tex", [&](){ shape = new XGLTexQuad(imgPath); return shape; });
+	AddShape("shaders/yuv", [&](){ shape = new XGLTexQuad(imgPath); return shape; });
 
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(9.6f, 5.4f, 1.0f));
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 5.4f));
@@ -40,7 +40,7 @@ void ExampleXGL::BuildScene() {
 		unsigned char *image;
 		image = pvft->xavFile->mVideoStream->GetBuffer();
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 960, 540, 0, GL_BGR, GL_UNSIGNED_BYTE, (GLvoid *)image);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 960, 540, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)image);
 		GL_CHECK("glGetTexImage() didn't work");
 	};
 	shape->SetTheFunk(transform);
