@@ -78,7 +78,7 @@ void ExampleXGL::BuildScene() {
 
 	XGLShape::AnimaFunk transform = [&](XGLShape *s, float clock) {
 		if (pvft != NULL && pvft->IsRunning()) {
-			s->b.Bind();
+			s->Bind();
 			unsigned char *image = ib.b;
 
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920, 1080, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)image);
