@@ -8,7 +8,7 @@
 #include <xfifo.h>
 
 typedef struct {
-	unsigned char b[1920 * 1620];
+	unsigned char b[960 * 810];
 } ImageBuff;
 
 ImageBuff ib;
@@ -67,7 +67,7 @@ void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
 	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
-	std::string videoPath = pathToAssets + "/assets/2016-07-21 16-27-43.mp4";
+	std::string videoPath = pathToAssets + "/assets/CulturalPhenomenon.mp4";
 
 	AddShape("shaders/yuv", [&](){ shape = new XGLTexQuad(imgPath); return shape; });
 
@@ -80,7 +80,7 @@ void ExampleXGL::BuildScene() {
 		if (pvft != NULL && pvft->IsRunning()) {
 			unsigned char *image = ib.b;
 
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920, 1080, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)image);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 960, 540, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)image);
 			GL_CHECK("glGetTexImage() didn't work");
 		}
 	};
