@@ -3,19 +3,15 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
     <LibDir Condition="'$(PlatformTarget)'=='x64'">Win64</LibDir>
-    <LibDir Condition="'$(Configuration)'!='x86'">Win32</LibDir>
+    <LibDir Condition="'$(PlatformTarget)'=='x86'">Win32</LibDir>
   </PropertyGroup>
   <PropertyGroup>
     <IncludePath>$(OPENAL_DIR)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(OPENAL_DIR)\libs\$(LibDir);$(OPENAL_DIR)\libs\$(LibDir)EFX-Util-MTDLL;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OPENAL_DIR)\libs\$(LibDir);$(OPENAL_DIR)\libs\$(LibDir)\EFX-Util_MT;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalDependencies>
-	      OpenAL32.lib;
-        EFX-Util.lib;
-		    %(AdditionalDependencies)
-  	  </AdditionalDependencies>
+      <AdditionalDependencies>OpenAL32.lib;EFX-Util.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup />
