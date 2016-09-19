@@ -94,7 +94,6 @@ void ExampleXGL::BuildScene() {
 		glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(cosFunc, sinFunc, 5.4f));
 		glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		s->model = translate * rotate * scale;
-		s->Bind();
 	};
 	shape->SetTheFunk(transform);
 }

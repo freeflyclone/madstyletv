@@ -184,6 +184,5 @@ void XGLBuffer::AddTexture(std::string texName, int width, int height, int chann
     }
     GL_CHECK("glTexImage2D() failed");
 
-    XGL::getInstance()->textures.emplace(texName, texId);
     texIds.push_back(texId);
 }
