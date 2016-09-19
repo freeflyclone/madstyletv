@@ -58,7 +58,8 @@ static void cursor_position_callback(GLFWwindow *window, double x, double y) {
 	state |= glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
 	state |= glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) << 1;
 
-	exgl->MouseEvent((int)x, (int)y, state);
+	if (exgl != NULL) 
+		exgl->MouseEvent((int)x, (int)y, state);
 }
 
 int main(void) {
@@ -109,7 +110,11 @@ int main(void) {
 
 	xprintf("pathToAssets: %s\n", pathToAssets.c_str());
 
-	exgl = new ExampleXGL();
+	if ((exgl = new ExampleXGL()) == NULL){
+		printf("failed to construct an XGL object\n");
+		glfwTerminate();
+		exit(0);
+	}
 
 	while (!glfwWindowShouldClose(window)) {
 		int width, height;
