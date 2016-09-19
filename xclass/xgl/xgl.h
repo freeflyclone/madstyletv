@@ -129,8 +129,7 @@ public:
 
     // all the scene objects, mapped by XGLShader name
     XGLShapesMap shapes;
-    // Textures (bitmap images used for texture mapping)
-    XGLTextureMap textures;
+
     // Obligatory Font goodness...
     std::shared_ptr<XGLFont> font;
 

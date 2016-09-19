@@ -85,7 +85,6 @@ void ExampleXGL::BuildScene() {
 			glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 			s->model = translate * rotate * scale;
 		}
-		s->Bind();
 
 		if (pct != NULL && pct->IsRunning()) {
 			while (pct->matFifo.Size()) {
