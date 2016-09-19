@@ -13,7 +13,7 @@
 #include "xglshader.h"
 #include "xglmaterial.h"
 
-class XGLShape : public XGLObject {
+class XGLShape : public XGLObject , public XGLBuffer {
 public:
     typedef std::function<void(XGLShape *, float)> AnimaFunk;
 
@@ -37,8 +37,7 @@ public:
     AnimaFunk funk;
 
     // retained mode OpenGL buffer objects
-    XGLBuffer b;
-	XGLMaterial m;
+ 	XGLMaterial m;
 
 	glm::mat4 model;
 };

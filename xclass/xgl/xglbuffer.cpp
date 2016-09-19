@@ -20,14 +20,6 @@ XGLBuffer::XGLBuffer() :
     GL_CHECK("glGenBuffers() failed");
     glGenBuffers(1, &ibo);
     GL_CHECK("glGenBuffers() failed");
-
-    // use the Singleton reference here to get the current shader,
-    // and then immediately bind it so setting of uniforms
-    // will work
-	std::shared_ptr<XGL> xgl = XGL::getInstance();
-	shader = xgl->GetShader();
-	program = shader->Id();
-	Bind();
 }
 
 void XGLBuffer::Bind(){
@@ -81,7 +73,8 @@ void XGLBuffer::UnmapVertexBuffer() {
 	GL_CHECK("glUnmapBuffer() failed");
 }
 
-void XGLBuffer::Load(std::vector<XGLVertexAttributes> va, std::vector<XGLIndex> ib){
+void XGLBuffer::Load(XGLShader *shader, std::vector<XGLVertexAttributes> va, std::vector<XGLIndex> ib){
+	program = shader->Id();
     Bind();
 
     // bind "vao"  and "vbo".  This means setting OpenGL state to refer to these objects
