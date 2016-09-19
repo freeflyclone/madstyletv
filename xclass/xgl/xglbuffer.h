@@ -20,7 +20,7 @@ public:
     XGLBuffer();
     virtual void Bind();
     virtual void Unbind();
-    virtual void Load(std::vector<XGLVertexAttributes> va, std::vector<XGLIndex> ib = {});
+    virtual void Load(XGLShader *shader, std::vector<XGLVertexAttributes> va, std::vector<XGLIndex> ib = {});
     virtual void AddTexture(std::string name);
 	virtual void AddTexture(std::string, int, int, int, GLubyte *, bool flipColors = false);
 

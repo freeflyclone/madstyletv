@@ -22,20 +22,20 @@ void XGLShape::Transform(glm::mat4 tm){
 }
 
 void XGLShape::SetColor(XGLColor c) {
-	XGLVertexAttributes *pv = b.MapVertexBuffer();
+	XGLVertexAttributes *pv = MapVertexBuffer();
 	for ( int i = 0; i < v.size(); i++)
 		pv[i].c = c;
-	b.UnmapVertexBuffer();
+	UnmapVertexBuffer();
 }
 
 void XGLShape::Render(float clock) {
 	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, sizeof(glm::mat4), (GLvoid *)&model);
 
-	b.Bind();
-	m.Bind(b.program);
+	Bind();
+	m.Bind(program);
 	Animate(clock);
 	Draw();
-	b.Unbind();
+	Unbind();
 
 	XGLObjectChildren children = Children();
 	if (children.size()) {
@@ -51,11 +51,11 @@ void XGLShape::Render(glm::mat4 modelChain, float clock) {
 	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, sizeof(glm::mat4), (GLvoid *)&modelChain);
 	GL_CHECK("glBufferSubData() failed");
 
-	b.Bind();
-	m.Bind(b.program);
+	Bind();
+	m.Bind(program);
 	Animate(clock);
 	Draw();
-	b.Unbind();
+	Unbind();
 
 	XGLObjectChildren children = Children();
 	if (children.size()) {
@@ -84,7 +84,7 @@ XYPlaneGrid::XYPlaneGrid() {
 		v.push_back({ { -size, -float(i), 0 }, {}, {}, gridColor });
 	}
 
-	b.Load(v);
+	//Load(v);
 }
 
 void XYPlaneGrid::Draw(){
@@ -99,7 +99,7 @@ XGLTriangle::XGLTriangle() {
     v.push_back({ { 10, 0, 0 }, {}, {}, { 0, 1, 0 } });
     v.push_back({ { 0, 0, 14.12 }, {}, {}, { 0, 0, 1 } });
 
-    b.Load(v);
+    //Load(v);
 }
 void XGLTriangle::Draw(){
     glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -133,8 +133,6 @@ XGLCube::XGLCube() {
 	idx.push_back(4);
 	idx.push_back(0);
 	idx.push_back(1);
-
-	b.Load(v, idx);
 }
 void XGLCube::Draw() {
 	glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
@@ -189,8 +187,6 @@ XGLSphere::XGLSphere(float r, int n) : radius(r), nSegments(n), visualizeNormals
 			idx.push_back((i%nVerts) + nVerts);
 		}
 	}
-
-	b.Load(v, idx);
 }
 
 void XGLSphere::Draw() {
@@ -279,8 +275,6 @@ XGLCapsule::XGLCapsule(float r, float l, int n) : radius(r), length(l), nSegment
 			idx.push_back(mostRecentEvenIdx);
 		}
 	}
-
-	b.Load(v, idx);
 }
 
 XGLCapsule::~XGLCapsule() {
@@ -410,9 +404,6 @@ XGLTorus::XGLTorus(float rMaj, float rMin, int nMaj, int nMin) :
     }
 
     nTotalIndices = (GLsizei)(idx.size());
-
-    // load up the OpenGL vertex buffer stuff
-    b.Load(v,idx);
 }
 
 void XGLTorus::Draw() {
@@ -470,8 +461,6 @@ XGLIcoSphere::XGLIcoSphere() {
 	idx.push_back(6);	idx.push_back(2);	idx.push_back(10);
 	idx.push_back(8);	idx.push_back(6);	idx.push_back(7);
 	idx.push_back(9);	idx.push_back(8);	idx.push_back(1);
-
-	b.Load(v, idx);
 }
 
 void XGLIcoSphere::Draw() {
@@ -540,8 +529,6 @@ XGLSphere2::XGLSphere2(float r, int n) : radius(r), nSegments(n), visualizeNorma
 			idx.push_back(mostRecentEvenIdx);
 		}
 	}
-
-	b.Load(v, idx);
 }
 
 void XGLSphere2::Draw() {
@@ -607,7 +594,7 @@ XGLTextureAtlas::XGLTextureAtlas() : font(XGL::getInstance()->font) {
 			idx.push_back(index + 2);
 			idx.push_back(index + 3);
 
-			b.AddTexture(FONT_NAME, font->atlasWidth, font->atlasHeight, 1, font->bitmapPages[i]);
+			AddTexture(FONT_NAME, font->atlasWidth, font->atlasHeight, 1, font->bitmapPages[i]);
 			i++;
 			if (i == font->atlasPageCount)
 				break;
@@ -615,7 +602,6 @@ XGLTextureAtlas::XGLTextureAtlas() : font(XGL::getInstance()->font) {
 		if (i == font->atlasPageCount)
 			break;
 	}
-	b.Load(v, idx);
 }
 
 void XGLTextureAtlas::Draw() {
@@ -625,7 +611,7 @@ void XGLTextureAtlas::Draw() {
 	GL_CHECK("glBlendFunc() failed");
 
 	for (unsigned int i = 0; i < font->atlasPageCount; i++) {
-		glBindTexture(GL_TEXTURE_2D, b.texIds[i]);
+		glBindTexture(GL_TEXTURE_2D, texIds[i]);
 		GL_CHECK("glBindTexture() failed");
 		glDrawElementsBaseVertex(GL_TRIANGLE_STRIP, 4, XGLIndexType, 0, i * 4);
 		GL_CHECK("glDrawElements() failed");
@@ -649,8 +635,7 @@ XGLTexQuad::XGLTexQuad(std::string fileName) {
 	idx.push_back(2);
 	idx.push_back(3);
 
-	b.AddTexture(fileName);
-	b.Load(v, idx);
+	AddTexture(fileName);
 }
 
 XGLTexQuad::XGLTexQuad(std::string texName, int width, int height, int channels, GLubyte *img, bool flipColors) {
@@ -667,8 +652,7 @@ XGLTexQuad::XGLTexQuad(std::string texName, int width, int height, int channels,
 	idx.push_back(2);
 	idx.push_back(3);
 
-	b.AddTexture(texName, width, height, channels, img, flipColors);
-	b.Load(v, idx);
+	AddTexture(texName, width, height, channels, img, flipColors);
 }
 
 void XGLTexQuad::Draw() {

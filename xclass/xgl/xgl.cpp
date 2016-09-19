@@ -205,9 +205,10 @@ void XGL::AddShape(std::string shName, XGLNewShapeLambda fn){
     }
 
     // set the "currentShader" in the Singleton
-    currentShader = shaderMap[shaderName];
+    //currentShader = shaderMap[shaderName];
  
 	XGLShape *pShape = fn();
+	pShape->Load(shaderMap[shaderName], pShape->v, pShape->idx);
 	AddChild(pShape);
     shapes[shaderName]->push_back(pShape);
 }
@@ -229,7 +230,7 @@ void XGL::IterateShapesMap(){
 
         for (perShape = perShader->second->begin(); perShape != perShader->second->end(); perShape++) {
             XGLShape *shape = *perShape;
-			xprintf("   shape->b: vao:%d, vbo:%d, program:%d\n", shape->b.vao, shape->b.vbo, shape->b.program);
+			xprintf("   shape->b: vao:%d, vbo:%d, program:%d\n", shape->vao, shape->vbo, shape->program);
         }
     }
 }
