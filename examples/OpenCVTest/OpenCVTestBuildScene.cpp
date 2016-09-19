@@ -40,7 +40,7 @@ void ExampleXGL::BuildScene() {
 
 		s->m.ambientColor = blue;
 		s->m.diffuseColor = blue;
-		s->b.Bind();
+		s->Bind();
 	};
 	shape->SetTheFunk(transform);
 }
