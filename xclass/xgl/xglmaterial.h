@@ -17,13 +17,13 @@ const XGLColor green = { 0,1,0 };
 const XGLColor blue = { 0,0,1 };
 const XGLColor yellow = { 1,1,0 };
 
-class XGLMaterial : public XGLObject {
+class XGLMaterial {
 public:
-	XGLMaterial() : XGLObject("XGLMaterial"),
+	XGLMaterial() :
 		ambientColor(white),
 		diffuseColor(white),
 		specularColor(white),
-		shininess(1)
+		shininess(100.0f)
 	{};
 
 	void Bind(GLuint program) {

@@ -31,8 +31,8 @@ void XGLShape::SetColor(XGLColor c) {
 void XGLShape::Render(float clock) {
 	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, sizeof(glm::mat4), (GLvoid *)&model);
 
-	Bind();
-	m.Bind(program);
+	XGLBuffer::Bind();
+	XGLMaterial::Bind(program);
 	Animate(clock);
 	Draw();
 	Unbind();
@@ -51,8 +51,8 @@ void XGLShape::Render(glm::mat4 modelChain, float clock) {
 	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, sizeof(glm::mat4), (GLvoid *)&modelChain);
 	GL_CHECK("glBufferSubData() failed");
 
-	Bind();
-	m.Bind(program);
+	XGLBuffer::Bind();
+	XGLMaterial::Bind(program);
 	Animate(clock);
 	Draw();
 	Unbind();
