@@ -13,8 +13,17 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+#include <al.h>
+#include <alc.h>
+
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
+
+	ALCdevice *audioDevice = alcOpenDevice(NULL);
+	if (audioDevice == NULL) {
+		throwXGLException("alcOpenDevice() failed");
+	}
+
 	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
 	cv::Mat image;
 	image = cv::imread(imgPath, cv::IMREAD_UNCHANGED);
