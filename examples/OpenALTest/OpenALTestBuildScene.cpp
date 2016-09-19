@@ -16,13 +16,61 @@
 #include <al.h>
 #include <alc.h>
 
+short audioBuffer[48000 * 4];
+
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
-	ALCdevice *audioDevice = alcOpenDevice(NULL);
-	if (audioDevice == NULL) {
+	ALCdevice *audioDevice;
+	ALCcontext *audioContext;
+
+	if ((audioDevice = alcOpenDevice(NULL)) == NULL) {
 		throwXGLException("alcOpenDevice() failed");
 	}
+
+	if ((audioContext = alcCreateContext(audioDevice, NULL)) == NULL) {
+		throwXGLException("alcCreateContext() failed\n");
+	}
+
+	alcMakeContextCurrent(audioContext);
+
+	alGetError();
+
+	ALuint buffer;
+	alGenBuffers(1, &buffer);
+	ALenum error = alGetError();
+	if (error != AL_NO_ERROR) {
+		throwXGLException("alGenBuffers() failed to create a buffer");
+	}
+
+	{// build a sine wave in "audioBuffer"
+		int NSAMPLES = sizeof(audioBuffer) / sizeof(audioBuffer[0]);
+		for (int i = 0; i < NSAMPLES; i++) {
+			double value = 2.0 * (double)i / (double)128 * M_PI;
+			audioBuffer[i] = (short)(sin(value) * 32767.0);
+		}
+	}
+
+	alBufferData(buffer, AL_FORMAT_MONO16, audioBuffer, sizeof(audioBuffer), 48000);
+	error = alGetError();
+	if (error != AL_NO_ERROR) {
+		throwXGLException("alBufferData() failed");
+	}
+
+	ALuint source = 0;
+	alGenSources(1, &source);
+	error = alGetError();
+	if (error != AL_NO_ERROR) {
+		throwXGLException("alGenSources() failed");
+	}
+
+	alSourcei(source, AL_BUFFER, buffer);
+	error = alGetError();
+	if (error != AL_NO_ERROR) {
+		throwXGLException("alSource() failed");
+	}
+
+	alSourcePlay(source);
 
 	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
 	cv::Mat image;

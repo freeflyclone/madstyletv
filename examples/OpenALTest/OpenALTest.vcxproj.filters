@@ -21,7 +21,7 @@
     <ClCompile Include="..\common\ExampleXGL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OpenAL-TestBuildScene.cpp">
+    <ClCompile Include="OpenALTestBuildScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
