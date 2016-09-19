@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{4B1147B2-B1B4-448C-8CBF-C9D944070306}</ProjectGuid>
+    <ProjectGuid>{E7E845DE-F82B-446B-877D-6FEF448F6038}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>OpenAL_Test</RootNamespace>
+    <RootNamespace>OpenALTest</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -173,7 +173,7 @@
   <ItemGroup>
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
-    <ClCompile Include="OpenAL-TestBuildScene.cpp" />
+    <ClCompile Include="OpenALTestBuildScene.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
