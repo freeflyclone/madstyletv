@@ -135,10 +135,6 @@ public:
     XGLShaderMap shaderMap;
 
     float clock;
-
-    // for Singleton goodness. There can be only one XGL
-    static std::shared_ptr<XGL>getInstance();
-
 private:
     // this is returned by GetShader().  Use of GetShader() feels funky, like my structure design blows chunks.
     XGLShader *currentShader;
