@@ -38,8 +38,6 @@ void ExampleXGL::CameraTracker(XGLCamera *c){
 	if (kt.l)
 		c->pos -= glm::normalize(glm::cross(c->front, c->up)) * speed;
 
-	c->Set();
-
 	if (mt.IsTrackingLeftButton() && !mt.IsTrackingRightButton()) {
 		glm::float32 yaw = 0.0f;
 		glm::float32 pitch = 0.0f;
@@ -53,7 +51,6 @@ void ExampleXGL::CameraTracker(XGLCamera *c){
 			glm::mat4 cameraYaw = glm::rotate(glm::mat4(), yaw, camera.up);
 			glm::vec4 front = cameraYaw * glm::vec4(camera.front, 1.0f);
 			camera.front = glm::vec3(front.x, front.y, front.z);
-			c->Set();
 
 			// pitch involves rotating around the "right" vector, which doesn't exist, so make one from front & up
 			glm::mat4 cameraPitch = glm::rotate(glm::mat4(), pitch, glm::cross(camera.up, camera.front));
@@ -65,7 +62,6 @@ void ExampleXGL::CameraTracker(XGLCamera *c){
 			// enforce limit (emperically derived value)
 			if (pitchVerticality < 0.99f) {
 				camera.front = glm::vec3(front.x, front.y, front.z);
-				c->Set();
 			}
 
 			// clear mouse tracker delta position

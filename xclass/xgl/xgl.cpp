@@ -29,11 +29,6 @@ void CheckStatus(const char *file, int line) {
 	}
 }
 
-static std::shared_ptr<XGL> instance(NULL);
-std::shared_ptr<XGL> XGL::getInstance() {
-	return instance;
-}
-
 // for GLUT runtimes
 #ifdef USE_GLUT
 XGL::XGL(int *argcp, char **argv) {
@@ -67,8 +62,6 @@ XGL::XGL(int *argcp, char **argv) {
 #endif
 
 XGL::XGL() : XGLObject("XGL"), clock(0.0f) {
-    instance.reset(this);
-    
     xprintf("OpenGL version: %s\n", glGetString(GL_VERSION));
 	glGetError();
 
@@ -161,7 +154,9 @@ void XGL::Display() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// set the projection,view,model,mvp matrices in the matrix UBO
-	// this should probably be done else where, once startup-order issues are resolved
+	shaderMatrix.view = camera.GetViewMatrix();
+	shaderMatrix.projection = projector.GetProjectionMatrix();
+
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(shaderMatrix), (GLvoid *)&shaderMatrix, GL_DYNAMIC_DRAW);
 	GL_CHECK("glBufferData() failed");
 

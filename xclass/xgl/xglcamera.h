@@ -4,12 +4,13 @@ public:
     typedef std::function<void(XGLCamera *)> XGLCameraFunk;
 
     XGLCamera();
-    void Set(bool lookat=true);
 
 	void Set(glm::vec3 pos, glm::vec3 front, glm::vec3 up);
 
     void SetTheFunk(XGLCameraFunk);
     void Animate();
+
+	glm::mat4 GetViewMatrix();
 
  	glm::vec3 pos;
 	glm::vec3 front;
