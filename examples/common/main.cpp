@@ -110,29 +110,30 @@ int main(void) {
 
 	xprintf("pathToAssets: %s\n", pathToAssets.c_str());
 
-	if ((exgl = new ExampleXGL()) == NULL){
-		printf("failed to construct an XGL object\n");
+	try {
+		exgl = new ExampleXGL();
+
+		while (!glfwWindowShouldClose(window)) {
+			int width, height;
+
+			glfwGetFramebufferSize(window, &width, &height);
+			exgl->Reshape(width, height);
+
+			glfwSwapInterval(1);
+
+			glClear(GL_COLOR_BUFFER_BIT);
+
+			exgl->Display();
+
+			glfwSwapBuffers(window);
+			glfwPollEvents();
+		}
+
 		glfwTerminate();
-		exit(0);
 	}
-
-	while (!glfwWindowShouldClose(window)) {
-		int width, height;
-
-		glfwGetFramebufferSize(window, &width, &height);
-		exgl->Reshape(width, height);
-
-		glfwSwapInterval(1);
-
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		exgl->Display();
-
-		glfwSwapBuffers(window);
-		glfwPollEvents();
+	catch (std::runtime_error e) {
+		printf("Exception: %s\n", e.what());
 	}
-
-	glfwTerminate();
 
 	return 0;
 }
