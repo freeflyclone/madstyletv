@@ -127,9 +127,6 @@ public:
     // all the scene objects, mapped by XGLShader name
     XGLShapesMap shapes;
 
-    // Obligatory Font goodness...
-    std::shared_ptr<XGLFont> font;
-
     // encapsulate the camera and projection tranforms (view,perspectiv matrices)
     XGLCamera camera;
     XGLProjector projector;
