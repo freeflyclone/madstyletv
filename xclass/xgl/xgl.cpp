@@ -204,11 +204,11 @@ void XGL::AddShape(std::string shName, XGLNewShapeLambda fn){
         shapes.emplace(shaderName, new XGLShapeList);
     }
 
-    // set the "currentShader" in the Singleton
-    //currentShader = shaderMap[shaderName];
+	XGLShader *shader = shaderMap[shaderName];
+	shader->SetLights(&lights);
  
 	XGLShape *pShape = fn();
-	pShape->Load(shaderMap[shaderName], pShape->v, pShape->idx);
+	pShape->Load(shader, pShape->v, pShape->idx);
 	AddChild(pShape);
     shapes[shaderName]->push_back(pShape);
 }
