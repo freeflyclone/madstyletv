@@ -118,8 +118,6 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f) {
 		xprintf("Light position: %0.2f, %0.2f, %0.2f\n", p.x, p.y, p.z);
 	}
 
-    font = std::make_shared<XGLFont>();
-
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	glDepthFunc(GL_LESS);

@@ -111,10 +111,10 @@ private:
 
 class XGLTextureAtlas : public XGLShape {
 public:
-	std::shared_ptr<XGLFont> font;
 	XGLTextureAtlas();
 	virtual void Draw();
 private:
+	XGLFont font;
 	float gridCellWidth, gridCellHeight;
 	int gridXsize, gridYsize;
 };

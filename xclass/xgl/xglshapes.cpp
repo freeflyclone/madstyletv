@@ -538,7 +538,7 @@ void XGLSphere2::Draw() {
 	GL_CHECK("glDrawElements() failed");
 }
 
-XGLTextureAtlas::XGLTextureAtlas() : font(XGL::getInstance()->font) {
+XGLTextureAtlas::XGLTextureAtlas() {
 	SetName("XGLTextureAtlas");
 	XGLColor white = { 1, 1, 0 };
 
@@ -548,7 +548,7 @@ XGLTextureAtlas::XGLTextureAtlas() : font(XGL::getInstance()->font) {
 	float halfWidth = gridCellWidth / 2.0f;
 	float halfHeight = gridCellHeight / 2.0f;
 
-	int atlasPagesDiv2 = (font->atlasPageCount + 1) >> 1;
+	int atlasPagesDiv2 = (font.atlasPageCount + 1) >> 1;
 	int factor;
 
 	for (factor = atlasPagesDiv2 - 1; factor >= 2; factor--)
@@ -558,7 +558,7 @@ XGLTextureAtlas::XGLTextureAtlas() : font(XGL::getInstance()->font) {
 	if (factor == 0)
 		factor = 1;
 
-	gridXsize = (font->atlasPageCount + 1) / factor;
+	gridXsize = (font.atlasPageCount + 1) / factor;
 	gridYsize = factor;
 
 	if (gridYsize > gridXsize) {
@@ -577,10 +577,10 @@ XGLTextureAtlas::XGLTextureAtlas() : font(XGL::getInstance()->font) {
 			float xScale = 1.0f;
 			float yScale = 1.0f;
 
-			if (font->atlasHeight > font->atlasWidth)
-				xScale *= (float)font->atlasWidth / (float)font->atlasHeight;
+			if (font.atlasHeight > font.atlasWidth)
+				xScale *= (float)font.atlasWidth / (float)font.atlasHeight;
 			else
-				yScale *= (float)font->atlasHeight / (float)font->atlasWidth;
+				yScale *= (float)font.atlasHeight / (float)font.atlasWidth;
 
 			v.push_back({ { xPos - halfWidth*xScale, yPos - halfHeight*yScale, 0 }, { 0, 1 }, {}, white });
 			v.push_back({ { xPos - halfWidth*xScale, yPos + halfHeight*yScale, 0 }, { 0, 0 }, {}, white });
@@ -594,12 +594,12 @@ XGLTextureAtlas::XGLTextureAtlas() : font(XGL::getInstance()->font) {
 			idx.push_back(index + 2);
 			idx.push_back(index + 3);
 
-			AddTexture(FONT_NAME, font->atlasWidth, font->atlasHeight, 1, font->bitmapPages[i]);
+			AddTexture(FONT_NAME, font.atlasWidth, font.atlasHeight, 1, font.bitmapPages[i]);
 			i++;
-			if (i == font->atlasPageCount)
+			if (i == font.atlasPageCount)
 				break;
 		}
-		if (i == font->atlasPageCount)
+		if (i == font.atlasPageCount)
 			break;
 	}
 }
@@ -610,7 +610,7 @@ void XGLTextureAtlas::Draw() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	GL_CHECK("glBlendFunc() failed");
 
-	for (unsigned int i = 0; i < font->atlasPageCount; i++) {
+	for (unsigned int i = 0; i < font.atlasPageCount; i++) {
 		glBindTexture(GL_TEXTURE_2D, texIds[i]);
 		GL_CHECK("glBindTexture() failed");
 		glDrawElementsBaseVertex(GL_TRIANGLE_STRIP, 4, XGLIndexType, 0, i * 4);
