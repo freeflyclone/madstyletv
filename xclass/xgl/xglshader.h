@@ -13,6 +13,7 @@
 #define XGLSHADER_H
 
 #include "xglprimitives.h"
+#include "xgllight.h"
 
 class XGLShaderComponent
 {
@@ -39,6 +40,7 @@ public:
     bool Compile(std::string name);
     void InfoLog();
     void Reshape(int w, int h);
+	void SetLights(XGLLights *lights);
     void Use();
     void UnUse();
 

@@ -131,9 +131,12 @@ bool XGLShader::Compile(std::string name) {
 	}
 
 	glUseProgram(programId);
+	//DebugPrintf("XGLShader::Compile(%s) shader #: %d\n", name.c_str(), shader);
+    return true;
+}
 
-	XGLLights lights = XGL::getInstance()->lights;
-	XGLLight light = lights.back();
+void XGLShader::SetLights(XGLLights *lights) {
+	XGLLight light = lights->back();
 
 	glUniform3fv(glGetUniformLocation(programId, "light.position"), 1, (GLfloat*)glm::value_ptr(light.position));
 	GL_STATUS();
@@ -152,9 +155,6 @@ bool XGLShader::Compile(std::string name) {
 
 	glUniform1f(glGetUniformLocation(programId, "materialShininess"), 100.0f);
 	GL_STATUS();
-
-	//DebugPrintf("XGLShader::Compile(%s) shader #: %d\n", name.c_str(), shader);
-    return true;
 }
 
 void XGLShader::InfoLog() {

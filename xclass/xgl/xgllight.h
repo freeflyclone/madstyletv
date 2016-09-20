@@ -19,4 +19,6 @@ struct XGLLight {
 	float ambientCoefficient;
 };
 
+typedef std::vector<XGLLight> XGLLights;
+
 #endif

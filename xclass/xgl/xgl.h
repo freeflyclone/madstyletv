@@ -85,9 +85,6 @@ typedef std::map<std::string, XGLShader *> XGLShaderMap;
 typedef std::vector<XGLShape *> XGLShapeList;
 typedef std::map<std::string, XGLShapeList *> XGLShapesMap;
 
-// define types for std::vector of XGLLights
-typedef std::vector<XGLLight> XGLLights;
-
 // define a type for passing a lambda that creates an XGLShape as an argument
 typedef std::function<XGLShape *()> XGLNewShapeLambda;
 
