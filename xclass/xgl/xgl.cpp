@@ -84,7 +84,9 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f) {
 		GL_CHECK("glBindBuffer() failed");
 
 		// for now, create one point light, for diffuse lighting shader development
-		XGLLight light = { { 10,6,16 },{ 1,1,1 }, 0.001f, 0.001f };
+		// position, pad1, color, pad2, attenuation, ambientCoefficient
+		XGLLight light = { { 10,6,16 }, 1.0f, { 1,1,1 }, 1.0, 0.001f, 0.01f };
+		xprintf("sizeof(light): %d\n", sizeof(light));
 		lights.push_back(light);
 
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(light), &light, GL_DYNAMIC_DRAW);
@@ -202,11 +204,8 @@ void XGL::AddShape(std::string shName, XGLNewShapeLambda fn){
         shapes.emplace(shaderName, new XGLShapeList);
     }
 
-	XGLShader *shader = shaderMap[shaderName];
-	shader->SetLights(&lights);
- 
 	XGLShape *pShape = fn();
-	pShape->Load(shader, pShape->v, pShape->idx);
+	pShape->Load(shaderMap[shaderName], pShape->v, pShape->idx);
 	AddChild(pShape);
     shapes[shaderName]->push_back(pShape);
 }
