@@ -14,7 +14,9 @@
 // via a glUniform() call.
 struct XGLLight {
     XGLVertex position;
+	float pad1;
     XGLColor diffuse;
+	float pad2;
 	float attenuation;
 	float ambientCoefficient;
 };

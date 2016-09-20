@@ -15,9 +15,9 @@ uniform sampler2D materialTex;
 uniform float materialShininess;
 uniform vec3 materialSpecularColor;
 
-uniform struct Light {
-   vec3 position;
-   vec3 intensities; //a.k.a the color of the light
+layout (std140) uniform LightData {
+   vec4 position;
+   vec4 intensities; //a.k.a the color of the light
    float attenuation;
    float ambientCoefficient;
 } light;
@@ -31,24 +31,24 @@ out vec4 finalColor;
 
 void main() {
     vec3 normal = normalize(transpose(inverse(mat3(model))) * fragNormal);
-    vec3 surfacePos = vec3(model * vec4(fragVert, 1));
+    vec4 surfacePos = vec4(model * vec4(fragVert, 1));
     //vec4 surfaceColor = texture(materialTex, fragTexCoord);
     vec4 surfaceColor = vec4(fragColor, 1.0);
-	vec3 surfaceToLight = normalize(light.position - surfacePos);
-    vec3 surfaceToCamera = normalize(cameraPosition - surfacePos);
+	vec4 surfaceToLight = normalize(light.position - surfacePos);
+    vec3 surfaceToCamera = normalize(cameraPosition - surfacePos.xyz);
     
     //ambient
-    vec3 ambient = light.ambientCoefficient * surfaceColor.rgb * light.intensities;
+    vec3 ambient = light.ambientCoefficient * surfaceColor.rgb * light.intensities.rgb;
 
     //diffuse
-    float diffuseCoefficient = max(0.0, dot(normal, surfaceToLight));
-    vec3 diffuse = diffuseCoefficient * surfaceColor.rgb * light.intensities;
+    float diffuseCoefficient = max(0.0, dot(normal, surfaceToLight.xyz));
+    vec3 diffuse = diffuseCoefficient * surfaceColor.rgb * light.intensities.rgb;
     
     //specular
     float specularCoefficient = 0.0;
     if(diffuseCoefficient > 0.0)
-        specularCoefficient = pow(max(0.0, dot(surfaceToCamera, reflect(-surfaceToLight, normal))), materialShininess);
-    vec3 specular = specularCoefficient * materialSpecularColor * light.intensities;
+        specularCoefficient = pow(max(0.0, dot(surfaceToCamera, reflect(-surfaceToLight.xyz, normal))), materialShininess);
+    vec3 specular = specularCoefficient * materialSpecularColor * light.intensities.rgb;
     
     //attenuation
     float distanceToLight = length(light.position - surfacePos);
