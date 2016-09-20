@@ -24,7 +24,15 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(1) {
 			throwXAVException("error getting frame and/or buffer\n");
 	}
 	else if( pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO ) {
-		;
+		char buff[1024];
+		xprintf("Found AVMEDIA_TYPE_AUDIO\n");
+		xprintf("    Samples Per Second: %d\n", pCodecCtx->sample_rate);
+		xprintf("          SampleFormat: %s\n", av_get_sample_fmt_string(buff, sizeof(buff), pCodecCtx->sample_fmt));
+		xprintf("            BlockAlign: %d\n", pCodecCtx->block_align);
+		xprintf("              Channels: %d\n", pCodecCtx->channels);
+		xprintf("sizeof(float): %d\n", sizeof(float));
+		pFrame = av_frame_alloc();
+		buffer = (unsigned char *)av_malloc(192000);
 	}
 
 	nFramesDecoded = 0;
@@ -49,6 +57,10 @@ bool XAVStream::Decode(AVPacket *packet)
 		}
 	}
 	else if( pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO ) {
+		int length = avcodec_decode_audio4(pCodecCtx, pFrame, &frameFinished, packet);
+		if (frameFinished){
+			//xprintf("Decoded audio frame: found %d bytes.\n", length);
+		}
 	}
 
 	return true;
@@ -122,8 +134,10 @@ void XAVSrc::Run()
 {
 	while( av_read_frame(pFormatCtx, &packet) >= 0 )
 	{
-		mStreams[packet.stream_index]->Decode(&packet);
-		av_packet_unref(&packet);
+		if (packet.stream_index <= 1) {
+			mStreams[packet.stream_index]->Decode(&packet);
+			av_packet_unref(&packet);
+		}
 	}
 	while(IsRunning())
 	{
