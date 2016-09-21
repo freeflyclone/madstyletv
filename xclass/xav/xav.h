@@ -7,11 +7,6 @@
 #ifndef XAV_H
 #define XAV_H
 
-#ifdef WIN32
-#include <windows.h>
-#include <winsock.h>
-#endif
-
 #include <vector>
 #include <string>
 #include <memory>

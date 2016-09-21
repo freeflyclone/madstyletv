@@ -12,8 +12,8 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(1) {
 
 	if( pCodecCtx->codec_type == AVMEDIA_TYPE_VIDEO ) {
 		xprintf("Found AVMEDIA_TYPE_VIDEO\n");
-		xprintf("                   width: %d\n", pCodecCtx->width);
-		xprintf("                  height: %d\n", pCodecCtx->height);
+		xprintf("               width: %d\n", pCodecCtx->width);
+		xprintf("              height: %d\n", pCodecCtx->height);
 		pFrame = av_frame_alloc();
 		numBytes = av_image_get_buffer_size(pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height,8) * 4;
 		buffer = (unsigned char *)av_malloc(numBytes*sizeof(unsigned char));
@@ -23,17 +23,18 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(1) {
 		if( !pFrame || !buffer )
 			throwXAVException("error getting frame and/or buffer\n");
 	}
-	else if( pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO ) {
+	else if (pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO) {
 		char buff[1024];
 		xprintf("Found AVMEDIA_TYPE_AUDIO\n");
-		xprintf("    Samples Per Second: %d\n", pCodecCtx->sample_rate);
-		xprintf("          SampleFormat: %s\n", av_get_sample_fmt_string(buff, sizeof(buff), pCodecCtx->sample_fmt));
-		xprintf("            BlockAlign: %d\n", pCodecCtx->block_align);
-		xprintf("              Channels: %d\n", pCodecCtx->channels);
-		xprintf("sizeof(float): %d\n", sizeof(float));
+		xprintf("  Samples Per Second: %d\n", pCodecCtx->sample_rate);
+		xprintf("        SampleFormat: %s\n", av_get_sample_fmt_string(buff, sizeof(buff), pCodecCtx->sample_fmt));
+		xprintf("          BlockAlign: %d\n", pCodecCtx->block_align);
+		xprintf("            Channels: %d\n", pCodecCtx->channels);
 		pFrame = av_frame_alloc();
 		buffer = (unsigned char *)av_malloc(192000);
 	}
+	else
+		xprintf("Found unknown AVMEDIA_TYPE\n");
 
 	nFramesDecoded = 0;
 }

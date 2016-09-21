@@ -4,6 +4,7 @@
 **************************************************************/
 #include "ExampleXGL.h"
 
+#include <xav.h>
 #include <xavfile.h>
 #include <xfifo.h>
 
@@ -29,13 +30,12 @@ private:
 	LARGE_INTEGER frequency;
 };
 
-class VideoFileThread : public XGLObject , public XThread {
+class AVThread : public XGLObject , public XThread {
 public:
-	VideoFileThread(std::string url) : XGLObject("VideoFileThread"), XThread("VideoFIleThread"), imageFifo(4) {
-		// first thing MUST be av_register_all()
-		av_register_all();
-		xavFile = new XAVFile(url);
-		xavFile->Start();
+	AVThread(std::string url) : XGLObject("AVThread"), XThread("AVThread") {
+		xavSrc = std::make_shared<XAVFile>(url);
+		xav.AddSrc(xavSrc);
+		xav.Start();
 	}
 
 	void Run() {
@@ -44,7 +44,7 @@ public:
 			unsigned int start = hpt.Count();
 			unsigned int end = start;
 			unsigned int diff = end - start;
-			image = xavFile->mVideoStream->GetBuffer();
+			image = xavSrc->mVideoStream->GetBuffer();
 			memcpy(&imageBuff.b, image, sizeof(imageBuff));
 			ib = imageBuff;
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
@@ -55,13 +55,13 @@ public:
 		}
 	}
 
-	XAVFile *xavFile;
-	XFifo<ImageBuff> imageFifo;
+	XAV xav;
+	std::shared_ptr<XAVSrc> xavSrc;
 	ImageBuff imageBuff;
 	HighPrecisionTimer hpt;
 };
 
-VideoFileThread *pvft;
+AVThread *pavt;
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
@@ -77,7 +77,7 @@ void ExampleXGL::BuildScene() {
 	shape->model = translate * rotate * scale;
 
 	XGLShape::AnimaFunk transform = [&](XGLShape *s, float clock) {
-		if (pvft != NULL && pvft->IsRunning()) {
+		if (pavt != NULL && pavt->IsRunning()) {
 			unsigned char *image = ib.b;
 
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 960, 540, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)image);
@@ -86,6 +86,6 @@ void ExampleXGL::BuildScene() {
 	};
 	shape->SetTheFunk(transform);
 
-	pvft = new VideoFileThread(videoPath);
-	pvft->Start();
+	pavt = new AVThread(videoPath);
+	pavt->Start();
 }

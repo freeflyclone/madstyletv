@@ -26,7 +26,6 @@ extern "C" {
 #include "xutils.h"
 };
 
-//#include "xclasses.h"
 #include "xthread.h"
 #include "xavexcept.h"
 

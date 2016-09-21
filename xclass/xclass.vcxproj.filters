@@ -135,6 +135,9 @@
     <ClInclude Include="xav\xavfile.h">
       <Filter>xav\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xav\xav.h">
+      <Filter>xav\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xutils.c">
@@ -198,6 +201,9 @@
       <Filter>xav\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="xav\xavfile.cpp">
+      <Filter>xav\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xav\xav.cpp">
       <Filter>xav\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
