@@ -1,6 +1,6 @@
 #include "xavsrc.h"
 
-XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(1) {
+XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES) {
 	pCodecCtx = ctx;
 
 	pCodec=avcodec_find_decoder(pCodecCtx->codec_id);
@@ -16,11 +16,17 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(1) {
 		xprintf("              height: %d\n", pCodecCtx->height);
 		pFrame = av_frame_alloc();
 		numBytes = av_image_get_buffer_size(pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height,8) * 4;
-		buffer = (unsigned char *)av_malloc(numBytes*sizeof(unsigned char));
-
+		buffer = (unsigned char *)av_malloc(numBytes);
 		memset(buffer, 0, numBytes);
 
-		if( !pFrame || !buffer )
+		for (int i = 0; i < XAV_NUM_FRAMES; i++) {
+			frames[i].buffer = (unsigned char *)av_malloc(numBytes);
+			frames[i].count = numBytes;
+			frames[i].size = 0;
+			memset(frames[i].buffer, 0, numBytes);
+		}
+
+		if (!pFrame || !buffer)
 			throwXAVException("error getting frame and/or buffer\n");
 	}
 	else if (pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO) {
@@ -32,6 +38,13 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(1) {
 		xprintf("            Channels: %d\n", pCodecCtx->channels);
 		pFrame = av_frame_alloc();
 		buffer = (unsigned char *)av_malloc(192000);
+
+		for (int i = 0; i < XAV_NUM_FRAMES; i++) {
+			frames[i].buffer = (unsigned char *)av_malloc(4096);
+			frames[i].count = 4096;
+			frames[i].size = 0;
+			memset(frames[i].buffer, 0, 4096);
+		}
 	}
 	else
 		xprintf("Found unknown AVMEDIA_TYPE\n");
@@ -54,6 +67,7 @@ bool XAVStream::Decode(AVPacket *packet)
 			// for 4:2:0
 			memcpy(buffer+size, pFrame->data[1], size/4);
 			memcpy(buffer+size + (size/4), pFrame->data[2], size/4);
+			nFramesDecoded++;
 			usedBuffs.notify();
 		}
 	}
