@@ -20,10 +20,15 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES) {
 		memset(buffer, 0, numBytes);
 
 		for (int i = 0; i < XAV_NUM_FRAMES; i++) {
-			frames[i].buffer = (unsigned char *)av_malloc(numBytes);
+			unsigned char *buffer = (unsigned char *)av_malloc(numBytes);
+			memset(buffer, 0, numBytes);
+
+			frames[i].buffer = buffer;
 			frames[i].count = numBytes;
 			frames[i].size = 0;
-			memset(frames[i].buffer, 0, numBytes);
+
+			XAVBuffer xb = { buffer, numBytes, 0 };
+			framesVector.push_back(xb);
 		}
 
 		if (!pFrame || !buffer)
@@ -40,16 +45,24 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES) {
 		buffer = (unsigned char *)av_malloc(192000);
 
 		for (int i = 0; i < XAV_NUM_FRAMES; i++) {
-			frames[i].buffer = (unsigned char *)av_malloc(4096);
-			frames[i].count = 4096;
+			int numBytes = 4096;
+			unsigned char *buffer = (unsigned char *)av_malloc(numBytes);
+			memset(buffer, 0, numBytes);
+
+			frames[i].buffer = buffer;
+			frames[i].count = numBytes;
 			frames[i].size = 0;
-			memset(frames[i].buffer, 0, 4096);
+
+			XAVBuffer xb = { buffer, numBytes, 0 };
+			framesVector.push_back(xb);
 		}
+
 	}
 	else
 		xprintf("Found unknown AVMEDIA_TYPE\n");
 
 	nFramesDecoded = 0;
+	nFramesRead = 0;
 }
 
 bool XAVStream::Decode(AVPacket *packet)
@@ -61,30 +74,48 @@ bool XAVStream::Decode(AVPacket *packet)
 		avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, packet);
 		if( frameFinished ) {
 			freeBuffs.wait_for(200);
+			int frameIdx = (nFramesDecoded - 1) & (XAV_NUM_FRAMES - 1);
+			XAVBuffer xb = framesVector[frameIdx];
 			int size = pCodecCtx->height * pFrame->linesize[0];
-			memcpy(buffer, pFrame->data[0], size);
+			memcpy(xb.buffer, pFrame->data[0], size);
 
 			// for 4:2:0
-			memcpy(buffer+size, pFrame->data[1], size/4);
-			memcpy(buffer+size + (size/4), pFrame->data[2], size/4);
+			memcpy(xb.buffer+size, pFrame->data[1], size/4);
+			memcpy(xb.buffer+size + (size/4), pFrame->data[2], size/4);
 			nFramesDecoded++;
 			usedBuffs.notify();
 		}
 	}
 	else if( pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO ) {
 		int length = avcodec_decode_audio4(pCodecCtx, pFrame, &frameFinished, packet);
+		/*
 		if (frameFinished){
-			//xprintf("Decoded audio frame: found %d bytes.\n", length);
+			freeBuffs.wait_for(200);
+
+			// replace all of this mumbo with an XFifo
+			int frameIdx = (nFramesDecoded - 1) & (XAV_NUM_FRAMES - 1);
+			XAVBufferVector::iterator it = framesVector.begin();
+			it += frameIdx;
+
+			XAVBuffer *pxb = std::addressof(*it);
+			pxb->count = length;
+			memcpy(pxb->buffer, pFrame->data[0], pxb->count);
+			nFramesDecoded++;
+			usedBuffs.notify();
 		}
+		*/
 	}
 
 	return true;
 }
 
-unsigned char *XAVStream::GetBuffer() {
+XAVBuffer XAVStream::GetBuffer() {
 	usedBuffs.wait_for(200);
+	int frameIdx = nFramesRead & (XAV_NUM_FRAMES - 1);
+	XAVBuffer xb = framesVector[frameIdx];
 	freeBuffs.notify();
-	return buffer;
+	nFramesRead++;
+	return xb;
 }
 
 void XAVStream::ReleaseBuffer() {

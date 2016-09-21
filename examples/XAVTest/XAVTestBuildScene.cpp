@@ -8,8 +8,12 @@
 #include <xavfile.h>
 #include <xfifo.h>
 
+#include <al.h>
+#include <alc.h>
+
+
 typedef struct {
-	unsigned char b[960 * 810];
+	unsigned char b[1920 * 1620];
 } ImageBuff;
 
 ImageBuff ib;
@@ -20,7 +24,7 @@ public:
 		QueryPerformanceFrequency(&frequency);
 	};
 
-	unsigned int Count() {
+	long long Count() {
 		LARGE_INTEGER count;
 		QueryPerformanceCounter(&count);
 		return (count.QuadPart * (unsigned int)1000000) / frequency.QuadPart;
@@ -36,12 +40,12 @@ public:
 
 	void Run() {
 		while (IsRunning()) {
-			unsigned char *image;
-			unsigned int start = hpt.Count();
-			unsigned int end = start;
-			unsigned int diff = end - start;
+			XAVBuffer image;
+			long long start = hpt.Count();
+			long long end = start;
+			long long diff = end - start;
 			image = stream->GetBuffer();
-			memcpy(&imageBuff.b, image, sizeof(imageBuff));
+			memcpy(&imageBuff.b, image.buffer, sizeof(imageBuff));
 			ib = imageBuff;
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
 			do {
@@ -58,23 +62,70 @@ public:
 
 class AudioStreamThread : public XThread {
 public:
-	AudioStreamThread(std::shared_ptr<XAVStream> s) : XThread("AudioStreamThread"), stream(s) {}
+	AudioStreamThread(std::shared_ptr<XAVStream> s) : XThread("AudioStreamThread"), stream(s) {
+		if ((audioDevice = alcOpenDevice(NULL)) == NULL) {
+			throwXGLException("alcOpenDevice() failed");
+		}
+
+		if ((audioContext = alcCreateContext(audioDevice, NULL)) == NULL) {
+			throwXGLException("alcCreateContext() failed\n");
+		}
+
+		alcMakeContextCurrent(audioContext);
+		alGetError();
+
+		alGenBuffers(1, &buffer);
+		error = alGetError();
+		if (error != AL_NO_ERROR) {
+			throwXGLException("alGenBuffers() failed to create a buffer");
+		}
+
+		{// build a sine wave in "audioBuffer"
+			int NSAMPLES = sizeof(audioBuffer) / sizeof(audioBuffer[0]);
+			for (int i = 0; i < NSAMPLES; i++) {
+				double value = 2.0 * (double)i / (double)128 * M_PI;
+				audioBuffer[i] = (short)(sin(value) * 32767.0);
+			}
+		}
+
+		alBufferData(buffer, AL_FORMAT_MONO16, audioBuffer, sizeof(audioBuffer), 48000);
+		error = alGetError();
+		if (error != AL_NO_ERROR) {
+			throwXGLException("alBufferData() failed");
+		}
+
+		alGenSources(1, &source);
+		error = alGetError();
+		if (error != AL_NO_ERROR) {
+			throwXGLException("alGenSources() failed");
+		}
+
+		alSourcei(source, AL_BUFFER, buffer);
+		error = alGetError();
+		if (error != AL_NO_ERROR) {
+			throwXGLException("alSource() failed");
+		}
+
+		//alSourcePlay(source);
+	}
 
 	void Run() {
+		int totalBytes = 0;
 		while (IsRunning()) {
-			short *audio;
-			unsigned int start = hpt.Count();
-			unsigned int end = start;
-			unsigned int diff = end - start;
-			audio = (short *)(stream->GetBuffer());
-			memcpy(audioBuff, audio, sizeof(audioBuff));
-			xprintf("AudioStreamThread\n");
+			XAVBuffer audio;
+			audio = stream->GetBuffer();
+			totalBytes += audio.count;
 		}
 	}
 
 	std::shared_ptr<XAVStream> stream;
-	short audioBuff[4096 * 2];
-	HighPrecisionTimer hpt;
+
+	ALCdevice *audioDevice;
+	ALCcontext *audioContext;
+	ALuint buffer;
+	ALenum error;
+	ALuint source = 0;
+	short audioBuffer[48000 * 4];
 };
 
 class AVPlayer : public XGLObject, public XThread {
@@ -111,7 +162,7 @@ void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
 	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
-	std::string videoPath = pathToAssets + "/assets/CulturalPhenomenon.mp4";
+	std::string videoPath = pathToAssets + "/assets/GOPR0541.mp4";
 
 	AddShape("shaders/yuv", [&](){ shape = new XGLTexQuad(imgPath); return shape; });
 
@@ -124,7 +175,7 @@ void ExampleXGL::BuildScene() {
 		if (pavp != NULL && pavp->IsRunning()) {
 			unsigned char *image = ib.b;
 
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 960, 540, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)image);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920, 1080, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)image);
 			GL_CHECK("glGetTexImage() didn't work");
 		}
 	};

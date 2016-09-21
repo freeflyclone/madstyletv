@@ -29,13 +29,16 @@ extern "C" {
 #include "xthread.h"
 #include "xavexcept.h"
 
+// this must be a power of 2, and preferrably rather small.
 #define XAV_NUM_FRAMES 4
 
-typedef struct _xavBuffer {
+typedef struct {
 	unsigned char *buffer;
 	int size;
 	int count;
 } XAVBuffer;
+
+typedef std::vector<XAVBuffer> XAVBufferVector;
 
 // Multimedia sources possibly have more than one "stream" (audio/video for ex.)
 class XAVStream
@@ -43,21 +46,26 @@ class XAVStream
 public:
 	XAVStream(AVCodecContext *context);
 	bool Decode(AVPacket *packet);
-	unsigned char *GetBuffer();
+	XAVBuffer GetBuffer();
 	void ReleaseBuffer();
 
 	void Acquire();
 	void Release();
+
+	int nFramesDecoded;
+	int nFramesRead;
+
 private:
 	AVCodecContext *pCodecCtx;
 	AVCodec *pCodec;
 	AVFrame *pFrame;
 	XAVBuffer frames[XAV_NUM_FRAMES];
 
+	XAVBufferVector framesVector;
+
 	unsigned char *buffer;
 	int numBytes;
 	int frameFinished;
-	int nFramesDecoded;
 	XSemaphore freeBuffs;
 	XSemaphore usedBuffs;
 };
