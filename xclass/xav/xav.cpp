@@ -1,10 +1,6 @@
 #include "xav.h"
 
-XAV::XAV()
-{
-	if( WSAStartup(MAKEWORD(2,2),&wsaData) != 0)
-		throwXAVException("WSAStartup() failed");
-
+XAV::XAV() : XThread("XAV") {
 	av_register_all();
 }
 
@@ -16,13 +12,13 @@ void XAV::Run() {
 	std::vector<std::shared_ptr<XAVSrc> >::iterator i;
 
 	for(i=mSrcs.begin(); i!= mSrcs.end(); i++) 
-		i->get()->WaitStart();
-	
-	
-	for(i=mSrcs.begin(); i!= mSrcs.end(); i++)
-		i->get()->Wait();
+		i->get()->Start();
+		
+	for (i = mSrcs.begin(); i != mSrcs.end(); i++)
+		i->get()->Stop();
 
-	return (void *)1;
+	for (i = mSrcs.begin(); i != mSrcs.end(); i++)
+		i->get()->WaitForJoin();
 }
 
 std::shared_ptr<XAVSrc> XAV::GetSrc(int idx) {
