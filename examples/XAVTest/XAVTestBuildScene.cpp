@@ -30,13 +30,9 @@ private:
 	LARGE_INTEGER frequency;
 };
 
-class AVThread : public XGLObject , public XThread {
+class VideoStreamThread : public XThread {
 public:
-	AVThread(std::string url) : XGLObject("AVThread"), XThread("AVThread") {
-		xavSrc = std::make_shared<XAVFile>(url);
-		xav.AddSrc(xavSrc);
-		xav.Start();
-	}
+	VideoStreamThread(std::shared_ptr<XAVStream> s) : XThread("VideoStreamThread"), stream(s) {}
 
 	void Run() {
 		while (IsRunning()) {
@@ -44,7 +40,7 @@ public:
 			unsigned int start = hpt.Count();
 			unsigned int end = start;
 			unsigned int diff = end - start;
-			image = xavSrc->mVideoStream->GetBuffer();
+			image = stream->GetBuffer();
 			memcpy(&imageBuff.b, image, sizeof(imageBuff));
 			ib = imageBuff;
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
@@ -55,13 +51,61 @@ public:
 		}
 	}
 
-	XAV xav;
-	std::shared_ptr<XAVSrc> xavSrc;
+	std::shared_ptr<XAVStream> stream;
 	ImageBuff imageBuff;
 	HighPrecisionTimer hpt;
 };
 
-AVThread *pavt;
+class AudioStreamThread : public XThread {
+public:
+	AudioStreamThread(std::shared_ptr<XAVStream> s) : XThread("AudioStreamThread"), stream(s) {}
+
+	void Run() {
+		while (IsRunning()) {
+			short *audio;
+			unsigned int start = hpt.Count();
+			unsigned int end = start;
+			unsigned int diff = end - start;
+			audio = (short *)(stream->GetBuffer());
+			memcpy(audioBuff, audio, sizeof(audioBuff));
+			xprintf("AudioStreamThread\n");
+		}
+	}
+
+	std::shared_ptr<XAVStream> stream;
+	short audioBuff[4096 * 2];
+	HighPrecisionTimer hpt;
+};
+
+class AVPlayer : public XGLObject, public XThread {
+public:
+	AVPlayer(std::string url) : XGLObject("AVPlayer"), XThread("AVPlayerThread") {
+		xavSrc = std::make_shared<XAVFile>(url);
+		xav.AddSrc(xavSrc);
+		xav.Start();
+		vst = new VideoStreamThread(xavSrc->mVideoStream);
+		ast = new AudioStreamThread(xavSrc->mAudioStream);
+	}
+
+	void Run() {
+		vst->Start();
+		ast->Start();
+
+		while (IsRunning()) {
+			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(50));
+		}
+
+		vst->Stop();
+		ast->Stop();
+	}
+
+	XAV xav;
+	VideoStreamThread *vst;
+	AudioStreamThread *ast;
+	std::shared_ptr<XAVSrc> xavSrc;
+};
+
+AVPlayer *pavp;
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
@@ -77,7 +121,7 @@ void ExampleXGL::BuildScene() {
 	shape->model = translate * rotate * scale;
 
 	XGLShape::AnimaFunk transform = [&](XGLShape *s, float clock) {
-		if (pavt != NULL && pavt->IsRunning()) {
+		if (pavp != NULL && pavp->IsRunning()) {
 			unsigned char *image = ib.b;
 
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 960, 540, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)image);
@@ -86,6 +130,6 @@ void ExampleXGL::BuildScene() {
 	};
 	shape->SetTheFunk(transform);
 
-	pavt = new AVThread(videoPath);
-	pavt->Start();
+	pavp = new AVPlayer(videoPath);
+	pavp->Start();
 }
