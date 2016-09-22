@@ -58,13 +58,13 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES) {
 		buffer = (unsigned char *)av_malloc(192000);
 
 		for (int i = 0; i < XAV_NUM_FRAMES; i++) {
-			int numBytes = formatSize * channels;
+			int numBytes = 1024 * formatSize * channels;
 			unsigned char *buffer = (unsigned char *)av_malloc(numBytes);
 			memset(buffer, 0, numBytes);
 
 			frames[i].buffer = buffer;
-			frames[i].count = numBytes;
-			frames[i].size = 0;
+			frames[i].count = 0;
+			frames[i].size = numBytes;
 		}
 
 	}
@@ -103,9 +103,8 @@ bool XAVStream::Decode(AVPacket *packet)
 
 			// replace all of this mumbo with an XFifo
 			int frameIdx = (nFramesDecoded - 1) & (XAV_NUM_FRAMES - 1);
-			XAVBuffer *pxb = &frames[frameIdx];
-			pxb->count = length;
-			memcpy(pxb->buffer, pFrame->data[0], pxb->size);
+			XAVBuffer xb = frames[frameIdx];
+			memcpy(xb.buffer, pFrame->data[0], xb.size);
 			nFramesDecoded++;
 			usedBuffs.notify();
 		}
