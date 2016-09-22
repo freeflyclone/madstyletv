@@ -10,6 +10,7 @@
 
 #include <al.h>
 #include <alc.h>
+#include <alext.h>
 #include <iostream>
 
 #define AUDIO_SAMPLES 1024
@@ -83,6 +84,11 @@ public:
 		if ((audioDevice = alcOpenDevice(NULL)) == NULL) {
 			throwXGLException("alcOpenDevice() failed");
 		}
+
+		xprintf("ALC_EXTENSIONS: '%s'\n", alcGetString(audioDevice, ALC_EXTENSIONS));
+		if (alIsExtensionPresent("AL_EXT_FLOAT32"))
+			xprintf("AL_EXT_FLOAT32 is present\n");
+
 		if ((audioContext = alcCreateContext(audioDevice, NULL)) == NULL) {
 			throwXGLException("alcCreateContext() failed\n");
 		}
@@ -140,7 +146,6 @@ public:
 
 			// convert to signed short
 			for (int i = 0; i < AUDIO_SAMPLES; i++) {
-				//std::cout << pasf->left << "," << pasf->right << std::endl;
 				pass->left = (short)(pasf->left * 32767.0f);
 				pass->right = (short)(pasf->left * 32767.0f);
 				pass++;
@@ -151,7 +156,7 @@ public:
 			bufferIdx++;
 
 			alGetSourcei(source, AL_BUFFERS_PROCESSED, &val);
-			while (val > 0){
+			if (val > 0){
 				alSourceUnqueueBuffers(source, 1, &bufferId);
 				error = alGetError();
 				if (error == AL_NO_ERROR) {
