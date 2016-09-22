@@ -26,9 +26,6 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES) {
 			frames[i].buffer = buffer;
 			frames[i].count = numBytes;
 			frames[i].size = 0;
-
-			XAVBuffer xb = { buffer, numBytes, 0 };
-			framesVector.push_back(xb);
 		}
 
 		if (!pFrame || !buffer)
@@ -42,19 +39,32 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES) {
 		xprintf("          BlockAlign: %d\n", pCodecCtx->block_align);
 		xprintf("            Channels: %d\n", pCodecCtx->channels);
 		pFrame = av_frame_alloc();
+
+		channels = pCodecCtx->channels;
+		formatSize = 0;
+		isFloat = false;
+		sampleRate = pCodecCtx->sample_rate;
+
+		switch (pCodecCtx->sample_fmt) {
+			case 8:
+				formatSize = 4;
+				isFloat = true;
+				break;
+
+			default:
+				throwXAVException("unknown pCodecCtx->sampleFmt");
+		}
+
 		buffer = (unsigned char *)av_malloc(192000);
 
 		for (int i = 0; i < XAV_NUM_FRAMES; i++) {
-			int numBytes = 4096;
+			int numBytes = formatSize * channels;
 			unsigned char *buffer = (unsigned char *)av_malloc(numBytes);
 			memset(buffer, 0, numBytes);
 
 			frames[i].buffer = buffer;
 			frames[i].count = numBytes;
 			frames[i].size = 0;
-
-			XAVBuffer xb = { buffer, numBytes, 0 };
-			framesVector.push_back(xb);
 		}
 
 	}
@@ -75,7 +85,7 @@ bool XAVStream::Decode(AVPacket *packet)
 		if( frameFinished ) {
 			freeBuffs.wait_for(200);
 			int frameIdx = (nFramesDecoded - 1) & (XAV_NUM_FRAMES - 1);
-			XAVBuffer xb = framesVector[frameIdx];
+			XAVBuffer xb = frames[frameIdx];
 			int size = pCodecCtx->height * pFrame->linesize[0];
 			memcpy(xb.buffer, pFrame->data[0], size);
 
@@ -88,22 +98,17 @@ bool XAVStream::Decode(AVPacket *packet)
 	}
 	else if( pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO ) {
 		int length = avcodec_decode_audio4(pCodecCtx, pFrame, &frameFinished, packet);
-		/*
 		if (frameFinished){
 			freeBuffs.wait_for(200);
 
 			// replace all of this mumbo with an XFifo
 			int frameIdx = (nFramesDecoded - 1) & (XAV_NUM_FRAMES - 1);
-			XAVBufferVector::iterator it = framesVector.begin();
-			it += frameIdx;
-
-			XAVBuffer *pxb = std::addressof(*it);
+			XAVBuffer *pxb = &frames[frameIdx];
 			pxb->count = length;
-			memcpy(pxb->buffer, pFrame->data[0], pxb->count);
+			memcpy(pxb->buffer, pFrame->data[0], pxb->size);
 			nFramesDecoded++;
 			usedBuffs.notify();
 		}
-		*/
 	}
 
 	return true;
@@ -112,7 +117,7 @@ bool XAVStream::Decode(AVPacket *packet)
 XAVBuffer XAVStream::GetBuffer() {
 	usedBuffs.wait_for(200);
 	int frameIdx = nFramesRead & (XAV_NUM_FRAMES - 1);
-	XAVBuffer xb = framesVector[frameIdx];
+	XAVBuffer xb = frames[frameIdx];
 	freeBuffs.notify();
 	nFramesRead++;
 	return xb;
