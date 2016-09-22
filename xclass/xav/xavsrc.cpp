@@ -109,7 +109,9 @@ bool XAVStream::Decode(AVPacket *packet)
 }
 
 XAVBuffer XAVStream::GetBuffer() {
-	usedBuffs.wait_for(200);
+	if (!usedBuffs.wait_for(200)) 
+		return XAVBuffer {NULL, 0, 0};
+
 	int frameIdx = nFramesRead & (XAV_NUM_FRAMES - 1);
 	XAVBuffer xb = frames[frameIdx];
 	freeBuffs.notify();
@@ -183,11 +185,6 @@ void XAVSrc::Run()
 			mStreams[packet.stream_index]->Decode(&packet);
 			av_packet_unref(&packet);
 		}
-	}
-	while(IsRunning())
-	{
-		mVideoStream->Acquire();
-		mVideoStream->Release();
 	}
 }
 
