@@ -38,14 +38,13 @@ typedef struct {
 	int count;
 } XAVBuffer;
 
-typedef std::vector<XAVBuffer> XAVBufferVector;
-
 // Multimedia sources possibly have more than one "stream" (audio/video for ex.)
 class XAVStream
 {
 public:
 	XAVStream(AVCodecContext *context);
 	bool Decode(AVPacket *packet);
+	void AllocateBufferPool(int number, int size);
 	XAVBuffer GetBuffer();
 	void ReleaseBuffer();
 
@@ -70,9 +69,11 @@ public:
 	AVCodecContext *pCodecCtx;
 	AVCodec *pCodec;
 	AVFrame *pFrame;
+
+	// buffer pool for decoded frames.
 	XAVBuffer frames[XAV_NUM_FRAMES];
 
-	unsigned char *buffer;
+	//unsigned char *buffer;
 	int numBytes;
 	int frameFinished;
 	XSemaphore freeBuffs;
