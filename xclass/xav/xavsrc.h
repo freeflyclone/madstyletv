@@ -54,14 +54,23 @@ public:
 
 	int nFramesDecoded;
 	int nFramesRead;
+	
+	// number of audio channels (audio streams only)
+	int channels;
 
-private:
+	// size of a single channel sample in bytes
+	int formatSize;
+
+	// is this a floating point format?
+	bool isFloat;
+	
+	int sampleRate;
+
+//private:
 	AVCodecContext *pCodecCtx;
 	AVCodec *pCodec;
 	AVFrame *pFrame;
 	XAVBuffer frames[XAV_NUM_FRAMES];
-
-	XAVBufferVector framesVector;
 
 	unsigned char *buffer;
 	int numBytes;

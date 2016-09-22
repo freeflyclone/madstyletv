@@ -10,13 +10,25 @@
 
 #include <al.h>
 #include <alc.h>
+#include <iostream>
 
+#define AUDIO_SAMPLES 1024
+#define AL_CHECK(what) CheckError(__FILE__,__LINE__,what)
 
 typedef struct {
 	unsigned char b[1920 * 1620];
 } ImageBuff;
 
 ImageBuff ib;
+
+typedef struct {
+	float left;
+} AudioSampleFloat;
+
+typedef struct {
+	short left;
+	short right;
+} AudioSampleShort;
 
 class HighPrecisionTimer {
 public:
@@ -63,10 +75,14 @@ public:
 class AudioStreamThread : public XThread {
 public:
 	AudioStreamThread(std::shared_ptr<XAVStream> s) : XThread("AudioStreamThread"), stream(s) {
+		xprintf("AudioCodec name: %s\n", stream->pCodec->name);
+		int sampleSize = stream->formatSize * stream->channels;
+
+		sampleRate = stream->sampleRate;
+
 		if ((audioDevice = alcOpenDevice(NULL)) == NULL) {
 			throwXGLException("alcOpenDevice() failed");
 		}
-
 		if ((audioContext = alcCreateContext(audioDevice, NULL)) == NULL) {
 			throwXGLException("alcCreateContext() failed\n");
 		}
@@ -74,11 +90,14 @@ public:
 		alcMakeContextCurrent(audioContext);
 		alGetError();
 
-		alGenBuffers(1, &buffer);
-		error = alGetError();
-		if (error != AL_NO_ERROR) {
-			throwXGLException("alGenBuffers() failed to create a buffer");
-		}
+		alGenBuffers(XAV_NUM_FRAMES, bufferIDs);
+		AL_CHECK("alGenBuffers() failed");
+
+		for (int i = 0; i < XAV_NUM_FRAMES; i++)
+			xprintf("bufferIDs[%d]: %d\n", i, bufferIDs[i]);
+
+		alGenSources(1, &source);
+		AL_CHECK("alGenSource() failed");
 
 		{// build a sine wave in "audioBuffer"
 			int NSAMPLES = sizeof(audioBuffer) / sizeof(audioBuffer[0]);
@@ -88,33 +107,59 @@ public:
 			}
 		}
 
-		alBufferData(buffer, AL_FORMAT_MONO16, audioBuffer, sizeof(audioBuffer), 48000);
-		error = alGetError();
-		if (error != AL_NO_ERROR) {
-			throwXGLException("alBufferData() failed");
-		}
+		alBufferData(bufferIDs[0], AL_FORMAT_STEREO16, audioBuffer, sizeof(audioBuffer), sampleRate);
+		AL_CHECK("alBufferData() failed");
+		alBufferData(bufferIDs[1], AL_FORMAT_STEREO16, audioBuffer, sizeof(audioBuffer), sampleRate);
+		AL_CHECK("alBufferData() failed");
+		alBufferData(bufferIDs[2], AL_FORMAT_STEREO16, audioBuffer, sizeof(audioBuffer), sampleRate);
+		AL_CHECK("alBufferData() failed");
+		alBufferData(bufferIDs[3], AL_FORMAT_STEREO16, audioBuffer, sizeof(audioBuffer), sampleRate);
+		AL_CHECK("alBufferData() failed");
 
-		alGenSources(1, &source);
-		error = alGetError();
-		if (error != AL_NO_ERROR) {
-			throwXGLException("alGenSources() failed");
-		}
+		alSourceQueueBuffers(source, XAV_NUM_FRAMES, bufferIDs);
+		AL_CHECK("alSourceQueueBuffers() failed");
 
-		alSourcei(source, AL_BUFFER, buffer);
-		error = alGetError();
-		if (error != AL_NO_ERROR) {
-			throwXGLException("alSource() failed");
-		}
+		alSourcei(source, AL_LOOPING, AL_FALSE);
+		AL_CHECK("alSourcei() failed");
 
-		//alSourcePlay(source);
+		alSourcePlay(source);
+		AL_CHECK("alSourcePlay() failed");
 	}
 
 	void Run() {
 		int totalBytes = 0;
+		int bufferIdx = 0;
+		ALuint bufferId;
+		ALint val;
+
 		while (IsRunning()) {
-			XAVBuffer audio;
-			audio = stream->GetBuffer();
+			int idx = bufferIdx & (XAV_NUM_FRAMES - 1);
+			XAVBuffer audio = stream->GetBuffer();
+			AudioSampleFloat *pasf = (AudioSampleFloat *)audio.buffer;
+			AudioSampleShort *pass = (AudioSampleShort *)audioBuffers[idx];
+
+			// convert to signed short
+			for (int i = 0; i < AUDIO_SAMPLES; i++) {
+				//std::cout << pasf->left << "," << pasf->right << std::endl;
+				pass->left = (short)(pasf->left * 32767.0f);
+				pass->right = (short)(pasf->left * 32767.0f);
+				pass++;
+				pasf++;
+			}
+
 			totalBytes += audio.count;
+			bufferIdx++;
+
+			alGetSourcei(source, AL_BUFFERS_PROCESSED, &val);
+			while (val > 0){
+				alSourceUnqueueBuffers(source, 1, &bufferId);
+				error = alGetError();
+				if (error == AL_NO_ERROR) {
+					alBufferData(bufferId, AL_FORMAT_STEREO16, audioBuffers[idx], AUDIO_SAMPLES * 4, sampleRate);
+					alSourceQueueBuffers(source, 1, &bufferId);
+				}
+				val--;
+			}
 		}
 	}
 
@@ -122,10 +167,12 @@ public:
 
 	ALCdevice *audioDevice;
 	ALCcontext *audioContext;
-	ALuint buffer;
+	ALuint bufferIDs[XAV_NUM_FRAMES];
 	ALenum error;
 	ALuint source = 0;
-	short audioBuffer[48000 * 4];
+	int sampleRate;
+	short audioBuffer[AUDIO_SAMPLES];
+	AudioSampleShort audioBuffers[XAV_NUM_FRAMES][AUDIO_SAMPLES];
 };
 
 class AVPlayer : public XGLObject, public XThread {
@@ -162,7 +209,7 @@ void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
 	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
-	std::string videoPath = pathToAssets + "/assets/GOPR0541.mp4";
+	std::string videoPath = pathToAssets + "/assets/CulturalPhenomenon.mp4";
 
 	AddShape("shaders/yuv", [&](){ shape = new XGLTexQuad(imgPath); return shape; });
 
@@ -175,7 +222,7 @@ void ExampleXGL::BuildScene() {
 		if (pavp != NULL && pavp->IsRunning()) {
 			unsigned char *image = ib.b;
 
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920, 1080, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)image);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 960, 540, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)image);
 			GL_CHECK("glGetTexImage() didn't work");
 		}
 	};
