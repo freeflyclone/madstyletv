@@ -19,6 +19,8 @@ void XAV::Run() {
 
 	for (i = mSrcs.begin(); i != mSrcs.end(); i++)
 		i->get()->WaitForJoin();
+
+	Stop();
 }
 
 std::shared_ptr<XAVSrc> XAV::GetSrc(int idx) {

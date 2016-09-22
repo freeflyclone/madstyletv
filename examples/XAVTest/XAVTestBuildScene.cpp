@@ -53,11 +53,15 @@ public:
 
 	void Run() {
 		while (IsRunning()) {
-			XAVBuffer image;
 			long long start = hpt.Count();
 			long long end = start;
 			long long diff = end - start;
-			image = stream->GetBuffer();
+	
+			XAVBuffer image = stream->GetBuffer();
+			if (image.buffer == NULL) {
+				Stop();
+				break;
+			}
 			memcpy(&imageBuff.b, image.buffer, sizeof(imageBuff));
 			ib = imageBuff;
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
@@ -136,6 +140,10 @@ public:
 		while (IsRunning()) {
 			int idx = bufferIdx & (XAV_NUM_FRAMES - 1);
 			XAVBuffer audio = stream->GetBuffer();
+			if (audio.buffer == NULL) {
+				Stop();
+				break;
+			}
 			AudioSampleFloat *pasf = (AudioSampleFloat *)audio.buffer;
 			AudioSampleShort *pass = (AudioSampleShort *)audioBuffers[idx];
 
@@ -161,7 +169,7 @@ public:
 				val--;
 			}
 
-			if (1) // dirty hack to work around the lack of robust buffering, DEFINITELY causes audio glitches.
+			if (1) // dirty hack to work around the lack of robust buffering, (from OpenAL examples) DEFINITELY causes audio glitches.
 			{
 				ALint state;
 				alGetSourcei(source, AL_SOURCE_STATE, &state);
@@ -188,16 +196,16 @@ public:
 	AVPlayer(std::string url) : XGLObject("AVPlayer"), XThread("AVPlayerThread") {
 		xavSrc = std::make_shared<XAVFile>(url);
 		xav.AddSrc(xavSrc);
-		xav.Start();
 		vst = new VideoStreamThread(xavSrc->mVideoStream);
 		ast = new AudioStreamThread(xavSrc->mAudioStream);
+		xav.Start();
 	}
 
 	void Run() {
 		vst->Start();
 		ast->Start();
 
-		while (IsRunning()) {
+		while ( xav.IsRunning() && IsRunning() ) {
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(50));
 		}
 
