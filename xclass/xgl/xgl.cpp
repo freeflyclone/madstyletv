@@ -78,7 +78,7 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f) {
 
 		// for now, create one point light, for diffuse lighting shader development
 		// position, pad1, color, pad2, attenuation, ambientCoefficient
-		XGLLight light = { { 10,6,16 }, 1.0f, { 1,1,1 }, 1.0, 0.001f, 0.01f };
+		XGLLight light = { { 10,6,16 }, 1.0f, { 1,1,1 }, 1.0, 0.001f, 0.005f };
 		xprintf("sizeof(light): %d\n", sizeof(light));
 		lights.push_back(light);
 
