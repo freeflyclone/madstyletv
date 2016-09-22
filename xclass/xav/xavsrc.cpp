@@ -16,19 +16,10 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES) {
 		xprintf("              height: %d\n", pCodecCtx->height);
 		pFrame = av_frame_alloc();
 		numBytes = av_image_get_buffer_size(pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height,8) * 4;
-		buffer = (unsigned char *)av_malloc(numBytes);
-		memset(buffer, 0, numBytes);
 
-		for (int i = 0; i < XAV_NUM_FRAMES; i++) {
-			unsigned char *buffer = (unsigned char *)av_malloc(numBytes);
-			memset(buffer, 0, numBytes);
+		AllocateBufferPool(XAV_NUM_FRAMES, numBytes);
 
-			frames[i].buffer = buffer;
-			frames[i].count = numBytes;
-			frames[i].size = 0;
-		}
-
-		if (!pFrame || !buffer)
+		if (!pFrame)
 			throwXAVException("error getting frame and/or buffer\n");
 	}
 	else if (pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO) {
@@ -55,24 +46,30 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES) {
 				throwXAVException("unknown pCodecCtx->sampleFmt");
 		}
 
-		buffer = (unsigned char *)av_malloc(192000);
+		numBytes = 1024 * formatSize * channels;
 
-		for (int i = 0; i < XAV_NUM_FRAMES; i++) {
-			int numBytes = 1024 * formatSize * channels;
-			unsigned char *buffer = (unsigned char *)av_malloc(numBytes);
-			memset(buffer, 0, numBytes);
-
-			frames[i].buffer = buffer;
-			frames[i].count = 0;
-			frames[i].size = numBytes;
-		}
-
+		AllocateBufferPool(XAV_NUM_FRAMES, numBytes);
 	}
 	else
 		xprintf("Found unknown AVMEDIA_TYPE\n");
 
 	nFramesDecoded = 0;
 	nFramesRead = 0;
+}
+
+void XAVStream::AllocateBufferPool(int number, int size) {
+	// TODO: make this number dynamic
+	if (number != XAV_NUM_FRAMES)
+		throwXAVException("number != XAV_NUM_FRAMES");
+
+	for (int i = 0; i < number; i++) {
+		unsigned char *buffer = (unsigned char *)av_malloc(size);
+		memset(buffer, 0, size);
+
+		frames[i].buffer = buffer;
+		frames[i].count = 0;
+		frames[i].size = size;
+	}
 }
 
 bool XAVStream::Decode(AVPacket *packet)
