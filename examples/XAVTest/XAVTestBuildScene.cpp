@@ -88,10 +88,6 @@ public:
 			throwXGLException("alcOpenDevice() failed");
 		}
 
-		xprintf("ALC_EXTENSIONS: '%s'\n", alcGetString(audioDevice, ALC_EXTENSIONS));
-		if (alIsExtensionPresent("AL_EXT_FLOAT32"))
-			xprintf("AL_EXT_FLOAT32 is present\n");
-
 		if ((audioContext = alcCreateContext(audioDevice, NULL)) == NULL) {
 			throwXGLException("alcCreateContext() failed\n");
 		}
@@ -101,9 +97,6 @@ public:
 
 		alGenBuffers(XAV_NUM_FRAMES, bufferIDs);
 		AL_CHECK("alGenBuffers() failed");
-
-		for (int i = 0; i < XAV_NUM_FRAMES; i++)
-			xprintf("bufferIDs[%d]: %d\n", i, bufferIDs[i]);
 
 		alGenSources(1, &source);
 		AL_CHECK("alGenSource() failed");
@@ -141,6 +134,7 @@ public:
 			int idx = bufferIdx & (XAV_NUM_FRAMES - 1);
 			XAVBuffer audio = stream->GetBuffer();
 			if (audio.buffer == NULL) {
+				alSourceStop(source);
 				Stop();
 				break;
 			}
@@ -206,7 +200,7 @@ public:
 		ast->Start();
 
 		while ( xav.IsRunning() && IsRunning() ) {
-			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(50));
+			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
 		}
 
 		vst->Stop();
@@ -222,13 +216,13 @@ public:
 AVPlayer *pavp;
 
 void ExampleXGL::BuildScene() {
-	XGLShape *shape;
+	XGLShape *shape, *childRed, *childYellow;
 
 	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
 	std::string videoPath = pathToAssets + "/assets/CulturalPhenomenon.mp4";
 
 	AddShape("shaders/lighting", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
-	shape->SetColor(yellow);
+	shape->SetColor({ 0.8, 0.8, 0.0001 });
 	shape->SetTheFunk([&](XGLShape *s, float clock) {
 		float translateFunction = sin(clock / 60.0f);
 		glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(translateFunction*4.0f, 0.0f, 0.0f));
@@ -238,8 +232,8 @@ void ExampleXGL::BuildScene() {
 	});
 
 	AddShape("shaders/yuv", [&](){ shape = new XGLTexQuad(imgPath); return shape; });
-	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(9.6f, 5.4f, 1.0f));
-	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 4.0f, 5.4f));
+	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
+	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 4.0f, 5.625f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	shape->model = translate * rotate * scale;
 
@@ -254,7 +248,7 @@ void ExampleXGL::BuildScene() {
 	shape->SetTheFunk(transform);
 
 	// Initialize the Camera matrix
-	glm::vec3 cameraPosition(10, -20, 20);
+	glm::vec3 cameraPosition(5, -20, 20);
 	glm::vec3 cameraDirection = glm::normalize(cameraPosition*-1.0f);
 	glm::vec3 cameraUp = { 0, 0, 1 };
 	camera.Set(cameraPosition, cameraDirection, cameraUp);
