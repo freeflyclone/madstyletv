@@ -113,14 +113,10 @@ public:
 			}
 		}
 
-		alBufferData(bufferIDs[0], AL_FORMAT_STEREO16, audioBuffer, sizeof(audioBuffer), sampleRate);
-		AL_CHECK("alBufferData() failed");
-		alBufferData(bufferIDs[1], AL_FORMAT_STEREO16, audioBuffer, sizeof(audioBuffer), sampleRate);
-		AL_CHECK("alBufferData() failed");
-		alBufferData(bufferIDs[2], AL_FORMAT_STEREO16, audioBuffer, sizeof(audioBuffer), sampleRate);
-		AL_CHECK("alBufferData() failed");
-		alBufferData(bufferIDs[3], AL_FORMAT_STEREO16, audioBuffer, sizeof(audioBuffer), sampleRate);
-		AL_CHECK("alBufferData() failed");
+		for (int i = 0; i < XAV_NUM_FRAMES; i++) {
+			alBufferData(bufferIDs[i], AL_FORMAT_STEREO16, audioBuffer, sizeof(audioBuffer), sampleRate);
+			AL_CHECK("alBufferData() failed");
+		}
 
 		alSourceQueueBuffers(source, XAV_NUM_FRAMES, bufferIDs);
 		AL_CHECK("alSourceQueueBuffers() failed");

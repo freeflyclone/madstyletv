@@ -10,26 +10,24 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES) {
 	if( avcodec_open2(pCodecCtx, pCodec,NULL) < 0 )
 		throwXAVException("Failed to open codec");
 
-	if( pCodecCtx->codec_type == AVMEDIA_TYPE_VIDEO ) {
+	pFrame = av_frame_alloc();
+	if (!pFrame)
+		throwXAVException("error allocating getting AVFrame\n");
+
+	if (pCodecCtx->codec_type == AVMEDIA_TYPE_VIDEO) {
 		xprintf("Found AVMEDIA_TYPE_VIDEO\n");
 		xprintf("               width: %d\n", pCodecCtx->width);
 		xprintf("              height: %d\n", pCodecCtx->height);
-		pFrame = av_frame_alloc();
 		numBytes = av_image_get_buffer_size(pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height,8) * 4;
 
 		AllocateBufferPool(XAV_NUM_FRAMES, numBytes);
-
-		if (!pFrame)
-			throwXAVException("error getting frame and/or buffer\n");
 	}
 	else if (pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO) {
-		char buff[1024];
 		xprintf("Found AVMEDIA_TYPE_AUDIO\n");
 		xprintf("  Samples Per Second: %d\n", pCodecCtx->sample_rate);
-		xprintf("        SampleFormat: %s\n", av_get_sample_fmt_string(buff, sizeof(buff), pCodecCtx->sample_fmt));
+		xprintf("        SampleFormat: %d\n", pCodecCtx->sample_fmt);
 		xprintf("          BlockAlign: %d\n", pCodecCtx->block_align);
 		xprintf("            Channels: %d\n", pCodecCtx->channels);
-		pFrame = av_frame_alloc();
 
 		channels = pCodecCtx->channels;
 		formatSize = 0;
@@ -45,10 +43,7 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES) {
 			default:
 				throwXAVException("unknown pCodecCtx->sampleFmt");
 		}
-
-		numBytes = 1024 * formatSize * channels;
-
-		AllocateBufferPool(XAV_NUM_FRAMES, numBytes);
+		// defer AllocateBufferPool() until first audio frame is decoded
 	}
 	else
 		xprintf("Found unknown AVMEDIA_TYPE\n");
@@ -96,6 +91,9 @@ bool XAVStream::Decode(AVPacket *packet)
 	else if( pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO ) {
 		int length = avcodec_decode_audio4(pCodecCtx, pFrame, &frameFinished, packet);
 		if (frameFinished){
+			if (nFramesDecoded == 0)
+				AllocateBufferPool(XAV_NUM_FRAMES, pFrame->nb_samples * formatSize * channels);
+
 			freeBuffs.wait_for(200);
 
 			// replace all of this mumbo with an XFifo
