@@ -76,7 +76,6 @@ public:
 class AudioStreamThread : public XThread {
 public:
 	AudioStreamThread(std::shared_ptr<XAVStream> s) : XThread("AudioStreamThread"), stream(s) {
-		xprintf("AudioCodec name: %s\n", stream->pCodec->name);
 		int sampleSize = stream->formatSize * stream->channels;
 
 		sampleRate = stream->sampleRate;
@@ -161,6 +160,14 @@ public:
 				}
 				val--;
 			}
+
+			if (1) // dirty hack to work around the lack of robust buffering, DEFINITELY causes audio glitches.
+			{
+				ALint state;
+				alGetSourcei(source, AL_SOURCE_STATE, &state);
+				if (state != AL_PLAYING)
+					alSourcePlay(source);
+			}
 		}
 	}
 
@@ -228,6 +235,12 @@ void ExampleXGL::BuildScene() {
 		}
 	};
 	shape->SetTheFunk(transform);
+
+	// Initialize the Camera matrix
+	glm::vec3 cameraPosition(10, -20, 20);
+	glm::vec3 cameraDirection = glm::normalize(cameraPosition*-1.0f);
+	glm::vec3 cameraUp = { 0, 0, 1 };
+	camera.Set(cameraPosition, cameraDirection, cameraUp);
 
 	pavp = new AVPlayer(videoPath);
 	pavp->Start();
