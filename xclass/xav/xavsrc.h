@@ -65,7 +65,7 @@ public:
 	
 	int sampleRate;
 
-//private:
+private:
 	AVCodecContext *pCodecCtx;
 	AVCodec *pCodec;
 	AVFrame *pFrame;
