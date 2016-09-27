@@ -5,6 +5,10 @@ void XGLProjector::Reshape(int w, int h)
 	width = w;
 	height = h;
 
+	Reshape();
+}
+
+void XGLProjector::Reshape() {
 	glViewport(0, 0, width, height);
 	GL_CHECK("glViewport() failed");
 }

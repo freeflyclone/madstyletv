@@ -3,6 +3,7 @@
 class XGLProjector {
 public:
     void Reshape(int w, int h);
+	void Reshape();
 	glm::mat4 GetProjectionMatrix();
 
 private:
