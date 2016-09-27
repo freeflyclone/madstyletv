@@ -109,7 +109,7 @@ public:
     virtual ~XGL();
 
 	virtual void Display();
-	virtual void FramebufferDisplay();
+	virtual void RenderScene();
 	virtual void Idle() {};
 
     void AddShape(std::string shaderName, XGLNewShapeLambda fn);
