@@ -118,6 +118,7 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f) {
 	glDepthFunc(GL_LESS);
 	glEnable(GL_DEPTH_TEST);
 
+	fb = new XGLFramebuffer();
 //	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //	glEnable(GL_BLEND);
 
@@ -148,7 +149,7 @@ XGL::~XGL(){
     }
 }
 
-void XGL::Display() {
+void XGL::FramebufferDisplay() {
 	camera.Animate();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -186,6 +187,26 @@ void XGL::Display() {
     }
 
     clock += 1.0f;
+}
+
+void XGL::Display(){
+	glBindFramebuffer(GL_FRAMEBUFFER, fb->fbo);
+	GL_CHECK("glBindFramebuffer() failed\n");
+	glViewport(0, 0, RENDER_WIDTH, RENDER_HEIGHT);
+	GL_CHECK("glViewport() failed\n");
+
+	FramebufferDisplay();
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	GL_CHECK("glReadBuffer() failed\n");
+
+	glReadPixels(0, 0, RENDER_WIDTH, RENDER_HEIGHT, GL_BGR, GL_UNSIGNED_BYTE, fb->fileMappedBuffer);
+	GL_CHECK("glReadPixels() failed\n");
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	GL_CHECK("glBindFrameBuffer(0) failed\n");
+
+	projector.Reshape();
+	FramebufferDisplay();
 }
 
 void XGL::AddShape(std::string shName, XGLNewShapeLambda fn){

@@ -109,6 +109,7 @@ public:
     virtual ~XGL();
 
 	virtual void Display();
+	virtual void FramebufferDisplay();
 	virtual void Idle() {};
 
     void AddShape(std::string shaderName, XGLNewShapeLambda fn);
@@ -135,7 +136,7 @@ public:
     // Shader stack is global per context
     XGLShaderMap shaderMap;
 
-	XGLFramebuffer fb;
+	XGLFramebuffer *fb;
     float clock;
 private:
     // this is returned by GetShader().  Use of GetShader() feels funky, like my structure design blows chunks.
