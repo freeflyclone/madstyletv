@@ -76,6 +76,7 @@
 #include "xglshapes.h"
 #include "xglcamera.h"
 #include "xglprojector.h"
+#include "xglframebuffer.h"
 
 // want to reference XGLShader by it's name, so use std::map for that
 typedef std::map<std::string, GLint> XGLTextureMap;
@@ -134,6 +135,7 @@ public:
     // Shader stack is global per context
     XGLShaderMap shaderMap;
 
+	XGLFramebuffer fb;
     float clock;
 private:
     // this is returned by GetShader().  Use of GetShader() feels funky, like my structure design blows chunks.
