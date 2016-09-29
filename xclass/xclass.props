@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <IncludePath>$(XCLASS_DIR);$(XCLASS_DIR)\xav;$(XCLASS_DIR)\xgl;$(XCLASS_DIR)\include\freetype2;$(XCLASS_DIR)\include\glm\gtc;$(XCLASS_DIR)\include\glm;$(XCLASS_DIR)\include</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup />
+  <ItemGroup />
+</Project>
