@@ -64,8 +64,8 @@ LDFLAGS +=\
 
 LIBS=-lxclass -lglfw3 -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXinerama -lXcursor -lpthread -lexpat -lfreetype
 
-Example02: ${COMMONOBJS} ${LIB} 
-	${CXX} ${CPPFLAGS} ${COMMONOBJS} ${LDFLAGS} ${LIBS} -o $@
+Example02: ${COMMONOBJS} ${LIB} ../examples/Example02/Example02.o
+	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} -o $@
 
 ${LIB}: ${OBJS}
 	${AR} rcs ${LIB} $? 
@@ -78,8 +78,3 @@ clean:
 
 #xgl.o: xgl.h
 #xglshader.o: xgl.h
-
-%.o:%.cpp
-	${CXX} ${CPPFLAGS} -c $*.cpp -o $@
-%.o:%.c
-	gcc ${CFLAGS} -c $*.c -o $@
