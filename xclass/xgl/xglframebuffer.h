@@ -7,8 +7,8 @@
 ****************************************************************************/
 #ifndef XGLFRAMEBUFFER_H
 #define XGLFRAMEBUFFER_H
-#include "XGLObject.h"
-#include "xshmem.h"
+#include <XGLObject.h>
+#include <xshmem.h>
 
 #define RENDER_WIDTH	1280
 #define RENDER_HEIGHT	720
