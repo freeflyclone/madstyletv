@@ -7,9 +7,6 @@
 ****************************************************************************/
 #ifndef XGLFRAMEBUFFER_H
 #define XGLFRAMEBUFFER_H
-
-#include <Windows.h>
-
 #include "XGLObject.h"
 #include "xshmem.h"
 
