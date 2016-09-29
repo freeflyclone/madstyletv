@@ -141,6 +141,9 @@
     <ClInclude Include="xgl\xglframebuffer.h">
       <Filter>xgl\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xshmem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xutils.c">
@@ -211,6 +214,9 @@
     </ClCompile>
     <ClCompile Include="xgl\xglframebuffer.cpp">
       <Filter>xgl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xshmem.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
