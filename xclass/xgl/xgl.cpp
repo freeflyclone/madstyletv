@@ -190,8 +190,8 @@ void XGL::RenderScene() {
 }
 
 void XGL::Display(){
-	GLuint width = fb->pHeader->width;
-	GLuint height = fb->pHeader->height;
+	GLuint width = fb->shmem.pHeader->width;
+	GLuint height = fb->shmem.pHeader->height;
 
 	glBindFramebuffer(GL_FRAMEBUFFER, fb->fbo);
 	GL_CHECK("glBindFramebuffer() failed\n");
@@ -202,7 +202,7 @@ void XGL::Display(){
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	GL_CHECK("glReadBuffer() failed\n");
 
-	glReadPixels(0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, fb->mappedBuffer);
+	glReadPixels(0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, fb->shmem.mappedBuffer);
 	GL_CHECK("glReadPixels() failed\n");
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

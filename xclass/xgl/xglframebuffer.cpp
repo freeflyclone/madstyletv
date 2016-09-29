@@ -1,7 +1,7 @@
 #include "xgl.h"
 
-XGLFramebuffer::XGLFramebuffer() : XGLObject("XGLFramebuffer"), mappedHeader(NULL), mappedBuffer(NULL) {
-	xprintf("XGLFramebuffer::XGLFramebuffer(), sizeof(MAPPED_HEADER): %d\n",sizeof(MAPPED_HEADER));
+XGLFramebuffer::XGLFramebuffer() : XGLObject("XGLFramebuffer"), shmem(DEFAULT_FILE_NAME) {
+	xprintf("XGLFramebuffer::XGLFramebuffer()\n");
 
 	glGenFramebuffers(1, &fbo);
 	GL_CHECK("glGenFramebuffers() failed\n");
@@ -46,25 +46,6 @@ XGLFramebuffer::XGLFramebuffer() : XGLObject("XGLFramebuffer"), mappedHeader(NUL
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		xprintf("glCheckFramebufferStatus() != GL_FRAMEBUFFER_COMPLETE\n");
 
-
-	// file mapping stuff (Windows specific)
-	{
-		hFile = CreateFile(TEXT("C:\\vcam_buffer.dat"), (GENERIC_READ | GENERIC_WRITE), (FILE_SHARE_READ | FILE_SHARE_WRITE), NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-		if (hFile == INVALID_HANDLE_VALUE)
-			xprintf("Failed to open file mapping file C:\\vcam_buffer.dat\n");
-
-		hMapping = CreateFileMapping(hFile, NULL, PAGE_READWRITE, 0, FILEMAPPING_SIZE, NULL);
-		if (hMapping == NULL)
-			xprintf("Failed to creat file mapping\n");
-		else {
-			mappedHeader = (unsigned char *)MapViewOfFile(hMapping, FILE_MAP_ALL_ACCESS, 0, 0, FILEMAPPING_SIZE);
-			if (mappedHeader == NULL) {
-				xprintf("MapViewOfFile() failed\n");
-			}
-			pHeader = (MAPPED_HEADER *)mappedHeader;
-			mappedBuffer = mappedHeader + 4096;
-		}
-	}
 };
 
 XGLFramebuffer::~XGLFramebuffer() {

@@ -228,6 +228,7 @@
     <ClInclude Include="xgl\xglshapes.h" />
     <ClInclude Include="xgl\xgluniform.h" />
     <ClInclude Include="xinput.h" />
+    <ClInclude Include="xshmem.h" />
     <ClInclude Include="xthread.h" />
     <ClInclude Include="xutils.h" />
   </ItemGroup>
@@ -254,6 +255,7 @@
     <ClCompile Include="xgl\xglshapes.cpp" />
     <ClCompile Include="xgl\xgluniform.cpp" />
     <ClCompile Include="xinput.cpp" />
+    <ClCompile Include="xshmem.cpp" />
     <ClCompile Include="xutils.c" />
   </ItemGroup>
   <ItemGroup>
