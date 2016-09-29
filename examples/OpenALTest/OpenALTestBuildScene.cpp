@@ -15,8 +15,30 @@
 
 #include <al.h>
 #include <alc.h>
+#include <vector>
 
 short audioBuffer[48000 * 4];
+
+std::vector<std::string> ALDeviceList;
+
+static void list_audio_devices(const ALCchar *devices)
+{
+        const ALCchar *device = devices, *next = devices + 1;
+        size_t len = 0;
+
+        fprintf(stdout, "Devices list:\n");
+        fprintf(stdout, "----------\n");
+        while (device && *device != '\0' && next && *next != '\0') {
+				ALDeviceList.push_back(std::string(device));
+                fprintf(stdout, "%s\n", device);
+                len = strlen(device);
+                device += (len + 1);
+                next += (len + 2);
+        }
+        fprintf(stdout, "----------\n");
+}
+
+
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
@@ -24,7 +46,22 @@ void ExampleXGL::BuildScene() {
 	ALCdevice *audioDevice;
 	ALCcontext *audioContext;
 
-	if ((audioDevice = alcOpenDevice(NULL)) == NULL) {
+	{
+		ALboolean hasEnumerate;
+		hasEnumerate = alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT");
+		if (hasEnumerate==AL_FALSE){
+			xprintf("ALC_ENUMERATION_EXT not present\n");
+		}
+		else {
+			xprintf("ALC_ENUMERATION_EXT exists!\n");
+			list_audio_devices(alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER));
+			for(int i=0; i<ALDeviceList.size(); i++)
+				xprintf("Device %d: %s\n", i, ALDeviceList[i].c_str());
+		}
+	}
+
+
+	if ((audioDevice = alcOpenDevice(ALDeviceList[2].c_str())) == NULL) {
 		throwXGLException("alcOpenDevice() failed");
 	}
 
