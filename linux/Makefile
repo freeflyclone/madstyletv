@@ -29,6 +29,7 @@ CPPSOURCES=${XGLDIR}/xgl.cpp \
 	${XGLDIR}/xglbuffer.cpp \
 	${XGLDIR}/xglcamera.cpp \
 	${XGLDIR}/xglfont.cpp \
+	${XGLDIR}/xglframebuffer.cpp \
 	${XGLDIR}/xgllight.cpp \
 	${XGLDIR}/xglmaterial.cpp \
 	${XGLDIR}/xglobject.cpp \
@@ -38,6 +39,7 @@ CPPSOURCES=${XGLDIR}/xgl.cpp \
 	${XGLDIR}/xgluniform.cpp \
 	${XCLASSDIR}/xinput.cpp \
 	${XCLASSDIR}/xconfig.cpp \
+	${XCLASSDIR}/xshmem.cpp \
 
 
 CSOURCES=${XGLDIR}/glew.c \
