@@ -10,6 +10,7 @@ CPPFLAGS +=-std=c++14\
 	-I../xclass/3rdParty/freetype/include/freetype2 \
 	-I../xclass \
 	-I../examples/common \
+	-I/usr/include/AL
 	-D_GNU_SOURCE=1 \
 	-DGLEW_STATIC \
 	-Wno-writable-strings \
@@ -66,13 +67,18 @@ LIBS=-lxclass -lglfw3 -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXine
 
 OPENCV_LIBS=-lopencv_flann -lopencv_gpu -lopencv_highgui -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_objdetect -lopencv_ocl -lopencv_photo -lopencv_stitching -lopencv_superres -lopencv_ts -lopencv_video -lopencv_videostab
 
-all: Example02 OpenCVTest OpenCVWebcam
+OPENAL_LIBS=-lopenal
+
+all: Example02 OpenCVTest OpenCVWebcam OpenALTest
 
 OpenCVWebcam: ${COMMONOBJS} ${LIB} ../examples/OpenCVWebcam/OpenCVWebcamBuildScene.o
 	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} ${OPENCV_LIBS} -o $@
 
 OpenCVTest: ${COMMONOBJS} ${LIB} ../examples/OpenCVTest/OpenCVTestBuildScene.o
 	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} ${OPENCV_LIBS} -o $@
+
+OpenALTest: ${COMMONOBJS} ${LIB} ../examples/OpenALTest/OpenALTestBuildScene.o
+	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} ${OPENCV_LIBS} ${OPENAL_LIBS} -o $@
 
 Example02: ${COMMONOBJS} ${LIB} ../examples/Example02/Example02.o
 	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} -o $@
