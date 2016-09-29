@@ -50,7 +50,7 @@ CSOURCES=${XGLDIR}/glew.c \
 	${XCLASSDIR}/3rdParty/soil/src/stb_image_aug.c \
 
 
-COMMON=main.cpp ../examples/common/ExampleXGL.cpp ../examples/Example02/Example02.cpp
+COMMON=main.cpp ../examples/common/ExampleXGL.cpp
 
 OBJS = $(patsubst %.cpp,%.o,${CPPSOURCES})
 OBJS += $(patsubst %.c,%.o,${CSOURCES})
@@ -62,7 +62,17 @@ LDFLAGS +=\
 	-L../xclass/3rdParty/glfw/lib \
 	-L/usr/lib/x86_64-linux-gnu
 
-LIBS=-lxclass -lglfw3 -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXinerama -lXcursor -lpthread -lexpat -lfreetype
+LIBS=-lxclass -lglfw3 -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXinerama -lXcursor -lpthread -lexpat -lfreetype -lopencv_core -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d 
+
+OPENCV_LIBS=-lopencv_flann -lopencv_gpu -lopencv_highgui -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_objdetect -lopencv_ocl -lopencv_photo -lopencv_stitching -lopencv_superres -lopencv_ts -lopencv_video -lopencv_videostab
+
+all: Example02 OpenCVTest OpenCVWebcam
+
+OpenCVWebcam: ${COMMONOBJS} ${LIB} ../examples/OpenCVWebcam/OpenCVWebcamBuildScene.o
+	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} ${OPENCV_LIBS} -o $@
+
+OpenCVTest: ${COMMONOBJS} ${LIB} ../examples/OpenCVTest/OpenCVTestBuildScene.o
+	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} ${OPENCV_LIBS} -o $@
 
 Example02: ${COMMONOBJS} ${LIB} ../examples/Example02/Example02.o
 	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} -o $@
