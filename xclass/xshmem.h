@@ -6,6 +6,8 @@
 #ifdef WIN32
 #include <Windows.h>
 #define DEFAULT_FILE_NAME "C:\\vcam_buffer.dat"
+#else
+#define DEFAULT_FILE_NAME "vcam_buffer.dat"
 #endif
 
 // (virtual memory quantum) at the front for IPC usage
