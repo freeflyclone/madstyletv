@@ -51,11 +51,6 @@ public:
 			}
 			memcpy(&imageBuff.b, image.buffer, sizeof(imageBuff));
 			ib = imageBuff;
-			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
-			do {
-				end = hpt.Count();
-				diff = end - start;
-			} while (diff < 16667);
 		}
 	}
 
@@ -71,13 +66,11 @@ public:
 
 		sampleRate = stream->sampleRate;
 
-		if ((audioDevice = alcOpenDevice(NULL)) == NULL) {
-			throwXGLException("alcOpenDevice() failed");
-		}
+		audioDevice = alcOpenDevice(NULL);
+		AL_CHECK("alOpenDevice() failed");
 
-		if ((audioContext = alcCreateContext(audioDevice, NULL)) == NULL) {
-			throwXGLException("alcCreateContext() failed\n");
-		}
+		audioContext = alcCreateContext(audioDevice, NULL);
+		AL_CHECK("alcCreateContext() failed\n");
 
 		alcMakeContextCurrent(audioContext);
 		alGetError();
@@ -88,25 +81,18 @@ public:
 		alGenSources(1, &source);
 		AL_CHECK("alGenSource() failed");
 
-		{// build a sine wave in "audioBuffer"
-			int NSAMPLES = sizeof(audioBuffer) / sizeof(audioBuffer[0]);
-			for (int i = 0; i < NSAMPLES; i++) {
-				double value = 2.0 * (double)i / (double)128 * M_PI;
-				audioBuffer[i] = (short)(sin(value) * 32767.0);
-			}
-		}
+		alSourcei(source, AL_LOOPING, AL_FALSE);
+		AL_CHECK("alSourcei() failed");
+
+		memset(audioBuffer, 0, sizeof(audioBuffer));
 
 		for (int i = 0; i < XAV_NUM_FRAMES; i++) {
-			alBufferData(bufferIDs[i], AL_FORMAT_STEREO16, audioBuffer, sizeof(audioBuffer), sampleRate);
+			alBufferData(bufferIDs[i], AL_FORMAT_STEREO16, audioBuffer, 4, sampleRate);
 			AL_CHECK("alBufferData() failed");
 		}
 
 		alSourceQueueBuffers(source, XAV_NUM_FRAMES, bufferIDs);
 		AL_CHECK("alSourceQueueBuffers() failed");
-
-		alSourcei(source, AL_LOOPING, AL_FALSE);
-		AL_CHECK("alSourcei() failed");
-
 	}
 
 	void Run() {
@@ -156,8 +142,9 @@ public:
 			alSourceQueueBuffers(source, 1, &bufferId);
 			AL_CHECK("alSourceQueueBuffers() failed");
 
-			if (1) // dirty hack to work around the lack of robust buffering, (from OpenAL examples) DEFINITELY causes audio glitches.
-			{
+			// may need to restart here if initial queueing was too short 
+			// ie: we ran out and stopped before we got here
+			if (1) {
 				ALint state;
 				alGetSourcei(source, AL_SOURCE_STATE, &state);
 				if (state != AL_PLAYING)
@@ -181,22 +168,22 @@ public:
 class AVPlayer : public XGLObject, public XThread {
 public:
 	AVPlayer(std::string url) : XGLObject("AVPlayer"), XThread("AVPlayerThread") {
-		xavSrc = std::make_shared<XAVSrc>(url, false, true);
+		xavSrc = std::make_shared<XAVSrc>(url, true, true);
 		xav.AddSrc(xavSrc);
-		//vst = new VideoStreamThread(xavSrc->mVideoStream);
+		vst = new VideoStreamThread(xavSrc->mVideoStream);
 		ast = new AudioStreamThread(xavSrc->mAudioStream);
 		xav.Start();
 	}
 
 	void Run() {
-		//vst->Start();
+		vst->Start();
 		ast->Start();
 
 		while ( xav.IsRunning() && IsRunning() ) {
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
 		}
 
-		//vst->Stop();
+		vst->Stop();
 		ast->Stop();
 	}
 
@@ -234,7 +221,7 @@ void ExampleXGL::BuildScene() {
 		if (pavp != NULL && pavp->IsRunning()) {
 			unsigned char *image = ib.b;
 
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 960, 540, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)image);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920, 1080, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)image);
 			GL_CHECK("glGetTexImage() didn't work");
 		}
 	};

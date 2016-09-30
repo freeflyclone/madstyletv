@@ -30,7 +30,7 @@ extern "C" {
 #include "xavexcept.h"
 
 // this must be a power of 2, and preferrably rather small.
-#define XAV_NUM_FRAMES 4
+#define XAV_NUM_FRAMES 8
 // this is the max number of "data" channels in an AVFrame (video or audio)
 #define XAV_MAX_CHANNELS 8
 
