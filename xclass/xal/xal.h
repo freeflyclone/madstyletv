@@ -19,8 +19,10 @@
 
 #include "xutils.h"
 
+void CheckAlError(const char *, int, std::string);
+#define AL_CHECK(what) CheckAlError(__FILE__,__LINE__,what)
+
 #define AUDIO_SAMPLES 1024
-#define AL_CHECK(what) CheckError(__FILE__,__LINE__,what)
 
 typedef struct {
 	float left;

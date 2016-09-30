@@ -3,7 +3,7 @@
 std::string currentWorkingDir;
 std::string pathToAssets;
 
-void CheckError(const char *file, int line, std::string what){
+void CheckGlError(const char *file, int line, std::string what){
     GLenum err = glGetError();
     const GLubyte *errString = gluErrorString(err);
     if (err){
@@ -21,7 +21,7 @@ void CheckError(const char *file, int line, std::string what){
     }
 }
 
-void CheckStatus(const char *file, int line) {
+void CheckGlStatus(const char *file, int line) {
 	GLenum err = glGetError();
 	if (err) {
 		const GLubyte *errString = gluErrorString(err);
