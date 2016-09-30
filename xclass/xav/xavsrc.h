@@ -69,6 +69,7 @@ public:
 	
 	int sampleRate;
 
+	int streamIdx;
 private:
 	AVCodecContext *pCodecCtx;
 	AVCodec *pCodec;
@@ -87,7 +88,7 @@ private:
 class XAVSrc : public XThread
 {
 public:
-	XAVSrc(const std::string name);
+	XAVSrc(const std::string name, bool v, bool a);
 	XAVSrc();
 	bool DecodeVideo(AVPacket *packet);
 	bool DecodeAudio(AVPacket *packet);
@@ -99,11 +100,14 @@ public:
 	// these need to be public for derived classes.
 	AVFormatContext *pFormatCtx;
 	int mNumStreams;
+	int mUsedStreams;
 	AVPacket packet;
 	std::vector<std::shared_ptr<XAVStream> >mStreams;
 	std::shared_ptr<XAVStream> mVideoStream;
 	std::shared_ptr<XAVStream> mAudioStream;
 	std::string name;
+
+	bool doVideo, doAudio;
 };
 
 #endif // XAVSRC_H
