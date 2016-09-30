@@ -31,9 +31,13 @@ extern "C" {
 
 // this must be a power of 2, and preferrably rather small.
 #define XAV_NUM_FRAMES 4
+// this is the max number of "data" channels in an AVFrame (video or audio)
+#define XAV_MAX_CHANNELS 8
 
 typedef struct {
 	unsigned char *buffer;
+	unsigned char *buffers[XAV_MAX_CHANNELS];
+	int nChannels;
 	int size;
 	int count;
 } XAVBuffer;
@@ -44,7 +48,7 @@ class XAVStream
 public:
 	XAVStream(AVCodecContext *context);
 	bool Decode(AVPacket *packet);
-	void AllocateBufferPool(int number, int size);
+	void AllocateBufferPool(int number, int size, int channels);
 	XAVBuffer GetBuffer();
 	void ReleaseBuffer();
 

@@ -11,23 +11,12 @@
 
 #include <iostream>
 
-#define AUDIO_SAMPLES 1024
-#define AL_CHECK(what) CheckError(__FILE__,__LINE__,what)
-
 typedef struct {
 	unsigned char b[1920 * 1620];
 } ImageBuff;
 
 ImageBuff ib;
 
-typedef struct {
-	float left;
-} AudioSampleFloat;
-
-typedef struct {
-	short left;
-	short right;
-} AudioSampleShort;
 
 class HighPrecisionTimer {
 public:

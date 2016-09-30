@@ -19,7 +19,21 @@
 
 #include "xutils.h"
 
+#define AUDIO_SAMPLES 1024
+#define AL_CHECK(what) CheckError(__FILE__,__LINE__,what)
+
+typedef struct {
+	float left;
+} AudioSampleFloat, AudioSampleFloatBuffer[AUDIO_SAMPLES];
+
+typedef struct {
+	short left;
+	short right;
+} AudioSampleShort, AudioSampleShortBuffer[AUDIO_SAMPLES];
+
 typedef std::vector<std::string> XALDeviceList;
+typedef std::vector<AudioSampleFloatBuffer> XALFloatBuffer;
+typedef std::vector<AudioSampleShortBuffer> XALShortBuffer;
 
 class XAL {
 public:
