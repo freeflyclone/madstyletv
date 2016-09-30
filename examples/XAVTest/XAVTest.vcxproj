@@ -57,42 +57,46 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\xclass\ffmpeg.props" />
     <Import Project="..\..\xclass\OpenAL.props" />
+    <Import Project="..\..\xclass\xclass.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\xclass\ffmpeg.props" />
     <Import Project="..\..\xclass\OpenAL.props" />
+    <Import Project="..\..\xclass\xclass.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\xclass\ffmpeg.props" />
     <Import Project="..\..\xclass\OpenAL.props" />
+    <Import Project="..\..\xclass\xclass.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\xclass\ffmpeg.props" />
     <Import Project="..\..\xclass\OpenAL.props" />
+    <Import Project="..\..\xclass\xclass.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir);$(SolutionDir)\examples\common;$(SolutionDir)\xclass\xav;$(SolutionDir)\xclass\xgl;$(SolutionDir)\xclass\include\freetype2;$(SolutionDir)\xclass\include\glm\gtc;$(SolutionDir)\xclass\include\glm;$(SolutionDir)\xclass\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)xclass\lib\$(PlatformTarget);$(SolutionDir)xclass\lib\$(PlatformTarget)\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir);$(SolutionDir)\examples\common;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir);$(SolutionDir)\examples\common;$(SolutionDir)\xclass\xav;$(SolutionDir)\xclass\xgl;$(SolutionDir)\xclass\include\freetype2;$(SolutionDir)\xclass\include\glm\gtc;$(SolutionDir)\xclass\include\glm;$(SolutionDir)\xclass\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)xclass\lib\$(PlatformTarget);$(SolutionDir)xclass\lib\$(PlatformTarget)\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir);$(SolutionDir)\examples\common;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir);$(SolutionDir)\examples\common;$(SolutionDir)\xclass\xav;$(SolutionDir)\xclass\xgl;$(SolutionDir)\xclass\include\freetype2;$(SolutionDir)\xclass\include\glm\gtc;$(SolutionDir)\xclass\include\glm;$(SolutionDir)\xclass\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)xclass\lib\$(PlatformTarget);$(SolutionDir)xclass\lib\$(PlatformTarget)\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir);$(SolutionDir)\examples\common;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir);$(SolutionDir)\examples\common;$(SolutionDir)\xclass\xav;$(SolutionDir)\xclass\xgl;$(SolutionDir)\xclass\include\freetype2;$(SolutionDir)\xclass\include\glm\gtc;$(SolutionDir)\xclass\include\glm;$(SolutionDir)\xclass\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)xclass\lib\$(PlatformTarget);$(SolutionDir)xclass\lib\$(PlatformTarget)\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir);$(SolutionDir)\examples\common;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

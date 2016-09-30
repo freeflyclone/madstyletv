@@ -9,17 +9,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalDependencies>
-	  	avcodec.lib;
-		avdevice.lib;
-		avfilter.lib;
-		avformat.lib;
-		avutil.lib;
-		postproc.lib;
-		swresample.lib;
-		swscale.lib;
-		%(AdditionalDependencies)
-	  </AdditionalDependencies>
+      <AdditionalDependencies>avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;postproc.lib;swresample.lib;swscale.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup />
