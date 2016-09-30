@@ -21,6 +21,8 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES), streamIdx
 		numBytes = av_image_get_buffer_size(pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height,8) * 4;
 
 		AllocateBufferPool(XAV_NUM_FRAMES, numBytes, 1);
+		width = pCodecCtx->width;
+		height = pCodecCtx->height;
 	}
 	else if (pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO) {
 		xprintf("Found AVMEDIA_TYPE_AUDIO\n");
@@ -188,9 +190,9 @@ XAVSrc::XAVSrc(const std::string name, bool video=true, bool audio=true) :
 					mUsedStreams++;
 				}
 			}
-		} 
+		}
 		else
-			mStreams.emplace_back(std::make_shared<XAVStream>(pFormatCtx->streams[i]->codec));
+			xprintf("Unknown codec type: %d, id: %d\n", pFormatCtx->streams[i]->codec->codec_type, pFormatCtx->streams[i]->codec);
 	}
 }
 

@@ -70,6 +70,9 @@ public:
 	int sampleRate;
 
 	int streamIdx;
+
+	int width, height;
+
 private:
 	AVCodecContext *pCodecCtx;
 	AVCodec *pCodec;
