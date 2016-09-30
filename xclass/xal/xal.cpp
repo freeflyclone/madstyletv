@@ -1,5 +1,21 @@
 #include "xal.h"
 
+void CheckAlError(const char *file, int line, std::string what){
+	ALenum err = alGetError();
+	if (err){
+		std::string estr(
+			file +
+			std::string(":") +
+			std::to_string(line) +
+			std::string(": ") +
+			what +
+			std::string(": ") +
+			std::to_string(err)
+			);
+		throw std::runtime_error(estr);
+	}
+}
+
 XAL::XAL() : deviceName(NULL) {
 	EnumerateDevices();
 

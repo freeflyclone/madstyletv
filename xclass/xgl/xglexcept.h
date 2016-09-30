@@ -9,10 +9,10 @@
 
 #include <stdexcept>
 
-void CheckError(const char *, int, std::string);
-void CheckStatus(const char *, int);
-#define GL_CHECK(what) CheckError(__FILE__,__LINE__,what)
-#define GL_STATUS() CheckStatus(__FILE__,__LINE__);
+void CheckGlError(const char *, int, std::string);
+void CheckGlStatus(const char *, int);
+#define GL_CHECK(what) CheckGlError(__FILE__,__LINE__,what)
+#define GL_STATUS() CheckGlStatus(__FILE__,__LINE__);
 
 class XGLException: public std::runtime_error
 {
