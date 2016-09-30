@@ -1,6 +1,6 @@
 #include "xavsrc.h"
 
-XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES) {
+XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES), streamIdx(0) {
 	pCodecCtx = ctx;
 
 	pCodec=avcodec_find_decoder(pCodecCtx->codec_id);
@@ -141,12 +141,15 @@ void XAVStream::Release() {
 	usedBuffs.notify();
 }
 
-XAVSrc::XAVSrc(const std::string name) :
+XAVSrc::XAVSrc(const std::string name, bool video=true, bool audio=true) :
 	name(name),
 	mNumStreams(0),
+	mUsedStreams(0),
 	mVideoStream(NULL),
 	mAudioStream(NULL),
 	pFormatCtx(NULL),
+	doVideo(video),
+	doAudio(audio),
 	XThread(name)
 {
 	if(avformat_open_input(&pFormatCtx, name.c_str(), NULL, NULL)!=0) {
@@ -161,16 +164,24 @@ XAVSrc::XAVSrc(const std::string name) :
 
 	// for now, just grab the first video and first audio streams found.
 	for(int i=0; i<mNumStreams; i++) {
-		if ((pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) && !mVideoStream) {
+		if (pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
 			if(!mVideoStream) {
-				mVideoStream = std::make_shared<XAVStream>(pFormatCtx->streams[i]->codec);
-				mStreams.emplace_back(mVideoStream);
+				if (doVideo) {
+					mVideoStream = std::make_shared<XAVStream>(pFormatCtx->streams[i]->codec);
+					mVideoStream->streamIdx = i;
+					mStreams.emplace_back(mVideoStream);
+					mUsedStreams++;
+				}
 			}
 		}
-		else if ((pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO) && !mAudioStream) {
+		else if (pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
 			if (!mAudioStream) {
-				mAudioStream = std::make_shared<XAVStream>(pFormatCtx->streams[i]->codec);
-				mStreams.emplace_back(mAudioStream);
+				if (doAudio) {
+					mAudioStream = std::make_shared<XAVStream>(pFormatCtx->streams[i]->codec);
+					mAudioStream->streamIdx = i;
+					mStreams.emplace_back(mAudioStream);
+					mUsedStreams++;
+				}
 			}
 		} 
 		else
@@ -191,9 +202,12 @@ void XAVSrc::Run()
 {
 	while( av_read_frame(pFormatCtx, &packet) >= 0 )
 	{
-		if (packet.stream_index <= 1) {
-			mStreams[packet.stream_index]->Decode(&packet);
-			av_packet_unref(&packet);
+		//if (packet.stream_index <= 1) {
+		for (int i = 0; i < mUsedStreams; i++) {
+			if (mStreams[i]->streamIdx == packet.stream_index) {
+				mStreams[i]->Decode(&packet);
+				av_packet_unref(&packet);
+			}
 		}
 	}
 }
