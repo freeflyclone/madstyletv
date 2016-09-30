@@ -7,10 +7,8 @@
 #include <xav.h>
 #include <xavfile.h>
 #include <xfifo.h>
+#include <xal.h>
 
-#include <al.h>
-#include <alc.h>
-#include <alext.h>
 #include <iostream>
 
 #define AUDIO_SAMPLES 1024
