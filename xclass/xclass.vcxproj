@@ -57,21 +57,25 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="ffmpeg.props" />
     <Import Project="xclass.props" />
+    <Import Project="OpenAL.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="ffmpeg.props" />
     <Import Project="xclass.props" />
+    <Import Project="OpenAL.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="ffmpeg.props" />
     <Import Project="xclass.props" />
+    <Import Project="OpenAL.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="ffmpeg.props" />
     <Import Project="xclass.props" />
+    <Import Project="OpenAL.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -208,6 +212,7 @@
     <ClInclude Include="3rdParty\soil\src\stbi_DDS_aug.h" />
     <ClInclude Include="3rdParty\soil\src\stbi_DDS_aug_c.h" />
     <ClInclude Include="3rdParty\soil\src\stb_image_aug.h" />
+    <ClInclude Include="xal\xal.h" />
     <ClInclude Include="xav\xav.h" />
     <ClInclude Include="xav\xavfile.h" />
     <ClInclude Include="xav\xavsrc.h" />
@@ -241,6 +246,7 @@
     <ClCompile Include="3rdParty\soil\src\image_helper.c" />
     <ClCompile Include="3rdParty\soil\src\SOIL.c" />
     <ClCompile Include="3rdParty\soil\src\stb_image_aug.c" />
+    <ClCompile Include="xal\xal.cpp" />
     <ClCompile Include="xav\xav.cpp" />
     <ClCompile Include="xav\xavfile.cpp" />
     <ClCompile Include="xav\xavsrc.cpp" />

@@ -40,6 +40,15 @@
     <Filter Include="xav\Source Files">
       <UniqueIdentifier>{da9e6da1-2a12-403a-88bb-c076ed1d0c37}</UniqueIdentifier>
     </Filter>
+    <Filter Include="xal">
+      <UniqueIdentifier>{f527757e-5496-4f75-8c7c-ac58b083cd62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="xal\Source Files">
+      <UniqueIdentifier>{35a3b228-9fd9-4b70-8474-5eab6d6bc090}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="xal\Header Files">
+      <UniqueIdentifier>{9033637e-c032-4bd4-b443-9f41f75082e7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -144,6 +153,9 @@
     <ClInclude Include="xshmem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xal\xal.h">
+      <Filter>xal\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xutils.c">
@@ -217,6 +229,9 @@
     </ClCompile>
     <ClCompile Include="xshmem.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xal\xal.cpp">
+      <Filter>xal\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -14,7 +14,6 @@
 #include <stdexcept>
 #include <al.h>
 #include <alc.h>
-#include <alext.h>
 
 #include "xutils.h"
 
