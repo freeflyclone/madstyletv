@@ -1,103 +1,27 @@
 /**************************************************************
-** OpenCVTestBuildScene.cpp
-**
-** Just to demonstrate instantiation of a "ground"
-** plane and a single texture-mapped quad, along with
-** scaling, translating and rotating the quad using the GLM
-** functions, and doing those inside an animation callback.
+** OpenALTestBuildScene.cpp
 **
 ** This is a copy of Example05, but utilizing OpenCV to load
-** the image instead.
+** the image instead, and unit testing of XAL.
+**
+** This *should* emit a tone for 4 seconds.
+**
+** If no exceptions are thrown by XAL, but you still don't hear
+** anything, it's probably that the default device not chosen
+** correctly.
 **************************************************************/
 #include "ExampleXGL.h"
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-#include <al.h>
-#include <alc.h>
-#include <vector>
+#include "xal.h"
 
-short audioBuffer[48000 * 4];
-
-std::vector<std::string> ALDeviceList;
-
-static void list_audio_devices(const ALCchar *devices) {
-        const ALCchar *device = devices, *next = devices + 1;
-
-        while (device && *device != '\0') {
-				ALDeviceList.push_back(std::string(device));
-                device += strlen(device) + 1;
-        }
-}
-
-
+XAL *pXal;
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
-	ALCdevice *audioDevice;
-	ALCcontext *audioContext;
-	const ALCchar *deviceName = NULL;
-
-	{
-		ALboolean hasEnumerate;
-		hasEnumerate = alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT");
-		if (hasEnumerate==AL_TRUE) {
-			list_audio_devices(alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER));
-			for(int i=0; i<ALDeviceList.size(); i++)
-				xprintf("Device %d: %s\n", i, ALDeviceList[i].c_str());
-
-			deviceName = ALDeviceList[0].c_str();
-		}
-	}
-
-	if ((audioDevice = alcOpenDevice(deviceName)) == NULL) {
-		throwXGLException("alcOpenDevice() failed");
-	}
-
-	if ((audioContext = alcCreateContext(audioDevice, NULL)) == NULL) {
-		throwXGLException("alcCreateContext() failed\n");
-	}
-
-	alcMakeContextCurrent(audioContext);
-
-	alGetError();
-
-	ALuint buffer;
-	alGenBuffers(1, &buffer);
-	ALenum error = alGetError();
-	if (error != AL_NO_ERROR) {
-		throwXGLException("alGenBuffers() failed to create a buffer");
-	}
-
-	{// build a sine wave in "audioBuffer"
-		int NSAMPLES = sizeof(audioBuffer) / sizeof(audioBuffer[0]);
-		for (int i = 0; i < NSAMPLES; i++) {
-			double value = 2.0 * (double)i / (double)128 * M_PI;
-			audioBuffer[i] = (short)(sin(value) * 32767.0);
-		}
-	}
-
-	alBufferData(buffer, AL_FORMAT_MONO16, audioBuffer, sizeof(audioBuffer), 48000);
-	error = alGetError();
-	if (error != AL_NO_ERROR) {
-		throwXGLException("alBufferData() failed");
-	}
-
-	ALuint source = 0;
-	alGenSources(1, &source);
-	error = alGetError();
-	if (error != AL_NO_ERROR) {
-		throwXGLException("alGenSources() failed");
-	}
-
-	alSourcei(source, AL_BUFFER, buffer);
-	error = alGetError();
-	if (error != AL_NO_ERROR) {
-		throwXGLException("alSource() failed");
-	}
-
-	alSourcePlay(source);
+	pXal = new XAL();
 
 	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
 	cv::Mat image;
