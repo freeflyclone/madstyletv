@@ -6,13 +6,11 @@ XAL::XAL() : deviceName(NULL) {
 	for (int i = 0; i < deviceList.size(); i++)
 		xprintf("Device: %s\n", deviceList[i].c_str());
 
-	if ((audioDevice = alcOpenDevice(deviceName)) == NULL) {
+	if ((audioDevice = alcOpenDevice(deviceName)) == NULL)
 		throw std::runtime_error("alcOpenDevice() failed");
-	}
 
-	if ((audioContext = alcCreateContext(audioDevice, NULL)) == NULL) {
+	if ((audioContext = alcCreateContext(audioDevice, NULL)) == NULL)
 		throw std::runtime_error("alcCreateContext() failed\n");
-	}
 
 	alcMakeContextCurrent(audioContext);
 	alGetError();

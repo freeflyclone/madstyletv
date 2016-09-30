@@ -20,7 +20,7 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES) {
 		xprintf("              height: %d\n", pCodecCtx->height);
 		numBytes = av_image_get_buffer_size(pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height,8) * 4;
 
-		AllocateBufferPool(XAV_NUM_FRAMES, numBytes);
+		AllocateBufferPool(XAV_NUM_FRAMES, numBytes, 1);
 	}
 	else if (pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO) {
 		xprintf("Found AVMEDIA_TYPE_AUDIO\n");
@@ -52,16 +52,26 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES) {
 	nFramesRead = 0;
 }
 
-void XAVStream::AllocateBufferPool(int number, int size) {
+void XAVStream::AllocateBufferPool(int number, int size, int channels) {
 	// TODO: make this number dynamic
 	if (number != XAV_NUM_FRAMES)
 		throwXAVException("number != XAV_NUM_FRAMES");
 
+	if ((channels<1) || (channels>XAV_MAX_CHANNELS))
+		throwXAVException("channels count is out of bounds: "+std::to_string(channels));
+
 	for (int i = 0; i < number; i++) {
 		unsigned char *buffer = (unsigned char *)av_malloc(size);
 		memset(buffer, 0, size);
-
 		frames[i].buffer = buffer;
+
+		for (int j = 0; j < channels; j++) {
+			unsigned char *buffer = (unsigned char *)av_malloc(size);
+			frames[i].buffers[j] = buffer;
+			memset(buffer, 0, size);
+		}
+
+		frames[i].nChannels = channels;
 		frames[i].count = 0;
 		frames[i].size = size;
 	}
@@ -92,14 +102,14 @@ bool XAVStream::Decode(AVPacket *packet)
 		int length = avcodec_decode_audio4(pCodecCtx, pFrame, &frameFinished, packet);
 		if (frameFinished){
 			if (nFramesDecoded == 0)
-				AllocateBufferPool(XAV_NUM_FRAMES, pFrame->nb_samples * formatSize * channels);
+				AllocateBufferPool(XAV_NUM_FRAMES, pFrame->nb_samples * formatSize * channels, 1);
 
 			freeBuffs.wait_for(200);
 
 			// replace all of this mumbo with an XFifo
 			int frameIdx = (nFramesDecoded - 1) & (XAV_NUM_FRAMES - 1);
 			XAVBuffer xb = frames[frameIdx];
-			memcpy(xb.buffer, pFrame->data[0], xb.size);
+			memcpy(xb.buffer, pFrame->data[1], xb.size);
 			nFramesDecoded++;
 			usedBuffs.notify();
 		}
