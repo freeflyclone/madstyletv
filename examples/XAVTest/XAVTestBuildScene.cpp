@@ -107,8 +107,6 @@ public:
 		alSourcei(source, AL_LOOPING, AL_FALSE);
 		AL_CHECK("alSourcei() failed");
 
-		alSourcePlay(source);
-		AL_CHECK("alSourcePlay() failed");
 	}
 
 	void Run() {
@@ -117,38 +115,46 @@ public:
 		ALuint bufferId;
 		ALint val;
 
+		alSourcePlay(source);
+		AL_CHECK("alSourcePlay() failed");
+
 		while (IsRunning()) {
-			int idx = bufferIdx & (XAV_NUM_FRAMES - 1);
+			do {
+				alGetSourcei(source, AL_BUFFERS_PROCESSED, &val);
+				std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
+			} while (val == 0);
+
+			alSourceUnqueueBuffers(source, 1, &bufferId);
+
+			// need a better mapping for this, good enough development tests for now
+			int idx = bufferId - 1;
 			XAVBuffer audio = stream->GetBuffer();
+
 			if (audio.buffer == NULL) {
 				alSourceStop(source);
 				Stop();
 				break;
 			}
-			AudioSampleFloat *pasf = (AudioSampleFloat *)audio.buffer;
+			float *pLeft = (float *)audio.buffers[0];
+			float *pRight = (float *)audio.buffers[1];
 			AudioSampleShort *pass = (AudioSampleShort *)audioBuffers[idx];
 
 			// convert to signed short
 			for (int i = 0; i < AUDIO_SAMPLES; i++) {
-				pass->left = (short)(pasf->left * 32767.0f);
-				pass->right = (short)(pasf->left * 32767.0f);
+				pass->left = (short)(*pLeft * 31000.0f);
+				pass->right = (short)(*pRight * 31000.0f);
 				pass++;
-				pasf++;
+				pLeft++;
+				pRight++;
 			}
 
 			totalBytes += audio.count;
 			bufferIdx++;
 
-			alGetSourcei(source, AL_BUFFERS_PROCESSED, &val);
-			if (val > 0){
-				alSourceUnqueueBuffers(source, 1, &bufferId);
-				error = alGetError();
-				if (error == AL_NO_ERROR) {
-					alBufferData(bufferId, AL_FORMAT_STEREO16, audioBuffers[idx], AUDIO_SAMPLES * 4, sampleRate);
-					alSourceQueueBuffers(source, 1, &bufferId);
-				}
-				val--;
-			}
+			alBufferData(bufferId, AL_FORMAT_STEREO16, audioBuffers[idx], AUDIO_SAMPLES * 4, sampleRate);
+			AL_CHECK("alBufferData() failed");
+			alSourceQueueBuffers(source, 1, &bufferId);
+			AL_CHECK("alSourceQueueBuffers() failed");
 
 			if (1) // dirty hack to work around the lack of robust buffering, (from OpenAL examples) DEFINITELY causes audio glitches.
 			{
@@ -175,22 +181,22 @@ public:
 class AVPlayer : public XGLObject, public XThread {
 public:
 	AVPlayer(std::string url) : XGLObject("AVPlayer"), XThread("AVPlayerThread") {
-		xavSrc = std::make_shared<XAVFile>(url);
+		xavSrc = std::make_shared<XAVSrc>(url, false, true);
 		xav.AddSrc(xavSrc);
-		vst = new VideoStreamThread(xavSrc->mVideoStream);
+		//vst = new VideoStreamThread(xavSrc->mVideoStream);
 		ast = new AudioStreamThread(xavSrc->mAudioStream);
 		xav.Start();
 	}
 
 	void Run() {
-		vst->Start();
+		//vst->Start();
 		ast->Start();
 
 		while ( xav.IsRunning() && IsRunning() ) {
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
 		}
 
-		vst->Stop();
+		//vst->Stop();
 		ast->Stop();
 	}
 
@@ -206,7 +212,7 @@ void ExampleXGL::BuildScene() {
 	XGLShape *shape, *childRed, *childYellow;
 
 	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
-	std::string videoPath = pathToAssets + "/assets/CulturalPhenomenon.mp4";
+	std::string videoPath = pathToAssets + "/assets/MY NEW ELECTRIC SCOOTER!.mp4";
 
 	AddShape("shaders/lighting", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
 	shape->SetColor({ 0.8, 0.8, 0.0001 });

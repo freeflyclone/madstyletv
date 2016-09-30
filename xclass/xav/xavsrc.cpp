@@ -102,14 +102,19 @@ bool XAVStream::Decode(AVPacket *packet)
 		int length = avcodec_decode_audio4(pCodecCtx, pFrame, &frameFinished, packet);
 		if (frameFinished){
 			if (nFramesDecoded == 0)
-				AllocateBufferPool(XAV_NUM_FRAMES, pFrame->nb_samples * formatSize * channels, 1);
+				AllocateBufferPool(XAV_NUM_FRAMES, pFrame->nb_samples * formatSize, channels);
 
 			freeBuffs.wait_for(200);
 
 			// replace all of this mumbo with an XFifo
 			int frameIdx = (nFramesDecoded - 1) & (XAV_NUM_FRAMES - 1);
 			XAVBuffer xb = frames[frameIdx];
-			memcpy(xb.buffer, pFrame->data[1], xb.size);
+
+			xb.nChannels = channels;
+
+			for (int i = 0; i < channels; i++)
+				memcpy(xb.buffers[i], pFrame->data[i], xb.size);
+
 			nFramesDecoded++;
 			usedBuffs.notify();
 		}

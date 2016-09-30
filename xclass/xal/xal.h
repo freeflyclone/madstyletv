@@ -26,6 +26,7 @@ void CheckAlError(const char *, int, std::string);
 
 typedef struct {
 	float left;
+	float right;
 } AudioSampleFloat, AudioSampleFloatBuffer[AUDIO_SAMPLES];
 
 typedef struct {
