@@ -13,26 +13,10 @@
 
 typedef struct {
 	unsigned char b[1920 * 1620];
+	int width, height;
 } ImageBuff;
 
 ImageBuff ib;
-
-
-class HighPrecisionTimer {
-public:
-	HighPrecisionTimer() {
-		QueryPerformanceFrequency(&frequency);
-	};
-
-	long long Count() {
-		LARGE_INTEGER count;
-		QueryPerformanceCounter(&count);
-		return (count.QuadPart * (unsigned int)1000000) / frequency.QuadPart;
-	}
-
-private:
-	LARGE_INTEGER frequency;
-};
 
 class VideoStreamThread : public XThread {
 public:
@@ -40,23 +24,18 @@ public:
 
 	void Run() {
 		while (IsRunning()) {
-			long long start = hpt.Count();
-			long long end = start;
-			long long diff = end - start;
-	
 			XAVBuffer image = stream->GetBuffer();
 			if (image.buffer == NULL) {
 				Stop();
 				break;
 			}
-			memcpy(&imageBuff.b, image.buffer, sizeof(imageBuff));
-			ib = imageBuff;
+			memcpy(&ib.b, image.buffer, sizeof(ib.b));
+			ib.width = stream->width;
+			ib.height = stream->height;
 		}
 	}
 
 	std::shared_ptr<XAVStream> stream;
-	ImageBuff imageBuff;
-	HighPrecisionTimer hpt;
 };
 
 class AudioStreamThread : public XThread {
@@ -199,7 +178,7 @@ void ExampleXGL::BuildScene() {
 	XGLShape *shape, *childRed, *childYellow;
 
 	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
-	std::string videoPath = pathToAssets + "/assets/MY NEW ELECTRIC SCOOTER!.mp4";
+	std::string videoPath = pathToAssets + "/assets/CulturalPhenomenon.mp4";
 
 	AddShape("shaders/lighting", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
 	shape->SetColor({ 0.8, 0.8, 0.0001 });
@@ -221,7 +200,7 @@ void ExampleXGL::BuildScene() {
 		if (pavp != NULL && pavp->IsRunning()) {
 			unsigned char *image = ib.b;
 
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1920, 1080, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)image);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.width, ib.height, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)image);
 			GL_CHECK("glGetTexImage() didn't work");
 		}
 	};
