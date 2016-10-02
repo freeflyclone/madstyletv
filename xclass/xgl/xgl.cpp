@@ -212,6 +212,21 @@ void XGL::Display(){
 	RenderScene();
 }
 
+void XGL::CreateShape(std::string shName, XGLNewShapeLambda fn){
+	std::string shaderName = pathToAssets + "/" + shName;
+	if (shaderMap.count(shaderName) == 0) {
+		shaderMap.emplace(shaderName, new XGLShader(shName));
+		shaderMap[shaderName]->Compile(shaderName);
+	}
+
+	if (shapes.count(shaderName) == 0) {
+		shapes.emplace(shaderName, new XGLShapeList);
+	}
+
+	XGLShape *pShape = fn();
+	pShape->Load(shaderMap[shaderName], pShape->v, pShape->idx);
+}
+
 void XGL::AddShape(std::string shName, XGLNewShapeLambda fn){
 	std::string shaderName = pathToAssets + "/" + shName;
     if (shaderMap.count(shaderName) == 0) {
@@ -225,8 +240,8 @@ void XGL::AddShape(std::string shName, XGLNewShapeLambda fn){
 
 	XGLShape *pShape = fn();
 	pShape->Load(shaderMap[shaderName], pShape->v, pShape->idx);
-	AddChild(pShape);
     shapes[shaderName]->push_back(pShape);
+	AddChild(pShape);
 }
 
 void XGL::IterateShapesMap(){
