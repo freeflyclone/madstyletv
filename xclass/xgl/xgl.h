@@ -112,7 +112,8 @@ public:
 	virtual void RenderScene();
 	virtual void Idle() {};
 
-    void AddShape(std::string shaderName, XGLNewShapeLambda fn);
+	void CreateShape(std::string shaderName, XGLNewShapeLambda fn);
+	void AddShape(std::string shaderName, XGLNewShapeLambda fn);
     void IterateShapesMap();
 
 	// query the OpenGL context for various implementation limits, and dump output
