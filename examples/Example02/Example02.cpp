@@ -7,41 +7,48 @@
 #include "ExampleXGL.h"
 
 void ExampleXGL::BuildScene() {
-	XGLShape *shape,*child1, *child2, *child3, *child4;
+	XGLShape *shape,*child1, *child2, *child3, *child4, *child5;
+	glm::mat4 rotate, translate;
 
-	AddShape("shaders/lighting", [&](){ shape = new XGLTorus(5.0f, 0.5f, 8, 32); return shape; });
-	shape->SetColor(yellow);
+	AddShape("shaders/lighting", [&](){ shape = new XGLTorus(5.0f, 1.0f, 64, 32); return shape; });
+	shape->SetColor({ 0.001, 0.001, 0.001 });
 	shape->SetTheFunk([&](XGLShape *s, float clock) {
 		float translateFunction = sin(clock / 180.0f);
 		glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0.0f, translateFunction*10.0f, 0.0f));
 		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 120.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 
-		s->model = translate * rotate;
+		s->model = rotate;
 	});
+	CreateShape("shaders/simple", [&](){ child4 = new XGLTransformer(); return child4; });
+	child4->SetTheFunk([&](XGLShape *s, float clock) {
+		float translateFunction = sin(clock / 180.0f);
+		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 60.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+		s->model = rotate;
+	});
+	shape->AddChild(child4);
 
-	CreateShape("shaders/simple", [&](){ child1 = new XGLTriangle(); return child1; });
+	CreateShape("shaders/lighting", [&](){ child5 = new XGLTorus(3.0f, 0.5f, 64, 32); return child5; });
+	child5->SetColor({ 1.0, 0.00001, 0.00001 });
+	translate = glm::translate(glm::mat4(), glm::vec3(5.0, 0, 0));
+	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	child5->model = translate * rotate;
+
+	CreateShape("shaders/simple", [&](){ child1 = new XGLTransformer(); return child1; });
 	child1->SetTheFunk([&](XGLShape *s, float clock) {
 		float translateFunction = sin(clock / 180.0f);
 		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 40.0f, glm::vec3(0.0f, 0.0f, 1.0f));
 		s->model = rotate;
 	});
 
-	CreateShape("shaders/simple", [&](){ child2 = new XGLTriangle(); return child2; });
-	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(5.0, 0, 0));
-	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	CreateShape("shaders/lighting", [&](){ child2 = new XGLTorus(1.5f, 0.25f, 64, 32); return child2; });
+	child2->SetColor(yellow);
+	translate = glm::translate(glm::mat4(), glm::vec3(3.0, 0, 0));
+	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	child2->model = translate * rotate;
 
-	CreateShape("shaders/lighting", [&](){ child3 = new XGLTorus(3.0f, 0.5f, 8, 32); return child3; });
-	child3->SetColor({ 0.001, 1.0, 1.0 });
-	child3->SetTheFunk([&](XGLShape *s, float clock) {
-		float translateFunction = sin(clock / 180.0f);
-		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 40.0f, glm::vec3(0.0f, 0.0f, 1.0f));
-		s->model = rotate;
-	});
-
-	child2->AddChild(child3);
 	child1->AddChild(child2);
-	shape->AddChild(child1);
+	child5->AddChild(child1);
+	child4->AddChild(child5);
 
 	AddShape("shaders/lighting", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
 	shape->SetColor(blue);
