@@ -126,5 +126,8 @@ public:
 	virtual void Draw();
 };
 
-
+class XGLTransformer : public XGLShape {
+public:
+	XGLTransformer();
+};
 #endif // XGLSHAPES_H

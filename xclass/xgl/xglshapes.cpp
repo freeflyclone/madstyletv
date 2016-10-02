@@ -29,13 +29,19 @@ void XGLShape::SetColor(XGLColor c) {
 }
 
 void XGLShape::Render(float clock) {
-	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, sizeof(glm::mat4), (GLvoid *)&model);
+	// Geometry-less XGLTransformer shape doesn't get rendered.  It has no OpenGL resources.
+	if (v.size()>0) {
+		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, sizeof(glm::mat4), (GLvoid *)&model);
+		GL_CHECK("glBufferSubData() failed");
 
-	XGLBuffer::Bind();
-	XGLMaterial::Bind(program);
+		XGLBuffer::Bind();
+		XGLMaterial::Bind(program);
+	}
 	Animate(clock);
 	Draw();
-	Unbind();
+
+	if (v.size()>0)
+		Unbind();
 
 	XGLObjectChildren children = Children();
 	if (children.size()) {
@@ -48,14 +54,18 @@ void XGLShape::Render(float clock) {
 }
 
 void XGLShape::Render(glm::mat4 modelChain, float clock) {
-	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, sizeof(glm::mat4), (GLvoid *)&modelChain);
-	GL_CHECK("glBufferSubData() failed");
+	if (v.size() > 0) {
+		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, sizeof(glm::mat4), (GLvoid *)&modelChain);
+		GL_CHECK("glBufferSubData() failed");
 
-	XGLBuffer::Bind();
-	XGLMaterial::Bind(program);
+		XGLBuffer::Bind();
+		XGLMaterial::Bind(program);
+	}
 	Animate(clock);
 	Draw();
-	Unbind();
+
+	if (v.size()>0)
+		Unbind();
 
 	XGLObjectChildren children = Children();
 	if (children.size()) {
@@ -667,3 +677,9 @@ void XGLTexQuad::Draw() {
 	glDisable(GL_BLEND);
 	GL_CHECK("glDisable(GL_BLEND) failed");
 }
+
+// place-holder for geometry-less shapes.  Useful for creating chains
+// of "model" matrices.
+XGLTransformer::XGLTransformer(){
+	SetName("XGLTransformer");
+};

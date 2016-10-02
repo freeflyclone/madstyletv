@@ -224,7 +224,9 @@ void XGL::CreateShape(std::string shName, XGLNewShapeLambda fn){
 	}
 
 	XGLShape *pShape = fn();
-	pShape->Load(shaderMap[shaderName], pShape->v, pShape->idx);
+
+	if (pShape->v.size()>0)
+		pShape->Load(shaderMap[shaderName], pShape->v, pShape->idx);
 }
 
 void XGL::AddShape(std::string shName, XGLNewShapeLambda fn){
@@ -239,8 +241,9 @@ void XGL::AddShape(std::string shName, XGLNewShapeLambda fn){
     }
 
 	XGLShape *pShape = fn();
-	pShape->Load(shaderMap[shaderName], pShape->v, pShape->idx);
-    shapes[shaderName]->push_back(pShape);
+	if (pShape->v.size()>0)
+		pShape->Load(shaderMap[shaderName], pShape->v, pShape->idx);
+	shapes[shaderName]->push_back(pShape);
 	AddChild(pShape);
 }
 
