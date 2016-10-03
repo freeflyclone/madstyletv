@@ -13,6 +13,9 @@
 #include <sstream>
 #include <stdexcept>
 
+#include <string.h>
+#include <math.h>
+
 // OpenAL includes
 #include <al.h>
 #include <alc.h>
