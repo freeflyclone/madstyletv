@@ -1,8 +1,10 @@
 LIB=libxclass.a
 XCLASSDIR=../xclass
 XGLDIR=../xclass/xgl
+XALDIR=../xclass/xal
 
 CPPFLAGS +=-std=c++14\
+	-I../xclass/xal \
 	-I../xclass/xgl \
 	-I../xclass/xgl/glm \
 	-I../xclass/xgl/glm/gtc \
@@ -19,6 +21,7 @@ CPPFLAGS +=-std=c++14\
 
 CFLAGS +=-std=c11 \
 	-Iglm \
+	-I../xclass/xal \
 	-I../xclass/xgl \
 	-I../xclass/xgl/glm \
 	-I../xclass \
@@ -38,6 +41,7 @@ CPPSOURCES=${XGLDIR}/xgl.cpp \
 	${XGLDIR}/xglshader.cpp \
 	${XGLDIR}/xglshapes.cpp \
 	${XGLDIR}/xgluniform.cpp \
+	${XALDIR}/xal.cpp \
 	${XCLASSDIR}/xinput.cpp \
 	${XCLASSDIR}/xconfig.cpp \
 	${XCLASSDIR}/xshmem.cpp \
