@@ -11,7 +11,7 @@ void ExampleXGL::BuildScene() {
 	glm::mat4 rotate, translate;
 
 	AddShape("shaders/lighting", [&](){ shape = new XGLTorus(5.0f, 1.0f, 64, 32); return shape; });
-	shape->SetColor({ 0.001, 0.001, 0.001 });
+	shape->SetColor({ 0.0025, 0.0025, 0.0025 });
 	shape->SetTheFunk([&](XGLShape *s, float clock) {
 		float translateFunction = sin(clock / 180.0f);
 		glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0.0f, translateFunction*10.0f, 0.0f));
@@ -22,12 +22,12 @@ void ExampleXGL::BuildScene() {
 	CreateShape("shaders/simple", [&](){ child4 = new XGLTransformer(); return child4; });
 	child4->SetTheFunk([&](XGLShape *s, float clock) {
 		float translateFunction = sin(clock / 180.0f);
-		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 60.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 90.0f, glm::vec3(0.0f, 0.0f, 1.0f));
 		s->model = rotate;
 	});
 	shape->AddChild(child4);
 
-	CreateShape("shaders/lighting", [&](){ child5 = new XGLTorus(3.0f, 0.5f, 64, 32); return child5; });
+	CreateShape("shaders/lighting", [&](){ child5 = new XGLTorus(2.0f, 0.5f, 64, 32); return child5; });
 	child5->SetColor({ 1.0, 0.00001, 0.00001 });
 	translate = glm::translate(glm::mat4(), glm::vec3(5.0, 0, 0));
 	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -36,13 +36,13 @@ void ExampleXGL::BuildScene() {
 	CreateShape("shaders/simple", [&](){ child1 = new XGLTransformer(); return child1; });
 	child1->SetTheFunk([&](XGLShape *s, float clock) {
 		float translateFunction = sin(clock / 180.0f);
-		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 40.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 60.0f, glm::vec3(0.0f, 0.0f, 1.0f));
 		s->model = rotate;
 	});
 
-	CreateShape("shaders/lighting", [&](){ child2 = new XGLTorus(1.5f, 0.25f, 64, 32); return child2; });
+	CreateShape("shaders/lighting", [&](){ child2 = new XGLTorus(0.75f, 0.25f, 64, 32); return child2; });
 	child2->SetColor(yellow);
-	translate = glm::translate(glm::mat4(), glm::vec3(3.0, 0, 0));
+	translate = glm::translate(glm::mat4(), glm::vec3(2.0, 0, 0));
 	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	child2->model = translate * rotate;
 
