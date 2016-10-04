@@ -1,5 +1,7 @@
 #include "xgl.h"
 
+#define SAMPLES 8
+
 XGLFramebuffer::XGLFramebuffer() : XGLObject("XGLFramebuffer"), shmem(DEFAULT_FILE_NAME) {
 	xprintf("XGLFramebuffer::XGLFramebuffer()\n");
 
@@ -12,16 +14,16 @@ XGLFramebuffer::XGLFramebuffer() : XGLObject("XGLFramebuffer"), shmem(DEFAULT_FI
 	glGenTextures(1, &texture);
 	GL_CHECK("glGenTextures() failed");
 
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, texture);
 	GL_CHECK("glBindTexture() failed");
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, RENDER_WIDTH, RENDER_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, SAMPLES, GL_RGB, RENDER_WIDTH, RENDER_HEIGHT, GL_TRUE);
 	GL_CHECK("glTexImage2D() failed");
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 	GL_CHECK("glBindTexture(0) failed");
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, texture, 0);
 	GL_CHECK("glFramebufferTexture() failedn");
 
 	// The depth buffer
@@ -31,7 +33,7 @@ XGLFramebuffer::XGLFramebuffer() : XGLObject("XGLFramebuffer"), shmem(DEFAULT_FI
 	glBindRenderbuffer(GL_RENDERBUFFER, depth);
 	GL_CHECK("glBindRenderbuffer() failed");
 
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, RENDER_WIDTH, RENDER_HEIGHT);
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, SAMPLES, GL_DEPTH_COMPONENT, RENDER_WIDTH, RENDER_HEIGHT);
 	GL_CHECK("glRenderbufferStorage() failed");
 
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth);
