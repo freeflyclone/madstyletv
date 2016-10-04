@@ -6,7 +6,6 @@ public:
 	void Reshape();
 	glm::mat4 GetProjectionMatrix();
 
-private:
 	int width, height;
 };
 
