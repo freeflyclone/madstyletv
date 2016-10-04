@@ -200,6 +200,18 @@ void XGL::Display(){
 
 		RenderScene();
 
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, fb->fbo);
+		GL_CHECK("glBindFrameBuffer(GL_READ_FRAMEBUFFER,fb->fbo) failed");
+
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fb->intFbo);
+		GL_CHECK("glBindFrameBuffer(GL_DRAW_FRAMEBUFFER, 0) failed");
+
+		glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		GL_CHECK("glBlitFramebuffer() failed");
+
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, fb->fbo);
+		GL_CHECK("glBindFrameBuffer(GL_READ_FRAMEBUFFER,fb->fbo) failed");
+
 		glReadBuffer(GL_COLOR_ATTACHMENT0);
 		GL_CHECK("glReadBuffer() failed");
 
@@ -207,7 +219,6 @@ void XGL::Display(){
 		GL_CHECK("glReadPixels() failed");
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		GL_CHECK("glBindFrameBuffer(0) failed");
 	}
 
 	projector.Reshape();
