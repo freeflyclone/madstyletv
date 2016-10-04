@@ -18,10 +18,17 @@ public:
 	XGLFramebuffer();
 	virtual ~XGLFramebuffer();
 
+	// for IPC of generated image
 	XSharedMem shmem;
+
+	// offscreen MSAA framebuffer
 	GLuint fbo;
 	GLuint texture;
-	GLuint depthrenderbuffer;
+	GLuint depth;
+
+	// offscreen intermediate framebuffer
+	GLuint intFbo;
+	GLuint intTexture;
 };
 
 
