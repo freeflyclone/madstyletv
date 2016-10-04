@@ -209,7 +209,7 @@ void XGL::Display(){
 		glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 		GL_CHECK("glBlitFramebuffer() failed");
 
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, fb->fbo);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, fb->intFbo);
 		GL_CHECK("glBindFrameBuffer(GL_READ_FRAMEBUFFER,fb->fbo) failed");
 
 		glReadBuffer(GL_COLOR_ATTACHMENT0);
