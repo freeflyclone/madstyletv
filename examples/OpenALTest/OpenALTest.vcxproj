@@ -80,23 +80,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir);$(SolutionDir)\examples\common;$(SolutionDir)\xclass\xgl;$(SolutionDir)\xclass\include\freetype2;$(SolutionDir)\xclass\include\glm\gtc;$(SolutionDir)\xclass\include\glm;$(SolutionDir)\xclass\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)xclass\lib\$(PlatformTarget);$(SolutionDir)xclass\lib\$(PlatformTarget)\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir);$(SolutionDir)\examples\common;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir);$(SolutionDir)\examples\common;$(SolutionDir)\xclass\xgl;$(SolutionDir)\xclass\include\freetype2;$(SolutionDir)\xclass\include\glm\gtc;$(SolutionDir)\xclass\include\glm;$(SolutionDir)\xclass\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)xclass\lib\$(PlatformTarget);$(SolutionDir)xclass\lib\$(PlatformTarget)\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir);$(SolutionDir)\examples\common;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir);$(SolutionDir)\examples\common;$(SolutionDir)\xclass\xgl;$(SolutionDir)\xclass\include\freetype2;$(SolutionDir)\xclass\include\glm\gtc;$(SolutionDir)\xclass\include\glm;$(SolutionDir)\xclass\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)xclass\lib\$(PlatformTarget);$(SolutionDir)xclass\lib\$(PlatformTarget)\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir);$(SolutionDir)\examples\common;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir);$(SolutionDir)\examples\common;$(SolutionDir)\xclass\xgl;$(SolutionDir)\xclass\include\freetype2;$(SolutionDir)\xclass\include\glm\gtc;$(SolutionDir)\xclass\include\glm;$(SolutionDir)\xclass\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)xclass\lib\$(PlatformTarget);$(SolutionDir)xclass\lib\$(PlatformTarget)\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir);$(SolutionDir)\examples\common;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
