@@ -188,31 +188,30 @@ void XGL::RenderScene() {
 }
 
 void XGL::Display(){
-	GLuint width = fb->shmem.pHeader->width;
-	GLuint height = fb->shmem.pHeader->height;
+	if (1) {
+		GLuint width = fb->shmem.pHeader->width;
+		GLuint height = fb->shmem.pHeader->height;
 
-	if (0) {
 		glBindFramebuffer(GL_FRAMEBUFFER, fb->fbo);
-		GL_CHECK("glBindFramebuffer() failed\n");
+		GL_CHECK("glBindFramebuffer() failed");
+
 		glViewport(0, 0, width, height);
-		GL_CHECK("glViewport() failed\n");
+		GL_CHECK("glViewport() failed");
 
 		RenderScene();
+
 		glReadBuffer(GL_COLOR_ATTACHMENT0);
-		GL_CHECK("glReadBuffer() failed\n");
+		GL_CHECK("glReadBuffer() failed");
 
 		glReadPixels(0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, fb->shmem.mappedBuffer);
-		GL_CHECK("glReadPixels() failed\n");
+		GL_CHECK("glReadPixels() failed");
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		GL_CHECK("glBindFrameBuffer(0) failed\n");
+		GL_CHECK("glBindFrameBuffer(0) failed");
 	}
 
 	projector.Reshape();
 	RenderScene();
-
-	glReadPixels(0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, fb->shmem.mappedBuffer);
-	GL_CHECK("glReadPixels() failed\n");
 
 	clock += 1.0f;
 }
