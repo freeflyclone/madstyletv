@@ -156,6 +156,12 @@
     <ClInclude Include="xal\xal.h">
       <Filter>xal\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="JSON.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JSONValue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xutils.c">
@@ -232,6 +238,12 @@
     </ClCompile>
     <ClCompile Include="xal\xal.cpp">
       <Filter>xal\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JSON.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JSONValue.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

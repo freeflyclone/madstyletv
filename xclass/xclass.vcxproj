@@ -212,6 +212,8 @@
     <ClInclude Include="3rdParty\soil\src\stbi_DDS_aug.h" />
     <ClInclude Include="3rdParty\soil\src\stbi_DDS_aug_c.h" />
     <ClInclude Include="3rdParty\soil\src\stb_image_aug.h" />
+    <ClInclude Include="JSON.h" />
+    <ClInclude Include="JSONValue.h" />
     <ClInclude Include="xal\xal.h" />
     <ClInclude Include="xav\xav.h" />
     <ClInclude Include="xav\xavfile.h" />
@@ -246,6 +248,8 @@
     <ClCompile Include="3rdParty\soil\src\image_helper.c" />
     <ClCompile Include="3rdParty\soil\src\SOIL.c" />
     <ClCompile Include="3rdParty\soil\src\stb_image_aug.c" />
+    <ClCompile Include="JSON.cpp" />
+    <ClCompile Include="JSONValue.cpp" />
     <ClCompile Include="xal\xal.cpp" />
     <ClCompile Include="xav\xav.cpp" />
     <ClCompile Include="xav\xavfile.cpp" />
