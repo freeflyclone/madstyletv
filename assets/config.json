@@ -1,6 +1,9 @@
 { 
 	"AssetFolder" : "assets",
-	"ChildObject" : {
-		"FirstFloat" : 5.195
+	"ShaderFolder" : "shaders",
+	"Light0" : {
+		"x" : 0.0,
+		"y" : -10.0,
+		"z" : 20.0
 	}
 }
