@@ -215,6 +215,7 @@
     <ClInclude Include="JSON.h" />
     <ClInclude Include="JSONValue.h" />
     <ClInclude Include="xal\xal.h" />
+    <ClInclude Include="xassets.h" />
     <ClInclude Include="xav\xav.h" />
     <ClInclude Include="xav\xavfile.h" />
     <ClInclude Include="xav\xavsrc.h" />
@@ -251,10 +252,10 @@
     <ClCompile Include="JSON.cpp" />
     <ClCompile Include="JSONValue.cpp" />
     <ClCompile Include="xal\xal.cpp" />
+    <ClCompile Include="xassets.cpp" />
     <ClCompile Include="xav\xav.cpp" />
     <ClCompile Include="xav\xavfile.cpp" />
     <ClCompile Include="xav\xavsrc.cpp" />
-    <ClCompile Include="xconfig.cpp" />
     <ClCompile Include="xgl\glew.c" />
     <ClCompile Include="xgl\xgl.cpp" />
     <ClCompile Include="xgl\xglbuffer.cpp" />

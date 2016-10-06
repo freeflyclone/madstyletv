@@ -162,6 +162,9 @@
     <ClInclude Include="JSONValue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xassets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xutils.c">
@@ -196,9 +199,6 @@
     </ClCompile>
     <ClCompile Include="xgl\xgluniform.cpp">
       <Filter>xgl\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="xconfig.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="3rdParty\soil\src\image_DXT.c">
       <Filter>soil\Source Files</Filter>
@@ -243,6 +243,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JSONValue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xassets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
