@@ -7,7 +7,7 @@
 #include "ExampleXGL.h"
 
 void ExampleXGL::BuildScene() {
-	XGLShape *shape,*child1, *child2, *child3, *child4, *child5;
+	XGLShape *shape, *child1, *child2, *child3, *child4, *child5;
 	glm::mat4 rotate, translate;
 
 	AddShape("shaders/lighting", [&](){ shape = new XGLTorus(5.0f, 1.0f, 64, 32); return shape; });

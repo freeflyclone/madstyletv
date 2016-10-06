@@ -15,21 +15,22 @@
 #ifndef XASSETS_H
 #define XASSETS_H
 
-#include <list>
 #include <JSON.h>
+#include <string>
+#include <iostream>
+#include <sstream>
 
 class XAssets : public JSONValue {
 public:
 	XAssets(std::string fileName);
 	~XAssets();
 
-	const std::wstring AsString(std::wstring) const;
-	bool AsBool(std::wstring) const;
-	double AsNumber(std::wstring) const;
-	const JSONArray &AsArray(std::wstring) const;
-	const JSONObject &AsObject(std::wstring) const;
+	// find something with a "object.object.[object.]*" style search string.
+	JSONValue *Find(std::wstring) const;
 
-	void Dump();
+	void DebugDump();
+	void DebugDump(JSONValue *value);
+
 private:
 	JSONValue *root;
 };

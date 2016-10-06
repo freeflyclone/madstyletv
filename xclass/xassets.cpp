@@ -19,29 +19,57 @@ XAssets::XAssets(std::string file) {
 			xprintf("JSON::Parse() failed\n");
 	}
 }
-const std::wstring XAssets::AsString(std::wstring name) const {
-	return root->Child(name.c_str())->AsString();
-};
-bool XAssets::AsBool(std::wstring name) const {
-	return root->Child(name.c_str())->AsBool();
-};
-double XAssets::AsNumber(std::wstring name) const {
-	return root->Child(name.c_str())->AsNumber();
-};
-const JSONArray &XAssets::AsArray(std::wstring name) const {
-	return root->Child(name.c_str())->AsArray();
-};
-const JSONObject &XAssets::AsObject(std::wstring name) const {
-	return root->Child(name.c_str())->AsObject();
-};
 
-void XAssets::Dump() {
-	std::vector<std::wstring>keys = root->ObjectKeys();
+JSONValue* XAssets::Find(std::wstring name) const {
+	std::wstringstream ss(name);
+	std::wstring token;
+	std::vector<std::wstring>tokens;
+	std::vector<std::wstring>::iterator iterator;
+	JSONObject object;
 
-	for (size_t i = 0; i < root->CountChildren(); i++) {
-		JSONValue *child = root->Child(keys[i].c_str());
-		xprintf("%S : %S\n", keys[i].c_str(), child->Stringify(true).c_str());
+	// just in JSONParse() failed
+	if (root == NULL)
+		return NULL;
+
+	// maybe I should keep root as JSONObject (?)
+	object = root->AsObject();
+
+	// split "name" into tokens with '.' as separator
+	while (std::getline(ss, token, L'.'))
+		tokens.push_back(token);
+
+	for (iterator = tokens.begin(); iterator != tokens.end(); iterator++) {
+		if (object.find(iterator->c_str()) != object.end()) {
+			if ((iterator + 1) == tokens.end())
+				return object[iterator->c_str()];
+			else if (object[iterator->c_str()]->IsObject())
+				object = object[iterator->c_str()]->AsObject();
+		}
 	}
+	return NULL;
+}
+
+void XAssets::DebugDump() {
+	DebugDump(root);
+}
+
+void XAssets::DebugDump(JSONValue *value) {
+	static int level = 0;
+	std::vector<std::wstring>keys = value->ObjectKeys();
+	std::vector<std::wstring>::iterator iterator = keys.begin();
+
+	level++;
+
+	while (iterator != keys.end()){
+		JSONValue *keyValue = value->Child((*iterator).c_str());
+		if (keyValue){
+			xprintf("XAssets::Dump(%d): %S : %S\n", level, (*iterator).c_str(), keyValue->Stringify().c_str());
+			if (keyValue->IsObject())
+				DebugDump(keyValue);
+		}
+		iterator++;
+	}
+	level--;
 }
 
 XAssets::~XAssets() {}
