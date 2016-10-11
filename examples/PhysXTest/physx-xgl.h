@@ -11,6 +11,28 @@
 #include <ExampleXGL.h>
 #include <pxphysicsapi.h>
 
+#ifdef _DEBUG
+#pragma comment(lib, "PhysX3DEBUG_x64.lib")
+#pragma comment(lib, "PhysX3ExtensionsDEBUG.lib")
+#pragma comment(lib, "PhysX3CommonDEBUG_x64.lib")
+#pragma comment(lib, "PhysX3CookingDEBUG_x64.lib")
+#pragma comment(lib, "PhysX3CharacterKinematicDEBUG_x64.lib")
+#pragma comment(lib, "PhysX3VehicleDEBUG.lib")
+#pragma comment(lib, "PhysXProfileSDKDEBUG.lib")
+#pragma comment(lib, "PhysXVisualDebuggerSDKDEBUG.lib")
+#pragma comment(lib, "PxTaskDEBUG.lib")
+#else
+#pragma comment(lib, "PhysX3Extensions.lib")
+#pragma comment(lib, "PhysX3Common_x64.lib")
+#pragma comment(lib, "PhysX3_x64.lib")
+#pragma comment(lib, "PhysX3Cooking_x64.lib")
+#pragma comment(lib, "PhysX3CharacterKinematic_x64.lib")
+#pragma comment(lib, "PhysX3Vehicle.lib")
+#pragma comment(lib, "PhysXProfileSDK.lib")
+#pragma comment(lib, "PhysXVisualDebuggerSDK.lib")
+#pragma comment(lib, "PxTask.lib")
+#endif
+
 #define MAX_NUM_ACTOR_SHAPES 128
 
 // define a bindable function pointer for various Physx Joint types creation
