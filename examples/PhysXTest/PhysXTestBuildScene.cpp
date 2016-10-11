@@ -6,9 +6,12 @@
 ** via keyboard and mouse.
 **************************************************************/
 #include "ExampleXGL.h"
+#include "mstv-physx.h"
+
+//MstvPhysx myPhysx;
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
-	AddShape("shaders/simple", [&](){ shape = new XGLTriangle(); return shape; });
+	AddShape("shaders/diffuse", [&](){ shape = new XGLTriangle(); return shape; });
 }
