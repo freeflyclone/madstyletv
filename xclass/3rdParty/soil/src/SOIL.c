@@ -94,7 +94,7 @@ unsigned int SOIL_direct_load_DDS(
 		int loading_as_cubemap );
 unsigned int SOIL_direct_load_DDS_from_memory(
 		const unsigned char *const buffer,
-		int buffer_length,
+		unsigned int buffer_length,
 		unsigned int reuse_texture_ID,
 		int flags,
 		int loading_as_cubemap );
@@ -1538,7 +1538,7 @@ const char*
 
 unsigned int SOIL_direct_load_DDS_from_memory(
 		const unsigned char *const buffer,
-		int buffer_length,
+		unsigned int buffer_length,
 		unsigned int reuse_texture_ID,
 		int flags,
 		int loading_as_cubemap )
@@ -1553,7 +1553,8 @@ unsigned int SOIL_direct_load_DDS_from_memory(
 	unsigned int DDS_main_size;
 	unsigned int DDS_full_size;
 	unsigned int width, height;
-	int mipmaps, cubemap, uncompressed, block_size = 16;
+	int mipmaps, cubemap, uncompressed;
+	unsigned int block_size = 16;
 	unsigned int flag;
 	unsigned int cf_target, ogl_target_start, ogl_target_end;
 	unsigned int opengl_texture_type;
@@ -1731,6 +1732,7 @@ unsigned int SOIL_direct_load_DDS_from_memory(
 			/*	upload the main chunk	*/
 			if( uncompressed )
 			{
+				unsigned int i;
 				/*	and remember, DXT uncompressed uses BGR(A),
 					so swap to RGB(A) for ALL MIPmap levels	*/
 				for( i = 0; i < DDS_full_size; i += block_size )
@@ -1871,7 +1873,7 @@ unsigned int SOIL_direct_load_DDS(
 	}
 	/*	now try to do the loading	*/
 	tex_ID = SOIL_direct_load_DDS_from_memory(
-		(const unsigned char *const)buffer, buffer_length,
+		(const unsigned char *const)buffer, (unsigned int)buffer_length,
 		reuse_texture_ID, flags, loading_as_cubemap );
 	SOIL_free_image_data( buffer );
 	return tex_ID;
@@ -1887,7 +1889,7 @@ static int soilIsSupported(char *ext){
     printf("There are %d extensions\n", numExtensions);
 
     for (int i = 0; i < numExtensions; i++){
-        char *extTmp = glGetStringi(GL_EXTENSIONS, i);
+        const char *extTmp = glGetStringi(GL_EXTENSIONS, i);
         if (strcmp(ext, extTmp) == 0){
             printf("Found it!\n");
             return 1;
