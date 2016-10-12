@@ -140,10 +140,11 @@ public:
 
 	XGLFramebuffer *fb;
     float clock;
+
+	XGLShaderMatrixData shaderMatrix;
 private:
     // this is returned by GetShader().  Use of GetShader() feels funky, like my structure design blows chunks.
     XGLShader *currentShader;
-	XGLShaderMatrixData shaderMatrix;
 
     // these are used by GLUT implementations
 #ifdef USE_GLUT

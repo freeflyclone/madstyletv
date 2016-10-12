@@ -5,6 +5,8 @@
 **************************************************************/
 #include "physx-xgl.h"
 
+XGLCube *cube;
+
 void ExampleXGL::BuildScene() {}
 
 void PhysXXGL::BuildScene() {
@@ -54,10 +56,28 @@ void PhysXXGL::BuildScene() {
 	};
 	AddKeyFunc('B', blocksKey);
 
-	XInputMouseFunc mouseFunc = [&](int x, int y, int flags) {
+	AddShape("shaders/diffuse", [&]() { cube = new XGLCube(); return cube; });
+
+	XInputMouseFunc worldCursorMouse = [&](int x, int y, int flags) {
 		if (mt.IsTrackingRightButton()) {
-			xprintf("Tracking: %d,%d\n", x, y);
+			XGLWorldCoord *out = wc.Unproject(projector, x, y);
+
+			RayCast(out[1], out[0]);
+
+			// project the worldCursor ray onto the X/Y (Z=0) plane
+			// TODO: Figure this out.  I found it on StackOverflow.
+			float f = out[0].z / (out[1].z - out[0].z);
+			float x2d = out[0].x - f * (out[1].x - out[0].x);
+			float y2d = out[0].y - f * (out[1].y - out[0].y);
+			float z2d = -0.002f;
+
+			if (cube) {
+				glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(x2d, y2d, z2d));
+				cube->model = translate;
+			}
 		}
+		else
+			ResetActive();
 	};
-	AddMouseFunc(mouseFunc);
+	AddMouseFunc(worldCursorMouse);
 }

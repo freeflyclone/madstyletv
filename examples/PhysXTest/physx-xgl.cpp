@@ -1,6 +1,6 @@
 #include "physx-xgl.h"
 
-PhysXXGL::PhysXXGL() {
+PhysXXGL::PhysXXGL() : dynamicsSerialNumber(-1), activeActor(NULL), mouseSphere(NULL), mouseJoint(NULL) {
 	xprintf("PhysXXGL::PhysXXGL()\n");
 
 	initPhysics(true);
@@ -229,3 +229,81 @@ void PhysXXGL::onControllerHit(const physx::PxControllersHit& hit) {
 void PhysXXGL::onObstacleHit(const physx::PxControllerObstacleHit& hit) {
 	xprintf("onObstacleHit()\n");
 };
+
+void PhysXXGL::RayCast(glm::vec3 o, glm::vec3 d) {
+	physx::PxVec3 orig(o.x, o.y, o.z);
+	physx::PxVec3 dir(d.x, d.y, d.z);
+	physx::PxReal length = 1000.0;
+	physx::PxRaycastHit hit;
+	physx::PxActor *actor;
+
+	if (activeActor == NULL) {
+		dir -= orig;
+		dir.normalize();
+		mScene->raycastSingle(orig, dir, length, physx::PxHitFlag::eDEFAULT, hit);
+
+		if ((actor = hit.actor) != NULL) {
+			if (actor->is<physx::PxRigidDynamic>()) {
+				activeActor = actor;
+				((UserData *)actor->userData)->active = true;
+				hitId = ((UserData *)actor->userData)->id;
+				if (mouseSphere == NULL)
+				{
+					physx::PxVec3 pos(hit.position), dir(0);
+					mouseSphere = createDynamic(physx::PxTransform(pos), physx::PxSphereGeometry(0.0001), dir);
+					mouseSphere->setRigidDynamicFlag(physx::PxRigidDynamicFlag::eKINEMATIC, true);
+					selectedActor = (physx::PxRigidDynamic*)actor;
+					selectedActor->wakeUp();
+
+					physx::PxTransform mFrame, sFrame;
+					mFrame.q = mouseSphere->getGlobalPose().q;
+					mFrame.p = mouseSphere->getGlobalPose().transformInv(hit.position);
+					sFrame.q = selectedActor->getGlobalPose().q;
+					sFrame.p = selectedActor->getGlobalPose().transformInv(hit.position);
+
+					mouseJoint = PxDistanceJointCreate(*mPhysics, mouseSphere, mFrame, selectedActor, sFrame);
+					mouseJoint->setConstraintFlag(physx::PxConstraintFlag::ePROJECTION, true);
+					mouseJoint->setDamping(10000.0f);
+					mouseJoint->setStiffness(200000.0f);
+					mouseJoint->setMinDistance(0.00001);
+					mouseJoint->setMaxDistance(0.0001);
+					mouseJoint->setDistanceJointFlag(physx::PxDistanceJointFlag::eMAX_DISTANCE_ENABLED, true);
+					mouseJoint->setDistanceJointFlag(physx::PxDistanceJointFlag::eSPRING_ENABLED, true);
+
+					float dx = hit.position.x - orig.x;
+					float dy = hit.position.y - orig.y;
+					float dz = hit.position.z - orig.z;
+					mouseDepth = sqrt(dx*dx + dy*dy + dz*dz);
+				}
+				return;
+			}
+		}
+	}
+	else {
+		physx::PxVec3 d = dir - orig;
+		d.normalize();
+		d *= mouseDepth;
+		d += orig;
+		if (d.z < 0.0f)
+			d.z = 0.0f;
+		physx::PxTransform t(d);
+		mouseSphere->setKinematicTarget(t);
+	}
+}
+
+void PhysXXGL::ResetActive() {
+	if (activeActor) {
+		physx::PxRigidDynamic *rd = (physx::PxRigidDynamic *)activeActor;
+		rd->wakeUp();
+		((UserData *)activeActor->userData)->active = false;
+	}
+	activeActor = NULL;
+
+	if (mouseJoint)
+		mouseJoint->release();
+	mouseJoint = NULL;
+
+	if (mouseSphere)
+		mouseSphere->release();
+	mouseSphere = NULL;
+}
