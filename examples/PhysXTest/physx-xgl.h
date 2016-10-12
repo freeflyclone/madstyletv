@@ -41,6 +41,7 @@ typedef std::function<physx::PxJoint *(physx::PxRigidActor *, const physx::PxTra
 class PhysXXGL : public ExampleXGL, public physx::PxUserControllerHitReport {
 public:
 	PhysXXGL();
+	void BuildScene();
 
 	physx::PxDefaultAllocator			mAllocator;
 	physx::PxDefaultErrorCallback		mErrorCallback;

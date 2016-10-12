@@ -4,6 +4,8 @@ PhysXXGL::PhysXXGL() {
 	xprintf("PhysXXGL::PhysXXGL()\n");
 
 	initPhysics(true);
+
+	BuildScene();
 }
 
 void PhysXXGL::initPhysics(bool interactive)
@@ -100,8 +102,33 @@ physx::PxRigidDynamic* PhysXXGL::createDynamic(const physx::PxTransform& t, cons
 	return rd;
 }
 
-void PhysXXGL::stepPhysics(bool interactive)
-{
+physx::PxRigidDynamic* PhysXXGL::createDynamic(const physx::PxTransform& t, const physx::PxGeometry& geometry, const physx::PxVec3& velocity) {
+	physx::PxRigidDynamic* dynamic = createDynamic(t, geometry, *mMaterial, 10.0f);
+	dynamic->setAngularDamping(0.5f);
+	dynamic->setLinearDamping(0.5f);
+	dynamic->setLinearVelocity(velocity);
+	mScene->addActor(*dynamic);
+	return dynamic;
+}
+
+void PhysXXGL::createStack(const physx::PxTransform& t, physx::PxU32 size, physx::PxReal halfExtent) {
+	physx::PxShape* shape = mPhysics->createShape(physx::PxBoxGeometry(halfExtent, halfExtent, halfExtent), *mMaterial);
+
+	for (physx::PxU32 i = 3; i<size; i++)
+	{
+		for (physx::PxU32 j = 0; j<size - i; j++)
+		{
+			physx::PxTransform localTm(physx::PxVec3(physx::PxReal(j * 2) - physx::PxReal(size - i), 0, physx::PxReal(i * 2 + 1)) * halfExtent);
+			physx::PxRigidDynamic* body = createDynamic(t.transform(localTm), physx::PxBoxGeometry(1, 1, 1), *mMaterial, 1.0f);
+			body->attachShape(*shape);
+			physx::PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
+			mScene->addActor(*body);
+		}
+	}
+	shape->release();
+}
+
+void PhysXXGL::stepPhysics(bool interactive) {
 	PX_UNUSED(interactive);
 	mScene->simulate(1.0f / 60.0f);
 	mScene->fetchResults(true);
@@ -142,6 +169,14 @@ void PhysXXGL::renderGeometry(physx::PxGeometryHolder h, physx::PxMat44 shapePos
 	{
 		case physx::PxGeometryType::eBOX:
 			renderer->box->XGLBuffer::Bind();
+			renderer->box->diffuseColor = XGLColor(1, 1, 0);
+			renderer->box->XGLMaterial::Bind(renderer->box->program);
+
+			glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, sizeof(glm::mat4), (GLvoid *)&shapePose);
+			//GL_CHECK("glBufferSubData() failed");
+			glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(renderer->box->idx.size()), XGLIndexType, 0);
+			//GL_CHECK("glDrawElements() failed");
+
 			renderer->box->XGLBuffer::Unbind();
 			break;
 
