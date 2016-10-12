@@ -48,6 +48,8 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 				pxgl->KeyEvent(key, 0);
 			else if (action == GLFW_RELEASE)
 				pxgl->KeyEvent(key, 0x8000);
+			else if (action == GLFW_REPEAT)
+				pxgl->KeyEvent(key, 0x4000);
 		}
 	}
 }
