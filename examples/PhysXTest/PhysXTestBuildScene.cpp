@@ -55,6 +55,9 @@ void PhysXXGL::BuildScene() {
 	AddKeyFunc('B', blocksKey);
 
 	XInputMouseFunc mouseFunc = [&](int x, int y, int flags) {
+		if (mt.IsTrackingRightButton()) {
+			xprintf("Tracking: %d,%d\n", x, y);
+		}
 	};
 	AddMouseFunc(mouseFunc);
 }
