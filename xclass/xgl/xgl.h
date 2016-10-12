@@ -123,6 +123,7 @@ public:
 	XGLLights lights;
 
     XGLShader *GetShader() { return currentShader; };
+	XGLShader *GetShader(std::string name) { return shaderMap[pathToAssets + "/" + name]; }
 	XGLShaderMatrixData *GetMatrix() { return &shaderMatrix; }
 
     XConfig config;

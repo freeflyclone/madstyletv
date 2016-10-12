@@ -112,14 +112,17 @@ int main(void) {
 
 	try {
 		pxgl = new PhysXXGL();
-		xprintf("About to call initPhysics()\n");
-		pxgl->initPhysics(true);
 
 		while (!glfwWindowShouldClose(window)) {
 			int width, height;
+			static int prevWidth = 0, prevHeight = 0;
 
 			glfwGetFramebufferSize(window, &width, &height);
-			pxgl->Reshape(width, height);
+			if ((width != prevWidth) || (height != prevHeight)){
+				pxgl->Reshape(width, height);
+				prevWidth = width;
+				prevHeight = height;
+			}
 
 			glfwSwapInterval(1);
 

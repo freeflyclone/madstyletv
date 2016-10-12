@@ -87,15 +87,15 @@ public:
 
 	class PhysxRenderer : public XGLShape {
 	public:
-		PhysxRenderer(PhysXXGL *p) : container(p) {
+		PhysxRenderer(PhysXXGL *p) : container(p), prevClock(0.0f) {
+			v.push_back({ { 0, 0, 0 } });
 			box = new XGLCube();
-			ball = new XGLSphere(1.0, 18);
-			capsule = new XGLCapsule(1.0, 2.0, 18);
+			ball = new XGLSphere(1.0, 36);
+			capsule = new XGLCapsule(1.0, 2.0, 36);
 		};
 		PhysXXGL *container;
 		void Draw();
-		void Init() {
-			XGLShader *shader = container->shaderMap[pathToAssets + "/shaders/diffuse"];
+		void Init(XGLShader *shader) {
 			box->Load(shader, box->v, box->idx);
 			ball->Load(shader, ball->v, ball->idx);
 			capsule->Load(shader, capsule->v, capsule->idx);
@@ -105,6 +105,7 @@ public:
 		XGLSphere *ball;
 		XGLCapsule *capsule;
 		GLuint program;
+		float prevClock;
 	};
 
 	class UserData {
@@ -124,5 +125,4 @@ public:
 	physx::PxRigidDynamic *mouseSphere = NULL;
 	float mouseDepth;
 	physx::PxRigidDynamic *selectedActor = NULL;
-	XGLShader *shader;
 };
