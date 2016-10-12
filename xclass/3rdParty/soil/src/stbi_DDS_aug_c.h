@@ -359,11 +359,11 @@ static stbi_uc *dds_load(stbi *s, int *x, int *y, int *comp, int req_comp)
 					stbi_decode_DXT_color_block ( block, compressed );
 				}
 				//	is this a partial block?
-				if( ref_x + 4 > s->img_x )
+				if( ref_x + 4 > (int)s->img_x )
 				{
 					bw = s->img_x - ref_x;
 				}
-				if( ref_y + 4 > s->img_y )
+				if( ref_y + 4 > (int)s->img_y )
 				{
 					bh = s->img_y - ref_y;
 				}
@@ -382,6 +382,7 @@ static stbi_uc *dds_load(stbi *s, int *x, int *y, int *comp, int req_comp)
 				skip MIPmaps if present	*/
 			if( has_mipmap )
 			{
+				unsigned int i;
 				int block_size = 16;
 				if( DXT_family == 1 )
 				{
@@ -418,6 +419,7 @@ static stbi_uc *dds_load(stbi *s, int *x, int *y, int *comp, int req_comp)
 		/*	do this once for each face	*/
 		for( cf = 0; cf < cubemap_faces; ++ cf )
 		{
+			unsigned int i;
 			/*	read the main image for this face	*/
 			getn( s, &dds_data[cf*s->img_x*s->img_y*s->img_n], s->img_x*s->img_y*s->img_n );
 			/*	done reading and decoding the main image...
