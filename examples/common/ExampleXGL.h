@@ -32,7 +32,6 @@ public:
 
 	void CameraTracker(XGLCamera *c);
 
-private:
 	// application-specific input events -> actions mappings
 	MouseTracker mt;
 	KeyboardTracker kt;
