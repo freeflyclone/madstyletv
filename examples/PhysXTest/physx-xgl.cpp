@@ -3,7 +3,7 @@
 PhysXXGL::PhysXXGL() {
 	xprintf("PhysXXGL::PhysXXGL()\n");
 
-	//initPhysics(true);
+	initPhysics(true);
 }
 
 void PhysXXGL::initPhysics(bool interactive)
@@ -42,11 +42,19 @@ void PhysXXGL::initPhysics(bool interactive)
 	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*mPhysics, physx::PxPlane(0, 0, 1, 0), *mMaterial);
 	mScene->addActor(*groundPlane);
 
-	AddShape("shaders/diffuse", [&]() { renderer = new PhysxRenderer(this); return renderer; });
-	renderer->program = shaderMap[pathToAssets + "/shaders/diffuse"]->Id();
-	renderer->ball->program = renderer->program;
-	renderer->box->program = renderer->program;
-	renderer->Init();
+	// XGLShape-derived object, for rendering the PhysX primitives.
+	// NOTE: this bit of code feels sketchy re: "this" inside Init() not
+	// being fully defined yet because of constructors of derived classes.
+	// (although I'm not sure,  need an in-depth guru meditation on the subject)
+	std::string shaderName = "shaders/diffuse";
+	AddShape(shaderName, [&]() { renderer = new PhysxRenderer(this); return renderer; });
+	renderer->Init(GetShader(shaderName));
+	renderer->SetTheFunk([&](XGLShape *s, float clock) {
+		if (clock > renderer->prevClock) {
+			stepPhysics(true);
+			renderer->prevClock = clock;
+		}
+	});
 
 	//if(false)
 	for (int i = -20; i < 20; i += 5) {
@@ -167,8 +175,6 @@ void PhysXXGL::renderGeometry(physx::PxGeometryHolder h, physx::PxMat44 shapePos
 
 void PhysXXGL::PhysxRenderer::Draw()
 {
-	container->stepPhysics(true);
-
 	physx::PxScene* scene;
 	PxGetPhysics().getScenes(&scene, 1);
 	physx::PxU32 nbActors = scene->getNbActors(physx::PxActorTypeSelectionFlag::eRIGID_DYNAMIC | physx::PxActorTypeSelectionFlag::eRIGID_STATIC);
