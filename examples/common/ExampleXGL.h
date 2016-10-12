@@ -17,6 +17,7 @@
 #pragma once
 #include "xgl.h"
 #include "xinput.h"
+#include "xglworldcursor.h"
 #include "InputTrackers.h"
 
 class ExampleXGL : public XGL, public XInput {
@@ -35,4 +36,5 @@ public:
 	// application-specific input events -> actions mappings
 	MouseTracker mt;
 	KeyboardTracker kt;
+	XGLWorldCursor wc;
 };
