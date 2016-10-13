@@ -12,6 +12,12 @@
 
 #include <xassets.h>
 
+
+//---------------------------------------------------
+// NOTE: coding the constructor this way causes a seg 
+// fault on linux if XCLASS_DIR is not set. It needs 
+// to be changed!!!
+//---------------------------------------------------
 class XConfig : public XAssets {
 public:
 	XConfig(std::string fileName = std::getenv("XCLASS_DIR") + std::string("/../assets/config.json")) : XAssets(fileName) {};
