@@ -1,17 +1,22 @@
+# map environment variables to internal variables
+XCLASSDIR=${XCLASS_DIR}
+
+XGLDIR=${XCLASSDIR}/xgl
+XALDIR=${XCLASSDIR}/xal
+EXAMPLESDIR=${XCLASSDIR}/../examples
+THIRDPARTYDIR=${XCLASSDIR}/3rdParty
+
 LIB=libxclass.a
-XCLASSDIR=../xclass
-XGLDIR=../xclass/xgl
-XALDIR=../xclass/xal
 
 CPPFLAGS +=-std=c++14\
-	-I../xclass/xal \
-	-I../xclass/xgl \
-	-I../xclass/xgl/glm \
-	-I../xclass/xgl/glm/gtc \
-	-I../xclass/3rdParty/soil/src \
-	-I../xclass/3rdParty/freetype/include/freetype2 \
-	-I../xclass \
-	-I../examples/common \
+	-I${XALDIR} \
+	-I${XGLDIR} \
+	-I${XGLDIR}/glm \
+	-I${XGLDIR}/glm/gtc \
+	-I${THIRDPARTYDIR}/soil/src \
+	-I${THIRDPARTYDIR}/freetype/include/freetype2 \
+	-I${XCLASSDIR} \
+	-I${EXAMPLESDIR}/common \
 	-I/usr/include/AL
 	-D_GNU_SOURCE=1 \
 	-DGLEW_STATIC \
@@ -20,11 +25,10 @@ CPPFLAGS +=-std=c++14\
 	-g
 
 CFLAGS +=-std=c11 \
-	-Iglm \
-	-I../xclass/xal \
-	-I../xclass/xgl \
-	-I../xclass/xgl/glm \
-	-I../xclass \
+	-I${XALDIR} \
+	-I${XGLDIR} \
+	-I${XGLDIR}/glm \
+	-I${XCLASSDIR} \
 	-D_GNU_SOURCE=1 \
 	-DGLEW_STATIC \
 	-g
@@ -52,13 +56,13 @@ CPPSOURCES=${XGLDIR}/xgl.cpp \
 
 CSOURCES=${XGLDIR}/glew.c \
 	${XCLASSDIR}/xutils.c \
-	${XCLASSDIR}/3rdParty/soil/src/image_DXT.c \
-	${XCLASSDIR}/3rdParty/soil/src/image_helper.c \
-	${XCLASSDIR}/3rdParty/soil/src/SOIL.c \
-	${XCLASSDIR}/3rdParty/soil/src/stb_image_aug.c \
+	${THIRDPARTYDIR}/soil/src/image_DXT.c \
+	${THIRDPARTYDIR}/soil/src/image_helper.c \
+	${THIRDPARTYDIR}/soil/src/SOIL.c \
+	${THIRDPARTYDIR}/soil/src/stb_image_aug.c \
 
 
-COMMON=main.cpp ../examples/common/ExampleXGL.cpp
+COMMON=main.cpp ${EXAMPLESDIR}/common/ExampleXGL.cpp
 
 OBJS = $(patsubst %.cpp,%.o,${CPPSOURCES})
 OBJS += $(patsubst %.c,%.o,${CSOURCES})
@@ -67,7 +71,7 @@ COMMONOBJS = $(patsubst %.cpp,%.o,${COMMON})
 
 LDFLAGS +=\
 	-L. \
-	-L../xclass/3rdParty/glfw/lib \
+	-L${THIRDPARTYDIR}/glfw/lib \
 	-L/usr/lib/x86_64-linux-gnu
 
 LIBS=-lxclass -lglfw3 -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXinerama -lXcursor -lpthread -lexpat -lfreetype -lopencv_core -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d 
@@ -78,16 +82,16 @@ OPENAL_LIBS=-lopenal
 
 all: Example02 OpenCVTest OpenCVWebcam OpenALTest
 
-OpenCVWebcam: ${COMMONOBJS} ${LIB} ../examples/OpenCVWebcam/OpenCVWebcamBuildScene.o
+OpenCVWebcam: ${COMMONOBJS} ${LIB} ${EXAMPLESDIR}/OpenCVWebcam/OpenCVWebcamBuildScene.o
 	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} ${OPENCV_LIBS} -o $@
 
-OpenCVTest: ${COMMONOBJS} ${LIB} ../examples/OpenCVTest/OpenCVTestBuildScene.o
+OpenCVTest: ${COMMONOBJS} ${LIB} ${EXAMPLESDIR}/OpenCVTest/OpenCVTestBuildScene.o
 	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} ${OPENCV_LIBS} -o $@
 
-OpenALTest: ${COMMONOBJS} ${LIB} ../examples/OpenALTest/OpenALTestBuildScene.o
+OpenALTest: ${COMMONOBJS} ${LIB} ${EXAMPLESDIR}/OpenALTest/OpenALTestBuildScene.o
 	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} ${OPENCV_LIBS} ${OPENAL_LIBS} -o $@
 
-Example02: ${COMMONOBJS} ${LIB} ../examples/Example02/Example02.o
+Example02: ${COMMONOBJS} ${LIB} ${EXAMPLESDIR}/Example02/Example02.o
 	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} -o $@
 
 ${LIB}: ${OBJS}
@@ -95,9 +99,8 @@ ${LIB}: ${OBJS}
 
 clean:
 	@-rm -rf Example*
+	@-rm -rf Open*
 	@-rm -rf ${COMMONOBJS}
 	@-rm -rf ${OBJS}
 	@-rm -rf ${LIB}
 
-#xgl.o: xgl.h
-#xglshader.o: xgl.h
