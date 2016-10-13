@@ -8,8 +8,9 @@
 *****************************************************************************/
 #pragma once
 
+//#include <ctype.h>
+#include <PxPhysicsAPI.h>
 #include <ExampleXGL.h>
-#include <pxphysicsapi.h>
 
 #ifdef _DEBUG
 #pragma comment(lib, "PhysX3DEBUG_x64.lib")

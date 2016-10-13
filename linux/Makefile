@@ -1,5 +1,6 @@
 # map environment variables to internal variables
 XCLASSDIR=${XCLASS_DIR}
+PHYSXDIR=${PHYSX_DIR}
 
 XGLDIR=${XCLASSDIR}/xgl
 XALDIR=${XCLASSDIR}/xal
@@ -17,7 +18,10 @@ CPPFLAGS +=-std=c++14\
 	-I${THIRDPARTYDIR}/freetype/include/freetype2 \
 	-I${XCLASSDIR} \
 	-I${EXAMPLESDIR}/common \
-	-I/usr/include/AL
+	-I${EXAMPLESDIR}/PhysXTest \
+	-I/usr/include/AL \
+	-I${PHYSXDIR}/Include \
+	-DNDEBUG \
 	-D_GNU_SOURCE=1 \
 	-DGLEW_STATIC \
 	-Wno-writable-strings \
@@ -72,6 +76,8 @@ COMMONOBJS = $(patsubst %.cpp,%.o,${COMMON})
 LDFLAGS +=\
 	-L. \
 	-L${THIRDPARTYDIR}/glfw/lib \
+	-L${PHYSXDIR}/Lib/linux64 \
+	-L${PHYSXDIR}/Bin/linux64 \
 	-L/usr/lib/x86_64-linux-gnu
 
 LIBS=-lxclass -lglfw3 -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXinerama -lXcursor -lpthread -lexpat -lfreetype -lopencv_core -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d 
@@ -79,6 +85,11 @@ LIBS=-lxclass -lglfw3 -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXine
 OPENCV_LIBS=-lopencv_flann -lopencv_gpu -lopencv_highgui -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_objdetect -lopencv_ocl -lopencv_photo -lopencv_stitching -lopencv_superres -lopencv_ts -lopencv_video -lopencv_videostab
 
 OPENAL_LIBS=-lopenal
+
+PHYSX_LIBS=-lPhysX3Extensions -lPhysX3Common_x64 -lPhysX3_x64 -lPhysX3Cooking_x64 -lPhysX3CharacterKinematic_x64 -lPhysX3Vehicle -lPhysXProfileSDK -lPhysXVisualDebuggerSDK -lPxTask
+
+PhysXTest: ${LIB} ${EXAMPLESDIR}/common/ExampleXGL.o physx-main.o ${EXAMPLESDIR}/PhysXTest/PhysXTestBuildScene.o ${EXAMPLESDIR}/PhysXTest/physx-xgl.o
+	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} ${PHYSX_LIBS} -o $@
 
 all: Example02 OpenCVTest OpenCVWebcam OpenALTest
 
