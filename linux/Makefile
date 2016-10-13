@@ -88,10 +88,10 @@ OPENAL_LIBS=-lopenal
 
 PHYSX_LIBS=-lPhysX3Extensions -lPhysX3Common_x64 -lPhysX3_x64 -lPhysX3Cooking_x64 -lPhysX3CharacterKinematic_x64 -lPhysX3Vehicle -lPhysXProfileSDK -lPhysXVisualDebuggerSDK -lPxTask
 
+all: Example02 OpenCVTest OpenCVWebcam OpenALTest PhysXTest
+
 PhysXTest: ${LIB} ${EXAMPLESDIR}/common/ExampleXGL.o physx-main.o ${EXAMPLESDIR}/PhysXTest/PhysXTestBuildScene.o ${EXAMPLESDIR}/PhysXTest/physx-xgl.o
 	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} ${PHYSX_LIBS} -o $@
-
-all: Example02 OpenCVTest OpenCVWebcam OpenALTest
 
 OpenCVWebcam: ${COMMONOBJS} ${LIB} ${EXAMPLESDIR}/OpenCVWebcam/OpenCVWebcamBuildScene.o
 	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} ${OPENCV_LIBS} -o $@
@@ -111,6 +111,7 @@ ${LIB}: ${OBJS}
 clean:
 	@-rm -rf Example*
 	@-rm -rf Open*
+	@-rm -rf *Test
 	@-rm -rf ${COMMONOBJS}
 	@-rm -rf ${OBJS}
 	@-rm -rf ${LIB}
