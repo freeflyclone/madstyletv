@@ -20,7 +20,8 @@
 //---------------------------------------------------
 class XConfig : public XAssets {
 public:
-	XConfig(std::string fileName = std::getenv("XCLASS_DIR") + std::string("/../assets/config.json")) : XAssets(fileName) {};
+	//XConfig(std::string fileName = std::getenv("XCLASS_DIR") + std::string("/../assets/config.json")) : XAssets(fileName) {};
+	XConfig(std::string fileName = std::getenv("XCLASS_DIR")?std::getenv("XCLASS_DIR"):"." + std::string("/../assets/config.json")) : XAssets(fileName) {};
 };
 
 #endif
