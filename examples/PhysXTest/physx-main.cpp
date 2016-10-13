@@ -126,8 +126,6 @@ int main(void) {
 				prevHeight = height;
 			}
 
-			glfwSwapInterval(1);
-
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			pxgl->Display();
