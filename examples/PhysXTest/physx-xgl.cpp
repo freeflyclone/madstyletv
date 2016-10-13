@@ -250,7 +250,7 @@ void PhysXXGL::RayCast(glm::vec3 o, glm::vec3 d) {
 				if (mouseSphere == NULL)
 				{
 					physx::PxVec3 pos(hit.position), dir(0);
-					mouseSphere = createDynamic(physx::PxTransform(pos), physx::PxSphereGeometry(0.0001), dir);
+					mouseSphere = createDynamic(physx::PxTransform(pos), physx::PxSphereGeometry(0.0001f), dir);
 					mouseSphere->setRigidDynamicFlag(physx::PxRigidDynamicFlag::eKINEMATIC, true);
 					selectedActor = (physx::PxRigidDynamic*)actor;
 					selectedActor->wakeUp();
@@ -265,8 +265,8 @@ void PhysXXGL::RayCast(glm::vec3 o, glm::vec3 d) {
 					mouseJoint->setConstraintFlag(physx::PxConstraintFlag::ePROJECTION, true);
 					mouseJoint->setDamping(10000.0f);
 					mouseJoint->setStiffness(200000.0f);
-					mouseJoint->setMinDistance(0.00001);
-					mouseJoint->setMaxDistance(0.0001);
+					mouseJoint->setMinDistance(0.00001f);
+					mouseJoint->setMaxDistance(0.0001f);
 					mouseJoint->setDistanceJointFlag(physx::PxDistanceJointFlag::eMAX_DISTANCE_ENABLED, true);
 					mouseJoint->setDistanceJointFlag(physx::PxDistanceJointFlag::eSPRING_ENABLED, true);
 
