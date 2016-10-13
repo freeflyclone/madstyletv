@@ -41,9 +41,12 @@ CPPSOURCES=${XGLDIR}/xgl.cpp \
 	${XGLDIR}/xglshader.cpp \
 	${XGLDIR}/xglshapes.cpp \
 	${XGLDIR}/xgluniform.cpp \
+	${XGLDIR}/xglworldcursor.cpp \
 	${XALDIR}/xal.cpp \
+	${XCLASSDIR}/xassets.cpp \
 	${XCLASSDIR}/xinput.cpp \
-	${XCLASSDIR}/xconfig.cpp \
+	${XCLASSDIR}/JSON.cpp \
+	${XCLASSDIR}/JSONValue.cpp \
 	${XCLASSDIR}/xshmem.cpp \
 
 
