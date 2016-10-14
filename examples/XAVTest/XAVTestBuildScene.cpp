@@ -45,11 +45,11 @@ public:
 
 		sampleRate = stream->sampleRate;
 
-		audioDevice = alcOpenDevice(NULL);
-		AL_CHECK("alOpenDevice() failed");
+		if ((audioDevice = alcOpenDevice(NULL)) == NULL)
+			throw std::runtime_error("alcOpenDevice() failed");
 
-		audioContext = alcCreateContext(audioDevice, NULL);
-		AL_CHECK("alcCreateContext() failed\n");
+		if ((audioContext = alcCreateContext(audioDevice, NULL)) == NULL)
+			throw std::runtime_error("alcCreateContext() failed");
 
 		alcMakeContextCurrent(audioContext);
 		alGetError();

@@ -2,7 +2,7 @@
 
 void CheckAlError(const char *file, int line, std::string what){
 	ALenum err = alGetError();
-	if (err){
+	if (err != AL_NO_ERROR){
 		std::string estr(
 			file +
 			std::string(":") +
