@@ -40,7 +40,7 @@ typedef struct _XGLMaterialAttributes
     XGLColor ambientColor;
 	XGLColor diffuseColor;
 	XGLColor specularColor;
-    GLfloat specularExponent;
+    GLfloat shininess;
 } XGLMaterialAttributes;
 
 typedef GLushort XGLIndex;
