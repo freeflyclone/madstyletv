@@ -7,7 +7,10 @@ layout (std140) uniform MatrixData {
 };
 
 layout (std140) uniform MaterialData {
+    vec4 ambient;
 	vec4 diffuse;
+	vec4 specular;
+    float specularExponent;
 };
 
 layout (std140) uniform LightData {

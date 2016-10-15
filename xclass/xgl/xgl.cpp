@@ -70,18 +70,21 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f) {
 	// for now, create one point light, for diffuse lighting shader development
 	// position, pad1, color, pad2, attenuation, ambientCoefficient
 	XGLLight light = { { 10, 6, 16 }, 1.0f, { 1, 1, 1, 1 }, 1.0, 0.001f, 0.005f };
-	xprintf("sizeof(light): %d\n", sizeof(light));
 	lights.push_back(light);
+
+	XGLMaterial material;
 
 	// NOTE: It is not necessary to know the names of uniform blocks within the shader.
 	// It IS necessary to know that the GL_UNIFORM_BUFFER target is indexed, and thus
 	// glBindBufferBase() must be used to bind a uniform buffer to a particular
 	// index.  Using glBindBuffer() with GL_UNIFORM_BUFFER should be avoided
-	// because while it will work, it can lead to ambiguity.
+	// because while it will work, it can lead to ambiguity if there is more than one
+	// uniform buffer object.
 	//
 	// The tutorial at 
 	//    http://http://www.lighthouse3d.com/tutorials/glsl-tutorial/uniform-blocks/
-	// proved to be a bit misleading... the code below is correct.
+	// proved to be a bit misleading... the code below is correct, per reading the
+	// OpenGL documentation of glBindBufferBase().
 	//
 	// Also, it is valid to set these up before creating GLSL shader programs which
 	// use them.  Uniform blocks are designed to be shared amongst shader programs,
@@ -108,6 +111,18 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f) {
 		GL_CHECK("glBindBufferBase() failed");
 
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(light), &light, GL_DYNAMIC_DRAW);
+		GL_CHECK("glBufferData() failed");
+	}
+
+	// utilize UBO for material parameters.
+	{
+		glGenBuffers(1, &materialUbo);
+		GL_CHECK("glGenBuffers() failed");
+
+		glBindBufferBase(GL_UNIFORM_BUFFER, 1, materialUbo);
+		GL_CHECK("glBindBufferBase() failed");
+
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(material.m), &material.m, GL_DYNAMIC_DRAW);
 		GL_CHECK("glBufferData() failed");
 	}
 
