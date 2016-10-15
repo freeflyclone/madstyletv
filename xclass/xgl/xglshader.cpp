@@ -100,7 +100,7 @@ bool XGLShader::Compile(std::string name) {
 	glGetProgramiv(programId, GL_LINK_STATUS, &status);
     GL_CHECK("glGetProgramiv() failed");
     if (status != GL_TRUE)
-        GL_CHECK("compile failed in the link stage");
+        throwXGLException("compile failed in the link stage");
 	glGetProgramiv(programId, GL_VALIDATE_STATUS, &status);
     GL_CHECK("glGetProgramiv() failed");
 	glGetProgramiv(programId, GL_ATTACHED_SHADERS, &status);
@@ -131,6 +131,7 @@ bool XGLShader::Compile(std::string name) {
 	}
 
 	glUseProgram(programId);
+	GL_CHECK("glUseProgram() failed");
 
 	glUniform3fv(glGetUniformLocation(programId, "materialSpecularColor"), 1, (GLfloat*)glm::value_ptr(white));
 	GL_STATUS();
