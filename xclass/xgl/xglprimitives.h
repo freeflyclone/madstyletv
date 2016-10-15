@@ -35,29 +35,13 @@ struct XGLVertexAttributes {
 	XGLColor c;
 };
 
-struct XGLMaterials
+typedef struct _XGLMaterialAttributes
 {
-    GLfloat ambientColor[4];
-    GLfloat diffuseColor[4];
-    GLfloat specularColor[4];
+    XGLColor ambientColor;
+	XGLColor diffuseColor;
+	XGLColor specularColor;
     GLfloat specularExponent;
-};
-
-struct XGLLightLocations
-{
-    GLint directionLocation;
-    GLint ambientColorLocation;
-    GLint diffuseColorLocation;
-    GLint specularColorLocation;
-};
-
-struct XGLMaterialLocations
-{
-    GLint ambientColorLocation;
-    GLint diffuseColorLocation;
-    GLint specularColorLocation;
-    GLint specularExponentLocation;
-};
+} XGLMaterialAttributes;
 
 typedef GLushort XGLIndex;
 #define XGLIndexType GL_UNSIGNED_SHORT
