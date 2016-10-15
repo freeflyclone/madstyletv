@@ -61,7 +61,7 @@ XGL::XGL(int *argcp, char **argv) {
 }
 #endif
 
-XGL::XGL() : XGLObject("XGL"), clock(0.0f) {
+XGL::XGL() : XGLObject("XGL"), clock(0.0f), fb(NULL) {
     xprintf("OpenGL version: %s\n", glGetString(GL_VERSION));
 	glGetError();
 
@@ -137,7 +137,7 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f) {
 	glDepthFunc(GL_LESS);
 	glEnable(GL_DEPTH_TEST);
 
-	fb = new XGLFramebuffer();
+	//fb = new XGLFramebuffer();
 //	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //	glEnable(GL_BLEND);
 
@@ -210,7 +210,7 @@ void XGL::Display(){
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, matrixUbo);
 	GL_CHECK("glBindBuffer() failed");
 
-	if (1) {
+	if (fb != NULL) {
 		GLuint width = fb->shmem.pHeader->width;
 		GLuint height = fb->shmem.pHeader->height;
 
