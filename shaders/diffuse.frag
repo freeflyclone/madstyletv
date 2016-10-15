@@ -8,7 +8,7 @@ layout (std140) uniform ShaderMatrixData {
 
 layout (std140) uniform LightData {
 	vec3 pos;
-	vec3 color;
+	vec4 color;
 };
 
 //uniform struct Light {
@@ -23,7 +23,7 @@ uniform vec4 diffuseColor;
 in vec3 fragVert;
 in vec2 fragTexCoord;
 in vec3 fragNormal;
-in vec3 fragColor;
+in vec4 fragColor;
 
 out vec4 finalColor;
 
@@ -49,5 +49,5 @@ void main() {
     //vec4 surfaceColor = texture(tex, fragTexCoord);
 
 
-    finalColor = (brightness * diffuseColor * vec4(fragColor, 1.0)) + (ambientColor * 0.1);
+    finalColor = (brightness * diffuseColor * fragColor) + (ambientColor * 0.1);
 }

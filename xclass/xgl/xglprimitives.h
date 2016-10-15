@@ -26,7 +26,7 @@
 typedef glm::vec3 XGLVertex;
 typedef glm::vec2 XGLTexCoord;
 typedef glm::vec3 XGLNormal;
-typedef glm::vec3 XGLColor;
+typedef glm::vec4 XGLColor;
 
 struct XGLVertexAttributes {
     XGLVertex v;
