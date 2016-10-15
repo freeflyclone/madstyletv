@@ -67,51 +67,55 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f) {
 
 	QueryContext();
 
-	// utilize UBO for lighting parameters.
-	{
-		GLuint ubo;
-		glGenBuffers(1, &ubo);
-		GL_CHECK("glGenBuffers() failed");
+	// for now, create one point light, for diffuse lighting shader development
+	// position, pad1, color, pad2, attenuation, ambientCoefficient
+	XGLLight light = { { 10, 6, 16 }, 1.0f, { 1, 1, 1, 1 }, 1.0, 0.001f, 0.005f };
+	xprintf("sizeof(light): %d\n", sizeof(light));
+	lights.push_back(light);
 
-		glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-		GL_CHECK("glBindBuffer() failed");
-
-		// for now, create one point light, for diffuse lighting shader development
-		// position, pad1, color, pad2, attenuation, ambientCoefficient
-		XGLLight light = { { 10, 6, 16 }, 1.0f, { 1, 1, 1, 1 }, 1.0, 0.001f, 0.005f };
-		xprintf("sizeof(light): %d\n", sizeof(light));
-		lights.push_back(light);
-
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(light), &light, GL_DYNAMIC_DRAW);
-		GL_CHECK("glBufferData() failed");
-
-		glBindBufferBase(GL_UNIFORM_BUFFER, 1, ubo);
-		GL_CHECK("glBindBufferBase() failed");
-	}
+	// NOTE: It is not necessary to know the names of uniform blocks within the shader.
+	// It IS necessary to know that the GL_UNIFORM_BUFFER target is indexed, and thus
+	// glBindBufferBase() must be used to bind a uniform buffer to a particular
+	// index.  Using glBindBuffer() with GL_UNIFORM_BUFFER should be avoided
+	// because while it will work, it can lead to ambiguity.
+	//
+	// The tutorial at 
+	//    http://http://www.lighthouse3d.com/tutorials/glsl-tutorial/uniform-blocks/
+	// proved to be a bit misleading... the code below is correct.
+	//
+	// Also, it is valid to set these up before creating GLSL shader programs which
+	// use them.  Uniform blocks are designed to be shared amongst shader programs,
+	// therefore their creation is independent from programs.
 
 	// utilize UBO for Matrix data
 	{
-		GLuint ubo;
-		glGenBuffers(1, &ubo);
+		glGenBuffers(1, &matrixUbo);
 		GL_CHECK("glGenBuffers() failed");
 
-		glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-		GL_CHECK("glBindBuffer() failed");
+		glBindBufferBase(GL_UNIFORM_BUFFER, 0, matrixUbo);
+		GL_CHECK("glBindBufferBase() failed");
 
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(shaderMatrix), &shaderMatrix, GL_DYNAMIC_DRAW);
 		GL_CHECK("glBufferData() failed");
-
-		glBindBufferBase(GL_UNIFORM_BUFFER, 0, ubo);
-		GL_CHECK("glBindBufferBase() failed");
 	}
 
+	// utilize UBO for lighting parameters.
 	{
-		XGLLight l = lights.back();
-		XGLColor c = l.diffuse;
-		XGLVertex p = l.position;
-		xprintf("Light color: %0.2f, %0.2f, %0.2f\n", c.r, c.g, c.b);
-		xprintf("Light position: %0.2f, %0.2f, %0.2f\n", p.x, p.y, p.z);
+		glGenBuffers(1, &lightUbo);
+		GL_CHECK("glGenBuffers() failed");
+
+		glBindBufferBase(GL_UNIFORM_BUFFER, 1, lightUbo);
+		GL_CHECK("glBindBufferBase() failed");
+
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(light), &light, GL_DYNAMIC_DRAW);
+		GL_CHECK("glBufferData() failed");
 	}
+
+	// force an unbinding of the generic GL_UNIFORM_BUFFER binding point, so that
+	// code that comes after can't accidently work by some fluke that goes undeteced.
+	// (don't ask me how I know.)
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	GL_CHECK("glBindBuffer(0) failed");
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -188,6 +192,9 @@ void XGL::RenderScene() {
 }
 
 void XGL::Display(){
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, matrixUbo);
+	GL_CHECK("glBindBuffer() failed");
+
 	if (1) {
 		GLuint width = fb->shmem.pHeader->width;
 		GLuint height = fb->shmem.pHeader->height;
