@@ -145,7 +145,7 @@ public:
 private:
     // this is returned by GetShader().  Use of GetShader() feels funky, like my structure design blows chunks.
     XGLShader *currentShader;
-	GLuint matrixUbo, lightUbo;
+	GLuint matrixUbo, lightUbo, materialUbo;
 
     // these are used by GLUT implementations
 #ifdef USE_GLUT
