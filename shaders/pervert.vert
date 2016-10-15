@@ -10,7 +10,7 @@ layout (std140) uniform MaterialData {
     vec4 ambient;
 	vec4 diffuse;
 	vec4 specular;
-    float specularExponent;
+    float shininess;
 };
 
 layout (std140) uniform LightData {
@@ -25,16 +25,16 @@ layout(location=3) in vec4 vertColor;
 
 out Attributes {
 	vec4 color;
-} AttributesOut;
+} Out;
 
 void main() {
 	// transform normal to camera space and normalize it.
-	// Example shader shows tat the transpose()... is passed in as a uniform
+	// Example shader shows that the transpose()... mumbo is passed in as a uniform
 	// I'm doing it here because reasons.
     vec3 normal = normalize(transpose(inverse(mat3(model))) * vertNormal);
 
 	float intensity = max(dot(normal, light.position.xyz),0.0);
-	AttributesOut.color = intensity * vertColor;
+	Out.color = max(intensity * diffuse, ambient);
 
     gl_Position = projector * view * model * vec4(vert, 1);
 }

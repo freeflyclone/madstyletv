@@ -119,7 +119,7 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f), fb(NULL) {
 		glGenBuffers(1, &materialUbo);
 		GL_CHECK("glGenBuffers() failed");
 
-		glBindBufferBase(GL_UNIFORM_BUFFER, 1, materialUbo);
+		glBindBufferBase(GL_UNIFORM_BUFFER, 2, materialUbo);
 		GL_CHECK("glBindBufferBase() failed");
 
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(material.m), &material.m, GL_DYNAMIC_DRAW);

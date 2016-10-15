@@ -130,14 +130,19 @@ bool XGLShader::Compile(std::string name) {
 		GL_CHECK("glUniformBlockBinding() failed");
 	}
 
+	idx = glGetUniformBlockIndex(programId, "MaterialData");
+	GL_CHECK("glGetUniformBlockIndex() failed");
+	if (idx == GL_INVALID_INDEX) {
+		xprintf("LightData not found in '%s'\n", name.c_str());
+	}
+	else {
+		// assign to uniform block 1
+		glUniformBlockBinding(programId, idx, 2);
+		GL_CHECK("glUniformBlockBinding() failed");
+	}
+
 	glUseProgram(programId);
 	GL_CHECK("glUseProgram() failed");
-
-	glUniform3fv(glGetUniformLocation(programId, "materialSpecularColor"), 1, (GLfloat*)glm::value_ptr(white));
-	GL_STATUS();
-
-	glUniform1f(glGetUniformLocation(programId, "materialShininess"), 100.0f);
-	GL_STATUS();
 
 	//DebugPrintf("XGLShader::Compile(%s) shader #: %d\n", name.c_str(), shader);
     return true;

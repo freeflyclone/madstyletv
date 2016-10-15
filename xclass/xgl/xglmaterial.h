@@ -24,10 +24,10 @@ const XGLColor magenta = { 1, 0, 1, 1 };
 class XGLMaterial {
 public:
 	XGLMaterial() {
-		m.ambientColor = white;
+		m.ambientColor = white * 0.05f;
 		m.diffuseColor = white;
-		m.specularColor = white;
-		m.specularExponent = 0.005f;
+		m.specularColor = cyan;
+		m.shininess = 0.005f;
 	};
 
 	void Bind(GLuint program) {
