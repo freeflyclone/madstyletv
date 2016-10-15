@@ -181,7 +181,7 @@ void ExampleXGL::BuildScene() {
 	std::string videoPath = pathToAssets + "/assets/CulturalPhenomenon.mp4";
 
 	AddShape("shaders/lighting", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
-	shape->SetColor({ 0.8, 0.8, 0.0001 });
+	shape->SetColor({ 0.8, 0.8, 0.0001, 1 });
 	shape->SetTheFunk([&](XGLShape *s, float clock) {
 		float translateFunction = sin(clock / 60.0f);
 		glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(translateFunction*4.0f, 0.0f, 0.0f));

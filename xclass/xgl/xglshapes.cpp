@@ -81,7 +81,7 @@ XYPlaneGrid::XYPlaneGrid() {
 	SetName("XYPlaneGrid");
 	const float size = 100.0f;
 	const int gridIncrement = 10;
-	const XGLColor gridColor = { 0.5, 0, 0 };
+	const XGLColor gridColor = { 0.5, 0, 0, 1 };
 
 	for (int i = 0; i <= 100; i += gridIncrement) {
 		v.push_back({ { float(i), size, 0 }, {}, {}, gridColor });
@@ -105,9 +105,9 @@ void XYPlaneGrid::Draw(){
 
 
 XGLTriangle::XGLTriangle() {
-    v.push_back({ { -1, 0, 0 }, {}, {}, { 1, 0, 0 } });
-    v.push_back({ { 1, 0, 0 }, {}, {}, { 0, 1, 0 } });
-    v.push_back({ { 0, 0, 1.412 }, {}, {}, { 0, 0, 1 } });
+	v.push_back({ { -1, 0, 0 }, {}, {}, { 1, 0, 0, 1 } });
+	v.push_back({ { 1, 0, 0 }, {}, {}, { 0, 1, 0, 1 } });
+	v.push_back({ { 0, 0, 1.412 }, {}, {}, { 0, 0, 1, 1 } });
 
     //Load(v);
 }
@@ -356,7 +356,7 @@ XGLTorus::XGLTorus(float rMaj, float rMin, int nMaj, int nMin) :
             vrtx.v = { x, y, z };
             vrtx.n = { nx, ny, nz };
             vrtx.t = { 0.0f, 0.0f };
-            vrtx.c = { 1, 1, 1 };
+			vrtx.c = { 1, 1, 1, 1 };
             v.push_back(vrtx);
         }
     }
@@ -550,7 +550,7 @@ void XGLSphere2::Draw() {
 
 XGLTextureAtlas::XGLTextureAtlas() {
 	SetName("XGLTextureAtlas");
-	XGLColor white = { 1, 1, 0 };
+	XGLColor white = { 1, 1, 0, 1 };
 
 	gridCellWidth = 10.0f;
 	gridCellHeight = 10.0f;
@@ -633,7 +633,7 @@ void XGLTextureAtlas::Draw() {
 
 XGLTexQuad::XGLTexQuad(std::string fileName) {
 	SetName("XTexQuad");
-	const XGLColor white = { 1, 1, 1 };
+	const XGLColor white = { 1, 1, 1, 1 };
 
 	v.push_back({ { -1.0, -1.0, 0 }, { 0, 1 }, {}, white });
 	v.push_back({ { -1.0, 1.0, 0 }, { 0, 0 }, {}, white });
@@ -650,7 +650,7 @@ XGLTexQuad::XGLTexQuad(std::string fileName) {
 
 XGLTexQuad::XGLTexQuad(std::string texName, int width, int height, int channels, GLubyte *img, bool flipColors) {
 	SetName("XTexQuad");
-	const XGLColor white = { 1, 1, 1 };
+	const XGLColor white = { 1, 1, 1, 1 };
 
 	v.push_back({ { -1.0, -1.0, 0 }, { 0, 1 }, {}, white });
 	v.push_back({ { -1.0, 1.0, 0 }, { 0, 0 }, {}, white });

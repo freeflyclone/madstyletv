@@ -11,7 +11,7 @@ void ExampleXGL::BuildScene() {
 	glm::mat4 rotate, translate;
 
 	AddShape("shaders/diffuse", [&](){ shape = new XGLTorus(5.0f, 1.0f, 64, 32); return shape; });
-	shape->SetColor({ 0.0025, 0.0025, 0.0025 });
+	shape->SetColor({ 0.0025, 0.0025, 0.0025, 1 });
 	shape->SetTheFunk([&](XGLShape *s, float clock) {
 		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 60.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 		s->model = rotate;
@@ -25,7 +25,7 @@ void ExampleXGL::BuildScene() {
 	shape->AddChild(child3);
 
 	CreateShape("shaders/diffuse", [&](){ child4 = new XGLTorus(2.0f, 0.5f, 64, 32); return child4; });
-	child4->SetColor({ 1.0, 0.00001, 0.00001 });
+	child4->SetColor({ 1.0, 0.00001, 0.00001, 1 });
 	translate = glm::translate(glm::mat4(), glm::vec3(5.0, 0, 0));
 	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	child4->model = translate * rotate;
