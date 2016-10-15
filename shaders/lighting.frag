@@ -3,7 +3,7 @@
 //uniform mat4 model;
 uniform vec3 cameraPosition;
 
-layout (std140) uniform ShaderMatrixData {
+layout (std140) uniform MatrixData {
 	mat4 projector;
 	mat4 view;
 	mat4 model;

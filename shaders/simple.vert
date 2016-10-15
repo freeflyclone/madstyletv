@@ -1,6 +1,6 @@
 #version 150
 
-layout (std140) uniform ShaderMatrixData {
+layout (std140) uniform MatrixData {
 	mat4 projector;
 	mat4 view;
 	mat4 model;

@@ -108,10 +108,10 @@ bool XGLShader::Compile(std::string name) {
 	glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &status);
     GL_CHECK("glGetProgramiv() failed");
 
-	GLuint idx = glGetUniformBlockIndex(programId, "ShaderMatrixData");
+	GLuint idx = glGetUniformBlockIndex(programId, "MatrixData");
 	GL_CHECK("glGetUniformBlockIndex() failed");
 	if (idx == GL_INVALID_INDEX) {
-		xprintf("ShaderMatrixData not found in '%s'\n", name.c_str());
+		xprintf("MatrixData not found in '%s'\n", name.c_str());
 	}
 	else {
 		// assign to uniform block 0
