@@ -194,7 +194,7 @@ void XGL::RenderScene() {
         shaderMap[name]->Use();
 		XGLShader *shader = shaderMap[name];
 
-		glUniform3fv(glGetUniformLocation(shader->Id(), "cameraPosition"), 1, (GLfloat*)glm::value_ptr(camera.pos));
+		glUniform3fv(glGetUniformLocation(shader->programId, "cameraPosition"), 1, (GLfloat*)glm::value_ptr(camera.pos));
 		GL_CHECK("glUniform3fv() failed");
 
 		for (eachShape = shapeList->begin(); eachShape != shapeList->end(); eachShape++) {
@@ -297,11 +297,11 @@ void XGL::IterateShapesMap(){
     for (perShader = shapes.begin(); perShader != shapes.end(); perShader++) {
         std::string name = perShader->first;
         shader = shaderMap[name];
-		xprintf("XGL::IterateShapesMap(): '%s', shader->shader: %d\n", name.c_str(), shader->Id());
+		xprintf("XGL::IterateShapesMap(): '%s', shader->shader: %d\n", name.c_str(), shader->programId);
 
         for (perShape = perShader->second->begin(); perShape != perShader->second->end(); perShape++) {
             XGLShape *shape = *perShape;
-			xprintf("   shape->b: vao:%d, vbo:%d, program:%d\n", shape->vao, shape->vbo, shape->program);
+			xprintf("   shape->b: vao:%d, vbo:%d, program:%d\n", shape->vao, shape->vbo, shape->shader->programId);
         }
     }
 }
