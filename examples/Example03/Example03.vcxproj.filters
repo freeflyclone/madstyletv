@@ -47,10 +47,10 @@
     <None Include="..\..\shaders\diffuse.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\shaders\pervert.vert">
+    <None Include="..\..\shaders\specular.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\shaders\pervert.frag">
+    <None Include="..\..\shaders\specular.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
