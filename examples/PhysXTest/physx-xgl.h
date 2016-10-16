@@ -92,16 +92,16 @@ public:
 		PhysxRenderer(PhysXXGL *p) : container(p), prevClock(0.0f) {
 			v.push_back({ { 0, 0, 0 } });
 			box = new XGLCube();
-			box->m.diffuseColor = blue;
 			ball = new XGLSphere(1.0, 36);
-			ball->m.diffuseColor = yellow;
 			capsule = new XGLCapsule(1.0, 2.0, 36);
 		};
 		PhysXXGL *container;
 		void Draw();
 		void Init(XGLShader *shader) {
 			box->Load(shader, box->v, box->idx);
+			box->SetColor(blue);
 			ball->Load(shader, ball->v, ball->idx);
+			ball->SetColor(yellow);
 			capsule->Load(shader, capsule->v, capsule->idx);
 		}
 
