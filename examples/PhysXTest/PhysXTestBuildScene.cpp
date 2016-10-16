@@ -5,7 +5,7 @@
 **************************************************************/
 #include "physx-xgl.h"
 
-XGLCube *cube;
+XGLSphere *sphere;
 
 void ExampleXGL::BuildScene() {}
 
@@ -56,7 +56,7 @@ void PhysXXGL::BuildScene() {
 	};
 	AddKeyFunc('B', blocksKey);
 
-	AddShape("shaders/diffuse", [&]() { cube = new XGLCube(); return cube; });
+	AddShape("shaders/specular", [&]() { sphere = new XGLSphere(0.5, 32); return sphere; });
 
 	XInputMouseFunc worldCursorMouse = [&](int x, int y, int flags) {
 		if (mt.IsTrackingRightButton()) {
@@ -71,9 +71,9 @@ void PhysXXGL::BuildScene() {
 			float y2d = out[0].y - f * (out[1].y - out[0].y);
 			float z2d = -0.002f;
 
-			if (cube) {
+			if (sphere) {
 				glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(x2d, y2d, z2d));
-				cube->model = translate;
+				sphere->model = translate;
 			}
 		}
 		else
