@@ -32,7 +32,6 @@ public:
     GLuint ibo;
     GLuint  texId;
     std::vector<GLuint> texIds;
-    GLint program;
     GLfloat clock;
 	XGLShader *shader;
 };

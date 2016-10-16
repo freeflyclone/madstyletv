@@ -188,10 +188,6 @@ std::string XGLShader::Name() {
 	return shaderName;
 }
 
-GLint XGLShader::Id() {
-	return programId;
-}
-
 GLint XGLShader::Attrib(std::string name) {
 	GLint attrib = glGetAttribLocation(programId, name.c_str());
 	if (attrib == -1)

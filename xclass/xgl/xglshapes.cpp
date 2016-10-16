@@ -35,7 +35,7 @@ void XGLShape::Render(float clock) {
 		GL_CHECK("glBufferSubData() failed");
 
 		XGLBuffer::Bind();
-		XGLMaterial::Bind(program);
+		XGLMaterial::Bind(shader->programId);
 	}
 	Animate(clock);
 	Draw();
@@ -59,7 +59,7 @@ void XGLShape::Render(glm::mat4 modelChain, float clock) {
 		GL_CHECK("glBufferSubData() failed");
 
 		XGLBuffer::Bind();
-		XGLMaterial::Bind(program);
+		XGLMaterial::Bind(shader->programId);
 	}
 	Animate(clock);
 	Draw();

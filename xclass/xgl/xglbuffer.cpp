@@ -27,12 +27,12 @@ void XGLBuffer::Bind(){
     GL_CHECK("glBindVertexArray() failed");
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     GL_CHECK("glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,ibo) failed");
-    glUseProgram(program);
+    glUseProgram(shader->programId);
     GL_CHECK("glUseProgram() failed");
 
     if (texId != 0){
         // setup the texture unit to 0
-        glProgramUniform1i(program, glGetUniformLocation(program, "texUnit"), 0);
+		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit"), 0);
         GL_CHECK("glProgramUniform1i() failed");
         glActiveTexture(GL_TEXTURE0);
         GL_CHECK("glActiveTexture() failed");
@@ -73,8 +73,8 @@ void XGLBuffer::UnmapVertexBuffer() {
 	GL_CHECK("glUnmapBuffer() failed");
 }
 
-void XGLBuffer::Load(XGLShader *shader, std::vector<XGLVertexAttributes> va, std::vector<XGLIndex> ib){
-	program = shader->Id();
+void XGLBuffer::Load(XGLShader *s, std::vector<XGLVertexAttributes> va, std::vector<XGLIndex> ib){
+	shader = s;
     Bind();
 
     // bind "vao"  and "vbo".  This means setting OpenGL state to refer to these objects
