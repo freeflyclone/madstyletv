@@ -11,14 +11,14 @@ layout (std140) uniform LightData {
 	vec4 color;
 };
 
-//uniform struct Light {
-//   vec3 position;
-//   vec3 intensities; //a.k.a the color of the light
-//} light;
+layout (std140) uniform MaterialData {
+    vec4 ambient;
+	vec4 diffuse;
+	vec4 specular;
+    float shininess;
+};
 
 uniform sampler2D tex;
-uniform vec4 ambientColor;
-uniform vec4 diffuseColor;
 
 in vec3 fragVert;
 in vec2 fragTexCoord;
@@ -35,7 +35,7 @@ void main() {
     //calculate the location of this fragment (pixel) in world coordinates
     vec3 fragPosition = vec3(model * vec4(fragVert, 1));
     
-    //calculate the vector from this pixels surface to the light source
+    //calculate the vector from this pixel's surface to the light source
     vec3 surfaceToLight = pos - fragPosition;
 
     //calculate the cosine of the angle of incidence
@@ -49,5 +49,6 @@ void main() {
     //vec4 surfaceColor = texture(tex, fragTexCoord);
 
 
-    finalColor = (brightness * diffuseColor * fragColor) + (ambientColor * 0.1);
+    finalColor = (brightness * diffuse * fragColor) + (ambient * 0.1);
+    //finalColor = (brightness * diffuse) + (ambient * 0.1);
 }
