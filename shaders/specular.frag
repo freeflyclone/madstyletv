@@ -1,4 +1,5 @@
 #version 330
+uniform vec3 cameraPosition;
 
 layout (std140) uniform MatrixData {
 	mat4 projector;
@@ -9,7 +10,7 @@ layout (std140) uniform MatrixData {
 layout (std140) uniform LightData {
 	vec3 pos;
 	vec4 color;
-};
+} light;
 
 layout (std140) uniform MaterialData {
     vec4 ambient;
@@ -31,24 +32,28 @@ void main() {
     //calculate normal in world coordinates
     mat3 normalMatrix = transpose(inverse(mat3(model)));
     vec3 normal = normalize(normalMatrix * fragNormal);
-    
-    //calculate the location of this fragment (pixel) in world coordinates
-    vec3 fragPosition = vec3(model * vec4(fragVert, 1));
-    
-    //calculate the vector from this pixel's surface to the light source
-    vec3 surfaceToLight = pos - fragPosition;
 
-    //calculate the cosine of the angle of incidence
-    float brightness = dot(normal, surfaceToLight) / (length(surfaceToLight) * length(normal));
-    brightness = clamp(brightness, 0, 1);
+	vec3 surfacePos = vec3(model * vec4(fragVert, 1));
+	vec4 surfaceColor = fragColor;
+    vec3 surfaceToLight = normalize(light.pos - surfacePos);
+    vec3 surfaceToCamera = normalize(cameraPosition - surfacePos);
 
-    //calculate final color of the pixel, based on:
-    // 1. The angle of incidence: brightness
-    // 2. The color/intensities of the light: light.intensities
-    // 3. The texture and texture coord: texture(tex, fragTexCoord)
-    //vec4 surfaceColor = texture(tex, fragTexCoord);
+    vec3 newAmbient = 0.005 * surfaceColor.rgb * light.color.rgb;
 
+	float diffuseCoefficient = max(0.0, dot(normal, surfaceToLight));
+	vec3 newDiffuse = diffuseCoefficient * surfaceColor.rgb * light.color.rgb;
 
-    finalColor = (brightness * diffuse * fragColor) + (ambient * 0.1);
-    //finalColor = (brightness * diffuse) + (ambient * 0.1);
+    float specularCoefficient = 0.0;
+    if(diffuseCoefficient > 0.0)
+        specularCoefficient = pow(max(0.0, dot(surfaceToCamera, reflect(-surfaceToLight, normal))), shininess);
+    vec3 newSpecular = specularCoefficient * specular.rgb * light.color.rgb;
+
+	float distanceToLight = length(light.pos - surfacePos);
+	float attenuation = 1.0 / (1.0 + 0.002 * pow(distanceToLight, 2));
+
+	vec3 linearColor = newAmbient + attenuation*(newDiffuse+newSpecular);
+
+	vec3 gamma = vec3(1.0/2.2);
+
+    finalColor = vec4(pow(linearColor,gamma), 1.0);
 }
