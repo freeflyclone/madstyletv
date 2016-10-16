@@ -48,7 +48,7 @@ void PhysXXGL::initPhysics(bool interactive)
 	// NOTE: this bit of code feels sketchy re: "this" inside Init() not
 	// being fully defined yet because of constructors of derived classes.
 	// (although I'm not sure,  need an in-depth guru meditation on the subject)
-	std::string shaderName = "shaders/diffuse";
+	std::string shaderName = "shaders/specular";
 	AddShape(shaderName, [&]() { renderer = new PhysxRenderer(this); return renderer; });
 	renderer->Init(GetShader(shaderName));
 	renderer->SetTheFunk([&](XGLShape *s, float clock) {
