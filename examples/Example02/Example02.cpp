@@ -11,7 +11,7 @@ void ExampleXGL::BuildScene() {
 	glm::mat4 rotate, translate;
 
 	AddShape("shaders/specular", [&](){ shape = new XGLTorus(5.0f, 1.0f, 64, 32); return shape; });
-	shape->SetColor({ 0.25, 0.25, 0.25, 1 });
+	shape->SetColor({ 0.005, 0.005, 0.005, 1 });
 	shape->SetTheFunk([&](XGLShape *s, float clock) {
 		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 60.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 		s->model = rotate;
