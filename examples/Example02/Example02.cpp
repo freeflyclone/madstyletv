@@ -10,9 +10,8 @@ void ExampleXGL::BuildScene() {
 	XGLShape *shape, *child1, *child2, *child3, *child4;
 	glm::mat4 rotate, translate;
 
-	AddShape("shaders/pervert", [&](){ shape = new XGLTorus(5.0f, 1.0f, 64, 32); return shape; });
-	//shape->SetColor({ 0.25, 0.25, 0.25, 1 });
-	shape->SetColor(red);
+	AddShape("shaders/diffuse", [&](){ shape = new XGLTorus(5.0f, 1.0f, 64, 32); return shape; });
+	shape->SetColor({ 0.25, 0.25, 0.25, 1 });
 	shape->SetTheFunk([&](XGLShape *s, float clock) {
 		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 60.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 		s->model = rotate;
@@ -48,16 +47,16 @@ void ExampleXGL::BuildScene() {
 	child4->AddChild(child1);
 	child3->AddChild(child4);
 
-	AddShape("shaders/pervert", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
+	AddShape("shaders/diffuse", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
 	shape->SetColor(blue);
 	shape->model = glm::translate(glm::mat4(), glm::vec3(20, 0, 0));
 
-	AddShape("shaders/pervert", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
+	AddShape("shaders/diffuse", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
 	shape->SetColor(red);
 	shape->model = glm::translate(glm::mat4(), glm::vec3(-20, 0, 0)) 
 				 * glm::scale(glm::mat4(), glm::vec3(2, 2, 2));
 
-	AddShape("shaders/pervert", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
+	AddShape("shaders/diffuse", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
 	shape->SetColor(green);
 	shape->model = glm::translate(glm::mat4(), glm::vec3(30, 0, 0)) 
 				 * glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(0,1,0)) 
