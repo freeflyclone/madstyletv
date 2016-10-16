@@ -31,7 +31,7 @@ void main() {
 	// transform normal to camera space and normalize it.
 	// Example shader shows that the transpose()... mumbo is passed in as a uniform
 	// I'm doing it here because reasons.
-    vec3 normal = normalize(transpose(inverse(mat3(model))) * vertNormal);
+    vec3 normal = normalize(transpose(inverse(mat3(view*model))) * vertNormal);
 
 	float intensity = max(dot(normal, light.position.xyz),0.0);
 	Out.color = max(intensity * diffuse, ambient);
