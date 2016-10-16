@@ -11,8 +11,14 @@
 
 void CheckGlError(const char *, int, std::string);
 void CheckGlStatus(const char *, int);
+
+#ifdef _DEBUG
 #define GL_CHECK(what) CheckGlError(__FILE__,__LINE__,what)
 #define GL_STATUS() CheckGlStatus(__FILE__,__LINE__);
+#else
+#define GL_CHECK(what)
+#define GL_STATUS()
+#endif
 
 class XGLException: public std::runtime_error
 {

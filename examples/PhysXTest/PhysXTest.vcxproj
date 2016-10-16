@@ -179,6 +179,10 @@
   <ItemGroup>
     <ClInclude Include="physx-xgl.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\shaders\specular.frag" />
+    <None Include="..\..\shaders\specular.vert" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

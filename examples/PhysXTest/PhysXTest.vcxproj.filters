@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{48ea2d28-c6e6-4749-864e-7425bc0bc3a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PhysXTestBuildScene.cpp">
@@ -32,5 +35,13 @@
     <ClInclude Include="physx-xgl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\shaders\specular.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\specular.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
