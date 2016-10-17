@@ -99,11 +99,11 @@ public:
 		void Draw();
 		void Init(XGLShader *shader) {
 			box->Load(shader, box->v, box->idx);
-			box->SetColor(blue);
 			box->l = shader->materialLocations;
+
 			ball->Load(shader, ball->v, ball->idx);
-			ball->SetColor(yellow);
 			ball->l = shader->materialLocations;
+
 			capsule->Load(shader, capsule->v, capsule->idx);
 			capsule->l = shader->materialLocations;
 		}
