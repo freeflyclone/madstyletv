@@ -21,9 +21,18 @@ Uniform variable management:
 ----------------------------
 Uniforms are variables allowing CPU <-> GPU code communication.
 
-A Uniform Buffer Object (UBO) is can be used to share variables shaders
-for things that are of "scene scope" vs "shape scope".
+A Uniform Buffer Object (UBO) can be used to share variables shaders
+for things that are of "scene scope" vs "shape scope". In other
+words: global to all shaders.
 
-Uniform blocks can be defined that contain multiple variables,
-basically the equivalent of a C/C++ struct.
+Uniform blocks can contain multiple variables, basically the 
+equivalent of a C/C++ struct.
+
+A uniform block MUST be in a uniform buffer object.(?)
+
+A "member" variable of a uniform block object can be referenced
+from OpenGL code as if it were a regular uniform.  Ie: by getting
+it's location with glGetUniformLoation()/glProgramUniform(), but
+only if it's in the currently bound uniform block index.(?)
+
 

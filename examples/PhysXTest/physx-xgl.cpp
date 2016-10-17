@@ -169,26 +169,22 @@ void PhysXXGL::renderGeometry(physx::PxGeometryHolder h, physx::PxMat44 shapePos
 	{
 		case physx::PxGeometryType::eBOX:
 			renderer->box->XGLBuffer::Bind();
-			renderer->box->m.diffuseColor = XGLColor(0, 1, 1, 1);
+			renderer->box->a.diffuseColor = XGLColor(0, 1, 1, 1);
 			renderer->box->XGLMaterial::Bind(renderer->box->shader->programId);
 
-			glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, sizeof(glm::mat4), (GLvoid *)&shapePose);
-			//GL_CHECK("glBufferSubData() failed");
+			glProgramUniformMatrix4fv(renderer->shader->programId, renderer->shader->modelUniformLocation, 1, false, (GLfloat *)&shapePose);
 			glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(renderer->box->idx.size()), XGLIndexType, 0);
-			//GL_CHECK("glDrawElements() failed");
 
 			renderer->box->XGLBuffer::Unbind();
 			break;
 
 		case physx::PxGeometryType::eSPHERE:
 			renderer->ball->XGLBuffer::Bind();
-			renderer->ball->m.diffuseColor = XGLColor(1, 1, 0, 1);
+			renderer->ball->a.diffuseColor = XGLColor(1, 1, 0, 1);
 			renderer->ball->XGLMaterial::Bind(renderer->ball->shader->programId);
 
-			glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, sizeof(glm::mat4), (GLvoid *)&shapePose);
-			//GL_CHECK("glBufferSubData() failed");
+			glProgramUniformMatrix4fv(renderer->shader->programId, renderer->shader->modelUniformLocation, 1, false, (GLfloat *)&shapePose);
 			glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(renderer->ball->idx.size()), XGLIndexType, 0);
-			//GL_CHECK("glDrawElements() failed");
 
 			renderer->ball->XGLBuffer::Unbind();
 

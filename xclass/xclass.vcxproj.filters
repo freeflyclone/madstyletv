@@ -52,6 +52,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
+    <Text Include="xgl\ReadMe.txt">
+      <Filter>xgl</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="xthread.h">

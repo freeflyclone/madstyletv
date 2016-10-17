@@ -31,8 +31,8 @@ void XGLShape::SetColor(XGLColor c) {
 void XGLShape::Render(float clock) {
 	// Geometry-less XGLTransformer shape doesn't get rendered.  It has no OpenGL resources.
 	if (v.size()>0) {
-		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, sizeof(glm::mat4), (GLvoid *)&model);
-		GL_CHECK("glBufferSubData() failed");
+		glProgramUniformMatrix4fv(shader->programId, shader->modelUniformLocation, 1, false, (GLfloat *)&model);
+		GL_CHECK("glProgramUniformMatrix4fv() failed");
 
 		XGLBuffer::Bind();
 		XGLMaterial::Bind(shader->programId);
@@ -55,8 +55,8 @@ void XGLShape::Render(float clock) {
 
 void XGLShape::Render(glm::mat4 modelChain, float clock) {
 	if (v.size() > 0) {
-		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, sizeof(glm::mat4), (GLvoid *)&modelChain);
-		GL_CHECK("glBufferSubData() failed");
+		glProgramUniformMatrix4fv(shader->programId, shader->modelUniformLocation, 1, false, (GLfloat *)&modelChain);
+		GL_CHECK("glProgramUniformMatrix4fv() failed");
 
 		XGLBuffer::Bind();
 		XGLMaterial::Bind(shader->programId);
