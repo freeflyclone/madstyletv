@@ -114,18 +114,6 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f), fb(NULL) {
 		GL_CHECK("glBufferData() failed");
 	}
 
-	// utilize UBO for material parameters.
-	{
-		glGenBuffers(1, &materialUbo);
-		GL_CHECK("glGenBuffers() failed");
-
-		glBindBufferBase(GL_UNIFORM_BUFFER, 2, materialUbo);
-		GL_CHECK("glBindBufferBase() failed");
-
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(material.m), &material.m, GL_DYNAMIC_DRAW);
-		GL_CHECK("glBufferData() failed");
-	}
-
 	// force an unbinding of the generic GL_UNIFORM_BUFFER binding point, so that
 	// code that comes after can't accidently work by some fluke that goes undeteced.
 	// (don't ask me how I know.)
@@ -261,9 +249,12 @@ void XGL::CreateShape(std::string shName, XGLNewShapeLambda fn){
 	}
 
 	XGLShape *pShape = fn();
+	XGLShader *shader = shaderMap[shaderName];
 
-	if (pShape->v.size()>0)
-		pShape->Load(shaderMap[shaderName], pShape->v, pShape->idx);
+	if (pShape->v.size() > 0) {
+		pShape->Load(shader, pShape->v, pShape->idx);
+		pShape->l = shader->materialLocations;
+	}
 }
 
 void XGL::AddShape(std::string shName, XGLNewShapeLambda fn){
@@ -278,8 +269,11 @@ void XGL::AddShape(std::string shName, XGLNewShapeLambda fn){
     }
 
 	XGLShape *pShape = fn();
-	if (pShape->v.size()>0)
+	XGLShader *shader = shaderMap[shaderName];
+	if (pShape->v.size() > 0) {
 		pShape->Load(shaderMap[shaderName], pShape->v, pShape->idx);
+		pShape->l = shader->materialLocations;
+	}
 	shapes[shaderName]->push_back(pShape);
 	AddChild(pShape);
 }

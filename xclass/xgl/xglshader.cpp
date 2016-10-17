@@ -108,6 +108,21 @@ bool XGLShader::Compile(std::string name) {
 	glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &status);
     GL_CHECK("glGetProgramiv() failed");
 
+	if ((modelUniformLocation = glGetUniformLocation(programId, "model")) == GL_INVALID_VALUE)
+		throwXGLException("failed to find the model matrix uniform");
+
+	if ((materialLocations.ambientLocation = glGetUniformLocation(programId, "ambient")) == GL_INVALID_VALUE)
+		throwXGLException("failed to find the material ambient uniform");
+
+	if ((materialLocations.diffuseLocation = glGetUniformLocation(programId, "diffuse")) == GL_INVALID_VALUE)
+		throwXGLException("failed to find the material diffuse uniform");
+
+	if ((materialLocations.specularLocation = glGetUniformLocation(programId, "specular")) == GL_INVALID_VALUE)
+		throwXGLException("failed to find the material specular uniform");
+
+	if ((materialLocations.shininessLocation = glGetUniformLocation(programId, "shininess")) == GL_INVALID_VALUE)
+		throwXGLException("failed to find the material shininess uniform");
+
 	GLuint idx = glGetUniformBlockIndex(programId, "MatrixData");
 	GL_CHECK("glGetUniformBlockIndex() failed");
 	if (idx == GL_INVALID_INDEX) {

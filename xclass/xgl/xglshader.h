@@ -14,6 +14,7 @@
 
 #include "xglprimitives.h"
 #include "xgllight.h"
+#include "xglmaterial.h"
 
 class XGLShaderComponent
 {
@@ -48,6 +49,8 @@ public:
 	GLint Uniform(std::string name);
 
 	GLint programId;
+	GLint modelUniformLocation;
+	XGLMaterialLocations materialLocations;
 
 private:
 	std::string shaderName;

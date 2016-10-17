@@ -204,6 +204,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
+    <Text Include="xgl\ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\soil\src\image_DXT.h" />

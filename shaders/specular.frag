@@ -1,23 +1,21 @@
 #version 330
+
 uniform vec3 cameraPosition;
+uniform mat4 model;
+uniform vec4 ambient;
+uniform vec4 diffuse;
+uniform vec4 specular;
+uniform float shininess;
 
 layout (std140) uniform MatrixData {
 	mat4 projector;
 	mat4 view;
-	mat4 model;
 };
 
 layout (std140) uniform LightData {
 	vec3 pos;
 	vec4 color;
 } light;
-
-layout (std140) uniform MaterialData {
-    vec4 ambient;
-	vec4 diffuse;
-	vec4 specular;
-    float shininess;
-};
 
 uniform sampler2D tex;
 
@@ -34,7 +32,7 @@ void main() {
     vec3 normal = normalize(normalMatrix * fragNormal);
 
 	vec3 surfacePos = vec3(model * vec4(fragVert, 1));
-	vec4 surfaceColor = fragColor;
+	vec4 surfaceColor = diffuse;
     vec3 surfaceToLight = normalize(light.pos - surfacePos);
     vec3 surfaceToCamera = normalize(cameraPosition - surfacePos);
 

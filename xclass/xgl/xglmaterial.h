@@ -23,13 +23,30 @@ const XGLColor yellow =  { 1, 1, Z, 1 };
 const XGLColor cyan =    { Z, 1, 1, 1 };
 const XGLColor magenta = { 1, Z, 1, 1 };
 
+typedef struct _XGLMaterialAttributes
+{
+	XGLColor ambientColor;
+	XGLColor diffuseColor;
+	XGLColor specularColor;
+	GLfloat shininess;
+} XGLMaterialAttributes;
+
+typedef struct _XGLMaterialLocations
+{
+	GLint ambientLocation;
+	GLint diffuseLocation;
+	GLint specularLocation;
+	GLint shininessLocation;
+} XGLMaterialLocations;
+
 class XGLMaterial {
 public:
 	XGLMaterial();
 
 	void Bind(GLuint program);
 
-	XGLMaterialAttributes m;
+	XGLMaterialAttributes a;
+	XGLMaterialLocations l;
 };
 
 #endif

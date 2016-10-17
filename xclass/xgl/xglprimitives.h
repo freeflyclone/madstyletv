@@ -35,14 +35,6 @@ struct XGLVertexAttributes {
 	XGLColor c;
 };
 
-typedef struct _XGLMaterialAttributes
-{
-    XGLColor ambientColor;
-	XGLColor diffuseColor;
-	XGLColor specularColor;
-    GLfloat shininess;
-} XGLMaterialAttributes;
-
 typedef GLushort XGLIndex;
 #define XGLIndexType GL_UNSIGNED_SHORT
 
@@ -54,8 +46,7 @@ typedef std::vector<XGLIndex> XGLIndexList;
 typedef struct XGLShaderMatrixData_t {
 	glm::mat4 projection;
 	glm::mat4 view;
-	glm::mat4 model;
-	glm::mat4 mvp;
+	//glm::mat4 model;
 } XGLShaderMatrixData;
 
 #endif
