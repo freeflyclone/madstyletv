@@ -45,7 +45,7 @@ public:
 
 	void Bind(GLuint program);
 
-	XGLMaterialAttributes a;
+	XGLMaterialAttributes attributes;
 	XGLMaterialLocations l;
 };
 

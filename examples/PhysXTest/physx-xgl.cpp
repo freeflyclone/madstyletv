@@ -169,7 +169,7 @@ void PhysXXGL::renderGeometry(physx::PxGeometryHolder h, physx::PxMat44 shapePos
 	{
 		case physx::PxGeometryType::eBOX:
 			renderer->box->XGLBuffer::Bind();
-			renderer->box->a.diffuseColor = XGLColor(0, 1, 1, 1);
+			renderer->box->attributes.diffuseColor = cyan;
 			renderer->box->XGLMaterial::Bind(renderer->box->shader->programId);
 
 			glProgramUniformMatrix4fv(renderer->shader->programId, renderer->shader->modelUniformLocation, 1, false, (GLfloat *)&shapePose);
@@ -180,7 +180,7 @@ void PhysXXGL::renderGeometry(physx::PxGeometryHolder h, physx::PxMat44 shapePos
 
 		case physx::PxGeometryType::eSPHERE:
 			renderer->ball->XGLBuffer::Bind();
-			renderer->ball->a.diffuseColor = XGLColor(1, 1, 0, 1);
+			renderer->ball->attributes.diffuseColor = yellow;
 			renderer->ball->XGLMaterial::Bind(renderer->ball->shader->programId);
 
 			glProgramUniformMatrix4fv(renderer->shader->programId, renderer->shader->modelUniformLocation, 1, false, (GLfloat *)&shapePose);
