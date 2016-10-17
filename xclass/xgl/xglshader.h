@@ -50,7 +50,7 @@ public:
 
 	GLint programId;
 	GLint modelUniformLocation;
-	XGLMaterialLocations materialLocations;
+	XGLMaterialUniformLocations materialLocations;
 
 private:
 	std::string shaderName;

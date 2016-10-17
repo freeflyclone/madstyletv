@@ -31,13 +31,13 @@ typedef struct _XGLMaterialAttributes
 	GLfloat shininess;
 } XGLMaterialAttributes;
 
-typedef struct _XGLMaterialLocations
+typedef struct _XGLMaterialUniformLocations
 {
 	GLint ambientLocation;
 	GLint diffuseLocation;
 	GLint specularLocation;
 	GLint shininessLocation;
-} XGLMaterialLocations;
+} XGLMaterialUniformLocations;
 
 class XGLMaterial {
 public:
@@ -46,7 +46,7 @@ public:
 	void Bind(GLuint program);
 
 	XGLMaterialAttributes attributes;
-	XGLMaterialLocations l;
+	XGLMaterialUniformLocations uniformLocations;
 };
 
 #endif

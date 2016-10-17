@@ -1,9 +1,10 @@
 #version 150
 
+uniform	mat4 model;
+
 layout (std140) shared uniform MatrixData {
 	mat4 projector;
 	mat4 view;
-	mat4 model;
 };
 
 
