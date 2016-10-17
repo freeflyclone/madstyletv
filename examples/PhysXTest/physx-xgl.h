@@ -99,13 +99,13 @@ public:
 		void Draw();
 		void Init(XGLShader *shader) {
 			box->Load(shader, box->v, box->idx);
-			box->l = shader->materialLocations;
+			box->uniformLocations = shader->materialLocations;
 
 			ball->Load(shader, ball->v, ball->idx);
-			ball->l = shader->materialLocations;
+			ball->uniformLocations = shader->materialLocations;
 
 			capsule->Load(shader, capsule->v, capsule->idx);
-			capsule->l = shader->materialLocations;
+			capsule->uniformLocations = shader->materialLocations;
 		}
 
 		XGLCube *box;

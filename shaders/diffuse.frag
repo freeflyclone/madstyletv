@@ -1,24 +1,21 @@
 #version 330
 
+uniform mat4 model;
+uniform vec4 ambient;
+uniform vec4 diffuse;
+uniform vec4 specular;
+uniform float shininess;
+uniform sampler2D tex;
+
 layout (std140) uniform MatrixData {
 	mat4 projector;
 	mat4 view;
-	mat4 model;
 };
 
 layout (std140) uniform LightData {
 	vec3 pos;
 	vec4 color;
 };
-
-layout (std140) uniform MaterialData {
-    vec4 ambient;
-	vec4 diffuse;
-	vec4 specular;
-    float shininess;
-};
-
-uniform sampler2D tex;
 
 in vec3 fragVert;
 in vec2 fragTexCoord;

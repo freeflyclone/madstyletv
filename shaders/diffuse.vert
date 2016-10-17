@@ -1,9 +1,10 @@
 #version 330
 
+uniform mat4 model;
+
 layout (std140) uniform MatrixData {
 	mat4 projector;
 	mat4 view;
-	mat4 model;
 };
 
 layout(location=0) in vec3 vert;

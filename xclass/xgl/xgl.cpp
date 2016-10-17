@@ -253,7 +253,7 @@ void XGL::CreateShape(std::string shName, XGLNewShapeLambda fn){
 
 	if (pShape->v.size() > 0) {
 		pShape->Load(shader, pShape->v, pShape->idx);
-		pShape->l = shader->materialLocations;
+		pShape->uniformLocations = shader->materialLocations;
 	}
 }
 
@@ -272,7 +272,7 @@ void XGL::AddShape(std::string shName, XGLNewShapeLambda fn){
 	XGLShader *shader = shaderMap[shaderName];
 	if (pShape->v.size() > 0) {
 		pShape->Load(shaderMap[shaderName], pShape->v, pShape->idx);
-		pShape->l = shader->materialLocations;
+		pShape->uniformLocations = shader->materialLocations;
 	}
 	shapes[shaderName]->push_back(pShape);
 	AddChild(pShape);
