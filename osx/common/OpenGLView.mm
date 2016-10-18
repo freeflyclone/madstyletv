@@ -135,6 +135,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     GLsizei w = NSWidth(bounds);
     GLsizei h = NSHeight(bounds);
     exgl->Reshape(w,h);
+    NSLog(@"exgl->Reshape() called.");
 }
 
 - (void)activateContext {

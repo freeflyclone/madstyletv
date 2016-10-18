@@ -21,7 +21,6 @@
 		5919975C1D63F261003F62FF /* xglshapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 591997381D63F00D003F62FF /* xglshapes.cpp */; };
 		5919975D1D63F261003F62FF /* xgluniform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5919973A1D63F00D003F62FF /* xgluniform.cpp */; };
 		5919975E1D63F2AB003F62FF /* xclass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 591996171D63F00D003F62FF /* xclass.cpp */; };
-		5919975F1D63F2AB003F62FF /* xconfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5919961B1D63F00D003F62FF /* xconfig.cpp */; };
 		5962D3851D6B80AB006BCD52 /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3841D6B80AB006BCD52 /* OpenGLView.mm */; };
 		5962D3891D6B81D8006BCD52 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3881D6B81D8006BCD52 /* main.m */; };
 		5984BD951D6B88650047DF80 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5984BD941D6B88650047DF80 /* Assets.xcassets */; };
@@ -48,6 +47,11 @@
 		59C7C7EB1D6B9A5A000F4E87 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 59FDE31F1D6B845200AE8BD0 /* Info.plist */; };
 		59C7C7EC1D6B9A5A000F4E87 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5993CC301D6B9031006105A9 /* MainMenu.xib */; };
 		59C7C7F41D6B9ACD000F4E87 /* Example02.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59C7C7F31D6B9ACD000F4E87 /* Example02.cpp */; };
+		59DA3B931DB697E300767298 /* JSON.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59DA3B8D1DB697E300767298 /* JSON.cpp */; };
+		59DA3B941DB697E300767298 /* JSONValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59DA3B8F1DB697E300767298 /* JSONValue.cpp */; };
+		59DA3B951DB697E300767298 /* xshmem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59DA3B911DB697E300767298 /* xshmem.cpp */; };
+		59DA3B981DB6983D00767298 /* xglworldcursor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59DA3B961DB6983D00767298 /* xglworldcursor.cpp */; };
+		59DA3B9B1DB6987900767298 /* xassets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59DA3B991DB6987900767298 /* xassets.cpp */; };
 		59E566B91D6B6CC0007D0DD6 /* Example01.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59E566B81D6B6CC0007D0DD6 /* Example01.cpp */; };
 		59FDE3201D6B845200AE8BD0 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 59FDE31F1D6B845200AE8BD0 /* Info.plist */; };
 /* End PBXBuildFile section */
@@ -152,7 +156,6 @@
 		5919960E1D63F00D003F62FF /* test_rect.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_rect.png; sourceTree = "<group>"; };
 		5919960F1D63F00D003F62FF /* ReadMe.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ReadMe.txt; sourceTree = "<group>"; };
 		591996171D63F00D003F62FF /* xclass.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = xclass.cpp; sourceTree = "<group>"; };
-		5919961B1D63F00D003F62FF /* xconfig.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = xconfig.cpp; sourceTree = "<group>"; };
 		5919961C1D63F00D003F62FF /* xconfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xconfig.h; sourceTree = "<group>"; };
 		5919961E1D63F00D003F62FF /* glew.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = glew.c; sourceTree = "<group>"; };
 		5919961F1D63F00D003F62FF /* glew.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = glew.h; sourceTree = "<group>"; };
@@ -461,6 +464,16 @@
 		59BEB3E21D6B7FBF00CD09FF /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = common/AppDelegate.m; sourceTree = SOURCE_ROOT; };
 		59C7C7F11D6B9A5A000F4E87 /* Example02.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example02.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		59C7C7F31D6B9ACD000F4E87 /* Example02.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Example02.cpp; path = Example02/Example02.cpp; sourceTree = "<group>"; };
+		59DA3B8D1DB697E300767298 /* JSON.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSON.cpp; sourceTree = "<group>"; };
+		59DA3B8E1DB697E300767298 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
+		59DA3B8F1DB697E300767298 /* JSONValue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSONValue.cpp; sourceTree = "<group>"; };
+		59DA3B901DB697E300767298 /* JSONValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONValue.h; sourceTree = "<group>"; };
+		59DA3B911DB697E300767298 /* xshmem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = xshmem.cpp; sourceTree = "<group>"; };
+		59DA3B921DB697E300767298 /* xshmem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xshmem.h; sourceTree = "<group>"; };
+		59DA3B961DB6983D00767298 /* xglworldcursor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = xglworldcursor.cpp; sourceTree = "<group>"; };
+		59DA3B971DB6983D00767298 /* xglworldcursor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xglworldcursor.h; sourceTree = "<group>"; };
+		59DA3B991DB6987900767298 /* xassets.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = xassets.cpp; sourceTree = "<group>"; };
+		59DA3B9A1DB6987900767298 /* xassets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xassets.h; sourceTree = "<group>"; };
 		59E566B81D6B6CC0007D0DD6 /* Example01.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Example01.cpp; path = ../../examples/Example01/Example01.cpp; sourceTree = "<group>"; };
 		59E575911D6400BF0093ADFE /* InputTrackers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InputTrackers.h; sourceTree = "<group>"; };
 		59FDE31F1D6B845200AE8BD0 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = common/Info.plist; sourceTree = SOURCE_ROOT; };
@@ -501,10 +514,17 @@
 		5919959B1D63F00D003F62FF /* xclass */ = {
 			isa = PBXGroup;
 			children = (
+				59DA3B991DB6987900767298 /* xassets.cpp */,
+				59DA3B9A1DB6987900767298 /* xassets.h */,
+				59DA3B8D1DB697E300767298 /* JSON.cpp */,
+				59DA3B8E1DB697E300767298 /* JSON.h */,
+				59DA3B8F1DB697E300767298 /* JSONValue.cpp */,
+				59DA3B901DB697E300767298 /* JSONValue.h */,
+				59DA3B911DB697E300767298 /* xshmem.cpp */,
+				59DA3B921DB697E300767298 /* xshmem.h */,
 				5919959C1D63F00D003F62FF /* 3rdParty */,
 				5919960F1D63F00D003F62FF /* ReadMe.txt */,
 				591996171D63F00D003F62FF /* xclass.cpp */,
-				5919961B1D63F00D003F62FF /* xconfig.cpp */,
 				5919961C1D63F00D003F62FF /* xconfig.h */,
 				5919961D1D63F00D003F62FF /* xgl */,
 				5919973C1D63F00D003F62FF /* xinput.cpp */,
@@ -742,6 +762,8 @@
 				591997391D63F00D003F62FF /* xglshapes.h */,
 				5919973A1D63F00D003F62FF /* xgluniform.cpp */,
 				5919973B1D63F00D003F62FF /* xgluniform.h */,
+				59DA3B961DB6983D00767298 /* xglworldcursor.cpp */,
+				59DA3B971DB6983D00767298 /* xglworldcursor.h */,
 			);
 			path = xgl;
 			sourceTree = "<group>";
@@ -1316,7 +1338,6 @@
 				599FCC631D66552D00C57873 /* SOIL.c in Sources */,
 				599FCC641D66552D00C57873 /* stb_image_aug.c in Sources */,
 				5919975E1D63F2AB003F62FF /* xclass.cpp in Sources */,
-				5919975F1D63F2AB003F62FF /* xconfig.cpp in Sources */,
 				591997531D63F261003F62FF /* xgl.cpp in Sources */,
 				591997541D63F261003F62FF /* xglbuffer.cpp in Sources */,
 				591997551D63F261003F62FF /* xglcamera.cpp in Sources */,
@@ -1339,7 +1360,12 @@
 			files = (
 				5962D3891D6B81D8006BCD52 /* main.m in Sources */,
 				599FCC601D6654EB00C57873 /* ExampleXGL.cpp in Sources */,
+				59DA3B941DB697E300767298 /* JSONValue.cpp in Sources */,
 				5962D3851D6B80AB006BCD52 /* OpenGLView.mm in Sources */,
+				59DA3B981DB6983D00767298 /* xglworldcursor.cpp in Sources */,
+				59DA3B9B1DB6987900767298 /* xassets.cpp in Sources */,
+				59DA3B931DB697E300767298 /* JSON.cpp in Sources */,
+				59DA3B951DB697E300767298 /* xshmem.cpp in Sources */,
 				59BEB3E31D6B7FBF00CD09FF /* AppDelegate.m in Sources */,
 				59E566B91D6B6CC0007D0DD6 /* Example01.cpp in Sources */,
 			);
@@ -1414,11 +1440,8 @@
 				GCC_ENABLE_CPP_RTTI = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"OSX=1",
-					"DEBUG=1",
-					"$(inherited)",
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "$(inherited)";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -1465,6 +1488,7 @@
 				GCC_ENABLE_CPP_RTTI = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = "OSX=1";
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "$(inherited)";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -1483,6 +1507,11 @@
 		595FA11C1D32E1300005D056 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
+					"_APPLE_=1",
+					"OSX=1",
+					"DEBUG=1",
+				);
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "";
 			};
 			name = Debug;
@@ -1490,6 +1519,10 @@
 		595FA11D1D32E1300005D056 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
+					"_APPLE_=1",
+					"OSX=1",
+				);
 			};
 			name = Release;
 		};
@@ -1522,10 +1555,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -1634,10 +1664,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
