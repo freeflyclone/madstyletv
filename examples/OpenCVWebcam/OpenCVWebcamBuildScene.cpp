@@ -33,6 +33,7 @@ public:
 		cap.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));
 		cap.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
 		cap.set(CV_CAP_PROP_FRAME_HEIGHT, 720);
+		cap.set(CV_CAP_PROP_FPS, 30.0);
 
 		while (IsRunning()) {
 			cap >> frame;
