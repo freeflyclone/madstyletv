@@ -115,4 +115,5 @@ clean:
 	@-rm -rf ${COMMONOBJS}
 	@-rm -rf ${OBJS}
 	@-rm -rf ${LIB}
+	@-find .. -name \*.o -exec rm -rf {} \;
 
