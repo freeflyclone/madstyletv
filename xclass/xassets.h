@@ -15,7 +15,7 @@
 #ifndef XASSETS_H
 #define XASSETS_H
 
-#include <JSON.h>
+#include "JSON.h"
 #include <string>
 #include <iostream>
 #include <sstream>

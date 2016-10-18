@@ -10,7 +10,7 @@
 #ifndef XCONFIG_H
 #define XCONFIG_H
 
-#include <xassets.h>
+#include "xassets.h"
 
 class XConfig : public XAssets {
 public:
