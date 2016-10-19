@@ -11,8 +11,8 @@
 ** correctly.
 **************************************************************/
 #include "ExampleXGL.h"
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
+//#include <opencv2/core/core.hpp>
+//#include <opencv2/highgui/highgui.hpp>
 
 #include "xal.h"
 
@@ -24,15 +24,8 @@ void ExampleXGL::BuildScene() {
 	pXal = new XAL();
 
 	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
-	cv::Mat image;
-	image = cv::imread(imgPath, cv::IMREAD_UNCHANGED);
 
-	if (!image.data) {
-		xprintf("imread() failed\n");
-		exit(-1);
-	}
-
-	AddShape("shaders/tex", [&](){ shape = new XGLTexQuad(imgPath, image.cols, image.rows, image.channels(), image.data, true); return shape; });
+	AddShape("shaders/tex", [&](){ shape = new XGLTexQuad(imgPath); return shape; });
 
 	// have the upright texture scaled up and made 16:9 aspect, and orbiting the origin
 	// to highlight use of the callback function for animation of a shape.  Note that this function
