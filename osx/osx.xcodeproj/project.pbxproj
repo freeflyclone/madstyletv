@@ -21,7 +21,6 @@
 		5919975C1D63F261003F62FF /* xglshapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 591997381D63F00D003F62FF /* xglshapes.cpp */; };
 		5919975D1D63F261003F62FF /* xgluniform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5919973A1D63F00D003F62FF /* xgluniform.cpp */; };
 		5919975E1D63F2AB003F62FF /* xclass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 591996171D63F00D003F62FF /* xclass.cpp */; };
-		595642771DB6A166002A756F /* xglframebuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 595642751DB6A166002A756F /* xglframebuffer.cpp */; };
 		5956427B1DB6A640002A756F /* Example01.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5956427A1DB6A640002A756F /* Example01.cpp */; };
 		5956427C1DB6A8A5002A756F /* xassets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59DA3B991DB6987900767298 /* xassets.cpp */; };
 		5956427D1DB6A8A5002A756F /* JSON.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59DA3B8D1DB697E300767298 /* JSON.cpp */; };
@@ -33,6 +32,17 @@
 		5962D3891D6B81D8006BCD52 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3881D6B81D8006BCD52 /* main.m */; };
 		5984BD951D6B88650047DF80 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5984BD941D6B88650047DF80 /* Assets.xcassets */; };
 		5993CC321D6B9031006105A9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5993CC301D6B9031006105A9 /* MainMenu.xib */; };
+		599A90EC1DB7DDB900EAD8C9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3881D6B81D8006BCD52 /* main.m */; };
+		599A90ED1DB7DDB900EAD8C9 /* ExampleXGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 599FCC4A1D6645B300C57873 /* ExampleXGL.cpp */; };
+		599A90EE1DB7DDB900EAD8C9 /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3841D6B80AB006BCD52 /* OpenGLView.mm */; };
+		599A90EF1DB7DDB900EAD8C9 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 59BEB3E21D6B7FBF00CD09FF /* AppDelegate.m */; };
+		599A90F11DB7DDB900EAD8C9 /* libxclass.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 591997461D63F05D003F62FF /* libxclass.a */; };
+		599A90F31DB7DDB900EAD8C9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5984BD941D6B88650047DF80 /* Assets.xcassets */; };
+		599A90F41DB7DDB900EAD8C9 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 59FDE31F1D6B845200AE8BD0 /* Info.plist */; };
+		599A90F51DB7DDB900EAD8C9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5993CC301D6B9031006105A9 /* MainMenu.xib */; };
+		599A90FE1DB7E0AD00EAD8C9 /* OpenALTestBuildScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 599A90FD1DB7E0AD00EAD8C9 /* OpenALTestBuildScene.cpp */; };
+		599A90FF1DB7E0CD00EAD8C9 /* OpenALTestBuildScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 599A90FD1DB7E0AD00EAD8C9 /* OpenALTestBuildScene.cpp */; };
+		599A91031DB7E39B00EAD8C9 /* xal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 599A91011DB7E39B00EAD8C9 /* xal.cpp */; };
 		599FCC4D1D6645B300C57873 /* ExampleXGL.h in Headers */ = {isa = PBXBuildFile; fileRef = 599FCC4B1D6645B300C57873 /* ExampleXGL.h */; };
 		599FCC5B1D66508D00C57873 /* libxclass.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 591997461D63F05D003F62FF /* libxclass.a */; };
 		599FCC601D6654EB00C57873 /* ExampleXGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 599FCC4A1D6645B300C57873 /* ExampleXGL.cpp */; };
@@ -46,6 +56,8 @@
 		599FCC7D1D667CCB00C57873 /* libpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FCC7C1D667CCB00C57873 /* libpng.a */; };
 		599FCC7F1D667F0400C57873 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FCC7E1D667F0400C57873 /* libbz2.a */; };
 		59BEB3E31D6B7FBF00CD09FF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 59BEB3E21D6B7FBF00CD09FF /* AppDelegate.m */; };
+		59C2C2261DB7E5370074FC03 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 59C2C2251DB7E5370074FC03 /* OpenAL.framework */; };
+		59C2C2271DB7E7540074FC03 /* xal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 599A91011DB7E39B00EAD8C9 /* xal.cpp */; };
 		59C7C7E21D6B9A5A000F4E87 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3881D6B81D8006BCD52 /* main.m */; };
 		59C7C7E31D6B9A5A000F4E87 /* ExampleXGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 599FCC4A1D6645B300C57873 /* ExampleXGL.cpp */; };
 		59C7C7E41D6B9A5A000F4E87 /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3841D6B80AB006BCD52 /* OpenGLView.mm */; };
@@ -55,17 +67,18 @@
 		59C7C7EB1D6B9A5A000F4E87 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 59FDE31F1D6B845200AE8BD0 /* Info.plist */; };
 		59C7C7EC1D6B9A5A000F4E87 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5993CC301D6B9031006105A9 /* MainMenu.xib */; };
 		59C7C7F41D6B9ACD000F4E87 /* Example02.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59C7C7F31D6B9ACD000F4E87 /* Example02.cpp */; };
-		59CE88751DB6D96800D2023B /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 59CE88741DB6D96800D2023B /* CoreVideo.framework */; };
-		59DA3B931DB697E300767298 /* JSON.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59DA3B8D1DB697E300767298 /* JSON.cpp */; };
-		59DA3B941DB697E300767298 /* JSONValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59DA3B8F1DB697E300767298 /* JSONValue.cpp */; };
-		59DA3B951DB697E300767298 /* xshmem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59DA3B911DB697E300767298 /* xshmem.cpp */; };
-		59DA3B981DB6983D00767298 /* xglworldcursor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59DA3B961DB6983D00767298 /* xglworldcursor.cpp */; };
-		59DA3B9B1DB6987900767298 /* xassets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59DA3B991DB6987900767298 /* xassets.cpp */; };
 		59FDE3201D6B845200AE8BD0 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 59FDE31F1D6B845200AE8BD0 /* Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
 		594109BD1D66AD8E0033C67F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 595FA1181D32E1300005D056 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 591997451D63F05D003F62FF;
+			remoteInfo = xclass;
+		};
+		599A90E91DB7DDB900EAD8C9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 595FA1181D32E1300005D056 /* Project object */;
 			proxyType = 1;
@@ -463,6 +476,10 @@
 		5984BD941D6B88650047DF80 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = common/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		598A6CEB1D6636CA005BC5D9 /* Example01.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example01.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5993CC311D6B9031006105A9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = common/Base.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
+		599A90FA1DB7DDB900EAD8C9 /* OpenALTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenALTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		599A90FD1DB7E0AD00EAD8C9 /* OpenALTestBuildScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OpenALTestBuildScene.cpp; path = OpenALTest/OpenALTestBuildScene.cpp; sourceTree = "<group>"; };
+		599A91011DB7E39B00EAD8C9 /* xal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xal.cpp; path = xal/xal.cpp; sourceTree = "<group>"; };
+		599A91021DB7E39B00EAD8C9 /* xal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xal.h; path = xal/xal.h; sourceTree = "<group>"; };
 		599FCC4A1D6645B300C57873 /* ExampleXGL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExampleXGL.cpp; sourceTree = "<group>"; };
 		599FCC4B1D6645B300C57873 /* ExampleXGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExampleXGL.h; sourceTree = "<group>"; };
 		599FCC5C1D6651FA00C57873 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = lib64/libfreetype.a; sourceTree = "<group>"; };
@@ -473,9 +490,9 @@
 		599FCC7E1D667F0400C57873 /* libbz2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbz2.a; path = ../xclass/lib/osx/libbz2.a; sourceTree = "<group>"; };
 		59BEB3E11D6B7FAC00CD09FF /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = common/AppDelegate.h; sourceTree = SOURCE_ROOT; };
 		59BEB3E21D6B7FBF00CD09FF /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = common/AppDelegate.m; sourceTree = SOURCE_ROOT; };
+		59C2C2251DB7E5370074FC03 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
 		59C7C7F11D6B9A5A000F4E87 /* Example02.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example02.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		59C7C7F31D6B9ACD000F4E87 /* Example02.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Example02.cpp; path = Example02/Example02.cpp; sourceTree = "<group>"; };
-		59CE88741DB6D96800D2023B /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		59DA3B8D1DB697E300767298 /* JSON.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSON.cpp; sourceTree = "<group>"; };
 		59DA3B8E1DB697E300767298 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
 		59DA3B8F1DB697E300767298 /* JSONValue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSONValue.cpp; sourceTree = "<group>"; };
@@ -511,11 +528,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		599A90F01DB7DDB900EAD8C9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				59C2C2261DB7E5370074FC03 /* OpenAL.framework in Frameworks */,
+				599A90F11DB7DDB900EAD8C9 /* libxclass.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		59C7C7E71D6B9A5A000F4E87 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				59CE88751DB6D96800D2023B /* CoreVideo.framework in Frameworks */,
 				59C7C7E81D6B9A5A000F4E87 /* libxclass.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -538,6 +563,7 @@
 				5919960F1D63F00D003F62FF /* ReadMe.txt */,
 				591996171D63F00D003F62FF /* xclass.cpp */,
 				5919961C1D63F00D003F62FF /* xconfig.h */,
+				599A91001DB7E37400EAD8C9 /* xal */,
 				5919961D1D63F00D003F62FF /* xgl */,
 				5919973C1D63F00D003F62FF /* xinput.cpp */,
 				5919973D1D63F00D003F62FF /* xinput.h */,
@@ -1070,7 +1096,7 @@
 		595FA1171D32E1300005D056 = {
 			isa = PBXGroup;
 			children = (
-				59CE88741DB6D96800D2023B /* CoreVideo.framework */,
+				59C2C2251DB7E5370074FC03 /* OpenAL.framework */,
 				59E420DA1D6B781400EE74D6 /* Prebuilt LIbs */,
 				59E5758F1D6400BF0093ADFE /* examples */,
 				5919959B1D63F00D003F62FF /* xclass */,
@@ -1084,6 +1110,7 @@
 				591997461D63F05D003F62FF /* libxclass.a */,
 				598A6CEB1D6636CA005BC5D9 /* Example01.app */,
 				59C7C7F11D6B9A5A000F4E87 /* Example02.app */,
+				599A90FA1DB7DDB900EAD8C9 /* OpenALTest.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1103,6 +1130,23 @@
 			);
 			name = "Supporting Files";
 			path = ../osx/Example01;
+			sourceTree = "<group>";
+		};
+		599A90FC1DB7E06B00EAD8C9 /* OpenALTEst */ = {
+			isa = PBXGroup;
+			children = (
+				599A90FD1DB7E0AD00EAD8C9 /* OpenALTestBuildScene.cpp */,
+			);
+			name = OpenALTEst;
+			sourceTree = "<group>";
+		};
+		599A91001DB7E37400EAD8C9 /* xal */ = {
+			isa = PBXGroup;
+			children = (
+				599A91011DB7E39B00EAD8C9 /* xal.cpp */,
+				599A91021DB7E39B00EAD8C9 /* xal.h */,
+			);
+			name = xal;
 			sourceTree = "<group>";
 		};
 		599FCC5F1D6653E500C57873 /* lib */ = {
@@ -1152,8 +1196,9 @@
 			isa = PBXGroup;
 			children = (
 				59BEB3E01D6B7F4C00CD09FF /* osx common */,
-				59C7C7F51D6B9ADB000F4E87 /* Example02 */,
 				598A6CEC1D6636CA005BC5D9 /* Example01 */,
+				59C7C7F51D6B9ADB000F4E87 /* Example02 */,
+				599A90FC1DB7E06B00EAD8C9 /* OpenALTEst */,
 				59E575901D6400BF0093ADFE /* common */,
 			);
 			name = examples;
@@ -1221,6 +1266,25 @@
 			productReference = 598A6CEB1D6636CA005BC5D9 /* Example01.app */;
 			productType = "com.apple.product-type.application";
 		};
+		599A90E71DB7DDB900EAD8C9 /* OpenALTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 599A90F71DB7DDB900EAD8C9 /* Build configuration list for PBXNativeTarget "OpenALTest" */;
+			buildPhases = (
+				599A90EA1DB7DDB900EAD8C9 /* Sources */,
+				599A90F01DB7DDB900EAD8C9 /* Frameworks */,
+				599A90F21DB7DDB900EAD8C9 /* Resources */,
+				599A90F61DB7DDB900EAD8C9 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				599A90E81DB7DDB900EAD8C9 /* PBXTargetDependency */,
+			);
+			name = OpenALTest;
+			productName = Example01;
+			productReference = 599A90FA1DB7DDB900EAD8C9 /* OpenALTest.app */;
+			productType = "com.apple.product-type.application";
+		};
 		59C7C7DE1D6B9A5A000F4E87 /* Example02 */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 59C7C7EE1D6B9A5A000F4E87 /* Build configuration list for PBXNativeTarget "Example02" */;
@@ -1272,6 +1336,7 @@
 			targets = (
 				598A6CEA1D6636CA005BC5D9 /* Example01 */,
 				59C7C7DE1D6B9A5A000F4E87 /* Example02 */,
+				599A90E71DB7DDB900EAD8C9 /* OpenALTest */,
 				591997451D63F05D003F62FF /* xclass */,
 			);
 		};
@@ -1288,6 +1353,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		599A90F21DB7DDB900EAD8C9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				599A90F31DB7DDB900EAD8C9 /* Assets.xcassets in Resources */,
+				599A90F41DB7DDB900EAD8C9 /* Info.plist in Resources */,
+				599A90F51DB7DDB900EAD8C9 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		59C7C7E91D6B9A5A000F4E87 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1301,6 +1376,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		599A90F61DB7DDB900EAD8C9 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export BUILD_RESULT=$CONFIGURATION/${PRODUCT_NAME}.app\ncp -R ${BUILD_RESULT} ../bin";
+		};
 		599FCC681D6662F100C57873 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1347,6 +1435,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				59C2C2271DB7E7540074FC03 /* xal.cpp in Sources */,
 				595642801DB6A931002A756F /* xglframebuffer.cpp in Sources */,
 				595642811DB6A931002A756F /* xglworldcursor.cpp in Sources */,
 				5956427C1DB6A8A5002A756F /* xassets.cpp in Sources */,
@@ -1380,15 +1469,23 @@
 			files = (
 				5962D3891D6B81D8006BCD52 /* main.m in Sources */,
 				599FCC601D6654EB00C57873 /* ExampleXGL.cpp in Sources */,
-				595642771DB6A166002A756F /* xglframebuffer.cpp in Sources */,
-				59DA3B941DB697E300767298 /* JSONValue.cpp in Sources */,
 				5962D3851D6B80AB006BCD52 /* OpenGLView.mm in Sources */,
-				59DA3B981DB6983D00767298 /* xglworldcursor.cpp in Sources */,
-				59DA3B9B1DB6987900767298 /* xassets.cpp in Sources */,
-				59DA3B931DB697E300767298 /* JSON.cpp in Sources */,
-				59DA3B951DB697E300767298 /* xshmem.cpp in Sources */,
 				59BEB3E31D6B7FBF00CD09FF /* AppDelegate.m in Sources */,
+				599A90FE1DB7E0AD00EAD8C9 /* OpenALTestBuildScene.cpp in Sources */,
+				599A91031DB7E39B00EAD8C9 /* xal.cpp in Sources */,
 				5956427B1DB6A640002A756F /* Example01.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		599A90EA1DB7DDB900EAD8C9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				599A90FF1DB7E0CD00EAD8C9 /* OpenALTestBuildScene.cpp in Sources */,
+				599A90EC1DB7DDB900EAD8C9 /* main.m in Sources */,
+				599A90ED1DB7DDB900EAD8C9 /* ExampleXGL.cpp in Sources */,
+				599A90EE1DB7DDB900EAD8C9 /* OpenGLView.mm in Sources */,
+				599A90EF1DB7DDB900EAD8C9 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1411,6 +1508,11 @@
 			isa = PBXTargetDependency;
 			target = 591997451D63F05D003F62FF /* xclass */;
 			targetProxy = 594109BD1D66AD8E0033C67F /* PBXContainerItemProxy */;
+		};
+		599A90E81DB7DDB900EAD8C9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 591997451D63F05D003F62FF /* xclass */;
+			targetProxy = 599A90E91DB7DDB900EAD8C9 /* PBXContainerItemProxy */;
 		};
 		59C7C7DF1D6B9A5A000F4E87 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1659,6 +1761,115 @@
 			};
 			name = Release;
 		};
+		599A90F81DB7DDB900EAD8C9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = common/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"../xclass/3rdParty/**",
+					"$(PROJECT_DIR)/Debug",
+				);
+				"LIBRARY_SEARCH_PATHS[arch=*]" = (
+					"../xclass/3rdParty/**",
+					"$(PROJECT_DIR)/Debug",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.OpenALTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.11;
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
+			};
+			name = Debug;
+		};
+		599A90F91DB7DDB900EAD8C9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = common/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"../xclass/3rdParty/**",
+					"$(PROJECT_DIR)/Debug",
+				);
+				"LIBRARY_SEARCH_PATHS[arch=*]" = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Debug",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.OpenALTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.11;
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
+			};
+			name = Release;
+		};
 		59C7C7EF1D6B9A5A000F4E87 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1794,6 +2005,15 @@
 			buildConfigurations = (
 				598A6CFA1D6636CA005BC5D9 /* Debug */,
 				598A6CFB1D6636CA005BC5D9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		599A90F71DB7DDB900EAD8C9 /* Build configuration list for PBXNativeTarget "OpenALTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				599A90F81DB7DDB900EAD8C9 /* Debug */,
+				599A90F91DB7DDB900EAD8C9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

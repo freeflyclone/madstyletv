@@ -17,8 +17,13 @@
 #include <math.h>
 
 // OpenAL includes
+#ifdef _APPLE_
+#include <OpenAL/al.h>
+#include <OpenAL/alc.h>
+#else
 #include <al.h>
 #include <alc.h>
+#endif
 
 #include "xutils.h"
 
