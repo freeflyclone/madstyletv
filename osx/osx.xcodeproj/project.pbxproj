@@ -55,6 +55,17 @@
 		599FCC6E1D66706600C57873 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FCC6D1D66706600C57873 /* libfreetype.a */; };
 		599FCC7D1D667CCB00C57873 /* libpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FCC7C1D667CCB00C57873 /* libpng.a */; };
 		599FCC7F1D667F0400C57873 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FCC7E1D667F0400C57873 /* libbz2.a */; };
+		59B41FBA1DB8386F00787183 /* OpenCVWebcamBuildScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59B41FB91DB8386F00787183 /* OpenCVWebcamBuildScene.cpp */; };
+		59B41FBF1DB8387800787183 /* OpenALTestBuildScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 599A90FD1DB7E0AD00EAD8C9 /* OpenALTestBuildScene.cpp */; };
+		59B41FC01DB8387800787183 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3881D6B81D8006BCD52 /* main.m */; };
+		59B41FC11DB8387800787183 /* ExampleXGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 599FCC4A1D6645B300C57873 /* ExampleXGL.cpp */; };
+		59B41FC21DB8387800787183 /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3841D6B80AB006BCD52 /* OpenGLView.mm */; };
+		59B41FC31DB8387800787183 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 59BEB3E21D6B7FBF00CD09FF /* AppDelegate.m */; };
+		59B41FC51DB8387800787183 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 59C2C2251DB7E5370074FC03 /* OpenAL.framework */; };
+		59B41FC61DB8387800787183 /* libxclass.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 591997461D63F05D003F62FF /* libxclass.a */; };
+		59B41FC81DB8387800787183 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5984BD941D6B88650047DF80 /* Assets.xcassets */; };
+		59B41FC91DB8387800787183 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 59FDE31F1D6B845200AE8BD0 /* Info.plist */; };
+		59B41FCA1DB8387800787183 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5993CC301D6B9031006105A9 /* MainMenu.xib */; };
 		59BEB3E31D6B7FBF00CD09FF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 59BEB3E21D6B7FBF00CD09FF /* AppDelegate.m */; };
 		59C2C2261DB7E5370074FC03 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 59C2C2251DB7E5370074FC03 /* OpenAL.framework */; };
 		59C2C2271DB7E7540074FC03 /* xal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 599A91011DB7E39B00EAD8C9 /* xal.cpp */; };
@@ -79,6 +90,13 @@
 			remoteInfo = xclass;
 		};
 		599A90E91DB7DDB900EAD8C9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 595FA1181D32E1300005D056 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 591997451D63F05D003F62FF;
+			remoteInfo = xclass;
+		};
+		59B41FBD1DB8387800787183 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 595FA1181D32E1300005D056 /* Project object */;
 			proxyType = 1;
@@ -488,6 +506,9 @@
 		599FCC6D1D66706600C57873 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../xclass/lib/osx/libfreetype.a; sourceTree = "<group>"; };
 		599FCC7C1D667CCB00C57873 /* libpng.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng.a; path = ../xclass/lib/osx/libpng.a; sourceTree = "<group>"; };
 		599FCC7E1D667F0400C57873 /* libbz2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbz2.a; path = ../xclass/lib/osx/libbz2.a; sourceTree = "<group>"; };
+		59B41FB91DB8386F00787183 /* OpenCVWebcamBuildScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OpenCVWebcamBuildScene.cpp; path = OpenCVWebcam/OpenCVWebcamBuildScene.cpp; sourceTree = "<group>"; };
+		59B41FCF1DB8387800787183 /* OpenCVWebcam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenCVWebcam.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		59B41FD01DB8387900787183 /* OpenALTest copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "OpenALTest copy-Info.plist"; path = "/Users/evanmortimore/src/madstyle/osx/OpenALTest copy-Info.plist"; sourceTree = "<absolute>"; };
 		59BEB3E11D6B7FAC00CD09FF /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = common/AppDelegate.h; sourceTree = SOURCE_ROOT; };
 		59BEB3E21D6B7FBF00CD09FF /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = common/AppDelegate.m; sourceTree = SOURCE_ROOT; };
 		59C2C2251DB7E5370074FC03 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
@@ -534,6 +555,15 @@
 			files = (
 				59C2C2261DB7E5370074FC03 /* OpenAL.framework in Frameworks */,
 				599A90F11DB7DDB900EAD8C9 /* libxclass.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		59B41FC41DB8387800787183 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				59B41FC51DB8387800787183 /* OpenAL.framework in Frameworks */,
+				59B41FC61DB8387800787183 /* libxclass.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1101,6 +1131,7 @@
 				59E5758F1D6400BF0093ADFE /* examples */,
 				5919959B1D63F00D003F62FF /* xclass */,
 				595FA1231D32E17C0005D056 /* Products */,
+				59B41FD01DB8387900787183 /* OpenALTest copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1111,6 +1142,7 @@
 				598A6CEB1D6636CA005BC5D9 /* Example01.app */,
 				59C7C7F11D6B9A5A000F4E87 /* Example02.app */,
 				599A90FA1DB7DDB900EAD8C9 /* OpenALTest.app */,
+				59B41FCF1DB8387800787183 /* OpenCVWebcam.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1132,12 +1164,12 @@
 			path = ../osx/Example01;
 			sourceTree = "<group>";
 		};
-		599A90FC1DB7E06B00EAD8C9 /* OpenALTEst */ = {
+		599A90FC1DB7E06B00EAD8C9 /* OpenALTest */ = {
 			isa = PBXGroup;
 			children = (
 				599A90FD1DB7E0AD00EAD8C9 /* OpenALTestBuildScene.cpp */,
 			);
-			name = OpenALTEst;
+			name = OpenALTest;
 			sourceTree = "<group>";
 		};
 		599A91001DB7E37400EAD8C9 /* xal */ = {
@@ -1155,6 +1187,14 @@
 				599FCC5C1D6651FA00C57873 /* libfreetype.a */,
 			);
 			name = lib;
+			sourceTree = "<group>";
+		};
+		59B41FB81DB8384800787183 /* OpenCVWebcam */ = {
+			isa = PBXGroup;
+			children = (
+				59B41FB91DB8386F00787183 /* OpenCVWebcamBuildScene.cpp */,
+			);
+			name = OpenCVWebcam;
 			sourceTree = "<group>";
 		};
 		59BEB3E01D6B7F4C00CD09FF /* osx common */ = {
@@ -1196,10 +1236,11 @@
 			isa = PBXGroup;
 			children = (
 				59BEB3E01D6B7F4C00CD09FF /* osx common */,
+				59E575901D6400BF0093ADFE /* common */,
 				598A6CEC1D6636CA005BC5D9 /* Example01 */,
 				59C7C7F51D6B9ADB000F4E87 /* Example02 */,
-				599A90FC1DB7E06B00EAD8C9 /* OpenALTEst */,
-				59E575901D6400BF0093ADFE /* common */,
+				599A90FC1DB7E06B00EAD8C9 /* OpenALTest */,
+				59B41FB81DB8384800787183 /* OpenCVWebcam */,
 			);
 			name = examples;
 			path = ../examples;
@@ -1285,6 +1326,25 @@
 			productReference = 599A90FA1DB7DDB900EAD8C9 /* OpenALTest.app */;
 			productType = "com.apple.product-type.application";
 		};
+		59B41FBB1DB8387800787183 /* OpenCVWebcam */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 59B41FCC1DB8387800787183 /* Build configuration list for PBXNativeTarget "OpenCVWebcam" */;
+			buildPhases = (
+				59B41FBE1DB8387800787183 /* Sources */,
+				59B41FC41DB8387800787183 /* Frameworks */,
+				59B41FC71DB8387800787183 /* Resources */,
+				59B41FCB1DB8387800787183 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				59B41FBC1DB8387800787183 /* PBXTargetDependency */,
+			);
+			name = OpenCVWebcam;
+			productName = Example01;
+			productReference = 59B41FCF1DB8387800787183 /* OpenCVWebcam.app */;
+			productType = "com.apple.product-type.application";
+		};
 		59C7C7DE1D6B9A5A000F4E87 /* Example02 */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 59C7C7EE1D6B9A5A000F4E87 /* Build configuration list for PBXNativeTarget "Example02" */;
@@ -1337,6 +1397,7 @@
 				598A6CEA1D6636CA005BC5D9 /* Example01 */,
 				59C7C7DE1D6B9A5A000F4E87 /* Example02 */,
 				599A90E71DB7DDB900EAD8C9 /* OpenALTest */,
+				59B41FBB1DB8387800787183 /* OpenCVWebcam */,
 				591997451D63F05D003F62FF /* xclass */,
 			);
 		};
@@ -1360,6 +1421,16 @@
 				599A90F31DB7DDB900EAD8C9 /* Assets.xcassets in Resources */,
 				599A90F41DB7DDB900EAD8C9 /* Info.plist in Resources */,
 				599A90F51DB7DDB900EAD8C9 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		59B41FC71DB8387800787183 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				59B41FC81DB8387800787183 /* Assets.xcassets in Resources */,
+				59B41FC91DB8387800787183 /* Info.plist in Resources */,
+				59B41FCA1DB8387800787183 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1401,6 +1472,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# runs in the folder madstyle/osx (same as .xcodeproj)\nif [ ! -d \"../xclass/lib/osx\" ]; then mkdir -p ../xclass/lib/osx; fi\nif [ ! -f \"../xclass/lib/osx/libfreetype.a\" ]; then cp ../xclass/3rdParty/freetype/lib/osx/libfreetype.a ../xclass/lib/osx; fi\nif [ ! -f \"../xclass/lib/osx/libexpat.a\" ]; then cp ../xclass/3rdParty/expat/lib/osx/libexpat.a ../xclass/lib/osx; fi\nif [ ! -f \"../xclass/lib/osx/libz.a\" ]; then cp ../xclass/3rdParty/zlib/lib/osx/libz.a ../xclass/lib/osx; fi\nif [ ! -f \"../xclass/lib/osx/libpng.a\" ]; then cp ../xclass/3rdParty/libpng/lib/osx/libpng.a ../xclass/lib/osx; fi\nif [ ! -f \"../xclass/lib/osx/libbz2.a\" ]; then cp ../xclass/3rdParty/bzip2/lib/osx/libbz2.a ../xclass/lib/osx; fi\n\n\n\n\n\n\n\n";
+		};
+		59B41FCB1DB8387800787183 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export BUILD_RESULT=$CONFIGURATION/${PRODUCT_NAME}.app\ncp -R ${BUILD_RESULT} ../bin";
 		};
 		59C7C7ED1D6B9A5A000F4E87 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1470,6 +1554,7 @@
 				5962D3891D6B81D8006BCD52 /* main.m in Sources */,
 				599FCC601D6654EB00C57873 /* ExampleXGL.cpp in Sources */,
 				5962D3851D6B80AB006BCD52 /* OpenGLView.mm in Sources */,
+				59B41FBA1DB8386F00787183 /* OpenCVWebcamBuildScene.cpp in Sources */,
 				59BEB3E31D6B7FBF00CD09FF /* AppDelegate.m in Sources */,
 				599A90FE1DB7E0AD00EAD8C9 /* OpenALTestBuildScene.cpp in Sources */,
 				599A91031DB7E39B00EAD8C9 /* xal.cpp in Sources */,
@@ -1486,6 +1571,18 @@
 				599A90ED1DB7DDB900EAD8C9 /* ExampleXGL.cpp in Sources */,
 				599A90EE1DB7DDB900EAD8C9 /* OpenGLView.mm in Sources */,
 				599A90EF1DB7DDB900EAD8C9 /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		59B41FBE1DB8387800787183 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				59B41FBF1DB8387800787183 /* OpenALTestBuildScene.cpp in Sources */,
+				59B41FC01DB8387800787183 /* main.m in Sources */,
+				59B41FC11DB8387800787183 /* ExampleXGL.cpp in Sources */,
+				59B41FC21DB8387800787183 /* OpenGLView.mm in Sources */,
+				59B41FC31DB8387800787183 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1513,6 +1610,11 @@
 			isa = PBXTargetDependency;
 			target = 591997451D63F05D003F62FF /* xclass */;
 			targetProxy = 599A90E91DB7DDB900EAD8C9 /* PBXContainerItemProxy */;
+		};
+		59B41FBC1DB8387800787183 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 591997451D63F05D003F62FF /* xclass */;
+			targetProxy = 59B41FBD1DB8387800787183 /* PBXContainerItemProxy */;
 		};
 		59C7C7DF1D6B9A5A000F4E87 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1870,6 +1972,115 @@
 			};
 			name = Release;
 		};
+		59B41FCD1DB8387800787183 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = common/info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"../xclass/3rdParty/**",
+					"$(PROJECT_DIR)/Debug",
+				);
+				"LIBRARY_SEARCH_PATHS[arch=*]" = (
+					"../xclass/3rdParty/**",
+					"$(PROJECT_DIR)/Debug",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.OpenCVWebcam;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.11;
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
+			};
+			name = Debug;
+		};
+		59B41FCE1DB8387800787183 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = common/info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"../xclass/3rdParty/**",
+					"$(PROJECT_DIR)/Debug",
+				);
+				"LIBRARY_SEARCH_PATHS[arch=*]" = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Debug",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.OpenCVWebcam;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.11;
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
+			};
+			name = Release;
+		};
 		59C7C7EF1D6B9A5A000F4E87 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2014,6 +2225,15 @@
 			buildConfigurations = (
 				599A90F81DB7DDB900EAD8C9 /* Debug */,
 				599A90F91DB7DDB900EAD8C9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		59B41FCC1DB8387800787183 /* Build configuration list for PBXNativeTarget "OpenCVWebcam" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				59B41FCD1DB8387800787183 /* Debug */,
+				59B41FCE1DB8387800787183 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
