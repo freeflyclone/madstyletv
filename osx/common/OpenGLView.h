@@ -11,8 +11,10 @@
 #import "ExampleXGL.h"
 
 @interface OpenGLView : NSOpenGLView <NSWindowDelegate> {
+    @public ExampleXGL *exgl;
+
     CVDisplayLinkRef mDisplayLink;
-    ExampleXGL *exgl;
+    NSOpenGLContext *context;
 }
 
 - (void) prepareOpenGL;

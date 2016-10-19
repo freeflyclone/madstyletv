@@ -12,24 +12,37 @@
 #import <Cocoa/Cocoa.h>
 #import <CoreVideo/CVDisplayLink.h>
 
-static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp *now, const CVTimeStamp *outputTime, CVOptionFlags flagsIn, CVOptionFlags *flagsOut, void *displayLinkContext) {
-    
-    xprintf("displayLinkCallback()\n");
-    return kCVReturnSuccess;
-}
-
 @implementation OpenGLView
+
+
+static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp *now, const CVTimeStamp *outputTime, CVOptionFlags flagsIn, CVOptionFlags *flagsOut, void *displayLinkContext) {
+
+    CVReturn result = [(__bridge OpenGLView*)displayLinkContext getFrameForTime:outputTime];
+    return result;
+}
 
 - (void)prepareOpenGL{
     GLint swapInt = 1;
     [[self openGLContext] setValues:&swapInt forParameter:NSOpenGLCPSwapInterval];
     
     CVDisplayLinkCreateWithActiveCGDisplays(&mDisplayLink);
-
-    //CVDisplayLinkSetOutputCallback();//mDisplayLink, &displayLinkCallback, self);
+    
     CVDisplayLinkSetOutputCallback(mDisplayLink, &displayLinkCallback, (__bridge void *)self);
     CVDisplayLinkStart(mDisplayLink);
-    xprintf("prepareOpenGL\n");
+}
+
+- (CVReturn)getFrameForTime:(const CVTimeStamp*)outputTime {
+    [context lock];
+    [self activateContext];
+    
+    if (exgl != nil)
+        exgl->Display();
+    
+    [self flushContext];
+    [context unlock];
+
+    
+    return kCVReturnSuccess;
 }
 
 - (void)awakeFromNib {
@@ -47,7 +60,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     if (!pf)
         NSLog(@"No OpenGL pixel format");
     
-    NSOpenGLContext *context = [[NSOpenGLContext alloc] initWithFormat:pf shareContext:nil];
+    context = [[NSOpenGLContext alloc] initWithFormat:pf shareContext:nil];
     NSString *cwd = [[NSFileManager defaultManager] currentDirectoryPath];
     currentWorkingDir = std::string([cwd UTF8String]);
     
@@ -66,6 +79,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     [self setOpenGLContext:context];
     [self activateContext];
     
+    [context lock];
+    
     try {
         exgl = new ExampleXGL();
     }
@@ -77,17 +92,13 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
         abort();
     }
     
-    NSTimer *renderTimer = [NSTimer timerWithTimeInterval:0.0166666 target:self selector:@selector(timerFired:) userInfo:nil repeats:YES];
-    [[NSRunLoop currentRunLoop] addTimer:renderTimer forMode:NSDefaultRunLoopMode];
-    [[NSRunLoop currentRunLoop] addTimer:renderTimer forMode:NSEventTrackingRunLoopMode];
-    
     [self.window makeFirstResponder:self];
     
-    NSLog(@"Set context complete.");
+    [context unlock];
+    
+    xprintf("Set context complete.");
 }
-- (void) timerFired: (id) sender {
-    [self setNeedsDisplay:YES];
-}
+
 - (void) mouseDown: (NSEvent *) theEvent {
 }
 - (void) mouseUp: (NSEvent *) theEvent {
@@ -121,12 +132,14 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 }
 
 - (void)drawRect:(NSRect)bounds {
+    [context lock];
     [self activateContext];
     
     if (exgl != nil)
         exgl->Display();
     
     [self flushContext];
+    [context unlock];
 }
 
 - (void)reshape {
@@ -134,12 +147,15 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
         return;
     }
     
+    [context lock];
+    
     [self activateContext];
     NSRect bounds = [self bounds];
     GLsizei w = NSWidth(bounds);
     GLsizei h = NSHeight(bounds);
     exgl->Reshape(w,h);
-    NSLog(@"exgl->Reshape() called.");
+    
+    [context unlock];
 }
 
 - (void)activateContext {
@@ -148,5 +164,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 
 - (void)flushContext {
     [[self openGLContext] flushBuffer];
+}
+
+- (void)dealloc {
+    CVDisplayLinkStop(mDisplayLink);
+    CVDisplayLinkRelease(mDisplayLink);
 }
 @end
