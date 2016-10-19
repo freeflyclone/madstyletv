@@ -56,7 +56,6 @@
 		599FCC7D1D667CCB00C57873 /* libpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FCC7C1D667CCB00C57873 /* libpng.a */; };
 		599FCC7F1D667F0400C57873 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FCC7E1D667F0400C57873 /* libbz2.a */; };
 		59B41FBA1DB8386F00787183 /* OpenCVWebcamBuildScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59B41FB91DB8386F00787183 /* OpenCVWebcamBuildScene.cpp */; };
-		59B41FBF1DB8387800787183 /* OpenALTestBuildScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 599A90FD1DB7E0AD00EAD8C9 /* OpenALTestBuildScene.cpp */; };
 		59B41FC01DB8387800787183 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3881D6B81D8006BCD52 /* main.m */; };
 		59B41FC11DB8387800787183 /* ExampleXGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 599FCC4A1D6645B300C57873 /* ExampleXGL.cpp */; };
 		59B41FC21DB8387800787183 /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3841D6B80AB006BCD52 /* OpenGLView.mm */; };
@@ -66,6 +65,7 @@
 		59B41FC81DB8387800787183 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5984BD941D6B88650047DF80 /* Assets.xcassets */; };
 		59B41FC91DB8387800787183 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 59FDE31F1D6B845200AE8BD0 /* Info.plist */; };
 		59B41FCA1DB8387800787183 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5993CC301D6B9031006105A9 /* MainMenu.xib */; };
+		59B41FD11DB83A2100787183 /* OpenCVWebcamBuildScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59B41FB91DB8386F00787183 /* OpenCVWebcamBuildScene.cpp */; };
 		59BEB3E31D6B7FBF00CD09FF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 59BEB3E21D6B7FBF00CD09FF /* AppDelegate.m */; };
 		59C2C2261DB7E5370074FC03 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 59C2C2251DB7E5370074FC03 /* OpenAL.framework */; };
 		59C2C2271DB7E7540074FC03 /* xal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 599A91011DB7E39B00EAD8C9 /* xal.cpp */; };
@@ -508,7 +508,7 @@
 		599FCC7E1D667F0400C57873 /* libbz2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbz2.a; path = ../xclass/lib/osx/libbz2.a; sourceTree = "<group>"; };
 		59B41FB91DB8386F00787183 /* OpenCVWebcamBuildScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OpenCVWebcamBuildScene.cpp; path = OpenCVWebcam/OpenCVWebcamBuildScene.cpp; sourceTree = "<group>"; };
 		59B41FCF1DB8387800787183 /* OpenCVWebcam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenCVWebcam.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		59B41FD01DB8387900787183 /* OpenALTest copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "OpenALTest copy-Info.plist"; path = "/Users/evanmortimore/src/madstyle/osx/OpenALTest copy-Info.plist"; sourceTree = "<absolute>"; };
+		59B41FD21DB83C7000787183 /* xfifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xfifo.h; sourceTree = "<group>"; };
 		59BEB3E11D6B7FAC00CD09FF /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = common/AppDelegate.h; sourceTree = SOURCE_ROOT; };
 		59BEB3E21D6B7FBF00CD09FF /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = common/AppDelegate.m; sourceTree = SOURCE_ROOT; };
 		59C2C2251DB7E5370074FC03 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
@@ -581,6 +581,7 @@
 		5919959B1D63F00D003F62FF /* xclass */ = {
 			isa = PBXGroup;
 			children = (
+				59B41FD21DB83C7000787183 /* xfifo.h */,
 				59DA3B991DB6987900767298 /* xassets.cpp */,
 				59DA3B9A1DB6987900767298 /* xassets.h */,
 				59DA3B8D1DB697E300767298 /* JSON.cpp */,
@@ -1131,7 +1132,6 @@
 				59E5758F1D6400BF0093ADFE /* examples */,
 				5919959B1D63F00D003F62FF /* xclass */,
 				595FA1231D32E17C0005D056 /* Products */,
-				59B41FD01DB8387900787183 /* OpenALTest copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1578,7 +1578,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				59B41FBF1DB8387800787183 /* OpenALTestBuildScene.cpp in Sources */,
+				59B41FD11DB83A2100787183 /* OpenCVWebcamBuildScene.cpp in Sources */,
 				59B41FC01DB8387800787183 /* main.m in Sources */,
 				59B41FC11DB8387800787183 /* ExampleXGL.cpp in Sources */,
 				59B41FC21DB8387800787183 /* OpenGLView.mm in Sources */,
@@ -1737,6 +1737,8 @@
 					"OSX=1",
 					"DEBUG=1",
 				);
+				HEADER_SEARCH_PATHS = "";
+				"LIBRARY_SEARCH_PATHS[arch=*]" = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "";
 			};
@@ -1750,6 +1752,8 @@
 					"OSX=1",
 					"NDEBUG=1",
 				);
+				HEADER_SEARCH_PATHS = "";
+				"LIBRARY_SEARCH_PATHS[arch=*]" = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 			};
 			name = Release;
@@ -2008,6 +2012,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = /usr/local/include;
 				INFOPLIST_FILE = common/info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
@@ -2017,10 +2022,15 @@
 				"LIBRARY_SEARCH_PATHS[arch=*]" = (
 					"../xclass/3rdParty/**",
 					"$(PROJECT_DIR)/Debug",
+					/usr/local/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-lopencv_highgui",
+					"-lopencv_core",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.OpenCVWebcam;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx10.11;
@@ -2062,6 +2072,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = /usr/local/include;
 				INFOPLIST_FILE = common/info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
@@ -2071,9 +2082,14 @@
 				"LIBRARY_SEARCH_PATHS[arch=*]" = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Debug",
+					/usr/local/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = (
+					"-lopencv_highgui",
+					"-lopencv_core",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.OpenCVWebcam;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx10.11;
