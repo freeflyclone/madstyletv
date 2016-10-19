@@ -125,11 +125,11 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f), fb(NULL) {
 	glDepthFunc(GL_LESS);
 	glEnable(GL_DEPTH_TEST);
 
-	fb = new XGLFramebuffer();
+//	fb = new XGLFramebuffer();
 //	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //	glEnable(GL_BLEND);
 
-//	glCullFace(GL_BACK);
+	glCullFace(GL_BACK);
 //	glDisable(GL_CULL_FACE);
 }
 
