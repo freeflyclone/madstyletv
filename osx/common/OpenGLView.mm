@@ -7,7 +7,16 @@
 //
 
 #import "OpenGLView.h"
+#import <Foundation/FOundation.h>
 #import <OpenGL/gl3.h>
+#import <Cocoa/Cocoa.h>
+#import <CoreVideo/CVDisplayLink.h>
+
+static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp *now, const CVTimeStamp *outputTime, CVOptionFlags flagsIn, CVOptionFlags *flagsOut, void *displayLinkContext) {
+    
+    xprintf("displayLinkCallback()\n");
+    return kCVReturnSuccess;
+}
 
 @implementation OpenGLView
 
@@ -15,19 +24,14 @@
     GLint swapInt = 1;
     [[self openGLContext] setValues:&swapInt forParameter:NSOpenGLCPSwapInterval];
     
-    CVDisplayLinkCreateWithActiveCGDisplays(&displayLink);
+    CVDisplayLinkCreateWithActiveCGDisplays(&mDisplayLink);
 
-    //CVDisplayLinkSetOutputCallback(displayLink, &displayLinkCallback, self);
+    //CVDisplayLinkSetOutputCallback();//mDisplayLink, &displayLinkCallback, self);
+    CVDisplayLinkSetOutputCallback(mDisplayLink, &displayLinkCallback, (__bridge void *)self);
+    CVDisplayLinkStart(mDisplayLink);
     xprintf("prepareOpenGL\n");
-
-
 }
 
-static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeStamp *now, const CVTimeStamp *outputTime, CVOptionFlags flagsIn, CVOptionFlags *flagsOut, void *displayLinkContext) {
-    
-    return kCVReturnSuccess;
-    
-}
 - (void)awakeFromNib {
     xprintf("awakeFromNib()\n");
     NSOpenGLPixelFormatAttribute attrs[] = {
@@ -73,7 +77,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
         abort();
     }
     
-    NSTimer *renderTimer = [NSTimer timerWithTimeInterval:0.001 target:self selector:@selector(timerFired:) userInfo:nil repeats:YES];
+    NSTimer *renderTimer = [NSTimer timerWithTimeInterval:0.0166666 target:self selector:@selector(timerFired:) userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:renderTimer forMode:NSDefaultRunLoopMode];
     [[NSRunLoop currentRunLoop] addTimer:renderTimer forMode:NSEventTrackingRunLoopMode];
     

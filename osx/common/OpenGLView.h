@@ -7,13 +7,14 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import <QuartzCore/CVDisplayLink.h>
+#import <QuartzCore/QuartzCore.h>
 #import "ExampleXGL.h"
 
-@interface OpenGLView : NSOpenGLView {
-    CVDisplayLinkRef displayLink;
+@interface OpenGLView : NSOpenGLView <NSWindowDelegate> {
+    CVDisplayLinkRef mDisplayLink;
     ExampleXGL *exgl;
 }
+
 - (void) prepareOpenGL;
 - (void) drawRect: (NSRect) bounds;
 - (void) awakeFromNib;

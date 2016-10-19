@@ -55,6 +55,7 @@
 		59C7C7EB1D6B9A5A000F4E87 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 59FDE31F1D6B845200AE8BD0 /* Info.plist */; };
 		59C7C7EC1D6B9A5A000F4E87 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5993CC301D6B9031006105A9 /* MainMenu.xib */; };
 		59C7C7F41D6B9ACD000F4E87 /* Example02.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59C7C7F31D6B9ACD000F4E87 /* Example02.cpp */; };
+		59CE88751DB6D96800D2023B /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 59CE88741DB6D96800D2023B /* CoreVideo.framework */; };
 		59DA3B931DB697E300767298 /* JSON.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59DA3B8D1DB697E300767298 /* JSON.cpp */; };
 		59DA3B941DB697E300767298 /* JSONValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59DA3B8F1DB697E300767298 /* JSONValue.cpp */; };
 		59DA3B951DB697E300767298 /* xshmem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59DA3B911DB697E300767298 /* xshmem.cpp */; };
@@ -474,6 +475,7 @@
 		59BEB3E21D6B7FBF00CD09FF /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = common/AppDelegate.m; sourceTree = SOURCE_ROOT; };
 		59C7C7F11D6B9A5A000F4E87 /* Example02.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example02.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		59C7C7F31D6B9ACD000F4E87 /* Example02.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Example02.cpp; path = Example02/Example02.cpp; sourceTree = "<group>"; };
+		59CE88741DB6D96800D2023B /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		59DA3B8D1DB697E300767298 /* JSON.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSON.cpp; sourceTree = "<group>"; };
 		59DA3B8E1DB697E300767298 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
 		59DA3B8F1DB697E300767298 /* JSONValue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSONValue.cpp; sourceTree = "<group>"; };
@@ -513,6 +515,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				59CE88751DB6D96800D2023B /* CoreVideo.framework in Frameworks */,
 				59C7C7E81D6B9A5A000F4E87 /* libxclass.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1067,6 +1070,7 @@
 		595FA1171D32E1300005D056 = {
 			isa = PBXGroup;
 			children = (
+				59CE88741DB6D96800D2023B /* CoreVideo.framework */,
 				59E420DA1D6B781400EE74D6 /* Prebuilt LIbs */,
 				59E5758F1D6400BF0093ADFE /* examples */,
 				5919959B1D63F00D003F62FF /* xclass */,
@@ -1529,6 +1533,7 @@
 					"OSX=1",
 					"DEBUG=1",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "";
 			};
 			name = Debug;
@@ -1541,6 +1546,7 @@
 					"OSX=1",
 					"NDEBUG=1",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 			};
 			name = Release;
 		};
@@ -1590,7 +1596,7 @@
 					"../xclass/3rdParty/**",
 					"$(PROJECT_DIR)/Debug",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.Example01;
@@ -1644,7 +1650,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Debug",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.Example01;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1699,12 +1705,12 @@
 					"../xclass/3rdParty/**",
 					"$(PROJECT_DIR)/Debug",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.Example02;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
+				SDKROOT = macosx10.11;
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
 			};
 			name = Debug;
@@ -1753,11 +1759,11 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Debug",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.Example02;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
+				SDKROOT = macosx10.11;
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
 			};
 			name = Release;
