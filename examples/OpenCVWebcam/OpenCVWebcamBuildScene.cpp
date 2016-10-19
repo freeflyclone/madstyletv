@@ -22,6 +22,10 @@ public:
 		SetName(n);
 	};
 
+	~CameraThread() {
+		xprintf("~CameraThread()\n");
+		Stop();
+	}
 	void Run() {
 		cap.open(0);
 
@@ -55,6 +59,11 @@ CameraThread *pct;
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
+	glm::vec3 cameraPosition(0, 13, 5.4f);
+	glm::vec3 cameraDirection(0,-13,0);
+	glm::vec3 cameraUp = { 0, 0, 1 };
+	camera.Set(cameraPosition, cameraDirection, cameraUp);
+
 	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
 	cv::Mat image;
 	image = cv::imread(imgPath, cv::IMREAD_UNCHANGED);
@@ -69,7 +78,7 @@ void ExampleXGL::BuildScene() {
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(9.6f, 5.4f, 1.0f));
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 5.4f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	shape->model = rotate * scale;
+	shape->model = translate * rotate * scale;
 
 	// have the upright texture scaled up and made 16:9 aspect, and orbiting the origin
 	// to highlight use of the callback function for animation of a shape.  Note that this function
@@ -78,7 +87,7 @@ void ExampleXGL::BuildScene() {
 	XGLShape::AnimaFunk transform = [&](XGLShape *s, float clock) {
 		cv::Mat image;
 
-		if (clock > 0.0f) {
+/*		if (clock > 0.0f) {
 			float sinFunc = sin(clock / 120.0f) * 10.0f;
 			float cosFunc = cos(clock / 120.0f) * 10.0f;
 			glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(9.6f, 5.4f, 1.0f));
@@ -86,7 +95,7 @@ void ExampleXGL::BuildScene() {
 			glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 			s->model = translate * rotate * scale;
 		}
-
+*/
 		if (pct != NULL && pct->IsRunning()) {
 			while (pct->matFifo.Size()) {
 				image = pct->matFifo.Get();
