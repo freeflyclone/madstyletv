@@ -10,7 +10,7 @@ void ExampleXGL::BuildScene() {
 	XGLShape *shape, *child1, *child2, *child3, *child4;
 	glm::mat4 rotate, translate;
 
-	AddShape("shaders/diffuse", [&](){ shape = new XGLTorus(5.0f, 1.0f, 32, 24); return shape; });
+	AddShape("shaders/diffuse", [&](){ shape = new XGLTorus(5.0f, 1.0f, 24, 16); return shape; });
 	shape->attributes.diffuseColor = { 0.005, 0.005, 0.005, 1 };
 	shape->SetTheFunk([&](XGLShape *s, float clock) {
 		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 60.0f, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -24,7 +24,7 @@ void ExampleXGL::BuildScene() {
 	});
 	shape->AddChild(child3);
 
-	CreateShape("shaders/diffuse", [&](){ child4 = new XGLTorus(2.0f, 0.5f, 32, 24); return child4; });
+	CreateShape("shaders/diffuse", [&](){ child4 = new XGLTorus(2.0f, 0.5f, 24, 16); return child4; });
 	child4->attributes.diffuseColor = { 1.0, 0.00001, 0.00001, 1 };
 	translate = glm::translate(glm::mat4(), glm::vec3(5.0, 0, 0));
 	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -37,7 +37,7 @@ void ExampleXGL::BuildScene() {
 		s->model = rotate;
 	});
 
-	CreateShape("shaders/diffuse", [&](){ child2 = new XGLTorus(0.75f, 0.25f, 32, 24); return child2; });
+	CreateShape("shaders/diffuse", [&](){ child2 = new XGLTorus(0.75f, 0.25f, 24, 16); return child2; });
 	child2->attributes.diffuseColor = (yellow);
 	translate = glm::translate(glm::mat4(), glm::vec3(2.0, 0, 0));
 	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -47,16 +47,16 @@ void ExampleXGL::BuildScene() {
 	child4->AddChild(child1);
 	child3->AddChild(child4);
 
-	AddShape("shaders/diffuse", [&](){ shape = new XGLTorus(3.0f, 0.5f, 32, 24); return shape; });
+	AddShape("shaders/diffuse", [&](){ shape = new XGLTorus(3.0f, 0.5f, 24, 16); return shape; });
 	shape->attributes.diffuseColor = (blue);
 	shape->model = glm::translate(glm::mat4(), glm::vec3(20, 0, 0));
 
-	AddShape("shaders/diffuse", [&](){ shape = new XGLTorus(3.0f, 0.5f, 32, 24); return shape; });
+	AddShape("shaders/diffuse", [&](){ shape = new XGLTorus(3.0f, 0.5f, 24, 16); return shape; });
 	shape->attributes.diffuseColor = (red);
 	shape->model = glm::translate(glm::mat4(), glm::vec3(-20, 0, 0)) 
 				 * glm::scale(glm::mat4(), glm::vec3(2, 2, 2));
 
-	AddShape("shaders/diffuse", [&](){ shape = new XGLTorus(3.0f, 0.5f, 32, 24); return shape; });
+	AddShape("shaders/diffuse", [&](){ shape = new XGLTorus(3.0f, 0.5f, 24, 16); return shape; });
 	shape->attributes.diffuseColor = (green);
 	shape->model = glm::translate(glm::mat4(), glm::vec3(30, 0, 0)) 
 				 * glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(0,1,0)) 
