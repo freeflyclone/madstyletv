@@ -41,7 +41,7 @@ public:
 class AudioStreamThread : public XThread {
 public:
 	AudioStreamThread(std::shared_ptr<XAVStream> s) : XThread("AudioStreamThread"), stream(s) {
-		int sampleSize = stream->formatSize * stream->channels;
+		//int sampleSize = stream->formatSize * stream->channels;
 
 		sampleRate = stream->sampleRate;
 

@@ -37,7 +37,7 @@ public:
 	std::shared_ptr<XAVSrc>GetSrc(int idx);
 
 	std::vector<std::shared_ptr<XAVSrc>> mSrcs;
-	WSADATA wsaData;
+	//WSADATA wsaData;
 };
 
 
