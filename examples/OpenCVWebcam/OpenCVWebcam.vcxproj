@@ -175,6 +175,12 @@
     <ClCompile Include="..\common\main.cpp" />
     <ClCompile Include="OpenCVWebcamBuildScene.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\shaders\rgb2gray.frag" />
+    <None Include="..\..\shaders\rgb2gray.vert" />
+    <None Include="..\..\shaders\tex.frag" />
+    <None Include="..\..\shaders\tex.vert" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

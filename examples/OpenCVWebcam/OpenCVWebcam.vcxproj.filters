@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{d4cfb429-278b-4b12-b931-7b04ad24f273}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\common\main.cpp">
@@ -24,5 +27,19 @@
     <ClCompile Include="OpenCVWebcamBuildScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\shaders\tex.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\tex.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\rgb2gray.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\rgb2gray.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

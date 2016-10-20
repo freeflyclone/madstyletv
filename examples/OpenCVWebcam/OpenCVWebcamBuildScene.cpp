@@ -25,6 +25,7 @@ public:
 	~CameraThread() {
 		xprintf("~CameraThread()\n");
 		Stop();
+		cap.release();
 	}
 	void Run() {
 		cap.open(0);
@@ -35,8 +36,8 @@ public:
 		}
 
 		cap.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));
-		cap.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
-		cap.set(CV_CAP_PROP_FRAME_HEIGHT, 720);
+		cap.set(CV_CAP_PROP_FRAME_WIDTH, 1920);
+		cap.set(CV_CAP_PROP_FRAME_HEIGHT, 1080);
 		cap.set(CV_CAP_PROP_FPS, 30.0);
 
 		while (IsRunning()) {
@@ -59,11 +60,6 @@ CameraThread *pct;
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
-	glm::vec3 cameraPosition(0, 13, 5.4f);
-	glm::vec3 cameraDirection(0,-13,0);
-	glm::vec3 cameraUp = { 0, 0, 1 };
-	camera.Set(cameraPosition, cameraDirection, cameraUp);
-
 	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
 	cv::Mat image;
 	image = cv::imread(imgPath, cv::IMREAD_UNCHANGED);
@@ -73,7 +69,10 @@ void ExampleXGL::BuildScene() {
 		exit(-1);
 	}
 
-	AddShape("shaders/tex", [&](){ shape = new XGLTexQuad(imgPath, image.cols, image.rows, image.channels(), image.data, true); return shape; });
+	cv::Mat image2 = cv::Mat(image);
+
+	AddShape("shaders/rgb2gray", [&](){ shape = new XGLTexQuad(imgPath, image.cols, image.rows, image.channels(), image.data, true); return shape; });
+	shape->AddTexture(imgPath, image2.cols, image2.rows, image2.channels(), image2.data, true);
 
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(9.6f, 5.4f, 1.0f));
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 5.4f));
@@ -85,7 +84,8 @@ void ExampleXGL::BuildScene() {
 	// runs once per frame BEFORE the shape's geomentry is rendered.  A lot can
 	// be done here. Hint: scripting, physics(?)
 	XGLShape::AnimaFunk transform = [&](XGLShape *s, float clock) {
-		cv::Mat image;
+		cv::Mat img;
+		static int activeTexture = 0;
 
 /*		if (clock > 0.0f) {
 			float sinFunc = sin(clock / 120.0f) * 10.0f;
@@ -98,10 +98,18 @@ void ExampleXGL::BuildScene() {
 */
 		if (pct != NULL && pct->IsRunning()) {
 			while (pct->matFifo.Size()) {
-				image = pct->matFifo.Get();
+				img = pct->matFifo.Get();
 
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pct->width, pct->height, 0, GL_BGR, GL_UNSIGNED_BYTE, image.data);
+				glActiveTexture(GL_TEXTURE0 + activeTexture);
+				GL_CHECK("glActiveTexture() failed");
+
+				glBindTexture(GL_TEXTURE_2D, s->texIds[activeTexture]);
+				GL_CHECK("glBindTexture() failed");
+
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pct->width, pct->height, 0, GL_BGR, GL_UNSIGNED_BYTE, img.data);
 				GL_CHECK("glGetTexImage() didn't work");
+
+				activeTexture ^= 1;
 			}
 		}
 	};
