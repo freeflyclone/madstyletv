@@ -17,7 +17,7 @@ typedef std::function<void()> XGLFBORender;
 
 class XGLFramebuffer : public XGLObject {
 public:
-	XGLFramebuffer();
+	XGLFramebuffer(int w = RENDER_WIDTH, int h = RENDER_HEIGHT);
 	virtual ~XGLFramebuffer();
 
 	virtual void Render(XGLFBORender);
