@@ -30,7 +30,7 @@ public:
     GLuint vao;
     GLuint vbo;
     GLuint ibo;
-	GLuint numTextures;
+	GLint numTextures;
     std::vector<GLuint> texIds;
     GLfloat clock;
 	XGLShader *shader;
