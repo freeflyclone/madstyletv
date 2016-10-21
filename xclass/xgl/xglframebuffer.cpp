@@ -76,3 +76,42 @@ XGLFramebuffer::XGLFramebuffer() : XGLObject("XGLFramebuffer") {
 XGLFramebuffer::~XGLFramebuffer() {
 	xprintf("XGLFramebuffer::~XGLFramebuffer()\n");
 }
+
+void XGLFramebuffer::Render(XGLFBORender renderFunc){
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	GL_CHECK("glBindFramebuffer() failed");
+
+	glViewport(0, 0, width, height);
+	GL_CHECK("glViewport() failed");
+
+	renderFunc();
+
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+	GL_CHECK("glBindFrameBuffer(GL_READ_FRAMEBUFFER,fb->fbo) failed");
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, intFbo);
+	GL_CHECK("glBindFrameBuffer(GL_DRAW_FRAMEBUFFER, 0) failed");
+
+	glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+	GL_CHECK("glBlitFramebuffer() failed");
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void XGLSharedFBO::Render(XGLFBORender renderFunc) {
+	width = pHeader->width;
+	height = pHeader->height;
+
+	XGLFramebuffer::Render(renderFunc);
+
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, intFbo);
+	GL_CHECK("glBindFrameBuffer(GL_READ_FRAMEBUFFER,fb->fbo) failed");
+
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	GL_CHECK("glReadBuffer() failed");
+
+	glReadPixels(0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);
+	GL_CHECK("glReadPixels() failed");
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}

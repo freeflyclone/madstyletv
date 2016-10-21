@@ -13,10 +13,14 @@
 #define RENDER_WIDTH	1280
 #define RENDER_HEIGHT	720
 
+typedef std::function<void()> XGLFBORender;
+
 class XGLFramebuffer : public XGLObject {
 public:
 	XGLFramebuffer();
 	virtual ~XGLFramebuffer();
+
+	virtual void Render(XGLFBORender);
 
 	// offscreen MSAA framebuffer
 	GLuint fbo;
@@ -26,11 +30,15 @@ public:
 	// offscreen intermediate framebuffer
 	GLuint intFbo;
 	GLuint intTexture;
+
+	// dimensions (used for glViewport())
+	int width, height;
 };
 
 class XGLSharedFBO : public XGLFramebuffer, public XSharedMem {
 public:
 	XGLSharedFBO() : XSharedMem(DEFAULT_FILE_NAME) {};
+	virtual void Render(XGLFBORender);
 };
 
 #endif
