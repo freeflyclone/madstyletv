@@ -18,9 +18,6 @@ public:
 	XGLFramebuffer();
 	virtual ~XGLFramebuffer();
 
-	// for IPC of generated image
-	XSharedMem shmem;
-
 	// offscreen MSAA framebuffer
 	GLuint fbo;
 	GLuint texture;
@@ -31,5 +28,9 @@ public:
 	GLuint intTexture;
 };
 
+class XGLSharedFBO : public XGLFramebuffer, public XSharedMem {
+public:
+	XGLSharedFBO() : XSharedMem(DEFAULT_FILE_NAME) {};
+};
 
 #endif
