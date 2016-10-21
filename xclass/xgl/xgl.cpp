@@ -199,38 +199,10 @@ void XGL::Display(){
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, matrixUbo);
 	GL_CHECK("glBindBuffer() failed");
 
-	if (fb != NULL) {
-		GLuint width = fb->pHeader->width;
-		GLuint height = fb->pHeader->height;
-
-		glBindFramebuffer(GL_FRAMEBUFFER, fb->fbo);
-		GL_CHECK("glBindFramebuffer() failed");
-
-		glViewport(0, 0, width, height);
-		GL_CHECK("glViewport() failed");
-
-		RenderScene();
-
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, fb->fbo);
-		GL_CHECK("glBindFrameBuffer(GL_READ_FRAMEBUFFER,fb->fbo) failed");
-
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fb->intFbo);
-		GL_CHECK("glBindFrameBuffer(GL_DRAW_FRAMEBUFFER, 0) failed");
-
-		glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-		GL_CHECK("glBlitFramebuffer() failed");
-
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, fb->intFbo);
-		GL_CHECK("glBindFrameBuffer(GL_READ_FRAMEBUFFER,fb->fbo) failed");
-
-		glReadBuffer(GL_COLOR_ATTACHMENT0);
-		GL_CHECK("glReadBuffer() failed");
-
-		glReadPixels(0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, fb->mappedBuffer);
-		GL_CHECK("glReadPixels() failed");
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
+	// if there's an XGLSharedFBO object, call it's renderer
+	// to let other processes see our renderings.
+	if (fb != NULL)
+		fb->Render(std::bind(&XGL::RenderScene, this));
 
 	projector.Reshape();
 	RenderScene();
