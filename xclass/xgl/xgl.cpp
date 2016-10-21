@@ -125,7 +125,8 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f), fb(NULL) {
 	glDepthFunc(GL_LESS);
 	glEnable(GL_DEPTH_TEST);
 
-//	fb = new XGLFramebuffer();
+//	fb = new XGLSharedFBO();
+
 //	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //	glEnable(GL_BLEND);
 
@@ -201,8 +202,8 @@ void XGL::Display(){
 	GL_CHECK("glBindBuffer() failed");
 
 	if (fb != NULL) {
-		GLuint width = fb->shmem.pHeader->width;
-		GLuint height = fb->shmem.pHeader->height;
+		GLuint width = fb->pHeader->width;
+		GLuint height = fb->pHeader->height;
 
 		glBindFramebuffer(GL_FRAMEBUFFER, fb->fbo);
 		GL_CHECK("glBindFramebuffer() failed");
@@ -227,7 +228,7 @@ void XGL::Display(){
 		glReadBuffer(GL_COLOR_ATTACHMENT0);
 		GL_CHECK("glReadBuffer() failed");
 
-		glReadPixels(0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, fb->shmem.mappedBuffer);
+		glReadPixels(0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, fb->mappedBuffer);
 		GL_CHECK("glReadPixels() failed");
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

@@ -1,8 +1,7 @@
 #include "xgl.h"
 
-#define SAMPLES 8
-
-XGLFramebuffer::XGLFramebuffer() : XGLObject("XGLFramebuffer"), shmem(DEFAULT_FILE_NAME) {
+XGLFramebuffer::XGLFramebuffer() : XGLObject("XGLFramebuffer") {
+	const int nSamples = 8;
 	xprintf("XGLFramebuffer::XGLFramebuffer()\n");
 
 	glGenFramebuffers(1, &fbo);
@@ -17,7 +16,7 @@ XGLFramebuffer::XGLFramebuffer() : XGLObject("XGLFramebuffer"), shmem(DEFAULT_FI
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, texture);
 	GL_CHECK("glBindTexture() failed");
 
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, SAMPLES, GL_RGB, RENDER_WIDTH, RENDER_HEIGHT, GL_TRUE);
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, nSamples, GL_RGB, RENDER_WIDTH, RENDER_HEIGHT, GL_TRUE);
 	GL_CHECK("glTexImage2D() failed");
 
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
@@ -33,7 +32,7 @@ XGLFramebuffer::XGLFramebuffer() : XGLObject("XGLFramebuffer"), shmem(DEFAULT_FI
 	glBindRenderbuffer(GL_RENDERBUFFER, depth);
 	GL_CHECK("glBindRenderbuffer() failed");
 
-	glRenderbufferStorageMultisample(GL_RENDERBUFFER, SAMPLES, GL_DEPTH_COMPONENT, RENDER_WIDTH, RENDER_HEIGHT);
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, nSamples, GL_DEPTH_COMPONENT, RENDER_WIDTH, RENDER_HEIGHT);
 	GL_CHECK("glRenderbufferStorage() failed");
 
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth);

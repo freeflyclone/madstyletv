@@ -139,7 +139,7 @@ public:
     // Shader stack is global per context
     XGLShaderMap shaderMap;
 
-	XGLFramebuffer *fb;
+	XGLSharedFBO *fb;
     float clock;
 
 	XGLShaderMatrixData shaderMatrix;
