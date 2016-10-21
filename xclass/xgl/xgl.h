@@ -108,6 +108,7 @@ public:
 
     virtual ~XGL();
 
+	void PreRender();
 	virtual void Display();
 	virtual void RenderScene();
 	virtual void Idle() {};

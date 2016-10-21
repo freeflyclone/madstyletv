@@ -28,13 +28,15 @@ public:
     void Transform(glm::mat4 tm);
 	void SetColor(XGLColor c);
 
-	void Render(float clock = 0.0f);
-	void Render(glm::mat4 model, float clock);
+	virtual void Render(float clock = 0.0f);
+	virtual void Render(glm::mat4 model, float clock);
 
     XGLVertexList v;
     XGLIndexList idx;
 
     AnimaFunk funk;
+	AnimaFunk preRenderFunction;
+	AnimaFunk postRenderFunction;
 
 	glm::mat4 model;
 };

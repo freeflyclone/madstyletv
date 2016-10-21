@@ -195,6 +195,8 @@ void XGL::RenderScene() {
 }
 
 void XGL::Display(){
+	PreRender();
+
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, matrixUbo);
 	GL_CHECK("glBindBuffer() failed");
 
@@ -236,6 +238,29 @@ void XGL::Display(){
 
 	clock += 1.0f;
 }
+
+void XGL::PreRender() {
+	// iterate through all of the shaders...
+	XGLShapesMap::iterator perShader;
+	XGLShapeList::iterator eachShape;
+	XGLShape *shape;
+
+	for (perShader = shapes.begin(); perShader != shapes.end(); perShader++) {
+		XGLShapeList *shapeList = perShader->second;
+		std::string name = perShader->first;
+		shaderMap[name]->Use();
+		XGLShader *shader = shaderMap[name];
+
+		for (eachShape = shapeList->begin(); eachShape != shapeList->end(); eachShape++) {
+			shape = *eachShape;
+			if (shape->preRenderFunction)
+				shape->preRenderFunction(shape, clock);
+		}
+
+		shaderMap[name]->UnUse();
+	}
+}
+
 
 void XGL::CreateShape(std::string shName, XGLNewShapeLambda fn){
 	std::string shaderName = pathToAssets + "/" + shName;
