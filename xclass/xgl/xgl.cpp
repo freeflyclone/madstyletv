@@ -72,8 +72,6 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f), fb(NULL) {
 	XGLLight light = { { 10, 6, 16 }, 1.0f, { 1, 1, 1, 1 }, 1.0, 0.001f, 0.005f };
 	lights.push_back(light);
 
-	XGLMaterial material;
-
 	// NOTE: It is not necessary to know the names of uniform blocks within the shader.
 	// It IS necessary to know that the GL_UNIFORM_BUFFER target is indexed, and thus
 	// glBindBufferBase() must be used to bind a uniform buffer to a particular
@@ -130,8 +128,8 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f), fb(NULL) {
 //	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //	glEnable(GL_BLEND);
 
-	glCullFace(GL_BACK);
-//	glDisable(GL_CULL_FACE);
+//	glCullFace(GL_BACK);
+//	glEnable(GL_CULL_FACE);
 }
 
 XGL::~XGL(){
