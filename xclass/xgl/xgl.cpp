@@ -178,8 +178,9 @@ void XGL::RenderScene() {
 	for (perShader = shapes.begin(); perShader != shapes.end(); perShader++) {
 		XGLShapeList *shapeList = perShader->second;
 		std::string name = perShader->first;
-        shaderMap[name]->Use();
 		XGLShader *shader = shaderMap[name];
+		
+		shader->Use();
 
 		glUniform3fv(glGetUniformLocation(shader->programId, "cameraPosition"), 1, (GLfloat*)glm::value_ptr(camera.pos));
 		GL_CHECK("glUniform3fv() failed");
@@ -189,7 +190,7 @@ void XGL::RenderScene() {
 			shape->Render(clock);
 		}
 
-        shaderMap[name]->UnUse();
+        shader->UnUse();
     }
 }
 
@@ -219,8 +220,9 @@ void XGL::PreRender() {
 	for (perShader = shapes.begin(); perShader != shapes.end(); perShader++) {
 		XGLShapeList *shapeList = perShader->second;
 		std::string name = perShader->first;
-		shaderMap[name]->Use();
 		XGLShader *shader = shaderMap[name];
+
+		shader->Use();
 
 		for (eachShape = shapeList->begin(); eachShape != shapeList->end(); eachShape++) {
 			shape = *eachShape;
@@ -228,15 +230,15 @@ void XGL::PreRender() {
 				shape->preRenderFunction(shape, clock);
 		}
 
-		shaderMap[name]->UnUse();
+		shader->UnUse();
 	}
 }
 
 
-void XGL::CreateShape(std::string shName, XGLNewShapeLambda fn){
+XGLShape* XGL::CreateShape(std::string shName, XGLNewShapeLambda fn){
 	std::string shaderName = pathToAssets + "/" + shName;
 	if (shaderMap.count(shaderName) == 0) {
-		shaderMap.emplace(shaderName, new XGLShader(shName));
+		shaderMap.emplace(shaderName, new XGLShader(shaderName));
 		shaderMap[shaderName]->Compile(shaderName);
 	}
 
@@ -251,26 +253,14 @@ void XGL::CreateShape(std::string shName, XGLNewShapeLambda fn){
 		pShape->Load(shader, pShape->v, pShape->idx);
 		pShape->uniformLocations = shader->materialLocations;
 	}
+	return pShape;
 }
 
 void XGL::AddShape(std::string shName, XGLNewShapeLambda fn){
-	std::string shaderName = pathToAssets + "/" + shName;
-    if (shaderMap.count(shaderName) == 0) {
-        shaderMap.emplace(shaderName, new XGLShader(shName));
-        shaderMap[shaderName]->Compile(shaderName);
-    }
+	XGLShape *pShape = CreateShape(shName, fn);
 
-    if (shapes.count(shaderName) == 0) {
-        shapes.emplace(shaderName, new XGLShapeList);
-    }
+	shapes[pShape->shader->Name()]->push_back(pShape);
 
-	XGLShape *pShape = fn();
-	XGLShader *shader = shaderMap[shaderName];
-	if (pShape->v.size() > 0) {
-		pShape->Load(shaderMap[shaderName], pShape->v, pShape->idx);
-		pShape->uniformLocations = shader->materialLocations;
-	}
-	shapes[shaderName]->push_back(pShape);
 	AddChild(pShape);
 }
 

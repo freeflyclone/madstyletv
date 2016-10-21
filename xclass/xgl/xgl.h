@@ -113,7 +113,7 @@ public:
 	virtual void RenderScene();
 	virtual void Idle() {};
 
-	void CreateShape(std::string shaderName, XGLNewShapeLambda fn);
+	XGLShape* CreateShape(std::string shaderName, XGLNewShapeLambda fn);
 	void AddShape(std::string shaderName, XGLNewShapeLambda fn);
     void IterateShapesMap();
 
