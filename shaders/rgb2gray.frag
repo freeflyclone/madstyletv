@@ -34,7 +34,7 @@ void main(void)
 
 
 	//out_Color = vec4(1.0, 0.0, 1.0, 1.0);
-    //out_Color = vec4(l1,l1,l1,1.0);
-	out_Color = vec4(avg, avg, avg, 1.0);
+    out_Color = vec4(l1,l1,l1,1.0);
+	//out_Color = vec4(avg, avg, avg, 1.0);
 	//out_Color = vec4(diff, diff, diff, 1.0);
 }
