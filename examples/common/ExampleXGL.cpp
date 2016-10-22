@@ -6,7 +6,7 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	XGLShape *shape;
 
 	// Initialize the Camera matrix
-	glm::vec3 cameraPosition(30, 50, 30);
+	glm::vec3 cameraPosition(-15, 25, 15);
 	glm::vec3 cameraDirection = glm::normalize(cameraPosition*-1.0f);
 	glm::vec3 cameraUp = { 0, 0, 1 };
 	camera.Set(cameraPosition, cameraDirection,	cameraUp);
