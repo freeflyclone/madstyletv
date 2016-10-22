@@ -41,5 +41,11 @@
     <None Include="..\..\shaders\rgb2gray.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\shaders\fullscreen.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\fullscreen.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -104,6 +104,8 @@ void ExampleXGL::KeyFunc(int key, int flags){
 
 void ExampleXGL::Reshape(int w, int h) {
 	try {
+		width = w;
+		height = h;
 		projector.Reshape(w, h);
 		Display();
 	}

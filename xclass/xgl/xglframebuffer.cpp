@@ -85,9 +85,6 @@ void XGLFramebuffer::Render(XGLFBORender renderFunc){
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	GL_CHECK("glBindFramebuffer() failed");
 
-	glViewport(0, 0, width, height);
-	GL_CHECK("glViewport() failed");
-
 	renderFunc();
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
@@ -100,6 +97,8 @@ void XGLFramebuffer::Render(XGLFBORender renderFunc){
 	GL_CHECK("glBlitFramebuffer() failed");
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 }
 
 void XGLSharedFBO::Render(XGLFBORender renderFunc) {

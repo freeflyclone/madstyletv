@@ -194,3 +194,51 @@ void XGLBuffer::AddTexture(std::string texName, int width, int height, int chann
     texIds.push_back(texId);
 	numTextures++;
 }
+
+void XGLBuffer::AddTexture(int width, int height, int channels) {
+	GLenum format = GL_RGBA;
+	GLuint texId;
+	glGenTextures(1, &texId);
+	GL_CHECK("glGenTextures() failed");
+	glBindTexture(GL_TEXTURE_2D, texId);
+	GL_CHECK("glBindTexture() failed");
+
+	glActiveTexture(GL_TEXTURE0 + numTextures);
+	GL_CHECK("glActiveTexture(GL_TEXTURE0) failed");
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	GL_CHECK("glPixelStorei() failes");
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	GL_CHECK("glTexParameteri() failed");
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	GL_CHECK("glTexParameteri() failed");
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	GL_CHECK("glTexParameteri() failed");
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	GL_CHECK("glTexParameteri() failed");
+
+	switch (channels){
+	case 1:
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
+		break;
+	case 2:
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RG, width, height, 0, GL_RG, GL_UNSIGNED_BYTE, 0);
+		break;
+	case 3:
+		//format = flipColors ? GL_BGR : GL_RGB;
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+		break;
+	case 4:
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		break;
+
+	default:
+		throwXGLException("Unknown pixel format in XGL::AddTexture");
+	}
+	GL_CHECK("glTexImage2D() failed");
+
+	texIds.push_back(texId);
+	numTextures++;
+
+}

@@ -664,6 +664,22 @@ XGLTexQuad::XGLTexQuad(std::string texName, int width, int height, int channels,
 
 	AddTexture(texName, width, height, channels, img, flipColors);
 }
+XGLTexQuad::XGLTexQuad(int width, int height, int channels) {
+	SetName("XTexQuad");
+	const XGLColor white = { 1, 1, 1, 1 };
+
+	v.push_back({ { -1.0, -1.0, 0 }, { 0, 1 }, {}, white });
+	v.push_back({ { -1.0, 1.0, 0 }, { 0, 0 }, {}, white });
+	v.push_back({ { 1.0, -1.0, 0 }, { 1, 1 }, {}, white });
+	v.push_back({ { 1.0, 1.0, 0 }, { 1, 0 }, {}, white });
+
+	idx.push_back(0);
+	idx.push_back(1);
+	idx.push_back(2);
+	idx.push_back(3);
+
+	AddTexture(width, height, channels);
+}
 
 void XGLTexQuad::Draw() {
 	glEnable(GL_BLEND);
