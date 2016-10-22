@@ -36,7 +36,7 @@ public:
 		fboQuad->uniformLocations = fboQuadShader->materialLocations;
 
 		glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
-		glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(-20.0, 0, 5.625f));
+		glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(-10.0, 0, 5.625f));
 		glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
 		fboQuad->model = translate * rotate * scale;
@@ -55,7 +55,7 @@ public:
 		fboQuad->XGLBuffer::Bind();
 		fboQuad->XGLMaterial::Bind(fboQuad->shader->programId);
 		
-		bool bindFBOTextureDoesntWork = false;
+		bool bindFBOTextureDoesntWork = true;
 		if (bindFBOTextureDoesntWork) {
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, frameBuffer.intFbo);
 			GL_CHECK("glBindFrameBuffer(GL_READ_FRAMEBUFFER,fb->fbo) failed");
@@ -172,7 +172,7 @@ void ExampleXGL::BuildScene() {
 	shape->windowHeight = &height;
 
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
-	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 5.625f));
+	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(10, 0, 5.625f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	shape->model = translate * rotate * scale;
 
