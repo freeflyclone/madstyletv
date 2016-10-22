@@ -27,10 +27,6 @@ public:
 	GLuint texture;
 	GLuint depth;
 
-	// offscreen intermediate framebuffer
-	GLuint intFbo;
-	GLuint intTexture;
-
 	// dimensions (used for glViewport())
 	int width, height;
 };
