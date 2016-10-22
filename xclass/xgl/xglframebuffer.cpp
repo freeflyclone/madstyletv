@@ -17,16 +17,13 @@ XGLFramebuffer::XGLFramebuffer(int w, int h) :
 	glGenTextures(1, &texture);
 	GL_CHECK("glGenTextures() failed");
 
-	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
 	GL_CHECK("glBindTexture() failed");
 
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, nSamples, GL_RGB, width, height, GL_TRUE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	GL_CHECK("glTexImage2D() failed");
 
-	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
-	GL_CHECK("glBindTexture(0) failed");
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, texture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
 	GL_CHECK("glFramebufferTexture() failedn");
 
 	// The depth buffer
@@ -36,7 +33,7 @@ XGLFramebuffer::XGLFramebuffer(int w, int h) :
 	glBindRenderbuffer(GL_RENDERBUFFER, depth);
 	GL_CHECK("glBindRenderbuffer() failed");
 
-	glRenderbufferStorageMultisample(GL_RENDERBUFFER, nSamples, GL_DEPTH_COMPONENT, width, height);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
 	GL_CHECK("glRenderbufferStorage() failed");
 
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth);
@@ -45,36 +42,14 @@ XGLFramebuffer::XGLFramebuffer(int w, int h) :
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	GL_CHECK("glBindFrameBuffer(0) failed");
 
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		xprintf("glCheckFramebufferStatus() != GL_FRAMEBUFFER_COMPLETE\n");
-
-	// now let's generate the intermediate FBO...
-	glGenFramebuffers(1, &intFbo);
-	GL_CHECK("glGenFramebuffers() failed");
-
-	glBindFramebuffer(GL_FRAMEBUFFER, intFbo);
-	GL_CHECK("glBindFramebuffer() failed");
-
-	glGenTextures(1, &intTexture);
-	GL_CHECK("glGenTextures() failed");
-
-	glBindTexture(GL_TEXTURE_2D, intTexture);
-	GL_CHECK("glBindTexture() failed");
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
-	GL_CHECK("glTexImage2D() failed");
-
 	glBindTexture(GL_TEXTURE_2D, 0);
 	GL_CHECK("glBindTexture(0) failed");
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, intTexture, 0);
-	GL_CHECK("glFramebufferTexture() failedn");
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	GL_CHECK("glBindRenderbuffer() failed");
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		xprintf("glCheckFramebufferStatus() != GL_FRAMEBUFFER_COMPLETE\n");
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	GL_CHECK("glBindFrameBuffer(0) failed");
 };
 
 XGLFramebuffer::~XGLFramebuffer() {
@@ -87,18 +62,8 @@ void XGLFramebuffer::Render(XGLFBORender renderFunc){
 
 	renderFunc();
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
-	GL_CHECK("glBindFrameBuffer(GL_READ_FRAMEBUFFER,fb->fbo) failed");
-
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, intFbo);
-	GL_CHECK("glBindFrameBuffer(GL_DRAW_FRAMEBUFFER, 0) failed");
-
-	glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-	GL_CHECK("glBlitFramebuffer() failed");
-
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	GL_CHECK("glBidFramebuffer(0) failed");
 }
 
 void XGLSharedFBO::Render(XGLFBORender renderFunc) {
@@ -107,7 +72,7 @@ void XGLSharedFBO::Render(XGLFBORender renderFunc) {
 
 	XGLFramebuffer::Render(renderFunc);
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, intFbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
 	GL_CHECK("glBindFrameBuffer(GL_READ_FRAMEBUFFER,fb->fbo) failed");
 
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
