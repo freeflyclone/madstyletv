@@ -176,6 +176,8 @@
     <ClCompile Include="OpenCVWebcamBuildScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\shaders\fullscreen.frag" />
+    <None Include="..\..\shaders\fullscreen.vert" />
     <None Include="..\..\shaders\rgb2gray.frag" />
     <None Include="..\..\shaders\rgb2gray.vert" />
     <None Include="..\..\shaders\tex.frag" />

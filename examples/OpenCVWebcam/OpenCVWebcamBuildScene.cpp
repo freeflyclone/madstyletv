@@ -18,8 +18,8 @@
 
 class ImageProcessing : public XGLTexQuad {
 public:
-	ImageProcessing(std::string path, int w, int h, int c, GLubyte *img, bool flip) : 
-		XGLTexQuad(path, w, h, c, img, flip),
+	ImageProcessing(int w, int h, int c) : 
+		XGLTexQuad(w, h, c),
 		width(w),
 		height(h)
 	{
@@ -27,8 +27,11 @@ public:
 		fboQuadShader = new XGLShader(shaderPath);
 		fboQuadShader->Compile(shaderPath);
 
-		std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
-		fboQuad = new XGLTexQuad(imgPath);
+		shaderPath = pathToAssets + "/shaders/fullscreen";
+		fboFullscreenShader = new XGLShader(shaderPath);
+		fboFullscreenShader->Compile(shaderPath);
+
+		fboQuad = new XGLTexQuad(w, h, c);
 		fboQuad->Load(fboQuadShader, fboQuad->v, fboQuad->idx);
 		fboQuad->uniformLocations = fboQuadShader->materialLocations;
 
@@ -54,8 +57,9 @@ public:
 		glReadPixels(0, 0, frameBuffer.width, frameBuffer.height, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);
 		GL_CHECK("glReadPixels() failed");
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frameBuffer.width, frameBuffer.height, 0, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);
-		GL_CHECK("glGetTexImage() didn't work");
+		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frameBuffer.width, frameBuffer.height, 0, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);
+		GL_CHECK("glTexImage() didn't work");
 
 		fboQuad->Draw();
 
@@ -63,22 +67,50 @@ public:
 	}
 	
 	void FBRender() {
-		//xprintf("FBRender()\n");
-		glClearColor(0.25f, 0.5f, 0.75f, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0);
+		// this is a 2D render of the camera quad
+		// to a "fullscreen" FBO.  Disabling
+		// depth testing allows for not calling
+		// glClear().
+		glDisable(GL_DEPTH_TEST);
+
+		// want to render to the entire FBO bitmap texture
+		glViewport(0, 0, width, height);
+		GL_CHECK("glViewport() failed");
+
+		// setup this XGLTexQuad vertex attributes & stuff...
+		XGLBuffer::Bind();
+
+		//...BUT use the fullscreen shader instead of the one
+		// we got launched with.
+		glUseProgram(fboFullscreenShader->programId);
+
+		// draw the geometry.  Basically, this does a 2D fill of entire
+		// FBO texture with our camera data
+		glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
+		GL_CHECK("glDrawElements() failed");
+
+		// depending on the code that created this object to set these immediately
+		// used so that we can return the glViewport to the proper window dimensions
+		// after setting it above ^^
+		glViewport(0, 0, *windowWidth, *windowHeight);
+
+		glEnable(GL_DEPTH_TEST);
+
+		XGLBuffer::Unbind();
 	}
 
 	int width, height;
 	XGLTexQuad *fboQuad;
-	XGLShader *fboQuadShader;
+	XGLShader *fboQuadShader,*fboFullscreenShader;
 	XGLFramebuffer frameBuffer;
 	GLubyte mappedBuffer[1920 * 1080 * 4];
+
+	int *windowWidth, *windowHeight;
 };
 
 class CameraThread : public XGLObject, public XThread {
 public:
-	CameraThread(std::string n) : XGLObject(n), XThread(n), matFifo(4) {
+	CameraThread(std::string n, int w, int h, int c) : XGLObject(n), XThread(n), matFifo(4), width(w), height(h), channels(c) {
 		SetName(n);
 	};
 
@@ -96,8 +128,8 @@ public:
 		}
 
 		cap.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));
-		cap.set(CV_CAP_PROP_FRAME_WIDTH, 1920);
-		cap.set(CV_CAP_PROP_FRAME_HEIGHT, 1080);
+		cap.set(CV_CAP_PROP_FRAME_WIDTH, width);
+		cap.set(CV_CAP_PROP_FRAME_HEIGHT, height);
 		cap.set(CV_CAP_PROP_FPS, 30.0);
 
 		while (IsRunning()) {
@@ -112,27 +144,21 @@ public:
 	cv::Mat frame;
 
 	XFifo<cv::Mat> matFifo;
-	int width, height;
+	int width, height, channels;
 };
 
 CameraThread *pct;
 
 void ExampleXGL::BuildScene() {
-	XGLShape *shape;
+	ImageProcessing *shape;
+	const int camWidth = 1280;
+	const int camHeight = 720;
+	const int camChannels = 3;
 
-	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
-	cv::Mat image;
-	image = cv::imread(imgPath, cv::IMREAD_UNCHANGED);
 
-	if (!image.data) {
-		xprintf("imread() failed\n");
-		exit(-1);
-	}
-
-	cv::Mat image2 = cv::Mat(image);
-
-	AddShape("shaders/rgb2gray", [&](){ shape = new ImageProcessing(imgPath, image.cols, image.rows, image.channels(), image.data, true); return shape; });
-	//shape->AddTexture(imgPath, image2.cols, image2.rows, image2.channels(), image2.data, true);
+	AddShape("shaders/tex", [&](){ shape = new ImageProcessing(camWidth, camHeight, camChannels); return shape; });
+	shape->windowWidth = &width;
+	shape->windowHeight = &height;
 
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 5.625f));
@@ -149,22 +175,14 @@ void ExampleXGL::BuildScene() {
 			while (pct->matFifo.Size()) {
 				img = pct->matFifo.Get();
 
-				glActiveTexture(GL_TEXTURE0 + activeTexture);
-				GL_CHECK("glActiveTexture() failed");
-
-				glBindTexture(GL_TEXTURE_2D, ipShape->texIds[activeTexture]);
-				GL_CHECK("glBindTexture() failed");
-
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pct->width, pct->height, 0, GL_BGR, GL_UNSIGNED_BYTE, img.data);
+				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pct->width, pct->height, GL_BGR, GL_UNSIGNED_BYTE, img.data);
 				GL_CHECK("glGetTexImage() didn't work");
-
-				//activeTexture ^= 1;
 			}
 		}
 	};
 	shape->preRenderFunction = getCameraFrame;
 
-	pct = new CameraThread("CameraThread");
+	pct = new CameraThread("CameraThread", camWidth, camHeight, camChannels);
 	pct->Start();
 
 	AddChild(pct);

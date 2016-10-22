@@ -125,6 +125,7 @@ class XGLTexQuad : public XGLShape{
 public:
 	XGLTexQuad(std::string fileName);
 	XGLTexQuad(std::string texName, int width, int height, int channels, GLubyte *img, bool flipColors = false);
+	XGLTexQuad(int width, int height, int channels);
 	virtual void Draw();
 };
 
