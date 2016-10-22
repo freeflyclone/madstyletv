@@ -23,7 +23,7 @@ public:
 		width(w),
 		height(h)
 	{
-		std::string shaderPath = pathToAssets + "/shaders/tex";
+		std::string shaderPath = pathToAssets + "/shaders/tex2";
 		fboQuadShader = new XGLShader(shaderPath);
 		fboQuadShader->Compile(shaderPath);
 
@@ -42,6 +42,10 @@ public:
 		fboQuad->model = translate * rotate * scale;
 	};
 
+	// overide of XGLShape::Render(), which means if we're in this function
+	// we're being called by normal shape rendering chain. Doing this to
+	// add the rendering of the FBO to the chain, which is the whole reason
+	// for this derived class.
 	void Render(float clock) {
 		frameBuffer.Render(std::bind(&ImageProcessing::FBRender, this));
 
@@ -50,20 +54,27 @@ public:
 
 		fboQuad->XGLBuffer::Bind();
 		fboQuad->XGLMaterial::Bind(fboQuad->shader->programId);
+		
+		bool bindFBOTextureDoesntWork = false;
+		if (bindFBOTextureDoesntWork) {
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, frameBuffer.intFbo);
+			GL_CHECK("glBindFrameBuffer(GL_READ_FRAMEBUFFER,fb->fbo) failed");
 
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, frameBuffer.intFbo);
-		GL_CHECK("glBindFrameBuffer(GL_READ_FRAMEBUFFER,fb->fbo) failed");
+			glReadPixels(0, 0, frameBuffer.width, frameBuffer.height, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);
+			GL_CHECK("glReadPixels() failed");
 
-		glReadPixels(0, 0, frameBuffer.width, frameBuffer.height, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);
-		GL_CHECK("glReadPixels() failed");
-
-		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frameBuffer.width, frameBuffer.height, 0, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);
-		GL_CHECK("glTexImage() didn't work");
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);
+			GL_CHECK("glTexImage() didn't work");
+		}
+		else {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, frameBuffer.intTexture);
+		}
 
 		fboQuad->Draw();
+		fboQuad->XGLBuffer::Unbind();
 
-		XGLTexQuad::Render(clock);
+		XGLShape::Render(clock);
 	}
 	
 	void FBRender() {
