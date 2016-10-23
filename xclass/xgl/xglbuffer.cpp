@@ -7,6 +7,8 @@
 ****************************************************************************/
 #include "xgl.h"
 
+static int texUnits[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+
 XGLBuffer::XGLBuffer() :
     ibo(0),
     vao(0),
@@ -32,10 +34,6 @@ void XGLBuffer::Bind(){
 
     if (numTextures != 0){
 		for (GLint i = 0; i < numTextures; i++) {
-			// setup the texture unit to 0
-			glProgramUniform1iv(shader->programId, glGetUniformLocation(shader->programId, "texUnits"), i, (GLint *)texIds.data());
-			GL_CHECK("glProgramUniform1i() failed");
-
 			glActiveTexture(GL_TEXTURE0+i);
 			GL_CHECK("glActiveTexture() failed");
 
@@ -48,7 +46,17 @@ void XGLBuffer::Bind(){
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			GL_CHECK("glTexParameteri() failed");
 		}
-    }
+		// program the "texUnits" uniform (if found) (this doesn't make sense right now, since the uniform array is just getting it's ideces as values)
+		glProgramUniform1iv(shader->programId, glGetUniformLocation(shader->programId, "texUnits"), sizeof(texUnits)/sizeof(texUnits[0]), (GLint *)texUnits);
+		GL_CHECK("glProgramUniform1i() failed");
+
+		// Always leave Bind() with Texture Unit 0 selected and bound to the zeroeth texture
+		glActiveTexture(GL_TEXTURE0);
+		GL_CHECK("glActiveTexture() failed");
+
+		glBindTexture(GL_TEXTURE_2D, texIds[0]);
+		GL_CHECK("glBindTexture() failed");
+	}
 }
 
 void XGLBuffer::Unbind(){
@@ -151,12 +159,14 @@ void XGLBuffer::AddTexture(std::string texName){
 void XGLBuffer::AddTexture(std::string texName, int width, int height, int channels, GLubyte *img, bool flipColors){
 	GLenum format = GL_RGBA;
 	GLuint texId;
-    glGenTextures(1, &texId);
-    GL_CHECK("glGenTextures() failed");
-    glBindTexture(GL_TEXTURE_2D, texId);
-    GL_CHECK("glBindTexture() failed");
 
-    glActiveTexture(GL_TEXTURE0+numTextures);
+	glActiveTexture(GL_TEXTURE0 + numTextures);
+	GL_CHECK("glActiveTexture(GL_TEXTURE0) failed");
+
+	glBindTexture(GL_TEXTURE_2D, texId);
+	GL_CHECK("glBindTexture() failed");
+
+	glActiveTexture(GL_TEXTURE0 + numTextures);
     GL_CHECK("glActiveTexture(GL_TEXTURE0) failed");
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -198,13 +208,15 @@ void XGLBuffer::AddTexture(std::string texName, int width, int height, int chann
 void XGLBuffer::AddTexture(int width, int height, int channels) {
 	GLenum format = GL_RGBA;
 	GLuint texId;
+
 	glGenTextures(1, &texId);
 	GL_CHECK("glGenTextures() failed");
-	glBindTexture(GL_TEXTURE_2D, texId);
-	GL_CHECK("glBindTexture() failed");
 
 	glActiveTexture(GL_TEXTURE0 + numTextures);
 	GL_CHECK("glActiveTexture(GL_TEXTURE0) failed");
+
+	glBindTexture(GL_TEXTURE_2D, texId);
+	GL_CHECK("glBindTexture() failed");
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	GL_CHECK("glPixelStorei() failes");
