@@ -1,13 +1,31 @@
 /**************************************************************
 ** OpenCVTestBuildScene.cpp
 **
-** Just to demonstrate instantiation of a "ground"
-** plane and a single texture-mapped quad, along with
-** scaling, translating and rotating the quad using the GLM
-** functions, and doing those inside an animation callback.
+** Demonstrates instantiation of a "ground"
+** plane and deriving an ImageProcessing class from XGLTexQuad
+** along with scaling, translating and rotating the quad using
+** the GLM functions.
 **
-** This is a copy of Example05, but utilizing OpenCV to load
-** the image instead.
+** A thread is spawned to use OpenCV to connect to a web cam
+** and capture images at 30fps (if camera supports it) and
+** copy those images to a simple double-buffered image buffer
+** suitable for OpenGL texture upload.
+**
+** An animation function (runing in main rendering thread)
+** uploads the previously captured image buffer from the thread
+** to OpenGL texture memory.
+**
+** The ImageProcessing class overrides the Render() method
+** so as to inject an FBO rendering of the uploaded image,
+** to allow for pixel processing with a fragment shader.
+**
+** Image processing is accomplished with a shader that
+** reads pixels from the input texture, does some stuff, and
+** writes to an output texture during the FBO render pass,
+** then uses the output texture during the normal pass to
+** display the results.  This shader has a "mode" uniform
+** variable that is used to tell it which pass it's operating
+** for.
 **************************************************************/
 #include "ExampleXGL.h"
 #include <opencv2/core/core.hpp>
@@ -22,70 +40,51 @@ public:
 		XGLTexQuad(w, h, c),
 		width(w),
 		height(h),
-		frameBuffer(NULL)
+		frameBufferObject(NULL)
 	{
 		AddTexture(width, height, c);
-		frameBuffer = new XGLFramebuffer(width, height, texIds[0], texIds[1]);
+		frameBufferObject = new XGLFramebuffer(width, height, texIds[0], texIds[1]);
 		xprintf("ImageProcessing::ImageProcessing() frameBuffer\n");
 	};
 
 	// overide of XGLShape::Render(), which means if we're in this function
 	// we're being called by normal shape rendering chain. Doing this to
-	// add the rendering of the FBO to the chain, which is the whole reason
+	// add the rendering to the FBO to the chain, which is the whole reason
 	// for this derived class.
 	void Render(float clock) {
-		if (0) {
-			glProgramUniformMatrix4fv(shader->programId, shader->modelUniformLocation, 1, false, (GLfloat *)&model);
-			GL_CHECK("glProgramUniformMatrix4fv() failed");
-			XGLBuffer::Bind(true);
-			XGLMaterial::Bind(shader->programId);
-			Draw();
-			Unbind();
-		}
-		else
-			XGLShape::Render(0.0);
-
-		frameBuffer->Render(std::bind(&ImageProcessing::FBRender, this));
+		frameBufferObject->Render(std::bind(&ImageProcessing::FBORender, this));
+		XGLShape::Render(0.0);
 	}
 	
-	void FBRender() {
+	void FBORender() {
 		glDisable(GL_DEPTH_TEST);
-
 		glViewport(0, 0, width, height);
-		GL_CHECK("glViewport() failed");
 
-		XGLBuffer::Bind(true);
+		XGLBuffer::Bind();
 
 		glUniform1i(glGetUniformLocation(shader->programId, "mode"), 1);
-		GL_CHECK("glUniform1i() failed()");
-
 		glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
-		GL_CHECK("glDrawElements() failed");
-
 		glUniform1i(glGetUniformLocation(shader->programId, "mode"), 0);
-		GL_CHECK("glUniform1i() failed()");
-
 		glViewport(0, 0, *windowWidth, *windowHeight);
-
 		glEnable(GL_DEPTH_TEST);
+		GL_CHECK("there was a problem in the FBO rendering");
 
 		XGLBuffer::Unbind();
 	}
 
 	int width, height;
-	XGLFramebuffer *frameBuffer;
+	XGLFramebuffer *frameBufferObject;
 
 	int *windowWidth, *windowHeight;
 };
 
 class CameraThread : public XGLObject, public XThread {
 public:
-	CameraThread(std::string n, int w, int h, int c) : XGLObject(n), XThread(n), matFifo(4), width(w), height(h), channels(c) {
+	CameraThread(std::string n, int w, int h, int c) : XGLObject(n), XThread(n), width(w), height(h), channels(c), frameNumber(0) {
 		SetName(n);
 	};
 
 	~CameraThread() {
-		xprintf("~CameraThread()\n");
 		Stop();
 		cap.release();
 	}
@@ -97,6 +96,8 @@ public:
 			exit(-1);
 		}
 
+		// this is hard-coded for Logitech C920 web cam. Also works
+		// on a Macbook Pro with internal camera.  May work with others.
 		cap.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));
 		cap.set(CV_CAP_PROP_FRAME_WIDTH, width);
 		cap.set(CV_CAP_PROP_FRAME_HEIGHT, height);
@@ -104,52 +105,51 @@ public:
 
 		while (IsRunning()) {
 			cap >> frame;
+			memcpy(videoFrame[frameNumber&1], frame.data, (frame.cols*frame.rows*frame.channels()));
+			frameNumber++;
 			width = frame.cols;
 			height = frame.rows;
-			matFifo.Put(frame);
 		}
 	}
 
 	cv::VideoCapture cap;
 	cv::Mat frame;
 
-	XFifo<cv::Mat> matFifo;
 	int width, height, channels;
+	unsigned __int64 frameNumber;
+
+	// ultra-simple double-buffered intermediate frames from the camera
+	// (ping-ponged by frameNumber&1) TODO: size this programmatically.
+	GLubyte videoFrame[2][1920 * 1080 * 4];
 };
 
 CameraThread *pct;
 
 void ExampleXGL::BuildScene() {
 	ImageProcessing *shape;
-	const int camWidth = 1280;
-	const int camHeight = 720;
+	const int camWidth = 640;
+	const int camHeight = 360;
 	const int camChannels = 4;
 
-	AddShape("shaders/tex2", [&](){ shape = new ImageProcessing(camWidth, camHeight, camChannels); return shape; });
+	AddShape("shaders/imageproc", [&](){ shape = new ImageProcessing(camWidth, camHeight, camChannels); return shape; });
 	shape->windowWidth = &width;
 	shape->windowHeight = &height;
 
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
-	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(10, 0, 5.625f));
+	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 5.625f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	shape->model = translate * rotate * scale;
 
+	// animation function to grab a web cam frame from the web cam capture thread and upload it to texture memory
 	XGLShape::AnimaFunk getCameraFrame = [&](XGLShape *s, float clock) {
 		ImageProcessing *ipShape = (ImageProcessing *)s;
 
-		cv::Mat img;
-		static int activeTexture = 0;
-
-		if (pct != NULL && pct->IsRunning()) {
-			while (pct->matFifo.Size()) {
-				img = pct->matFifo.Get();
-
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pct->width, pct->height, GL_BGR, GL_UNSIGNED_BYTE, img.data);
-				GL_CHECK("glGetTexImage() didn't work");
-			}
+		if (pct != NULL && pct->IsRunning() && (pct->frameNumber>0) ) {
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pct->width, pct->height, GL_BGR, GL_UNSIGNED_BYTE, pct->videoFrame[(pct->frameNumber-1)&1]);
+			GL_CHECK("glGetTexImage() didn't work");
 		}
 	};
-	shape->preRenderFunction = getCameraFrame;
+	shape->SetTheFunk(getCameraFrame);
 
 	pct = new CameraThread("CameraThread", camWidth, camHeight, camChannels);
 	pct->Start();
