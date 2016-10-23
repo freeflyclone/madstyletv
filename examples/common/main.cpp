@@ -116,17 +116,17 @@ int main(void) {
 		while (!glfwWindowShouldClose(window)) {
 			int width, height;
 
+			glfwPollEvents();
 			glfwGetFramebufferSize(window, &width, &height);
 			exgl->Reshape(width, height);
 
-			glfwSwapInterval(1);
+			//glfwSwapInterval(1);
+			glfwSwapBuffers(window);
 
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			exgl->Display();
 
-			glfwSwapBuffers(window);
-			glfwPollEvents();
 		}
 
 		glfwTerminate();
