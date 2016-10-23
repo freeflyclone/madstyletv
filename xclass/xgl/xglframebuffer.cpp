@@ -6,6 +6,7 @@ XGLFramebuffer::XGLFramebuffer(int w, int h) :
 	height(h)
 {
 	const int nSamples = 8;
+	const GLuint attachments[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 	xprintf("XGLFramebuffer::XGLFramebuffer()\n");
 
 	glGenFramebuffers(1, &fbo);
@@ -34,6 +35,9 @@ XGLFramebuffer::XGLFramebuffer(int w, int h) :
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, textures[1], 0);
 	GL_CHECK("glFramebufferTexture() failedn");
+
+	glDrawBuffers(2, attachments);
+	GL_CHECK("glDrawBuffers() failed");
 
 	// The depth buffer
 	glGenRenderbuffers(1, &depth);
