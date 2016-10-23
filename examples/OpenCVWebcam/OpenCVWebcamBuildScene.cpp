@@ -57,7 +57,7 @@ public:
 		
 		bool bindFBOTextureDoesntWork = true;
 		if (bindFBOTextureDoesntWork) {
-			glBindFramebuffer(GL_READ_FRAMEBUFFER, frameBuffer.intFbo);
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, frameBuffer.fbo);
 			GL_CHECK("glBindFrameBuffer(GL_READ_FRAMEBUFFER,fb->fbo) failed");
 
 			glReadPixels(0, 0, frameBuffer.width, frameBuffer.height, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);
@@ -68,7 +68,7 @@ public:
 		}
 		else {
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, frameBuffer.intTexture);
+			glBindTexture(GL_TEXTURE_2D, frameBuffer.texture);
 		}
 
 		fboQuad->Draw();
