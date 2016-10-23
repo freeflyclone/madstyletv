@@ -98,7 +98,7 @@ public:
 
 		// this is hard-coded for Logitech C920 web cam. Also works
 		// on a Macbook Pro with internal camera.  May work with others.
-		cap.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));
+		//cap.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));
 		cap.set(CV_CAP_PROP_FRAME_WIDTH, width);
 		cap.set(CV_CAP_PROP_FRAME_HEIGHT, height);
 		cap.set(CV_CAP_PROP_FPS, 30.0);
@@ -116,7 +116,7 @@ public:
 	cv::Mat frame;
 
 	int width, height, channels;
-	unsigned __int64 frameNumber;
+	unsigned int frameNumber;
 
 	// ultra-simple double-buffered intermediate frames from the camera
 	// (ping-ponged by frameNumber&1) TODO: size this programmatically.
@@ -128,7 +128,7 @@ CameraThread *pct;
 void ExampleXGL::BuildScene() {
 	ImageProcessing *shape;
 	const int camWidth = 640;
-	const int camHeight = 360;
+	const int camHeight = 480;
 	const int camChannels = 4;
 
 	AddShape("shaders/imageproc", [&](){ shape = new ImageProcessing(camWidth, camHeight, camChannels); return shape; });
