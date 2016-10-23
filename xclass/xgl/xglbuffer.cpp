@@ -24,7 +24,7 @@ XGLBuffer::XGLBuffer() :
     GL_CHECK("glGenBuffers() failed");
 }
 
-void XGLBuffer::Bind(){
+void XGLBuffer::Bind(bool bindTextures){
     glBindVertexArray(vao);
     GL_CHECK("glBindVertexArray() failed");
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -32,7 +32,7 @@ void XGLBuffer::Bind(){
     glUseProgram(shader->programId);
     GL_CHECK("glUseProgram() failed");
 
-    if (numTextures != 0){
+    if (numTextures != 0 && bindTextures){
 		for (GLint i = 0; i < numTextures; i++) {
 			glActiveTexture(GL_TEXTURE0+i);
 			GL_CHECK("glActiveTexture() failed");
@@ -159,6 +159,9 @@ void XGLBuffer::AddTexture(std::string texName){
 void XGLBuffer::AddTexture(std::string texName, int width, int height, int channels, GLubyte *img, bool flipColors){
 	GLenum format = GL_RGBA;
 	GLuint texId;
+
+	glGenTextures(1, &texId);
+	GL_CHECK("glGenTextures() failed");
 
 	glActiveTexture(GL_TEXTURE0 + numTextures);
 	GL_CHECK("glActiveTexture(GL_TEXTURE0) failed");
