@@ -14,16 +14,25 @@ XGLFramebuffer::XGLFramebuffer(int w, int h) :
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	GL_CHECK("glBindFramebuffer() failed");
 
-	glGenTextures(1, &texture);
+	glGenTextures(2, textures);
 	GL_CHECK("glGenTextures() failed");
 
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
 	GL_CHECK("glBindTexture() failed");
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	GL_CHECK("glTexImage2D() failed");
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textures[0], 0);
+	GL_CHECK("glFramebufferTexture() failedn");
+
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
+	GL_CHECK("glBindTexture() failed");
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	GL_CHECK("glTexImage2D() failed");
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, textures[1], 0);
 	GL_CHECK("glFramebufferTexture() failedn");
 
 	// The depth buffer
