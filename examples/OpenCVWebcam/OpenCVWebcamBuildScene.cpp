@@ -21,21 +21,12 @@ public:
 	ImageProcessing(int w, int h, int c) : 
 		XGLTexQuad(w, h, c),
 		width(w),
-		height(h)
+		height(h),
+		frameBuffer(NULL)
 	{
-		std::string shaderPath = pathToAssets + "/shaders/tex2";
-		fboQuadShader = new XGLShader(shaderPath);
-		fboQuadShader->Compile(shaderPath);
-
-		fboQuad = new XGLTexQuad(w, h, c);
-		fboQuad->Load(fboQuadShader, fboQuad->v, fboQuad->idx);
-		fboQuad->uniformLocations = fboQuadShader->materialLocations;
-
-		glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
-		glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(-10.0, 0, 5.625f));
-		glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
-		fboQuad->model = translate * rotate * scale;
+		AddTexture(width, height, c);
+		frameBuffer = new XGLFramebuffer(width, height, texIds[0], texIds[1]);
+		xprintf("ImageProcessing::ImageProcessing() frameBuffer\n");
 	};
 
 	// overide of XGLShape::Render(), which means if we're in this function
@@ -43,36 +34,18 @@ public:
 	// add the rendering of the FBO to the chain, which is the whole reason
 	// for this derived class.
 	void Render(float clock) {
-		frameBuffer.Render(std::bind(&ImageProcessing::FBRender, this));
-
-		glProgramUniformMatrix4fv(fboQuad->shader->programId, fboQuad->shader->modelUniformLocation, 1, false, (GLfloat *)&fboQuad->model);
-		GL_CHECK("glProgramUniformMatrix4fv() failed");
-
-		fboQuad->XGLBuffer::Bind();
-		fboQuad->XGLMaterial::Bind(fboQuad->shader->programId);
-
-		bool bindFBOTextureDoesntWorkYet = true;
-		if (bindFBOTextureDoesntWorkYet) {
-			glBindFramebuffer(GL_READ_FRAMEBUFFER, frameBuffer.fbo);
-			GL_CHECK("glBindFrameBuffer(GL_READ_FRAMEBUFFER,fb->fbo) failed");
-
-			glReadPixels(0, 0, frameBuffer.width, frameBuffer.height, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);
-			GL_CHECK("glReadPixels() failed");
-
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);
-			GL_CHECK("glTexImage() didn't work");
+		if (0) {
+			glProgramUniformMatrix4fv(shader->programId, shader->modelUniformLocation, 1, false, (GLfloat *)&model);
+			GL_CHECK("glProgramUniformMatrix4fv() failed");
+			XGLBuffer::Bind(true);
+			XGLMaterial::Bind(shader->programId);
+			Draw();
+			Unbind();
 		}
-		else {
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, frameBuffer.texture);
-		}
+		else
+			XGLShape::Render(0.0f);
 
-		fboQuad->Draw();
-		
-		fboQuad->XGLBuffer::Unbind();
-
-		XGLShape::Render(clock);
-
+		frameBuffer->Render(std::bind(&ImageProcessing::FBRender, this));
 	}
 	
 	void FBRender() {
@@ -87,11 +60,7 @@ public:
 		GL_CHECK("glViewport() failed");
 
 		// setup this XGLTexQuad vertex attributes & stuff...
-		XGLBuffer::Bind();
-
-		//...BUT use the fullscreen shader instead of the one
-		// we got launched with.
-		//glUseProgram(fboFullscreenShader->programId);
+		XGLBuffer::Bind(true);
 
 		glUniform1i(glGetUniformLocation(shader->programId, "mode"), 1);
 		GL_CHECK("glUniform1i() failed()");
@@ -117,7 +86,7 @@ public:
 	int width, height;
 	XGLTexQuad *fboQuad;
 	XGLShader *fboQuadShader,*fboFullscreenShader;
-	XGLFramebuffer frameBuffer;
+	XGLFramebuffer *frameBuffer;
 	GLubyte mappedBuffer[1920 * 1080 * 4];
 
 	int *windowWidth, *windowHeight;
@@ -168,7 +137,7 @@ void ExampleXGL::BuildScene() {
 	ImageProcessing *shape;
 	const int camWidth = 1280;
 	const int camHeight = 720;
-	const int camChannels = 3;
+	const int camChannels = 4;
 
 	AddShape("shaders/tex2", [&](){ shape = new ImageProcessing(camWidth, camHeight, camChannels); return shape; });
 	shape->windowWidth = &width;
