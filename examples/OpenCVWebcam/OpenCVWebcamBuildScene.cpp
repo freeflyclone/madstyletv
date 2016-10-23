@@ -43,39 +43,28 @@ public:
 			Unbind();
 		}
 		else
-			XGLShape::Render(0.0f);
+			XGLShape::Render(0.0);
 
 		frameBuffer->Render(std::bind(&ImageProcessing::FBRender, this));
 	}
 	
 	void FBRender() {
-		// this is a 2D render of the camera quad
-		// to a "fullscreen" FBO.  Disabling
-		// depth testing allows for not calling
-		// glClear().
 		glDisable(GL_DEPTH_TEST);
 
-		// want to render to the entire FBO bitmap texture
 		glViewport(0, 0, width, height);
 		GL_CHECK("glViewport() failed");
 
-		// setup this XGLTexQuad vertex attributes & stuff...
 		XGLBuffer::Bind(true);
 
 		glUniform1i(glGetUniformLocation(shader->programId, "mode"), 1);
 		GL_CHECK("glUniform1i() failed()");
 
-		// draw the geometry.  Basically, this does a 2D fill of entire
-		// FBO texture with our camera data
 		glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
 		GL_CHECK("glDrawElements() failed");
 
 		glUniform1i(glGetUniformLocation(shader->programId, "mode"), 0);
 		GL_CHECK("glUniform1i() failed()");
 
-		// depending on the code that created this object to set these immediately
-		// used so that we can return the glViewport to the proper window dimensions
-		// after setting it above ^^
 		glViewport(0, 0, *windowWidth, *windowHeight);
 
 		glEnable(GL_DEPTH_TEST);
@@ -84,10 +73,7 @@ public:
 	}
 
 	int width, height;
-	XGLTexQuad *fboQuad;
-	XGLShader *fboQuadShader,*fboFullscreenShader;
 	XGLFramebuffer *frameBuffer;
-	GLubyte mappedBuffer[1920 * 1080 * 4];
 
 	int *windowWidth, *windowHeight;
 };
@@ -142,10 +128,6 @@ void ExampleXGL::BuildScene() {
 	AddShape("shaders/tex2", [&](){ shape = new ImageProcessing(camWidth, camHeight, camChannels); return shape; });
 	shape->windowWidth = &width;
 	shape->windowHeight = &height;
-
-	shape->AddTexture(camWidth, camHeight, camChannels);
-	shape->AddTexture(camWidth, camHeight, camChannels);
-	shape->AddTexture(camWidth, camHeight, camChannels);
 
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(10, 0, 5.625f));
