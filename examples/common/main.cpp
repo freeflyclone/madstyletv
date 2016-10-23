@@ -120,13 +120,11 @@ int main(void) {
 			glfwGetFramebufferSize(window, &width, &height);
 			exgl->Reshape(width, height);
 
-			//glfwSwapInterval(1);
 			glfwSwapBuffers(window);
 
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			exgl->Display();
-
 		}
 
 		glfwTerminate();
