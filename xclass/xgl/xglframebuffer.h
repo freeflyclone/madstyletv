@@ -24,7 +24,7 @@ public:
 
 	// offscreen MSAA framebuffer
 	GLuint fbo;
-	GLuint texture;
+	GLuint textures[2];
 	GLuint depth;
 
 	// dimensions (used for glViewport())
