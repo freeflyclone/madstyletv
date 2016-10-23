@@ -18,7 +18,7 @@
 class XGLBuffer {
 public:
     XGLBuffer();
-    virtual void Bind();
+    virtual void Bind(bool bindTextures=true);
     virtual void Unbind();
     virtual void Load(XGLShader *shader, std::vector<XGLVertexAttributes> va, std::vector<XGLIndex> ib = {});
     virtual void AddTexture(std::string name);
