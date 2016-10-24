@@ -1,21 +1,13 @@
 #include "xgl.h"
 
-XGLFramebuffer::XGLFramebuffer(int w, int h, GLuint tex0, GLuint tex1, GLuint tex2) :
+XGLFramebuffer::XGLFramebuffer(int w, int h, GLuint *texs, int ntexs) :
 	XGLObject("XGLFramebuffer"),
 	width(w),
-	height(h)
+	height(h),
+	numTextures(ntexs)
 {
-	textures[0] = tex0;
-	textures[1] = tex1;
-	textures[2] = tex2;
-
-	const int nSamples = 8;
-
-	attachments[0] = GL_COLOR_ATTACHMENT0;
-	attachments[1] = GL_COLOR_ATTACHMENT1;
-	attachments[2] = GL_COLOR_ATTACHMENT2;
-
-	xprintf("XGLFramebuffer::XGLFramebuffer()\n");
+	if (ntexs > 8)
+		throwXGLException("too many texures requested, max is 8, requested: " + std::to_string(ntexs));
 
 	glGenFramebuffers(1, &fbo);
 	GL_CHECK("glGenFramebuffers() failed");
@@ -23,16 +15,15 @@ XGLFramebuffer::XGLFramebuffer(int w, int h, GLuint tex0, GLuint tex1, GLuint te
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	GL_CHECK("glBindFramebuffer() failed");
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textures[0], 0);
-	GL_CHECK("glFramebufferTexture() failedn");
+	for (int i = 0; i < numTextures; i++) {
+		textures[i] = texs[i];
+		attachments[i] = GL_COLOR_ATTACHMENT0 + i;
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, textures[1], 0);
-	GL_CHECK("glFramebufferTexture() failedn");
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, GL_TEXTURE_2D, textures[i], 0);
+		GL_CHECK("glFramebufferTexture() failedn");
+	}
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, textures[2], 0);
-	GL_CHECK("glFramebufferTexture() failedn");
-
-	glDrawBuffers(3, attachments);
+	glDrawBuffers(numTextures, attachments);
 	GL_CHECK("glDrawBuffers() failed");
 
 	// The depth buffer
