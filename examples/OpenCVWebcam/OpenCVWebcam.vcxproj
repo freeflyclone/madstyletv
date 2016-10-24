@@ -176,14 +176,12 @@
     <ClCompile Include="OpenCVWebcamBuildScene.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\shaders\fullscreen.frag" />
-    <None Include="..\..\shaders\fullscreen.vert" />
+    <None Include="..\..\shaders\imageproc.frag" />
+    <None Include="..\..\shaders\imageproc.vert" />
     <None Include="..\..\shaders\rgb2gray.frag" />
     <None Include="..\..\shaders\rgb2gray.vert" />
     <None Include="..\..\shaders\tex.frag" />
     <None Include="..\..\shaders\tex.vert" />
-    <None Include="..\..\shaders\tex2.frag" />
-    <None Include="..\..\shaders\tex2.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
