@@ -1,17 +1,19 @@
 #include "xgl.h"
 
-XGLFramebuffer::XGLFramebuffer(int w, int h, GLuint tex0, GLuint tex1) :
+XGLFramebuffer::XGLFramebuffer(int w, int h, GLuint tex0, GLuint tex1, GLuint tex2) :
 	XGLObject("XGLFramebuffer"),
 	width(w),
 	height(h)
 {
 	textures[0] = tex0;
 	textures[1] = tex1;
+	textures[2] = tex2;
 
 	const int nSamples = 8;
 
 	attachments[0] = GL_COLOR_ATTACHMENT0;
 	attachments[1] = GL_COLOR_ATTACHMENT1;
+	attachments[2] = GL_COLOR_ATTACHMENT2;
 
 	xprintf("XGLFramebuffer::XGLFramebuffer()\n");
 
@@ -27,7 +29,10 @@ XGLFramebuffer::XGLFramebuffer(int w, int h, GLuint tex0, GLuint tex1) :
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, textures[1], 0);
 	GL_CHECK("glFramebufferTexture() failedn");
 
-	glDrawBuffers(2, attachments);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, textures[2], 0);
+	GL_CHECK("glFramebufferTexture() failedn");
+
+	glDrawBuffers(3, attachments);
 	GL_CHECK("glDrawBuffers() failed");
 
 	// The depth buffer
