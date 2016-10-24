@@ -41,16 +41,10 @@
     <None Include="..\..\shaders\rgb2gray.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\shaders\fullscreen.frag">
+    <None Include="..\..\shaders\imageproc.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\shaders\fullscreen.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\shaders\tex2.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\shaders\tex2.vert">
+    <None Include="..\..\shaders\imageproc.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
