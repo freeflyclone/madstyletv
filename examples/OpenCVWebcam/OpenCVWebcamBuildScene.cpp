@@ -43,7 +43,8 @@ public:
 		frameBufferObject(NULL)
 	{
 		AddTexture(width, height, c);
-		frameBufferObject = new XGLFramebuffer(width, height, texIds[0], texIds[1]);
+		AddTexture(width, height, c);
+		frameBufferObject = new XGLFramebuffer(width, height, texIds[0], texIds[1], texIds[2]);
 		xprintf("ImageProcessing::ImageProcessing() frameBuffer\n");
 	};
 
@@ -53,6 +54,15 @@ public:
 	// for this derived class.
 	void Render(float clock) {
 		frameBufferObject->Render(std::bind(&ImageProcessing::FBORender, this));
+
+		// These ensure that the textures rendered in the FBO pass are available 
+		// in the main rendering pass.  Is probably sticky in the program object, (shader)
+		// and could be set in this object's constructor, if "shader" were valid at that point.
+		// I'll need to refactor to make that so.
+		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit0"), 0);
+		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit1"), 1);
+		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit2"), 2);
+
 		XGLShape::Render(0.0);
 	}
 	
@@ -61,6 +71,13 @@ public:
 		glViewport(0, 0, width, height);
 
 		XGLBuffer::Bind();
+
+		// These ensure that the FBO pass has access to all the GL_COLORATTACHMENT buffers
+		// that have been setup in the FBO;  (Might be sticky in the FBO and not 
+		// need setting per render pass)
+		glBindFragDataLocation(shader->programId, 0, "color0");
+		glBindFragDataLocation(shader->programId, 1, "color1");
+		glBindFragDataLocation(shader->programId, 2, "color2");
 
 		glUniform1i(glGetUniformLocation(shader->programId, "mode"), 1);
 		glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
@@ -98,7 +115,7 @@ public:
 
 		// this is hard-coded for Logitech C920 web cam. Also works
 		// on a Macbook Pro with internal camera.  May work with others.
-		//cap.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));
+		cap.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));
 		cap.set(CV_CAP_PROP_FRAME_WIDTH, width);
 		cap.set(CV_CAP_PROP_FRAME_HEIGHT, height);
 		cap.set(CV_CAP_PROP_FPS, 30.0);
@@ -127,8 +144,8 @@ CameraThread *pct;
 
 void ExampleXGL::BuildScene() {
 	ImageProcessing *shape;
-	const int camWidth = 640;
-	const int camHeight = 480;
+	const int camWidth = 1280;
+	const int camHeight = 720;
 	const int camChannels = 4;
 
 	AddShape("shaders/imageproc", [&](){ shape = new ImageProcessing(camWidth, camHeight, camChannels); return shape; });

@@ -18,16 +18,16 @@ typedef std::function<void()> XGLFBORender;
 class XGLFramebuffer : public XGLObject {
 public:
 	XGLFramebuffer(int w = RENDER_WIDTH, int h = RENDER_HEIGHT);
-	XGLFramebuffer(int w, int h, GLuint tex1, GLuint tex2);
+	XGLFramebuffer(int w, int h, GLuint tex1, GLuint tex2, GLuint tex3);
 	virtual ~XGLFramebuffer();
 
 	virtual void Render(XGLFBORender);
 
 	// offscreen framebuffer
 	GLuint fbo;
-	GLuint textures[2];
+	GLuint textures[3];
 	GLuint depth;
-	GLuint attachments[2];
+	GLuint attachments[3];
 
 	// dimensions (used for glViewport())
 	int width, height;
