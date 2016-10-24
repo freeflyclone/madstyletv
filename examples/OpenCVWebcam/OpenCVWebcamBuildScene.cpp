@@ -44,7 +44,8 @@ public:
 	{
 		AddTexture(width, height, c);
 		AddTexture(width, height, c);
-		frameBufferObject = new XGLFramebuffer(width, height, texIds[0], texIds[1], texIds[2]);
+		frameBufferObject = new XGLFramebuffer(width, height, texIds.data(), texIds.size());
+
 		xprintf("ImageProcessing::ImageProcessing() frameBuffer\n");
 	};
 
@@ -162,6 +163,9 @@ void ExampleXGL::BuildScene() {
 		ImageProcessing *ipShape = (ImageProcessing *)s;
 
 		if (pct != NULL && pct->IsRunning() && (pct->frameNumber>0) ) {
+			glUniform1i(glGetUniformLocation(ipShape->shader->programId, "frameToggle"), (pct->frameNumber-1) & 1);
+			GL_CHECK("glUniform1i() failed");
+
 			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pct->width, pct->height, GL_BGR, GL_UNSIGNED_BYTE, pct->videoFrame[(pct->frameNumber-1)&1]);
 			GL_CHECK("glGetTexImage() didn't work");
 		}
