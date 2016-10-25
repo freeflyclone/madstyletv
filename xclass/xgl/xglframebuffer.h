@@ -39,7 +39,11 @@ class XGLSharedFBO : public XSharedMem {
 public:
 	XGLSharedFBO();
 
-	virtual void Render(int w, int h);
+	virtual void Render();
+
+	GLuint fbo, intFbo;
+	GLuint texture, intTexture;
+	GLuint depth;
 };
 
 #endif
