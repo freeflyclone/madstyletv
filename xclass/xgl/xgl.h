@@ -141,6 +141,8 @@ public:
     XGLShaderMap shaderMap;
 
 	XGLSharedPBO *pb;
+	XGLSharedFBO *fb;
+
 	float clock;
 
 	XGLShaderMatrixData shaderMatrix;
