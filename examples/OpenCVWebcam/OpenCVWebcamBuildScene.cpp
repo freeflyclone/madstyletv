@@ -139,8 +139,8 @@ public:
 	int width, height, channels;
 	unsigned int frameNumber;
 
-	// ultra-simple double-buffered intermediate frames from the camera
-	// (ping-ponged by frameNumber&1) TODO: size this programmatically.
+	// ultra-simple quadruple-buffered intermediate frames from the camera
+	// (ping-ponged by frameNumber&3) TODO: size this programmatically.
 	GLubyte videoFrame[4][1920 * 1080 * 4];
 };
 
@@ -148,9 +148,9 @@ CameraThread *pct;
 
 void ExampleXGL::BuildScene() {
 	ImageProcessing *shape;
-	const int camWidth = 1280;
-	const int camHeight = 720;
-	const int camChannels = 4;
+	const int camWidth = 1920;
+	const int camHeight = 1080;
+	const int camChannels = 3;
 
 	AddShape("shaders/imageproc", [&](){ shape = new ImageProcessing(camWidth, camHeight, camChannels); return shape; });
 	shape->windowWidth = &width;
