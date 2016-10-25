@@ -20,9 +20,8 @@ public:
 	XGLPixelbuffer(int w = RENDER_WIDTH, int h = RENDER_HEIGHT);
 	virtual ~XGLPixelbuffer();
 
-	virtual void Render();
+	virtual void Render(unsigned char *);
 
-	// dimensions (used for glViewport())
 	int width, height;
 };
 
