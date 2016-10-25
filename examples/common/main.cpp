@@ -130,8 +130,6 @@ int main(void) {
 		exgl->Reshape(width, height);
 
 		while (!glfwWindowShouldClose(window)) {
-			int newWidth, newHeight;
-
 			glfwPollEvents();
 
 			glfwSwapBuffers(window);
