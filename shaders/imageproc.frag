@@ -36,7 +36,10 @@ void main(void)
 
 	if(mode==1) {
 		color2 = vec4(diff, diff, diff, 1.0);
-		color3 = vec4(1.0, 0.81, 0.0, 1.0);
+		color3 = color2 * vec4(1.0, 0.81, 0.0, 1.0);
+	}
+	else if (mode == 2) {
+		color0 = tc2;
 	}
 	else {
 		color0 = tc2;
