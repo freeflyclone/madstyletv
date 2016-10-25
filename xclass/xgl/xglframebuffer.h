@@ -40,9 +40,6 @@ public:
 	XGLSharedFBO();
 
 	virtual void Render(int w, int h);
-
-	XGLFramebuffer *fbo;
-	XGLFramebuffer *intFbo;
 };
 
 #endif

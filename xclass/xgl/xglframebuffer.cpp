@@ -1,10 +1,11 @@
 #include "xgl.h"
 
-XGLFramebuffer::XGLFramebuffer(int w, int h, GLuint *texs, int ntexs) :
+XGLFramebuffer::XGLFramebuffer(int w, int h, GLuint *texs, int ntexs, bool d) :
 	XGLObject("XGLFramebuffer"),
 	width(w),
 	height(h),
-	numTextures(ntexs)
+	numTextures(ntexs),
+	hasDepth(d)
 {
 	if (ntexs > 8)
 		throwXGLException("too many texures requested, max is 8, requested: " + std::to_string(ntexs));
@@ -26,18 +27,20 @@ XGLFramebuffer::XGLFramebuffer(int w, int h, GLuint *texs, int ntexs) :
 	glDrawBuffers(numTextures, attachments);
 	GL_CHECK("glDrawBuffers() failed");
 
-	// The depth buffer
-	glGenRenderbuffers(1, &depth);
-	GL_CHECK("glGenRenderbuffers() failed");
+	if (hasDepth) {
+		// The depth buffer
+		glGenRenderbuffers(1, &depth);
+		GL_CHECK("glGenRenderbuffers() failed");
 
-	glBindRenderbuffer(GL_RENDERBUFFER, depth);
-	GL_CHECK("glBindRenderbuffer() failed");
+		glBindRenderbuffer(GL_RENDERBUFFER, depth);
+		GL_CHECK("glBindRenderbuffer() failed");
 
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
-	GL_CHECK("glRenderbufferStorage() failed");
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+		GL_CHECK("glRenderbufferStorage() failed");
 
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth);
-	GL_CHECK("glFramebufferRenderbuffer() failed");
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth);
+		GL_CHECK("glFramebufferRenderbuffer() failed");
+	}
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		xprintf("glCheckFramebufferStatus() != GL_FRAMEBUFFER_COMPLETE\n");
@@ -57,4 +60,10 @@ void XGLFramebuffer::Render(XGLFBORender renderFunc){
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	GL_CHECK("glBidFramebuffer(0) failed");
+}
+
+XGLSharedFBO::XGLSharedFBO() : XSharedMem(DEFAULT_FILE_NAME) {
+}
+
+void XGLSharedFBO::Render(int width, int height) {
 }
