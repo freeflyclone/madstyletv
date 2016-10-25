@@ -171,6 +171,9 @@
     <ClInclude Include="xgl\xglworldcursor.h">
       <Filter>xgl\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xgl\xglpixelbuffer.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xutils.c">
@@ -255,6 +258,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="xgl\xglworldcursor.cpp">
+      <Filter>xgl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xgl\xglpixelbuffer.cpp">
       <Filter>xgl\Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -8,16 +8,11 @@
 #ifndef XGLFRAMEBUFFER_H
 #define XGLFRAMEBUFFER_H
 #include "xglobject.h"
-#include "xshmem.h"
-
-#define RENDER_WIDTH	1280
-#define RENDER_HEIGHT	720
 
 typedef std::function<void()> XGLFBORender;
 
 class XGLFramebuffer : public XGLObject {
 public:
-	XGLFramebuffer(int w = RENDER_WIDTH, int h = RENDER_HEIGHT);
 	XGLFramebuffer(int w, int h, GLuint *texs, int ntex);
 	virtual ~XGLFramebuffer();
 
@@ -32,12 +27,6 @@ public:
 	// dimensions (used for glViewport())
 	int width, height;
 	int numTextures;
-};
-
-class XGLSharedFBO : public XGLFramebuffer, public XSharedMem {
-public:
-	XGLSharedFBO() : XSharedMem(DEFAULT_FILE_NAME) {};
-	virtual void Render(XGLFBORender);
 };
 
 #endif
