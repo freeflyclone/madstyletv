@@ -62,8 +62,19 @@ static void cursor_position_callback(GLFWwindow *window, double x, double y) {
 		exgl->MouseEvent((int)x, (int)y, state);
 }
 
+static void window_size_callback(GLFWwindow *window, int width, int height) {
+	if (exgl != NULL)
+		exgl->Reshape(width, height);
+}
+
+static void window_refresh_callback(GLFWwindow *window){
+	if (exgl != NULL)
+		exgl->Display();
+}
+
 int main(void) {
 	GLFWwindow *window;
+	int width, height;
 	/*
 	if (!FreeConsole()) {
 		printf("Freeing the console failed: %d\n", GetLastError());
@@ -92,6 +103,8 @@ int main(void) {
 
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetCursorPosCallback(window, cursor_position_callback);
+	glfwSetWindowSizeCallback(window, window_size_callback);
+
 	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glfwSwapInterval(1);
@@ -103,6 +116,8 @@ int main(void) {
 		exit(-1);
 	}
 	
+	glfwGetFramebufferSize(window, &width, &height);
+
 	SetGlobalWorkingDirectoryName();
 
 	xprintf("current working dir: %s\n", currentWorkingDir.c_str());
@@ -112,13 +127,12 @@ int main(void) {
 
 	try {
 		exgl = new ExampleXGL();
+		exgl->Reshape(width, height);
 
 		while (!glfwWindowShouldClose(window)) {
-			int width, height;
+			int newWidth, newHeight;
 
 			glfwPollEvents();
-			glfwGetFramebufferSize(window, &width, &height);
-			exgl->Reshape(width, height);
 
 			glfwSwapBuffers(window);
 
