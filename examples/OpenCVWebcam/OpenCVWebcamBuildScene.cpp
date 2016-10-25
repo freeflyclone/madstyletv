@@ -44,6 +44,7 @@ public:
 	{
 		AddTexture(width, height, c);
 		AddTexture(width, height, c);
+		AddTexture(width, height, c);
 		frameBufferObject = new XGLFramebuffer(width, height, texIds.data(), texIds.size());
 
 		xprintf("ImageProcessing::ImageProcessing() frameBuffer\n");
@@ -63,6 +64,7 @@ public:
 		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit0"), 0);
 		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit1"), 1);
 		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit2"), 2);
+		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit3"), 3);
 
 		XGLShape::Render(0.0);
 	}
@@ -79,6 +81,7 @@ public:
 		glBindFragDataLocation(shader->programId, 0, "color0");
 		glBindFragDataLocation(shader->programId, 1, "color1");
 		glBindFragDataLocation(shader->programId, 2, "color2");
+		glBindFragDataLocation(shader->programId, 3, "color3");
 
 		glUniform1i(glGetUniformLocation(shader->programId, "mode"), 1);
 		glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
@@ -123,7 +126,7 @@ public:
 
 		while (IsRunning()) {
 			cap >> frame;
-			memcpy(videoFrame[frameNumber&1], frame.data, (frame.cols*frame.rows*frame.channels()));
+			memcpy(videoFrame[frameNumber & 3], frame.data, (frame.cols*frame.rows*frame.channels()));
 			frameNumber++;
 			width = frame.cols;
 			height = frame.rows;
@@ -138,7 +141,7 @@ public:
 
 	// ultra-simple double-buffered intermediate frames from the camera
 	// (ping-ponged by frameNumber&1) TODO: size this programmatically.
-	GLubyte videoFrame[2][1920 * 1080 * 4];
+	GLubyte videoFrame[4][1920 * 1080 * 4];
 };
 
 CameraThread *pct;
@@ -162,11 +165,15 @@ void ExampleXGL::BuildScene() {
 	XGLShape::AnimaFunk getCameraFrame = [&](XGLShape *s, float clock) {
 		ImageProcessing *ipShape = (ImageProcessing *)s;
 
-		if (pct != NULL && pct->IsRunning() && (pct->frameNumber>0) ) {
-			glUniform1i(glGetUniformLocation(ipShape->shader->programId, "frameToggle"), (pct->frameNumber-1) & 1);
-			GL_CHECK("glUniform1i() failed");
+		if (pct != NULL && pct->IsRunning() && (pct->frameNumber>3) ) {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, ipShape->texIds[0]);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pct->width, pct->height, GL_BGR, GL_UNSIGNED_BYTE, pct->videoFrame[(pct->frameNumber-1)&3]);
+			GL_CHECK("glGetTexImage() didn't work");
 
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pct->width, pct->height, GL_BGR, GL_UNSIGNED_BYTE, pct->videoFrame[(pct->frameNumber-1)&1]);
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, ipShape->texIds[1]);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pct->width, pct->height, GL_BGR, GL_UNSIGNED_BYTE, pct->videoFrame[(pct->frameNumber-2)&3]);
 			GL_CHECK("glGetTexImage() didn't work");
 		}
 	};
