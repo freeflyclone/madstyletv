@@ -235,6 +235,7 @@
     <ClInclude Include="xgl\xgllight.h" />
     <ClInclude Include="xgl\xglmaterial.h" />
     <ClInclude Include="xgl\xglobject.h" />
+    <ClInclude Include="xgl\xglpixelbuffer.h" />
     <ClInclude Include="xgl\xglprimitives.h" />
     <ClInclude Include="xgl\xglprojector.h" />
     <ClInclude Include="xgl\xglshader.h" />
@@ -267,6 +268,7 @@
     <ClCompile Include="xgl\xgllight.cpp" />
     <ClCompile Include="xgl\xglmaterial.cpp" />
     <ClCompile Include="xgl\xglobject.cpp" />
+    <ClCompile Include="xgl\xglpixelbuffer.cpp" />
     <ClCompile Include="xgl\xglprojector.cpp" />
     <ClCompile Include="xgl\xglshader.cpp" />
     <ClCompile Include="xgl\xglshapes.cpp" />

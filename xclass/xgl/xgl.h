@@ -77,6 +77,7 @@
 #include "xglcamera.h"
 #include "xglprojector.h"
 #include "xglframebuffer.h"
+#include "xglpixelbuffer.h"
 
 // want to reference XGLShader by it's name, so use std::map for that
 typedef std::map<std::string, GLint> XGLTextureMap;
@@ -139,8 +140,8 @@ public:
     // Shader stack is global per context
     XGLShaderMap shaderMap;
 
-	XGLSharedFBO *fb;
-    float clock;
+	XGLSharedPBO *pb;
+	float clock;
 
 	XGLShaderMatrixData shaderMatrix;
 private:

@@ -61,7 +61,7 @@ XGL::XGL(int *argcp, char **argv) {
 }
 #endif
 
-XGL::XGL() : XGLObject("XGL"), clock(0.0f), fb(NULL) {
+XGL::XGL() : XGLObject("XGL"), clock(0.0f), pb(NULL) {
     xprintf("OpenGL version: %s\n", glGetString(GL_VERSION));
 	glGetError();
 
@@ -123,7 +123,7 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f), fb(NULL) {
 	glDepthFunc(GL_LESS);
 	glEnable(GL_DEPTH_TEST);
 
-//	fb = new XGLSharedFBO();
+	pb = new XGLSharedPBO();
 
 //	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //	glEnable(GL_BLEND);
@@ -200,13 +200,12 @@ void XGL::Display(){
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, matrixUbo);
 	GL_CHECK("glBindBuffer() failed");
 
-	// if there's an XGLSharedFBO object, call it's renderer
-	// to let other processes see our renderings.
-	if (fb != NULL)
-		fb->Render(std::bind(&XGL::RenderScene, this));
-
 	projector.Reshape();
 	RenderScene();
+
+	// TODO: call XGLPixelbuffer::Render() here
+	if (pb)
+		pb->Render();
 
 	clock += 1.0f;
 }
