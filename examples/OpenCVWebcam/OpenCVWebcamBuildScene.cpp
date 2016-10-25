@@ -47,6 +47,10 @@ public:
 		AddTexture(width, height, c);
 		frameBufferObject = new XGLFramebuffer(width, height, texIds.data(), texIds.size());
 
+		XGLShader *shader = new XGLShader(pathToAssets + "/shaders/imageproc");
+		imgQuad = new XGLTexQuad();
+		imgQuad->Load(shader, imgQuad->v, imgQuad->idx);
+
 		xprintf("ImageProcessing::ImageProcessing() frameBuffer\n");
 	};
 
@@ -95,7 +99,7 @@ public:
 
 	int width, height;
 	XGLFramebuffer *frameBufferObject;
-
+	XGLTexQuad *imgQuad;
 	int *windowWidth, *windowHeight;
 };
 
