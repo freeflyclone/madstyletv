@@ -47,11 +47,21 @@ public:
 		AddTexture(width, height, c);
 		frameBufferObject = new XGLFramebuffer(width, height, texIds.data(), texIds.size());
 
-		XGLShader *shader = new XGLShader(pathToAssets + "/shaders/imageproc");
-		imgQuad = new XGLTexQuad();
-		imgQuad->Load(shader, imgQuad->v, imgQuad->idx);
+		std::string shaderName = pathToAssets + "/shaders/imageproc";
+		imgShader = new XGLShader(shaderName);
+		imgShader->Compile(shaderName);
 
-		xprintf("ImageProcessing::ImageProcessing() frameBuffer\n");
+		glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
+		glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(10, 0, 5.625f));
+		glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+		MakeSubQuad(3, translate * rotate * scale);
+
+		translate = glm::translate(glm::mat4(), glm::vec3(-10, 0, 3*5.625f));
+		MakeSubQuad(0, translate * rotate * scale);
+
+		translate = glm::translate(glm::mat4(), glm::vec3(10, 0, 3 * 5.625f));
+		MakeSubQuad(1, translate * rotate * scale);
 	};
 
 	// overide of XGLShape::Render(), which means if we're in this function
@@ -71,6 +81,9 @@ public:
 		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit3"), 3);
 
 		XGLShape::Render(0.0);
+		for (imgQuadsIterator = imgQuads.begin(); imgQuadsIterator != imgQuads.end(); imgQuadsIterator++) {
+			(*imgQuadsIterator)->Render(0.0);
+		}
 	}
 	
 	void FBORender() {
@@ -97,9 +110,22 @@ public:
 		XGLBuffer::Unbind();
 	}
 
+	void MakeSubQuad(GLuint texId, glm::mat4 model) {
+		XGLTexQuad *quad = new XGLTexQuad();
+		quad = new XGLTexQuad();
+		quad->texIds.push_back(texIds[texId]);
+		quad->numTextures = 1;
+		quad->Load(imgShader, quad->v, quad->idx);
+		quad->uniformLocations = imgShader->materialLocations;
+		quad->model = model;
+		imgQuads.push_back(quad);
+	}
+
 	int width, height;
 	XGLFramebuffer *frameBufferObject;
-	XGLTexQuad *imgQuad;
+	XGLShapeList imgQuads;
+	XGLShapeList::iterator imgQuadsIterator;
+	XGLShader *imgShader;
 	int *windowWidth, *windowHeight;
 };
 
@@ -161,7 +187,7 @@ void ExampleXGL::BuildScene() {
 	shape->windowHeight = &height;
 
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
-	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 5.625f));
+	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(-10, 0, 5.625f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	shape->model = translate * rotate * scale;
 
