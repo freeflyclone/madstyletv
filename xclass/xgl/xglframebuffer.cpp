@@ -132,18 +132,44 @@ XGLSharedFBO::XGLSharedFBO() : XSharedMem(DEFAULT_FILE_NAME) {
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		xprintf("glCheckFramebufferStatus() != GL_FRAMEBUFFER_COMPLETE\n");
 
+	// now let's generate the output FBO...
+	glGenFramebuffers(1, &outFbo);
+	GL_CHECK("glGenFramebuffers() failed");
+
+	glBindFramebuffer(GL_FRAMEBUFFER, outFbo);
+	GL_CHECK("glBindFramebuffer() failed");
+
+	glGenTextures(1, &outTexture);
+	GL_CHECK("glGenTextures() failed");
+
+	glBindTexture(GL_TEXTURE_2D, outTexture);
+	GL_CHECK("glBindTexture() failed");
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, RENDER_WIDTH, RENDER_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+	GL_CHECK("glTexImage2D() failed");
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	GL_CHECK("glBindTexture(0) failed");
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, outTexture, 0);
+	GL_CHECK("glFramebufferTexture() failedn");
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		xprintf("glCheckFramebufferStatus() != GL_FRAMEBUFFER_COMPLETE\n");
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	GL_CHECK("glBindFrameBuffer(0) failed");
 }
 
-void XGLSharedFBO::Render() {
+void XGLSharedFBO::Render(int windowWidth, int windowHeight) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	GL_CHECK("glBindFrameBuffer(0) failed");
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
 	GL_CHECK("glBindFrameBuffer(DRAW) failed");
 
-	glBlitFramebuffer(0, 0, RENDER_WIDTH, RENDER_HEIGHT, 0, 0, RENDER_WIDTH, RENDER_HEIGHT, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+	// copies the default FBO (the screen) to this FBO
+	glBlitFramebuffer(0, 0, windowWidth, windowHeight, 0, 0, windowWidth, windowHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 	GL_CHECK("glBlitFramebuffer() failed");
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
@@ -152,16 +178,28 @@ void XGLSharedFBO::Render() {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, intFbo);
 	GL_CHECK("glBindFrameBuffer(DRAW) failed");
 
-	glBlitFramebuffer(0, 0, RENDER_WIDTH, RENDER_HEIGHT, 0, 0, RENDER_WIDTH, RENDER_HEIGHT, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+	// resolves multi-sampled to single sampled
+	glBlitFramebuffer(0, 0, windowWidth, windowHeight, 0, 0, windowWidth, windowHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 	GL_CHECK("glBlitFramebuffer() failed");
 
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, intFbo);
+	GL_CHECK("glBindFrameBuffer(0) failed");
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, outFbo);
+	GL_CHECK("glBindFrameBuffer(DRAW) failed");
+
+	// resolves size difference to output
+	glBlitFramebuffer(0, 0, windowWidth, windowHeight, 0, 0, pHeader->width, pHeader->height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	GL_CHECK("glBlitFramebuffer() failed");
+
+	// setup for glReadPixels -> shared mem
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	GL_CHECK("glBindFramebuffer(0) failed");
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, intFbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, outFbo);
 	GL_CHECK("glBindFramebuffer() failed");
 
-	glReadPixels(0, 0, RENDER_WIDTH, RENDER_HEIGHT, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);
+	glReadPixels(0, 0, pHeader->width, pHeader->height, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);
 	GL_CHECK("glReadPixels() failed\n");
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
