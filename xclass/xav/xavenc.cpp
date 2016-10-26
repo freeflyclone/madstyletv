@@ -1,7 +1,7 @@
 #include "xutils.h"
 #include "xavenc.h"
 
-XAVEncoder::XAVEncoder(){
+XAVEncoder::XAVEncoder() : frameNumber(0) {
 	xprintf("XAVEncoder::XAVEncoder()\n");
 
 	avcodec_register_all();
@@ -57,6 +57,19 @@ void XAVEncoder::EncodeFrame(unsigned char *img, int width, int height, int dept
 	unsigned char *dest_planes[3] = {frame->data[0], frame->data[1], frame->data[2]};
 	int src_stride[3] = { width * 3, 0, 0 };
 	int dest_stride[3] = { width, width / 2, width / 2 };
+	int ret,gotOutput;
 
-	xprintf("XAVEncoder::EncodeFrame\n");
+	sws_scale(convertCtx, src_planes, src_stride, 0, height, dest_planes, dest_stride);
+
+	frame->pts = frameNumber++;
+
+	av_init_packet(&pkt);
+	pkt.data = NULL;
+	pkt.size = 0;
+
+	if ((ret = avcodec_encode_video2(ctx, &pkt, frame, &gotOutput)) < 0)
+		throw std::runtime_error("avcodec_encode_video2() failed");
+
+	if (gotOutput)
+		xprintf("Got output: %d\n", pkt.size);
 }

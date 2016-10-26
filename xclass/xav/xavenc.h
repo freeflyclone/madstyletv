@@ -36,6 +36,7 @@ public:
 	AVPacket pkt;
 
 	SwsContext *convertCtx;
+	int frameNumber;
 };
 
 #endif
