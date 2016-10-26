@@ -206,4 +206,6 @@ void XGLSharedFBO::Render(int windowWidth, int windowHeight) {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	GL_CHECK("glBindFrameBuffer(0) failed");
+
+	encoder->EncodeFrame(mappedBuffer, pHeader->width, pHeader->height, 3);
 }

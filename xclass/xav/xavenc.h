@@ -34,6 +34,8 @@ public:
 	AVCodecContext *ctx;
 	AVFrame *frame;
 	AVPacket pkt;
+
+	SwsContext *convertCtx;
 };
 
 #endif

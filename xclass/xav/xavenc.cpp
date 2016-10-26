@@ -34,6 +34,9 @@ XAVEncoder::XAVEncoder(){
 
 	if (av_image_alloc(frame->data, frame->linesize, ctx->width, ctx->height, ctx->pix_fmt, 32) < 0)
 		throw std::runtime_error("av_image_alloc() failed");
+
+	if ((convertCtx = sws_getContext(ctx->width, ctx->height, AV_PIX_FMT_RGB24, ctx->width, ctx->height, AV_PIX_FMT_YUV420P, SWS_POINT, NULL, NULL, NULL)) == NULL)
+		throw std::runtime_error("sws_getContext() failed");
 }
 
 XAVEncoder::~XAVEncoder() {
@@ -50,5 +53,10 @@ void XAVEncoder::SetParams(void *p){
 }
 
 void XAVEncoder::EncodeFrame(unsigned char *img, int width, int height, int depth){
+	unsigned char *src_planes[3] = { img, NULL, NULL };
+	unsigned char *dest_planes[3] = {frame->data[0], frame->data[1], frame->data[2]};
+	int src_stride[3] = { width * 3, 0, 0 };
+	int dest_stride[3] = { width, width / 2, width / 2 };
+
 	xprintf("XAVEncoder::EncodeFrame\n");
 }
