@@ -37,6 +37,7 @@ public:
 
 	SwsContext *convertCtx;
 	int frameNumber;
+	FILE *output;
 };
 
 #endif

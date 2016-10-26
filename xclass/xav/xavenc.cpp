@@ -1,7 +1,7 @@
 #include "xutils.h"
 #include "xavenc.h"
 
-XAVEncoder::XAVEncoder() : frameNumber(0) {
+XAVEncoder::XAVEncoder() : frameNumber(0), output(NULL) {
 	xprintf("XAVEncoder::XAVEncoder()\n");
 
 	avcodec_register_all();
@@ -12,7 +12,7 @@ XAVEncoder::XAVEncoder() : frameNumber(0) {
 	if ((ctx = avcodec_alloc_context3(codec)) == NULL)
 		throw std::runtime_error("avcodec_alloc_context3() failed");
 
-	ctx->bit_rate = 4000000;
+	ctx->bit_rate = 12000000;
 	ctx->width = 1280;
 	ctx->height = 720;
 	ctx->time_base = { 1, 60 };
@@ -35,8 +35,11 @@ XAVEncoder::XAVEncoder() : frameNumber(0) {
 	if (av_image_alloc(frame->data, frame->linesize, ctx->width, ctx->height, ctx->pix_fmt, 32) < 0)
 		throw std::runtime_error("av_image_alloc() failed");
 
-	if ((convertCtx = sws_getContext(ctx->width, ctx->height, AV_PIX_FMT_RGB24, ctx->width, ctx->height, AV_PIX_FMT_YUV420P, SWS_POINT, NULL, NULL, NULL)) == NULL)
+	if ((convertCtx = sws_getContext(ctx->width, ctx->height, AV_PIX_FMT_BGR24, ctx->width, ctx->height, AV_PIX_FMT_YUV420P, SWS_POINT, NULL, NULL, NULL)) == NULL)
 		throw std::runtime_error("sws_getContext() failed");
+
+	if ((output = fopen("test.m4v", "wb")) == NULL)
+		throw std::runtime_error("failed to create output file");
 }
 
 XAVEncoder::~XAVEncoder() {
@@ -46,6 +49,9 @@ XAVEncoder::~XAVEncoder() {
 	av_free(ctx);
 	av_freep(&frame->data[0]);
 	av_frame_free(&frame);
+
+	if (output)
+		fclose(output);
 }
 
 void XAVEncoder::SetParams(void *p){
@@ -70,6 +76,9 @@ void XAVEncoder::EncodeFrame(unsigned char *img, int width, int height, int dept
 	if ((ret = avcodec_encode_video2(ctx, &pkt, frame, &gotOutput)) < 0)
 		throw std::runtime_error("avcodec_encode_video2() failed");
 
-	if (gotOutput)
+	if (gotOutput) {
 		xprintf("Got output: %d\n", pkt.size);
+		fwrite(pkt.data, 1, pkt.size, output);
+		fflush(output);
+	}
 }
