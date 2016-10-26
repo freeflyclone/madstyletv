@@ -10,9 +10,6 @@
 #include "xglobject.h"
 #include "xshmem.h"
 
-#define RENDER_WIDTH	1280
-#define RENDER_HEIGHT	720
-
 typedef std::function<void()> XGLPBORender;
 
 class XGLPixelbuffer : public XGLObject {

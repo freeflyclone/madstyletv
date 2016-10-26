@@ -206,8 +206,7 @@ void XGL::Display(){
 	RenderScene();
 
 	if (fb)
-		//fb->Render(projector.width, projector.height);
-		fb->Render();
+		fb->Render(projector.width, projector.height);
 
 	if (pb)
 		pb->Render();

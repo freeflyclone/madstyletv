@@ -10,6 +10,9 @@
 #include "xglobject.h"
 #include "xshmem.h"
 
+#define RENDER_WIDTH	1920
+#define RENDER_HEIGHT	1080
+
 typedef std::function<void()> XGLFBORender;
 
 class XGLFramebuffer : public XGLObject {
@@ -39,10 +42,10 @@ class XGLSharedFBO : public XSharedMem {
 public:
 	XGLSharedFBO();
 
-	virtual void Render();
+	virtual void Render(int width, int height);
 
-	GLuint fbo, intFbo;
-	GLuint texture, intTexture;
+	GLuint fbo, intFbo, outFbo;
+	GLuint texture, intTexture, outTexture;
 	GLuint depth;
 };
 
