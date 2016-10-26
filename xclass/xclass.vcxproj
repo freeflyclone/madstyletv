@@ -218,6 +218,7 @@
     <ClInclude Include="xal\xal.h" />
     <ClInclude Include="xassets.h" />
     <ClInclude Include="xav\xav.h" />
+    <ClInclude Include="xav\xavenc.h" />
     <ClInclude Include="xav\xavfile.h" />
     <ClInclude Include="xav\xavsrc.h" />
     <ClInclude Include="xconfig.h" />
@@ -257,6 +258,7 @@
     <ClCompile Include="xal\xal.cpp" />
     <ClCompile Include="xassets.cpp" />
     <ClCompile Include="xav\xav.cpp" />
+    <ClCompile Include="xav\xavenc.cpp" />
     <ClCompile Include="xav\xavfile.cpp" />
     <ClCompile Include="xav\xavsrc.cpp" />
     <ClCompile Include="xgl\glew.c" />

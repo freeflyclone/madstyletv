@@ -9,6 +9,7 @@
 #define XGLFRAMEBUFFER_H
 #include "xglobject.h"
 #include "xshmem.h"
+#include "xavenc.h"
 
 #define RENDER_WIDTH	1920
 #define RENDER_HEIGHT	1080
@@ -47,6 +48,8 @@ public:
 	GLuint fbo, intFbo, outFbo;
 	GLuint texture, intTexture, outTexture;
 	GLuint depth;
+
+	XAVEncoder *encoder;
 };
 
 #endif
