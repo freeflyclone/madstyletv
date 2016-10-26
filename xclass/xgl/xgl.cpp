@@ -123,9 +123,8 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f), pb(NULL), fb(NULL) {
 	glDepthFunc(GL_LESS);
 	glEnable(GL_DEPTH_TEST);
 
+	// for copying to shared memory buffer
 	fb = new XGLSharedFBO();
-
-//	pb = new XGLSharedPBO();
 
 //	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //	glEnable(GL_BLEND);
