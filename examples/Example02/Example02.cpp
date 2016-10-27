@@ -6,10 +6,13 @@
 **************************************************************/
 #include "ExampleXGL.h"
 
+// this needs to be file scope at least.  Local (to ::BuildScene) doesn't work
+XGLSphere *sphere;
+
 void ExampleXGL::BuildScene() {
 	XGLShape *shape, *child1, *child2, *child3, *child4;
 	glm::mat4 rotate, translate;
-
+	/*
 	AddShape("shaders/specular", [&](){ shape = new XGLTorus(5.0f, 1.0f, 64, 32); return shape; });
 	shape->attributes.diffuseColor = { 0.005, 0.005, 0.005, 1 };
 	shape->SetTheFunk([&](XGLShape *s, float clock) {
@@ -61,7 +64,10 @@ void ExampleXGL::BuildScene() {
 	shape->model = glm::translate(glm::mat4(), glm::vec3(30, 0, 0)) 
 				 * glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(0,1,0)) 
 				 * glm::scale(glm::mat4(), glm::vec3(2, 2, 2));
+	*/
 
+	//AddShape("shaders/specular", [&]() { shape = new XGLTorus(3.0, 1.0, 32, 32); return shape; });
+	//AddShape("shaders/specular", [&]() { shape = new XGLSphere(1.0, 32); return shape; });
 
 	XInputKeyFunc renderMod = [&](int key, int flags) {
 		const bool isDown = (flags & 0x8000) == 0;
@@ -77,4 +83,25 @@ void ExampleXGL::BuildScene() {
 
 	AddKeyFunc('M', renderMod);
 	AddKeyFunc('m', renderMod);
+
+	AddShape("shaders/specular", [&]() { sphere = new XGLSphere(3.0, 64); return sphere; });
+
+	XInputMouseFunc worldCursorMouse = [&](int x, int y, int flags) {
+		if (mt.IsTrackingRightButton()) {
+			XGLWorldCoord *out = wc.Unproject(projector, x, y);
+
+			// project the worldCursor ray onto the X/Y (Z=0) plane
+			// TODO: Figure this out.  I found it on StackOverflow.
+			float f = out[0].z / (out[1].z - out[0].z);
+			float x2d = out[0].x - f * (out[1].x - out[0].x);
+			float y2d = out[0].y - f * (out[1].y - out[0].y);
+			float z2d = -0.002f;
+
+			if (sphere) {
+				glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(x2d, y2d, z2d));
+				sphere->model = translate;
+			}
+		}
+	};
+	AddMouseFunc(worldCursorMouse);
 }

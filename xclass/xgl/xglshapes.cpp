@@ -175,9 +175,18 @@ XGLSphere::XGLSphere(float r, int n) : radius(r), nSegments(n), visualizeNormals
 
 	int nVerts = (int)v.size();
 
-	idx.push_back(1);
-	for (i = 0; i <= nVerts; i++)
-		idx.push_back(((i & 1) == 0) ? (i >> 1) % (XGLIndex)(v.size()) : ((i >> 1) + nSegments) % (XGLIndex)(v.size()));
+	idx.push_back(0);
+
+	for (j = 0; j < nSegments>>1; j++) {
+		for (int i = 1; i <= nSegments >> 1; i++) {
+			idx.push_back((j*nSegments) + nSegments + i);
+			idx.push_back((j*nSegments) + i);
+		}
+		for (int i = (nSegments >> 1) + 1; i <= nSegments; i++) {
+			idx.push_back((j*nSegments) + i);
+			idx.push_back((j*nSegments) + nSegments + i);
+		}
+	}
 
 	if (visualizeNormals) {
 		for (i = 0; i < nVerts; i++) {
@@ -201,7 +210,7 @@ XGLSphere::XGLSphere(float r, int n) : radius(r), nSegments(n), visualizeNormals
 
 void XGLSphere::Draw() {
 	glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
-	//glDrawElements(GL_LINES, (GLsizei)(idx.size()), XGLIndexType, 0);
+	//glDrawElements(GL_POINTS, (GLsizei)(idx.size()), XGLIndexType, 0);
 	GL_CHECK("glDrawElements() failed");
 }
 
