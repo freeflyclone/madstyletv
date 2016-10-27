@@ -105,8 +105,6 @@ int main(void) {
 	glfwSetCursorPosCallback(window, cursor_position_callback);
 	glfwSetWindowSizeCallback(window, window_size_callback);
 
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
 	glfwSwapInterval(1);
 
 	glewExperimental = GL_TRUE;
@@ -119,11 +117,7 @@ int main(void) {
 	glfwGetFramebufferSize(window, &width, &height);
 
 	SetGlobalWorkingDirectoryName();
-
-	xprintf("current working dir: %s\n", currentWorkingDir.c_str());
 	pathToAssets = currentWorkingDir + "\\..";
-
-	xprintf("pathToAssets: %s\n", pathToAssets.c_str());
 
 	try {
 		exgl = new ExampleXGL();

@@ -63,9 +63,14 @@ static void cursor_position_callback(GLFWwindow *window, double x, double y) {
 	if (pxgl != NULL)
 		pxgl->MouseEvent((int)x, (int)y, state);
 }
-
+static void window_size_callback(GLFWwindow *window, int width, int height) {
+	if (pxgl != NULL)
+		pxgl->Reshape(width, height);
+}
 int main(void) {
 	GLFWwindow *window;
+	int width, height;
+
 	/*
 	if (!FreeConsole()) {
 	printf("Freeing the console failed: %d\n", GetLastError());
@@ -94,7 +99,7 @@ int main(void) {
 
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetCursorPosCallback(window, cursor_position_callback);
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetWindowSizeCallback(window, window_size_callback);
 
 	glfwSwapInterval(1);
 
@@ -105,33 +110,23 @@ int main(void) {
 		exit(-1);
 	}
 
+	glfwGetFramebufferSize(window, &width, &height);
+
 	SetGlobalWorkingDirectoryName();
-
-	xprintf("current working dir: %s\n", currentWorkingDir.c_str());
 	pathToAssets = currentWorkingDir + "\\..";
-
-	xprintf("pathToAssets: %s\n", pathToAssets.c_str());
 
 	try {
 		pxgl = new PhysXXGL();
+		pxgl->Reshape(width, height);
 
 		while (!glfwWindowShouldClose(window)) {
-			int width, height;
-			static int prevWidth = 0, prevHeight = 0;
+			glfwPollEvents();
 
-			glfwGetFramebufferSize(window, &width, &height);
-			if ((width != prevWidth) || (height != prevHeight)){
-				pxgl->Reshape(width, height);
-				prevWidth = width;
-				prevHeight = height;
-			}
+			glfwSwapBuffers(window);
 
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			pxgl->Display();
-
-			glfwSwapBuffers(window);
-			glfwPollEvents();
 		}
 
 		glfwTerminate();
