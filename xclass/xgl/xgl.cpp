@@ -119,18 +119,15 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f), pb(NULL), fb(NULL) {
 	GL_CHECK("glBindBuffer(0) failed");
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
 	glDepthFunc(GL_LESS);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 
 	// for copying to shared memory buffer
 	fb = new XGLSharedFBO();
-
-//	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//	glEnable(GL_BLEND);
-
-//	glCullFace(GL_BACK);
-//	glEnable(GL_CULL_FACE);
 }
 
 XGL::~XGL(){

@@ -128,8 +128,6 @@ int main(void) {
 
 			glfwSwapBuffers(window);
 
-			glClear(GL_COLOR_BUFFER_BIT);
-
 			exgl->Display();
 		}
 
