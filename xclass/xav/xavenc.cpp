@@ -77,7 +77,6 @@ void XAVEncoder::EncodeFrame(unsigned char *img, int width, int height, int dept
 		throw std::runtime_error("avcodec_encode_video2() failed");
 
 	if (gotOutput) {
-		xprintf("Got output: %d\n", pkt.size);
 		fwrite(pkt.data, 1, pkt.size, output);
 		fflush(output);
 	}
