@@ -194,11 +194,7 @@ void XGLSharedFBO::Render(int windowWidth, int windowHeight) {
 	glBlitFramebuffer(0, 0, windowWidth, windowHeight, 0, 0, pHeader->width, pHeader->height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	GL_CHECK("glBlitFramebuffer() failed");
 
-	// setup for glReadPixels -> shared mem
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	GL_CHECK("glBindFramebuffer(0) failed");
-
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, outFbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, outFbo);
 	GL_CHECK("glBindFramebuffer() failed");
 
 	glReadPixels(0, 0, pHeader->width, pHeader->height, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);

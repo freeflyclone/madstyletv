@@ -50,6 +50,10 @@ public:
 	GLuint depth;
 
 	XAVEncoder *encoder;
+
+	XGLTexQuad *flipQuad;
+	XGLShader *imgShader;
+	GLuint attachments[2];
 };
 
 #endif
