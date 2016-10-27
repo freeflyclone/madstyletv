@@ -160,7 +160,7 @@ XGLSharedFBO::XGLSharedFBO() : XSharedMem(DEFAULT_FILE_NAME) {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	GL_CHECK("glBindFrameBuffer(0) failed");
 
-	encoder = new XAVEncoder();
+	//encoder = new XAVEncoder();
 }
 
 void XGLSharedFBO::Render(int windowWidth, int windowHeight) {
@@ -207,5 +207,5 @@ void XGLSharedFBO::Render(int windowWidth, int windowHeight) {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	GL_CHECK("glBindFrameBuffer(0) failed");
 
-	encoder->EncodeFrame(mappedBuffer, pHeader->width, pHeader->height, 3);
+	//encoder->EncodeFrame(mappedBuffer, pHeader->width, pHeader->height, 3);
 }

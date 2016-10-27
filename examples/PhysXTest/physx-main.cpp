@@ -83,7 +83,7 @@ int main(void) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 	glfwWindowHint(GLFW_SAMPLES, 8);
 
-	window = glfwCreateWindow(1920, 1080, "Mad Style TV Example", NULL, NULL);
+	window = glfwCreateWindow(1280, 720, "Mad Style TV Example", NULL, NULL);
 	if (!window) {
 		printf("glfwCreateWindow() failed\n");
 		glfwTerminate();

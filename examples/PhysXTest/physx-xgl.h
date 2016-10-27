@@ -92,8 +92,8 @@ public:
 		PhysxRenderer(PhysXXGL *p) : container(p), prevClock(0.0f) {
 			v.push_back({ { 0, 0, 0 } });
 			box = new XGLCube();
-			ball = new XGLSphere(1.0, 36);
-			capsule = new XGLCapsule(1.0, 2.0, 36);
+			ball = new XGLSphere(1.0, 64);
+			capsule = new XGLCapsule(1.0, 2.0, 64);
 		};
 		PhysXXGL *container;
 		void Draw();
