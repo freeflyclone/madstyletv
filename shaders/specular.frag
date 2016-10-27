@@ -55,7 +55,7 @@ void main() {
 	
 	// cull back facing fragments, to avoid visual turds due to unsorted triangles.
 	// does nothing to save from objects overlapping, which is equally unpleasant.
-	float alpha = 0.3;
+	float alpha = diffuse.a;
 	if(!gl_FrontFacing)
 		alpha = 0.0;
 
