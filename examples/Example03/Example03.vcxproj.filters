@@ -53,5 +53,11 @@
     <None Include="..\..\shaders\specular.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\shaders\imageflip.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\imageflip.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
