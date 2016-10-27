@@ -163,7 +163,7 @@ XGLSharedFBO::XGLSharedFBO() : XSharedMem(DEFAULT_FILE_NAME) {
 	//encoder = new XAVEncoder();
 }
 
-void XGLSharedFBO::Render(int windowWidth, int windowHeight) {
+void XGLSharedFBO::CopyScreenToFBO(){
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	GL_CHECK("glBindFrameBuffer(0) failed");
 
@@ -171,9 +171,11 @@ void XGLSharedFBO::Render(int windowWidth, int windowHeight) {
 	GL_CHECK("glBindFrameBuffer(DRAW) failed");
 
 	// copies the default FBO (the screen) to this FBO
-	glBlitFramebuffer(0, 0, windowWidth, windowHeight, 0, 0, windowWidth, windowHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	glBlitFramebuffer(0, 0, vpWidth, vpHeight, 0, 0, vpWidth, vpHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	GL_CHECK("glBlitFramebuffer() failed");
+}
 
+void XGLSharedFBO::ResolveMultisampledFBO(){
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
 	GL_CHECK("glBindFrameBuffer(0) failed");
 
@@ -181,9 +183,11 @@ void XGLSharedFBO::Render(int windowWidth, int windowHeight) {
 	GL_CHECK("glBindFrameBuffer(DRAW) failed");
 
 	// resolves multi-sampled to single sampled
-	glBlitFramebuffer(0, 0, windowWidth, windowHeight, 0, 0, windowWidth, windowHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	glBlitFramebuffer(0, 0, vpWidth, vpHeight, 0, 0, vpWidth, vpHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	GL_CHECK("glBlitFramebuffer() failed");
+}
 
+void XGLSharedFBO::ScaleToOutputSize(){
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, intFbo);
 	GL_CHECK("glBindFrameBuffer(0) failed");
 
@@ -191,9 +195,11 @@ void XGLSharedFBO::Render(int windowWidth, int windowHeight) {
 	GL_CHECK("glBindFrameBuffer(DRAW) failed");
 
 	// resolves size difference to output
-	glBlitFramebuffer(0, 0, windowWidth, windowHeight, 0, 0, pHeader->width, pHeader->height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	glBlitFramebuffer(0, 0, vpWidth, vpHeight, 0, 0, pHeader->width, pHeader->height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	GL_CHECK("glBlitFramebuffer() failed");
+}
 
+void XGLSharedFBO::CopyOutputToShared(){
 	glBindFramebuffer(GL_FRAMEBUFFER, outFbo);
 	GL_CHECK("glBindFramebuffer() failed");
 
@@ -202,6 +208,16 @@ void XGLSharedFBO::Render(int windowWidth, int windowHeight) {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	GL_CHECK("glBindFrameBuffer(0) failed");
+}
+
+void XGLSharedFBO::Render(int w, int h) {
+	vpWidth = w;
+	vpHeight = h;
+
+	CopyScreenToFBO();
+	ResolveMultisampledFBO();
+	ScaleToOutputSize();
+	CopyOutputToShared();
 
 	//encoder->EncodeFrame(mappedBuffer, pHeader->width, pHeader->height, 3);
 }
