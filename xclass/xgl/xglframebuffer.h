@@ -50,6 +50,9 @@ public:
 	void ScaleToOutputSize();
 	void CopyOutputToShared();
 
+	void MakeFlipQuad();
+	void RenderFlipQuad();
+
 	GLuint fbo, intFbo, outFbo;
 	GLuint texture, intTexture, outTexture;
 	GLuint depth;
