@@ -45,6 +45,11 @@ public:
 
 	virtual void Render(int width, int height);
 
+	void CopyScreenToFBO();
+	void ResolveMultisampledFBO();
+	void ScaleToOutputSize();
+	void CopyOutputToShared();
+
 	GLuint fbo, intFbo, outFbo;
 	GLuint texture, intTexture, outTexture;
 	GLuint depth;
@@ -54,6 +59,7 @@ public:
 	XGLTexQuad *flipQuad;
 	XGLShader *imgShader;
 	GLuint attachments[2];
+	int vpWidth, vpHeight;
 };
 
 #endif
