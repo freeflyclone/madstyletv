@@ -150,14 +150,16 @@ void XGLCube::Draw() {
 }
 
 
-XGLSphere::XGLSphere(float r, int n) : radius(r), nSegments(n), visualizeNormals(false) {
+XGLSphere::XGLSphere(float r, int n) : radius(r), nSegments(n - (n&1)), visualizeNormals(false) {
 	SetName("XGLSphere");
 	int i, j;
 	float twoPi = (2 * (float)PI);
 	XGLVertexAttributes vrtx;
+	int halfSeg = nSegments >> 1;
+	int halfSegPlus = halfSeg + 1;
 
 	for (j = 0; j <nSegments; j++) {
-		for (i = 0; i < nSegments; i++) {
+		for (i = 0; i < halfSegPlus; i++) {
 			float angle = (float)i * twoPi / (float)nSegments;
 			float angle2 = (float)j * twoPi / (float)nSegments;
 
@@ -175,17 +177,22 @@ XGLSphere::XGLSphere(float r, int n) : radius(r), nSegments(n), visualizeNormals
 
 	int nVerts = (int)v.size();
 
-	idx.push_back(0);
+	j = 0;
+	int count = (nSegments - 2);
+	for (j = 0; j < count; j++) {
+		for (int i = 0; i < halfSegPlus; i++) {
+			idx.push_back((j*halfSegPlus) + i);
+			idx.push_back(((j + 1)*halfSegPlus) + i);
+		}
 
-	for (j = 0; j < nSegments>>1; j++) {
-		for (int i = 1; i <= nSegments >> 1; i++) {
-			idx.push_back((j*nSegments) + nSegments + i);
-			idx.push_back((j*nSegments) + i);
+		for (int i = 1; i < halfSegPlus; i++) {
+			idx.push_back(((j + 2)*halfSegPlus) + halfSegPlus - i);
+			idx.push_back(((j + 1)*halfSegPlus) + halfSegPlus - i);
 		}
-		for (int i = (nSegments >> 1) + 1; i <= nSegments; i++) {
-			idx.push_back((j*nSegments) + i);
-			idx.push_back((j*nSegments) + nSegments + i);
-		}
+	}
+	for (int i = 0; i < halfSegPlus; i++) {
+		idx.push_back(((j+1)*halfSegPlus) + i);
+		idx.push_back(i);
 	}
 
 	if (visualizeNormals) {
@@ -210,7 +217,6 @@ XGLSphere::XGLSphere(float r, int n) : radius(r), nSegments(n), visualizeNormals
 
 void XGLSphere::Draw() {
 	glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
-	//glDrawElements(GL_POINTS, (GLsizei)(idx.size()), XGLIndexType, 0);
 	GL_CHECK("glDrawElements() failed");
 }
 

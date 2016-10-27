@@ -52,6 +52,12 @@ void main() {
 	vec3 linearColor = newAmbient + attenuation*(newDiffuse+newSpecular);
 
 	vec3 gamma = vec3(1.0/2.2);
+	
+	// cull back facing fragments, to avoid visual turds due to unsorted triangles.
+	// does nothing to save from objects overlapping, which is equally unpleasant.
+	float alpha = 0.3;
+	if(!gl_FrontFacing)
+		alpha = 0.0;
 
-    finalColor = vec4(pow(linearColor,gamma), 0.5);
+    finalColor = vec4(pow(linearColor,gamma), alpha);
 }
