@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2015 Evan Mortimore
+** Copyright (C) 2016 Evan Mortimore
 ** All rights reserved.
 **
 ** definitions of OpenGL retained mode API objects:
@@ -21,7 +21,7 @@ public:
 	XGLFramebuffer(int w, int h, bool withColor = true, bool withDepth = true, GLuint texId = 0);
 	virtual ~XGLFramebuffer();
 
-	void AddColorAttachment(GLuint texId=0);
+	void AddColorAttachment(GLuint texId=0, GLenum target=GL_TEXTURE_2D);
 	void AddDepthBuffer();
 
 	virtual void Render(XGLFBORender);
@@ -49,6 +49,7 @@ class XGLSharedFBO : public XSharedMem {
 public:
 	XGLSharedFBO();
 
+	// this gets called at then end of the XGL::Display()
 	virtual void Render(int width, int height);
 
 	void CopyScreenToFBO();
@@ -59,16 +60,18 @@ public:
 	void MakeFlipQuad();
 	void RenderFlipQuad();
 
-	GLuint fbo, intFbo, outFbo;
-	GLuint texture, intTexture, outTexture;
-	GLuint depth;
-
-	XAVEncoder *encoder;
+	XGLFramebuffer *msFbo;
+	XGLFramebuffer *ssFbo;
+	XGLFramebuffer *outFbo;
+	GLuint texture;
 
 	XGLTexQuad *flipQuad;
 	XGLShader *imgShader;
-	GLuint attachments[2];
+
+	// dimensions to restore to after rendering the flipQuad
 	int vpWidth, vpHeight;
+
+	XAVEncoder *encoder;
 };
 
 #endif
