@@ -49,7 +49,12 @@ public:
 		AddTexture(width, height, c);
 		AddTexture(width, height, c);
 
-		frameBufferObject = new XGLFramebuffer(width, height, texIds.data(), texIds.size());
+		//frameBufferObject = new XGLFramebuffer(width, height, texIds.data(), texIds.size());
+		frameBufferObject = new XGLFramebuffer(width, height, false);
+		frameBufferObject->AddColorAttachment(texIds[0]);
+		frameBufferObject->AddColorAttachment(texIds[1]);
+		frameBufferObject->AddColorAttachment(texIds[2]);
+		frameBufferObject->AddColorAttachment(texIds[3]);
 
 		std::string shaderName = pathToAssets + "/shaders/imageproc";
 		imgShader = new XGLShader(shaderName);

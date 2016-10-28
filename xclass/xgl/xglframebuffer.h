@@ -18,8 +18,7 @@ typedef std::function<void()> XGLFBORender;
 
 class XGLFramebuffer : public XGLObject {
 public:
-	XGLFramebuffer(int w, int h, bool withDepth = true, GLuint t = 0);
-	XGLFramebuffer(int w, int h, GLuint *texs, int ntex, bool withDepth = true);
+	XGLFramebuffer(int w, int h, bool withColor = true, bool withDepth = true, GLuint texId = 0);
 	virtual ~XGLFramebuffer();
 
 	void AddColorAttachment(GLuint texId=0);
@@ -41,6 +40,9 @@ public:
 	// (for example, from system FBO to shared memory) doesn't
 	// require depth buffer, only color.
 	bool hasDepth;
+
+	// it's also possible that no color attachments are desired. (I think)
+	bool hasColor;
 };
 
 class XGLSharedFBO : public XSharedMem {
