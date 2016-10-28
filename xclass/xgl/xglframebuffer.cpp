@@ -24,6 +24,7 @@ XGLFramebuffer::XGLFramebuffer(int w, int h, GLuint *texs, int ntexs, bool d) :
 		GL_CHECK("glFramebufferTexture() failedn");
 	}
 
+	// this is a no-op if there's only one attachment, but if there's more, this is a requirement!
 	glDrawBuffers(numTextures, attachments);
 	GL_CHECK("glDrawBuffers() failed");
 
@@ -160,6 +161,9 @@ XGLSharedFBO::XGLSharedFBO() : XSharedMem(DEFAULT_FILE_NAME) {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	GL_CHECK("glBindFrameBuffer(0) failed");
 
+	// OpenGL likes 0,0 to be lower left, while the rest of multimedia
+	// prefers upper left. Use an XGLTexQuad to do a flip after
+	// all has been rendered.
 	MakeFlipQuad();
 
 	//encoder = new XAVEncoder();
@@ -170,35 +174,19 @@ void XGLSharedFBO::MakeFlipQuad() {
 	imgShader = new XGLShader(shaderName);
 	imgShader->Compile(shaderName);
 
-	flipQuad = new XGLTexQuad(RENDER_WIDTH, RENDER_HEIGHT, 3);
+	flipQuad = new XGLTexQuad();
+	flipQuad->texIds.push_back(intTexture);
 	flipQuad->numTextures = 1;
 	flipQuad->Load(imgShader, flipQuad->v, flipQuad->idx);
 	flipQuad->uniformLocations = imgShader->materialLocations;
-	flipQuad->model = glm::mat4(1.0);
+	flipQuad->model = glm::translate(glm::mat4(), glm::vec3(0, -0.6667, 0));
 }
 
 void XGLSharedFBO::RenderFlipQuad() {
 	glBindFramebuffer(GL_FRAMEBUFFER, outFbo);
-
-	glDisable(GL_DEPTH_TEST);
 	glViewport(0, 0, RENDER_WIDTH, RENDER_HEIGHT);
-
-	flipQuad->XGLBuffer::Bind();
-
-	// bind the "intTexture" to GL_TEXTURE1
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, intTexture);
-
-	// "outFbo" only has one color attachment
-	glBindFragDataLocation(flipQuad->shader->programId, 0, "color0");
-	glProgramUniform1i(flipQuad->shader->programId, glGetUniformLocation(flipQuad->shader->programId, "texUnit1"), 1);
-
-	glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(flipQuad->idx.size()), XGLIndexType, 0);
+	flipQuad->Render(0.0);
 	glViewport(0, 0, vpWidth, vpHeight);
-	glEnable(GL_DEPTH_TEST);
-	GL_CHECK("there was a problem in the FBO rendering");
-
-	flipQuad->Unbind();
 }
 
 void XGLSharedFBO::CopyScreenToFBO(){
@@ -226,15 +214,7 @@ void XGLSharedFBO::ResolveMultisampledFBO(){
 }
 
 void XGLSharedFBO::ScaleToOutputSize(){
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, intFbo);
-	GL_CHECK("glBindFrameBuffer(0) failed");
-
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, outFbo);
-	GL_CHECK("glBindFrameBuffer(DRAW) failed");
-
-	// resolves size difference to output
-	glBlitFramebuffer(0, 0, vpWidth, vpHeight, 0, 0, pHeader->width, pHeader->height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-	GL_CHECK("glBlitFramebuffer() failed");
+	RenderFlipQuad();
 }
 
 void XGLSharedFBO::CopyOutputToShared(){
