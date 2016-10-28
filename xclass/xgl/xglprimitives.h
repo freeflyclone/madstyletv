@@ -49,8 +49,7 @@ typedef struct XGLShaderMatrixData_t {
 	//glm::mat4 model;
 } XGLShaderMatrixData;
 
-// anything that includes this file can know about XGL.  This smells to me.
-// But it works on VS 2013 at least.  Will have to try on Mac and Linux.
+// forward reference XGL, so others can have pointers to it.
 class XGL;
 
 #endif

@@ -24,6 +24,7 @@ public:
     virtual void AddTexture(std::string name);
 	virtual void AddTexture(std::string, int, int, int, GLubyte *, bool flipColors = false);
 	virtual void AddTexture(int, int, int);
+	virtual void AddTexture(GLuint);
 
 	virtual XGLVertexAttributes *MapVertexBuffer();
 	virtual void UnmapVertexBuffer();

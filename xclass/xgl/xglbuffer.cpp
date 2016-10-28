@@ -257,3 +257,8 @@ void XGLBuffer::AddTexture(int width, int height, int channels) {
 	numTextures++;
 
 }
+
+void XGLBuffer::AddTexture(GLuint texId) {
+	texIds.push_back(texId);
+	numTextures++;
+}
