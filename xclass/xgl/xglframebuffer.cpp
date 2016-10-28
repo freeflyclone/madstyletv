@@ -151,7 +151,6 @@ void XGLSharedFBO::CopyScreenToFBO(){
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, msFbo->fbo);
 	GL_CHECK("glBindFrameBuffer(DRAW) failed");
 
-	// copies the default FBO (the screen) to this FBO
 	glBlitFramebuffer(0, 0, vpWidth, vpHeight, 0, 0, vpWidth, vpHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	GL_CHECK("glBlitFramebuffer() failed");
 }
@@ -163,7 +162,6 @@ void XGLSharedFBO::ResolveMultisampledFBO(){
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, ssFbo->fbo);
 	GL_CHECK("glBindFrameBuffer(DRAW) failed");
 
-	// resolves multi-sampled to single sampled
 	glBlitFramebuffer(0, 0, vpWidth, vpHeight, 0, 0, vpWidth, vpHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	GL_CHECK("glBlitFramebuffer() failed");
 }
@@ -176,6 +174,7 @@ void XGLSharedFBO::CopyOutputToShared(){
 	glBindFramebuffer(GL_FRAMEBUFFER, outFbo->fbo);
 	GL_CHECK("glBindFramebuffer() failed");
 
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	glReadPixels(0, 0, pHeader->width, pHeader->height, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);
 	GL_CHECK("glReadPixels() failed\n");
 
