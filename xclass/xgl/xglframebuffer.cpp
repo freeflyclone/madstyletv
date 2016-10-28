@@ -25,7 +25,7 @@ XGLFramebuffer::~XGLFramebuffer() {
 	// this should release any OpenGL resources that 
 }
 
-void XGLFramebuffer::AddColorAttachment(GLuint t) {
+void XGLFramebuffer::AddColorAttachment(GLuint t, GLenum target) {
 	GLuint texId;
 
 	if (numTextures==8)
@@ -51,7 +51,7 @@ void XGLFramebuffer::AddColorAttachment(GLuint t) {
 	textures[numTextures] = texId;
 	attachments[numTextures] = GL_COLOR_ATTACHMENT0 + numTextures;
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + numTextures, GL_TEXTURE_2D, texId, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + numTextures, target, texId, 0);
 	GL_CHECK("glFramebufferTexture() failedn");
 
 	numTextures++;
@@ -95,105 +95,25 @@ void XGLFramebuffer::Render(XGLFBORender renderFunc){
 
 #define SAMPLES 8
 
-XGLSharedFBO::XGLSharedFBO() : XSharedMem(DEFAULT_FILE_NAME) {
-	xprintf("XGLFramebuffer::XGLFramebuffer()\n");
+XGLSharedFBO::XGLSharedFBO() : XSharedMem(DEFAULT_FILE_NAME), msFbo(NULL), ssFbo(NULL) {
+	// blit only FBO, no depth needed, adding multisampled color attachment
+	msFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, false, false);
 
-	glGenFramebuffers(1, &fbo);
-	GL_CHECK("glGenFramebuffers() failed");
-
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	GL_CHECK("glBindFramebuffer() failed");
-
+	// create a multi-sampled color buffer for "msFbo"
 	glGenTextures(1, &texture);
 	GL_CHECK("glGenTextures() failed");
-
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, texture);
 	GL_CHECK("glBindTexture() failed");
-
 	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, SAMPLES, GL_RGB, RENDER_WIDTH, RENDER_HEIGHT, GL_TRUE);
 	GL_CHECK("glTexImage2D() failed");
-
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 	GL_CHECK("glBindTexture(0) failed");
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, texture, 0);
-	GL_CHECK("glFramebufferTexture() failedn");
+	msFbo->AddColorAttachment(texture, GL_TEXTURE_2D_MULTISAMPLE);
 
-	// The depth buffer
-	glGenRenderbuffers(1, &depth);
-	GL_CHECK("glGenRenderbuffers() failed");
+	ssFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
+	outFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
 
-	glBindRenderbuffer(GL_RENDERBUFFER, depth);
-	GL_CHECK("glBindRenderbuffer() failed");
-
-	glRenderbufferStorageMultisample(GL_RENDERBUFFER, SAMPLES, GL_DEPTH_COMPONENT, RENDER_WIDTH, RENDER_HEIGHT);
-	GL_CHECK("glRenderbufferStorage() failed");
-
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth);
-	GL_CHECK("glFramebufferRenderbuffer() failed");
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	GL_CHECK("glBindFrameBuffer(0) failed");
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		xprintf("glCheckFramebufferStatus() != GL_FRAMEBUFFER_COMPLETE\n");
-
-	// now let's generate the intermediate FBO...
-	glGenFramebuffers(1, &intFbo);
-	GL_CHECK("glGenFramebuffers() failed");
-
-	glBindFramebuffer(GL_FRAMEBUFFER, intFbo);
-	GL_CHECK("glBindFramebuffer() failed");
-
-	glGenTextures(1, &intTexture);
-	GL_CHECK("glGenTextures() failed");
-
-	glBindTexture(GL_TEXTURE_2D, intTexture);
-	GL_CHECK("glBindTexture() failed");
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, RENDER_WIDTH, RENDER_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
-	GL_CHECK("glTexImage2D() failed");
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-	GL_CHECK("glBindTexture(0) failed");
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, intTexture, 0);
-	GL_CHECK("glFramebufferTexture() failedn");
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		xprintf("glCheckFramebufferStatus() != GL_FRAMEBUFFER_COMPLETE\n");
-
-	// now let's generate the output FBO...
-	glGenFramebuffers(1, &outFbo);
-	GL_CHECK("glGenFramebuffers() failed");
-
-	glBindFramebuffer(GL_FRAMEBUFFER, outFbo);
-	GL_CHECK("glBindFramebuffer() failed");
-
-	glGenTextures(1, &outTexture);
-	GL_CHECK("glGenTextures() failed");
-
-	glBindTexture(GL_TEXTURE_2D, outTexture);
-	GL_CHECK("glBindTexture() failed");
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, RENDER_WIDTH, RENDER_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
-	GL_CHECK("glTexImage2D() failed");
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-	GL_CHECK("glBindTexture(0) failed");
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, outTexture, 0);
-	GL_CHECK("glFramebufferTexture() failedn");
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		xprintf("glCheckFramebufferStatus() != GL_FRAMEBUFFER_COMPLETE\n");
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	GL_CHECK("glBindFrameBuffer(0) failed");
-
-	// OpenGL likes 0,0 to be lower left, while the rest of multimedia
-	// prefers upper left. Use an XGLTexQuad to do a flip after
-	// all has been rendered.
 	MakeFlipQuad();
 
 	//encoder = new XAVEncoder();
@@ -205,7 +125,7 @@ void XGLSharedFBO::MakeFlipQuad() {
 	imgShader->Compile(shaderName);
 
 	flipQuad = new XGLTexQuad();
-	flipQuad->texIds.push_back(intTexture);
+	flipQuad->texIds.push_back(ssFbo->textures[0]);
 	flipQuad->numTextures = 1;
 	flipQuad->Load(imgShader, flipQuad->v, flipQuad->idx);
 	flipQuad->uniformLocations = imgShader->materialLocations;
@@ -213,7 +133,7 @@ void XGLSharedFBO::MakeFlipQuad() {
 }
 
 void XGLSharedFBO::RenderFlipQuad() {
-	glBindFramebuffer(GL_FRAMEBUFFER, outFbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, outFbo->fbo);
 	glViewport(0, 0, RENDER_WIDTH, RENDER_HEIGHT);
 	flipQuad->Render(0.0);
 	glViewport(0, 0, vpWidth, vpHeight);
@@ -223,7 +143,7 @@ void XGLSharedFBO::CopyScreenToFBO(){
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	GL_CHECK("glBindFrameBuffer(0) failed");
 
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, msFbo->fbo);
 	GL_CHECK("glBindFrameBuffer(DRAW) failed");
 
 	// copies the default FBO (the screen) to this FBO
@@ -232,10 +152,10 @@ void XGLSharedFBO::CopyScreenToFBO(){
 }
 
 void XGLSharedFBO::ResolveMultisampledFBO(){
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, msFbo->fbo);
 	GL_CHECK("glBindFrameBuffer(0) failed");
 
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, intFbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, ssFbo->fbo);
 	GL_CHECK("glBindFrameBuffer(DRAW) failed");
 
 	// resolves multi-sampled to single sampled
@@ -248,7 +168,7 @@ void XGLSharedFBO::ScaleToOutputSize(){
 }
 
 void XGLSharedFBO::CopyOutputToShared(){
-	glBindFramebuffer(GL_FRAMEBUFFER, outFbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, outFbo->fbo);
 	GL_CHECK("glBindFramebuffer() failed");
 
 	glReadPixels(0, 0, pHeader->width, pHeader->height, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);
