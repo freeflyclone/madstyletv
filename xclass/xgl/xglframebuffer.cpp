@@ -25,7 +25,7 @@ XGLFramebuffer::~XGLFramebuffer() {
 	// this should release any OpenGL resources that 
 }
 
-void XGLFramebuffer::AddColorAttachment(GLuint t, GLenum target) {
+void XGLFramebuffer::AddColorAttachment(GLuint t, GLenum target, GLint format) {
 	GLuint texId;
 
 	if (numTextures==8)
@@ -42,7 +42,7 @@ void XGLFramebuffer::AddColorAttachment(GLuint t, GLenum target) {
 		glBindTexture(GL_TEXTURE_2D, texId);
 		GL_CHECK("glBindTexture() failed");
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, RENDER_WIDTH, RENDER_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+		glTexImage2D(GL_TEXTURE_2D, 0, format, RENDER_WIDTH, RENDER_HEIGHT, 0, format, GL_UNSIGNED_BYTE, 0);
 		GL_CHECK("glTexImage2D() failed");
 	}
 	else
@@ -115,9 +115,9 @@ XGLSharedFBO::XGLSharedFBO(XGL *context) : XSharedMem(DEFAULT_FILE_NAME), pXGL(c
 	outFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
 
 	// add additional color atachments for RGB -> YUV planar for XAVEncoder
-	outFbo->AddColorAttachment();
-	outFbo->AddColorAttachment();
-	outFbo->AddColorAttachment();
+	outFbo->AddColorAttachment(0, GL_TEXTURE_2D, GL_RED);
+	outFbo->AddColorAttachment(0, GL_TEXTURE_2D, GL_RED);
+	outFbo->AddColorAttachment(0, GL_TEXTURE_2D, GL_RED);
 
 	MakeFlipQuad();
 
