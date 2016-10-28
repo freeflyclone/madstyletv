@@ -127,7 +127,7 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f), pb(NULL), fb(NULL) {
 	//glCullFace(GL_BACK);
 
 	// for copying to shared memory buffer
-	fb = new XGLSharedFBO();
+	fb = new XGLSharedFBO(this);
 }
 
 XGL::~XGL(){

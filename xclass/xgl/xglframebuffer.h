@@ -8,6 +8,7 @@
 #ifndef XGLFRAMEBUFFER_H
 #define XGLFRAMEBUFFER_H
 #include "xglobject.h"
+#include "xglprimitives.h"
 #include "xshmem.h"
 #include "xavenc.h"
 
@@ -47,7 +48,7 @@ public:
 
 class XGLSharedFBO : public XSharedMem {
 public:
-	XGLSharedFBO();
+	XGLSharedFBO(XGL *context);
 
 	// this gets called at then end of the XGL::Display()
 	virtual void Render(int width, int height);
@@ -60,6 +61,7 @@ public:
 	void MakeFlipQuad();
 	void RenderFlipQuad();
 
+	XGL *pXGL;
 	XGLFramebuffer *msFbo;
 	XGLFramebuffer *ssFbo;
 	XGLFramebuffer *outFbo;

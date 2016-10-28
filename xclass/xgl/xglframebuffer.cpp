@@ -95,7 +95,7 @@ void XGLFramebuffer::Render(XGLFBORender renderFunc){
 
 #define SAMPLES 8
 
-XGLSharedFBO::XGLSharedFBO() : XSharedMem(DEFAULT_FILE_NAME), msFbo(NULL), ssFbo(NULL) {
+XGLSharedFBO::XGLSharedFBO(XGL *context) : XSharedMem(DEFAULT_FILE_NAME), pXGL(context), msFbo(NULL), ssFbo(NULL) {
 	// blit only FBO, no depth needed, adding multisampled color attachment
 	msFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, false, false);
 
@@ -125,15 +125,9 @@ XGLSharedFBO::XGLSharedFBO() : XSharedMem(DEFAULT_FILE_NAME), msFbo(NULL), ssFbo
 }
 
 void XGLSharedFBO::MakeFlipQuad() {
-	std::string shaderName = pathToAssets + "/shaders/imageflip";
-	imgShader = new XGLShader(shaderName);
-	imgShader->Compile(shaderName);
-
-	flipQuad = new XGLTexQuad();
+	pXGL->CreateShape("shaders/imageflip", [&]() { flipQuad = new XGLTexQuad(); return flipQuad; });
 	flipQuad->texIds.push_back(ssFbo->textures[0]);
 	flipQuad->numTextures = 1;
-	flipQuad->Load(imgShader, flipQuad->v, flipQuad->idx);
-	flipQuad->uniformLocations = imgShader->materialLocations;
 	flipQuad->model = glm::translate(glm::mat4(), glm::vec3(0, -0.6667, 0));
 }
 
