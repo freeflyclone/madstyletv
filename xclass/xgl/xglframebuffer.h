@@ -22,7 +22,7 @@ public:
 	XGLFramebuffer(int w, int h, bool withColor = true, bool withDepth = true, GLuint texId = 0);
 	virtual ~XGLFramebuffer();
 
-	void AddColorAttachment(GLuint texId=0, GLenum target=GL_TEXTURE_2D);
+	void AddColorAttachment(GLuint texId=0, GLenum target=GL_TEXTURE_2D, GLint format=GL_RGB);
 	void AddDepthBuffer();
 
 	virtual void Render(XGLFBORender);

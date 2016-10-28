@@ -1,8 +1,5 @@
 #version 330
 
-uniform int mode;
-uniform int frameToggle;
-
 precision highp float;
 
 in  vec4 ex_Color;
@@ -12,9 +9,9 @@ in  vec2 UV;
 // they won't be set properly.  glBindFragDataLocation()
 // fails if one of these isn't used in the shader code.
 layout(location = 0) out vec4 color0;
-layout(location = 1) out vec4 color1;
-layout(location = 2) out vec4 color2;
-layout(location = 3) out vec4 color3;
+layout(location = 1) out float color1;
+layout(location = 2) out float color2;
+layout(location = 3) out float color3;
 
 // these MUST be setup with glUniform1i() prior to main rendering pass
 // in order to have access to the FBO pass results
@@ -29,7 +26,7 @@ void main(void)
 	float u = (tc0.b - y) * 0.565;
 	float v = (tc0.r - y) * 0.713;
 
-	color1 = vec4(y,y,y,1.0);
-	color2 = vec4(u,u,u,1.0);
-	color3 = vec4(v,v,v,1.0);
+	color1 = y;
+	color2 = u;
+	color3 = v;
 }
