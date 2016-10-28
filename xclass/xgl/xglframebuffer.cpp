@@ -126,8 +126,7 @@ XGLSharedFBO::XGLSharedFBO(XGL *context) : XSharedMem(DEFAULT_FILE_NAME), pXGL(c
 
 void XGLSharedFBO::MakeFlipQuad() {
 	pXGL->CreateShape("shaders/imageflip", [&]() { flipQuad = new XGLTexQuad(); return flipQuad; });
-	flipQuad->texIds.push_back(ssFbo->textures[0]);
-	flipQuad->numTextures = 1;
+	flipQuad->AddTexture(ssFbo->textures[0]);
 	flipQuad->model = glm::translate(glm::mat4(), glm::vec3(0, -0.6667, 0));
 }
 
