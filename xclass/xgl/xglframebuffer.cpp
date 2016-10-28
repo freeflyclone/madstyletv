@@ -114,6 +114,11 @@ XGLSharedFBO::XGLSharedFBO() : XSharedMem(DEFAULT_FILE_NAME), msFbo(NULL), ssFbo
 	ssFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
 	outFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
 
+	// add additional color atachments for RGB -> YUV planar for XAVEncoder
+	outFbo->AddColorAttachment();
+	outFbo->AddColorAttachment();
+	outFbo->AddColorAttachment();
+
 	MakeFlipQuad();
 
 	//encoder = new XAVEncoder();
