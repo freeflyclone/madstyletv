@@ -1,5 +1,26 @@
 #include "xgl.h"
 
+XGLFramebuffer::XGLFramebuffer(int w, int h, bool d, GLuint t) : width(w), height(h), hasDepth(d), numTextures(0) {
+	glGenFramebuffers(1, &fbo);
+	GL_CHECK("glGenFramebuffers() failed");
+
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	GL_CHECK("glBindFramebuffer() failed");
+
+	// default for all FBO is one color attachment
+	AddColorAttachment();
+
+	if (hasDepth)
+		AddDepthBuffer();
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		xprintf("glCheckFramebufferStatus() != GL_FRAMEBUFFER_COMPLETE\n");
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	GL_CHECK("glBindFrameBuffer(0) failed");
+}
+
+
 XGLFramebuffer::XGLFramebuffer(int w, int h, GLuint *texs, int ntexs, bool d) :
 	XGLObject("XGLFramebuffer"),
 	width(w),
@@ -49,8 +70,65 @@ XGLFramebuffer::XGLFramebuffer(int w, int h, GLuint *texs, int ntexs, bool d) :
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	GL_CHECK("glBindFrameBuffer(0) failed");
 }
+
 XGLFramebuffer::~XGLFramebuffer() {
 	xprintf("XGLFramebuffer::~XGLFramebuffer()\n");
+	// this should release any OpenGL resources that 
+}
+
+void XGLFramebuffer::AddColorAttachment(GLuint t) {
+	GLuint texId;
+
+	if (numTextures==8)
+		throwXGLException("FBO has enough color attachments already");
+
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	GL_CHECK("glBindFramebuffer() failed");
+
+	// caller didn't specify an existing texture buffer, so create one.
+	if (t == 0) {
+		glGenTextures(1, &texId);
+		GL_CHECK("glGenTextures() failed");
+
+		glBindTexture(GL_TEXTURE_2D, texId);
+		GL_CHECK("glBindTexture() failed");
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, RENDER_WIDTH, RENDER_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+		GL_CHECK("glTexImage2D() failed");
+	}
+	else
+		texId = t;
+
+	textures[numTextures] = texId;
+	attachments[numTextures] = GL_COLOR_ATTACHMENT0 + numTextures;
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + numTextures, GL_TEXTURE_2D, texId, 0);
+	GL_CHECK("glFramebufferTexture() failedn");
+
+	numTextures++;
+
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	GL_CHECK("glBindFramebuffer() failed");
+}
+
+void XGLFramebuffer::AddDepthBuffer() {
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	GL_CHECK("glBindFramebuffer() failed");
+
+	glGenRenderbuffers(1, &depth);
+	GL_CHECK("glGenRenderbuffers() failed");
+
+	glBindRenderbuffer(GL_RENDERBUFFER, depth);
+	GL_CHECK("glBindRenderbuffer() failed");
+
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+	GL_CHECK("glRenderbufferStorage() failed");
+
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth);
+	GL_CHECK("glFramebufferRenderbuffer() failed");
+
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	GL_CHECK("glBindFramebuffer() failed");
 }
 
 void XGLFramebuffer::Render(XGLFBORender renderFunc){
