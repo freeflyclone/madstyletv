@@ -37,14 +37,18 @@
 class ImageProcessing : public XGLTexQuad {
 public:
 	ImageProcessing(int w, int h, int c) : 
-		XGLTexQuad(w, h, c),
+		XGLTexQuad(),
 		width(w),
 		height(h),
 		frameBufferObject(NULL)
 	{
+		// we start off with no textures in our base class constructor
+		// so add the 4 we'll need now.
 		AddTexture(width, height, c);
 		AddTexture(width, height, c);
 		AddTexture(width, height, c);
+		AddTexture(width, height, c);
+
 		frameBufferObject = new XGLFramebuffer(width, height, texIds.data(), texIds.size());
 
 		std::string shaderName = pathToAssets + "/shaders/imageproc";
