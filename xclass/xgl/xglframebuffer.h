@@ -18,8 +18,12 @@ typedef std::function<void()> XGLFBORender;
 
 class XGLFramebuffer : public XGLObject {
 public:
+	XGLFramebuffer(int w, int h, bool withDepth = true, GLuint t = 0);
 	XGLFramebuffer(int w, int h, GLuint *texs, int ntex, bool withDepth = true);
 	virtual ~XGLFramebuffer();
+
+	void AddColorAttachment(GLuint texId=0);
+	void AddDepthBuffer();
 
 	virtual void Render(XGLFBORender);
 
