@@ -138,7 +138,7 @@ XGLSharedFBO::XGLSharedFBO(XGL *context) : XSharedMem(DEFAULT_FILE_NAME), pXGL(c
 
 	MakeFlipQuad();
 
-	//encoder = new XAVEncoder();
+	encoder = new XAVEncoder(yBuffer, uBuffer, vBuffer);
 }
 
 void XGLSharedFBO::MakeFlipQuad() {
@@ -237,5 +237,5 @@ void XGLSharedFBO::Render(int w, int h) {
 		ScaleToOutputSize();
 		CopyOutputToShared();
 	}
-	//encoder->EncodeFrame(mappedBuffer, pHeader->width, pHeader->height, 3);
+	encoder->EncodeFrame(mappedBuffer, pHeader->width, pHeader->height, 3);
 }

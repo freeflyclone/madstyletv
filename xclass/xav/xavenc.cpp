@@ -1,7 +1,7 @@
 #include "xutils.h"
 #include "xavenc.h"
 
-XAVEncoder::XAVEncoder() : frameNumber(0), output(NULL) {
+XAVEncoder::XAVEncoder(unsigned char *y, unsigned char *u, unsigned char *v) : yBuffer(y), uBuffer(u), vBuffer(v), frameNumber(0), output(NULL) {
 	xprintf("XAVEncoder::XAVEncoder()\n");
 
 	avcodec_register_all();
@@ -18,7 +18,7 @@ XAVEncoder::XAVEncoder() : frameNumber(0), output(NULL) {
 	ctx->time_base = { 1, 60 };
 	ctx->gop_size = 10;
 	ctx->max_b_frames = 1;
-	ctx->pix_fmt = AV_PIX_FMT_YUV420P;
+	ctx->pix_fmt = AV_PIX_FMT_YUV444P;
 
 	av_opt_set(ctx->priv_data, "preset", "ultrafast", 0);
 
@@ -35,7 +35,7 @@ XAVEncoder::XAVEncoder() : frameNumber(0), output(NULL) {
 	if (av_image_alloc(frame->data, frame->linesize, ctx->width, ctx->height, ctx->pix_fmt, 32) < 0)
 		throw std::runtime_error("av_image_alloc() failed");
 
-	if ((convertCtx = sws_getContext(ctx->width, ctx->height, AV_PIX_FMT_BGR24, ctx->width, ctx->height, AV_PIX_FMT_YUV420P, SWS_POINT, NULL, NULL, NULL)) == NULL)
+	if ((convertCtx = sws_getContext(ctx->width, ctx->height, AV_PIX_FMT_BGR24, ctx->width, ctx->height, AV_PIX_FMT_YUV444P, SWS_POINT, NULL, NULL, NULL)) == NULL)
 		throw std::runtime_error("sws_getContext() failed");
 
 	if ((output = fopen("test.m4v", "wb")) == NULL)
@@ -62,7 +62,7 @@ void XAVEncoder::EncodeFrame(unsigned char *img, int width, int height, int dept
 	unsigned char *src_planes[3] = { img, NULL, NULL };
 	unsigned char *dest_planes[3] = {frame->data[0], frame->data[1], frame->data[2]};
 	int src_stride[3] = { width * 3, 0, 0 };
-	int dest_stride[3] = { width, width / 2, width / 2 };
+	int dest_stride[3] = { width, width, width };
 	int ret,gotOutput;
 
 	sws_scale(convertCtx, src_planes, src_stride, 0, height, dest_planes, dest_stride);
