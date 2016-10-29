@@ -22,7 +22,7 @@ extern "C" {
 
 class XAVEncoder {
 public:
-	XAVEncoder();
+	XAVEncoder(unsigned char *y, unsigned char *u, unsigned char *v);
 	~XAVEncoder();
 
 	void SetParams(void *params);
@@ -34,6 +34,8 @@ public:
 	AVCodecContext *ctx;
 	AVFrame *frame;
 	AVPacket pkt;
+
+	unsigned char *yBuffer, *uBuffer, *vBuffer;
 
 	SwsContext *convertCtx;
 	int frameNumber;
