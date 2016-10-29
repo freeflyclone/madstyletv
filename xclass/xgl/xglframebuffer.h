@@ -22,7 +22,7 @@ public:
 	XGLFramebuffer(int w, int h, bool withColor = true, bool withDepth = true, GLuint texId = 0);
 	virtual ~XGLFramebuffer();
 
-	void AddColorAttachment(GLuint texId=0, GLenum target=GL_TEXTURE_2D, GLint format=GL_RGB);
+	void AddColorAttachment(GLuint texId=0, GLenum target=GL_TEXTURE_2D, GLint format=GL_RGB, GLenum internalFormat = GL_RGB);
 	void AddDepthBuffer();
 
 	virtual void Render(XGLFBORender);
@@ -74,6 +74,9 @@ public:
 	int vpWidth, vpHeight;
 
 	XAVEncoder *encoder;
+	unsigned char yBuffer[RENDER_WIDTH*RENDER_HEIGHT];
+	unsigned char uBuffer[RENDER_WIDTH*RENDER_HEIGHT];
+	unsigned char vBuffer[RENDER_WIDTH*RENDER_HEIGHT];
 };
 
 #endif
