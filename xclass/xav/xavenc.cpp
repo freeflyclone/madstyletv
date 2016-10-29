@@ -18,6 +18,7 @@ XAVEncoder::XAVEncoder(unsigned char *y, unsigned char *u, unsigned char *v) : y
 	ctx->time_base = { 1, 60 };
 	ctx->gop_size = 10;
 	ctx->max_b_frames = 1;
+	// do 4:4:4 for now, until I figure out how to sub-sample U and V
 	ctx->pix_fmt = AV_PIX_FMT_YUV444P;
 
 	av_opt_set(ctx->priv_data, "preset", "ultrafast", 0);
@@ -34,9 +35,6 @@ XAVEncoder::XAVEncoder(unsigned char *y, unsigned char *u, unsigned char *v) : y
 
 	if (av_image_alloc(frame->data, frame->linesize, ctx->width, ctx->height, ctx->pix_fmt, 32) < 0)
 		throw std::runtime_error("av_image_alloc() failed");
-
-	if ((convertCtx = sws_getContext(ctx->width, ctx->height, AV_PIX_FMT_BGR24, ctx->width, ctx->height, AV_PIX_FMT_YUV444P, SWS_POINT, NULL, NULL, NULL)) == NULL)
-		throw std::runtime_error("sws_getContext() failed");
 
 	if ((output = fopen("test.m4v", "wb")) == NULL)
 		throw std::runtime_error("failed to create output file");
@@ -59,15 +57,13 @@ void XAVEncoder::SetParams(void *p){
 }
 
 void XAVEncoder::EncodeFrame(unsigned char *img, int width, int height, int depth){
-	unsigned char *src_planes[3] = { img, NULL, NULL };
-	unsigned char *dest_planes[3] = {frame->data[0], frame->data[1], frame->data[2]};
-	int src_stride[3] = { width * 3, 0, 0 };
-	int dest_stride[3] = { width, width, width };
 	int ret,gotOutput;
 
-	sws_scale(convertCtx, src_planes, src_stride, 0, height, dest_planes, dest_stride);
-
 	frame->pts = frameNumber++;
+
+	frame->data[0] = yBuffer;
+	frame->data[1] = uBuffer;
+	frame->data[2] = vBuffer;
 
 	av_init_packet(&pkt);
 	pkt.data = NULL;

@@ -23,8 +23,8 @@ void main(void)
 	color0 = tc0;
 
 	float y = tc0.r * 0.299 + tc0.g * 0.587 + tc0.b * 0.114;
-	float u = (tc0.b - y) * 0.565;
-	float v = (tc0.r - y) * 0.713;
+	float u = (tc0.b - y) * 0.565 + 0.5;
+	float v = (tc0.r - y) * 0.713 + 0.5;
 
 	color1 = vec4(y,y,y,1.0);
 	color2 = vec4(u,u,u,1.0);

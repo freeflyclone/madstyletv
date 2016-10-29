@@ -12,12 +12,7 @@
 extern "C" {
 #include <libavutil/opt.h>
 #include <libavcodec/avcodec.h>
-#include <libavutil/channel_layout.h>
-#include <libavutil/common.h>
 #include <libavutil/imgutils.h>
-#include <libavutil/mathematics.h>
-#include <libavutil/samplefmt.h>
-#include <libswscale/swscale.h>
 }
 
 class XAVEncoder {
@@ -37,7 +32,6 @@ public:
 
 	unsigned char *yBuffer, *uBuffer, *vBuffer;
 
-	SwsContext *convertCtx;
 	int frameNumber;
 	FILE *output;
 };
