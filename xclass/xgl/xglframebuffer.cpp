@@ -25,7 +25,7 @@ XGLFramebuffer::~XGLFramebuffer() {
 	// this should release any OpenGL resources that 
 }
 
-void XGLFramebuffer::AddColorAttachment(GLuint t, GLenum target, GLint format) {
+void XGLFramebuffer::AddColorAttachment(GLuint t, GLenum target, GLint format, GLenum internalFormat) {
 	GLuint texId;
 
 	if (numTextures==8)
@@ -42,7 +42,22 @@ void XGLFramebuffer::AddColorAttachment(GLuint t, GLenum target, GLint format) {
 		glBindTexture(GL_TEXTURE_2D, texId);
 		GL_CHECK("glBindTexture() failed");
 
-		glTexImage2D(GL_TEXTURE_2D, 0, format, RENDER_WIDTH, RENDER_HEIGHT, 0, format, GL_UNSIGNED_BYTE, 0);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		GL_CHECK("glPixelStorei() failed");
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		GL_CHECK("glTexParameteri() failed");
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		GL_CHECK("glTexParameteri() failed");
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		GL_CHECK("glTexParameteri() failed");
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		GL_CHECK("glTexParameteri() failed");
+
+		glPixelStorei(GL_PACK_ALIGNMENT, 1);
+		GL_CHECK("glPixelStorei() failed");
+
+		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, RENDER_WIDTH, RENDER_HEIGHT, 0, format, GL_UNSIGNED_BYTE, 0);
 		GL_CHECK("glTexImage2D() failed");
 	}
 	else
@@ -61,6 +76,8 @@ void XGLFramebuffer::AddColorAttachment(GLuint t, GLenum target, GLint format) {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	GL_CHECK("glBindFramebuffer() failed");
+
+	// leave the texId bound, in case subsequent changes are desired.  (for example various glPixelStore() parameters)
 }
 
 void XGLFramebuffer::AddDepthBuffer() {
@@ -115,9 +132,9 @@ XGLSharedFBO::XGLSharedFBO(XGL *context) : XSharedMem(DEFAULT_FILE_NAME), pXGL(c
 	outFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
 
 	// add additional color atachments for RGB -> YUV planar for XAVEncoder
-	outFbo->AddColorAttachment(0, GL_TEXTURE_2D, GL_RED);
-	outFbo->AddColorAttachment(0, GL_TEXTURE_2D, GL_RED);
-	outFbo->AddColorAttachment(0, GL_TEXTURE_2D, GL_RED);
+	outFbo->AddColorAttachment(0, GL_TEXTURE_2D, GL_RED, GL_R8);
+	outFbo->AddColorAttachment(0, GL_TEXTURE_2D, GL_RED, GL_R8);
+	outFbo->AddColorAttachment(0, GL_TEXTURE_2D, GL_RED, GL_R8);
 
 	MakeFlipQuad();
 
@@ -171,6 +188,18 @@ void XGLSharedFBO::CopyOutputToShared(){
 	// Will measure again when async PBO's are in place.
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	glReadPixels(0, 0, pHeader->width, pHeader->height, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);
+	GL_CHECK("glReadPixels() failed\n");
+
+	glReadBuffer(GL_COLOR_ATTACHMENT1);
+	glReadPixels(0, 0, pHeader->width, pHeader->height, GL_RED, GL_UNSIGNED_BYTE, yBuffer);
+	GL_CHECK("glReadPixels() failed\n");
+
+	glReadBuffer(GL_COLOR_ATTACHMENT2);
+	glReadPixels(0, 0, pHeader->width, pHeader->height, GL_RED, GL_UNSIGNED_BYTE, uBuffer);
+	GL_CHECK("glReadPixels() failed\n");
+
+	glReadBuffer(GL_COLOR_ATTACHMENT3);
+	glReadPixels(0, 0, pHeader->width, pHeader->height, GL_RED, GL_UNSIGNED_BYTE, vBuffer);
 	GL_CHECK("glReadPixels() failed\n");
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
