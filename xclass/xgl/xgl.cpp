@@ -127,6 +127,9 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f), pb(NULL), fb(NULL) {
 	//glCullFace(GL_BACK);
 
 	// for copying to shared memory buffer
+	// enabling this takes up GPU time,
+	// mostly because of glReadPixels().
+	// with the encoder in the loop, it's even worse
 	fb = new XGLSharedFBO(this);
 }
 

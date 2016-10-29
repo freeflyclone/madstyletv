@@ -167,6 +167,8 @@ void XGLSharedFBO::CopyOutputToShared(){
 	glBindFramebuffer(GL_FRAMEBUFFER, outFbo->fbo);
 	GL_CHECK("glBindFramebuffer() failed");
 
+	// enabling GPU profiling below reveals that this takes several milliseconds.
+	// Will measure again when async PBO's are in place.
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	glReadPixels(0, 0, pHeader->width, pHeader->height, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);
 	GL_CHECK("glReadPixels() failed\n");
@@ -179,10 +181,32 @@ void XGLSharedFBO::Render(int w, int h) {
 	vpWidth = w;
 	vpHeight = h;
 
-	CopyScreenToFBO();
-	ResolveMultisampledFBO();
-	ScaleToOutputSize();
-	CopyOutputToShared();
+	// set to true for crude GPU profiling.
+	if (false){
+		GLint64 begin,copy,resolve,scale,read;
 
+		glGetInteger64v(GL_TIMESTAMP, &begin);
+		CopyScreenToFBO();
+		glGetInteger64v(GL_TIMESTAMP, &copy);
+		ResolveMultisampledFBO();
+		glGetInteger64v(GL_TIMESTAMP, &resolve);
+		ScaleToOutputSize();
+		glGetInteger64v(GL_TIMESTAMP, &scale);
+		CopyOutputToShared();
+		glGetInteger64v(GL_TIMESTAMP, &read);
+
+		printf("%0.3f, %0.3f, %0.3f, %0.3f\n",
+		(float)(copy - begin) / 1000000.0,
+		(float)(resolve - copy) / 1000000.0,
+		(float)(scale - resolve) / 1000000.0,
+		(float)(read - scale) / 1000000.0
+		);
+	}
+	else {
+		CopyScreenToFBO();
+		ResolveMultisampledFBO();
+		ScaleToOutputSize();
+		CopyOutputToShared();
+	}
 	//encoder->EncodeFrame(mappedBuffer, pHeader->width, pHeader->height, 3);
 }
