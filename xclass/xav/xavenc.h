@@ -7,6 +7,7 @@
 ****************************************************************************/
 #ifndef XAVENC_H
 #define XAVENC_H
+#include "socket.h"
 #include "xshmem.h"
 
 extern "C" {
@@ -34,6 +35,7 @@ public:
 
 	int frameNumber;
 	FILE *output;
+	SOCKET udpSocket;
 };
 
 #endif

@@ -177,6 +177,9 @@
     <ClInclude Include="xav\xavenc.h">
       <Filter>xav\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="socket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xutils.c">
@@ -268,6 +271,9 @@
     </ClCompile>
     <ClCompile Include="xav\xavenc.cpp">
       <Filter>xav\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="socket.c">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
