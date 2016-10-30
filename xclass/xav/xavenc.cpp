@@ -9,6 +9,8 @@ std::map<std::wstring, AVPixelFormat> pixelFormats = {
 
 XAVEncoder::XAVEncoder(XConfig *cfg, unsigned char *y, unsigned char *u, unsigned char *v) : config(cfg), yBuffer(y), uBuffer(u), vBuffer(v), frameNumber(0), output(NULL), udpSocket(0) {
 	avcodec_register_all();
+	char udpAddress[17] = { "224.1.1.1" };
+	int udpPort = 5555;
 
 	if ((codec = avcodec_find_encoder(AV_CODEC_ID_H264)) == NULL)
 		throw std::runtime_error("couldn't find H264 encoder");
@@ -28,6 +30,10 @@ XAVEncoder::XAVEncoder(XConfig *cfg, unsigned char *y, unsigned char *u, unsigne
 		};
 		ctx->pix_fmt = pixelFormats[config->Find(L"Encoder.pixelFormat")->AsString()];
 		av_opt_set(ctx->priv_data, "preset", config->WideToBytes(config->Find(L"Encoder.preset")->AsString()).c_str(), 0);
+
+		std::string tmp = config->WideToBytes(config->Find(L"Encoder.udpaddress")->AsString());
+		strncpy(udpAddress, tmp.c_str(), sizeof(udpAddress));
+		udpPort = (int)config->Find(L"Encoder.udpport")->AsNumber();
 	}
 	else {
 		xprintf("Oops, no \"Encoder\" found in config file, using defaults\n");
@@ -59,11 +65,11 @@ XAVEncoder::XAVEncoder(XConfig *cfg, unsigned char *y, unsigned char *u, unsigne
 
 	SocketsSetup();
 
-	if ((udpSocket = SocketOpen(NULL, 5555, SOCK_DGRAM, IPPROTO_UDP, 0)) <= 0)
+	if ((udpSocket = SocketOpen(NULL, udpPort, SOCK_DGRAM, IPPROTO_UDP, 0)) <= 0)
 		xprintf("Failed to open udpSocket\n");
 
 	// UDP requires sendto(2), which requires a destination address
-	SockAddrIN(&udpDest, "224.1.1.1", 5555);
+	SockAddrIN(&udpDest, (char *)udpAddress, udpPort);
 }
 
 XAVEncoder::~XAVEncoder() {
@@ -102,6 +108,6 @@ void XAVEncoder::EncodeFrame(unsigned char *img, int width, int height, int dept
 		fwrite(pkt.data, 1, pkt.size, output);
 		fflush(output);
 
-		//sendto(udpSocket, (const char *)pkt.data, pkt.size, 0, (const struct sockaddr *)&udpDest, sizeof(udpDest));
+		sendto(udpSocket, (const char *)pkt.data, pkt.size, 0, (const struct sockaddr *)&udpDest, sizeof(udpDest));
 	}
 }
