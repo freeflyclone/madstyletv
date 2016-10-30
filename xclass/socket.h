@@ -2,6 +2,8 @@
 #ifndef SOCKET_H
 #define SOCKET_H
 
+#include "xutils.h"
+
 #define IN_CLASSD(i)	(((long)(i) & 0xf0000000) == 0xe0000000)
 #define IN_MULTICAST(i)	IN_CLASSD(i)
 
@@ -12,8 +14,9 @@ extern "C" {
 #endif
 
 #ifdef _WIN32
-#include <WinSock2.h>
-#include <ws2ipdef.h>
+#include <winsock.h>
+#else
+#error fix this: need this systems includes for socket stuff
 #endif
 
 int SocketsSetup();

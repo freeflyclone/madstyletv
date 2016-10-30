@@ -1,6 +1,8 @@
 // physx-main.cpp : Defines the entry point for the GLFW-based PhysX application.
 // The console window is immediately closed.
+#ifdef _WIN32
 #include <Windows.h>
+#endif
 #include <stdio.h>
 
 #include <glew.h>
