@@ -23,8 +23,8 @@ XAVEncoder::XAVEncoder(XConfig *cfg, unsigned char *y, unsigned char *u, unsigne
 		ctx->gop_size = (int)config->Find(L"Encoder.gopsize")->AsNumber();
 		ctx->max_b_frames = (int)config->Find(L"Encoder.max_b_frames")->AsNumber();
 		ctx->time_base = {
-			config->Find(L"Encoder.timebase")->AsArray()[0]->AsNumber(),
-			config->Find(L"Encoder.timebase")->AsArray()[1]->AsNumber()
+			(int)config->Find(L"Encoder.timebase")->AsArray()[0]->AsNumber(),
+			(int)config->Find(L"Encoder.timebase")->AsArray()[1]->AsNumber()
 		};
 		ctx->pix_fmt = pixelFormats[config->Find(L"Encoder.pixelFormat")->AsString()];
 		av_opt_set(ctx->priv_data, "preset", config->WideToBytes(config->Find(L"Encoder.preset")->AsString()).c_str(), 0);

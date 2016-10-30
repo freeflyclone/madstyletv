@@ -1,6 +1,8 @@
 // main.cpp : Defines the entry point for the GLFW application.
 // The console window is immediately closed.
-//#include <Windows.h>
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 #include <stdio.h>
 
 #include <glew.h>
