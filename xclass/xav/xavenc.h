@@ -9,6 +9,7 @@
 #define XAVENC_H
 #include "socket.h"
 #include "xshmem.h"
+#include "xconfig.h"
 
 extern "C" {
 #include <libavutil/opt.h>
@@ -18,13 +19,15 @@ extern "C" {
 
 class XAVEncoder {
 public:
-	XAVEncoder(unsigned char *y, unsigned char *u, unsigned char *v);
+	XAVEncoder(XConfig *cfg, unsigned char *y, unsigned char *u, unsigned char *v);
 	~XAVEncoder();
 
 	void SetParams(void *params);
 
 	// encode an RGB frame, doing RGB -> YUV conversion
 	void EncodeFrame(unsigned char *img, int width, int height, int depth);
+
+	XConfig *config;
 
 	AVCodec *codec;
 	AVCodecContext *ctx;

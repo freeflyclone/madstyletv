@@ -1,9 +1,13 @@
 #include "xavenc.h"
 #include "xutils.h"
 
-XAVEncoder::XAVEncoder(unsigned char *y, unsigned char *u, unsigned char *v) : yBuffer(y), uBuffer(u), vBuffer(v), frameNumber(0), output(NULL), udpSocket(0) {
-	xprintf("XAVEncoder::XAVEncoder()\n");
+std::map<std::wstring, AVPixelFormat> pixelFormats = { 
+	{ L"AV_PIX_FMT_YUV420P", AV_PIX_FMT_YUV420P },
+	{ L"AV_PIX_FMT_YUV422P", AV_PIX_FMT_YUV422P },
+	{ L"AV_PIX_FMT_YUV444P", AV_PIX_FMT_YUV444P }
+};
 
+XAVEncoder::XAVEncoder(XConfig *cfg, unsigned char *y, unsigned char *u, unsigned char *v) : config(cfg), yBuffer(y), uBuffer(u), vBuffer(v), frameNumber(0), output(NULL), udpSocket(0) {
 	avcodec_register_all();
 
 	if ((codec = avcodec_find_encoder(AV_CODEC_ID_H264)) == NULL)
@@ -12,16 +16,30 @@ XAVEncoder::XAVEncoder(unsigned char *y, unsigned char *u, unsigned char *v) : y
 	if ((ctx = avcodec_alloc_context3(codec)) == NULL)
 		throw std::runtime_error("avcodec_alloc_context3() failed");
 
-	ctx->bit_rate = 12000000;
-	ctx->width = 1280;
-	ctx->height = 720;
-	ctx->time_base = { 1, 60 };
-	ctx->gop_size = 60;
-	ctx->max_b_frames = 4;
-	// do 4:4:4 for now, until I figure out how to sub-sample U and V
-	ctx->pix_fmt = AV_PIX_FMT_YUV444P;
-
-	av_opt_set(ctx->priv_data, "preset", "ultrafast", 0);
+	if (config->Find(L"Encoder")) {
+		ctx->bit_rate = (int)config->Find(L"Encoder.bitrate")->AsNumber();
+		ctx->width = (int)config->Find(L"Encoder.width")->AsNumber();
+		ctx->height = (int)config->Find(L"Encoder.height")->AsNumber();
+		ctx->gop_size = (int)config->Find(L"Encoder.gopsize")->AsNumber();
+		ctx->max_b_frames = (int)config->Find(L"Encoder.max_b_frames")->AsNumber();
+		ctx->time_base = {
+			config->Find(L"Encoder.timebase")->AsArray()[0]->AsNumber(),
+			config->Find(L"Encoder.timebase")->AsArray()[1]->AsNumber()
+		};
+		ctx->pix_fmt = pixelFormats[config->Find(L"Encoder.pixelFormat")->AsString()];
+		av_opt_set(ctx->priv_data, "preset", config->WideToBytes(config->Find(L"Encoder.preset")->AsString()).c_str(), 0);
+	}
+	else {
+		xprintf("Oops, no \"Encoder\" found in config file, using defaults\n");
+		ctx->bit_rate = 8000000;
+		ctx->width = 1280;
+		ctx->height = 720;
+		ctx->gop_size = 20;
+		ctx->max_b_frames = 1;
+		ctx->time_base = { 1, 60 };
+		ctx->pix_fmt = AV_PIX_FMT_YUV444P;
+		av_opt_set(ctx->priv_data, "preset", "fast", 0);
+	}
 
 	if (avcodec_open2(ctx, codec, NULL) < 0)
 		throw std::runtime_error("avcodec_open2() failed");
@@ -40,9 +58,11 @@ XAVEncoder::XAVEncoder(unsigned char *y, unsigned char *u, unsigned char *v) : y
 		throw std::runtime_error("failed to create output file");
 
 	SocketsSetup();
+
 	if ((udpSocket = SocketOpen(NULL, 5555, SOCK_DGRAM, IPPROTO_UDP, 0)) <= 0)
 		xprintf("Failed to open udpSocket\n");
 
+	// UDP requires sendto(2), which requires a destination address
 	SockAddrIN(&udpDest, "224.1.1.1", 5555);
 }
 
@@ -82,6 +102,6 @@ void XAVEncoder::EncodeFrame(unsigned char *img, int width, int height, int dept
 		fwrite(pkt.data, 1, pkt.size, output);
 		fflush(output);
 
-		sendto(udpSocket, (const char *)pkt.data, pkt.size, 0, (const struct sockaddr *)&udpDest, sizeof(udpDest));
+		//sendto(udpSocket, (const char *)pkt.data, pkt.size, 0, (const struct sockaddr *)&udpDest, sizeof(udpDest));
 	}
 }
