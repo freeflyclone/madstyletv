@@ -1,5 +1,5 @@
-#include "xutils.h"
 #include "xavenc.h"
+#include "xutils.h"
 
 XAVEncoder::XAVEncoder(unsigned char *y, unsigned char *u, unsigned char *v) : yBuffer(y), uBuffer(u), vBuffer(v), frameNumber(0), output(NULL) {
 	xprintf("XAVEncoder::XAVEncoder()\n");
@@ -16,8 +16,8 @@ XAVEncoder::XAVEncoder(unsigned char *y, unsigned char *u, unsigned char *v) : y
 	ctx->width = 1280;
 	ctx->height = 720;
 	ctx->time_base = { 1, 60 };
-	ctx->gop_size = 10;
-	ctx->max_b_frames = 1;
+	ctx->gop_size = 60;
+	ctx->max_b_frames = 4;
 	// do 4:4:4 for now, until I figure out how to sub-sample U and V
 	ctx->pix_fmt = AV_PIX_FMT_YUV444P;
 
@@ -38,6 +38,8 @@ XAVEncoder::XAVEncoder(unsigned char *y, unsigned char *u, unsigned char *v) : y
 
 	if ((output = fopen("test.m4v", "wb")) == NULL)
 		throw std::runtime_error("failed to create output file");
+
+	udpSocket = SocketOpen(INADDR_ANY, 5555, SOCK_DGRAM, IPPROTO_UDP, 0);
 }
 
 XAVEncoder::~XAVEncoder() {

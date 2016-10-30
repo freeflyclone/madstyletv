@@ -9,6 +9,13 @@
     <IncludePath>$(XCLASS_DIR);$(XCLASS_DIR)\xav;$(XCLASS_DIR)\xal;$(XCLASS_DIR)\xgl;$(XCLASS_DIR)\xgl\glm;$(XCLASS_DIR)\xgl\glm\gtc;$(XCLASS_DIR)\include;$(XCLASS_DIR)\include\freetype2;$(IncludePath)</IncludePath>
     <LibraryPath>$(XCLASS_DIR)\lib\$(PlatformTarget);$(XCLASS_DIR)\lib\$(PlatformTarget)\$(Configuration);$(LibraryPath);$(FFMPEG_DIR)\lib</LibraryPath>
   </PropertyGroup>
-  <ItemDefinitionGroup />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup />
 </Project>

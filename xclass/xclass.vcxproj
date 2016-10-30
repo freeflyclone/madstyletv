@@ -219,6 +219,7 @@
     <ClInclude Include="3rdParty\soil\src\stb_image_aug.h" />
     <ClInclude Include="JSON.h" />
     <ClInclude Include="JSONValue.h" />
+    <ClInclude Include="socket.h" />
     <ClInclude Include="xal\xal.h" />
     <ClInclude Include="xassets.h" />
     <ClInclude Include="xav\xav.h" />
@@ -259,6 +260,7 @@
     <ClCompile Include="3rdParty\soil\src\stb_image_aug.c" />
     <ClCompile Include="JSON.cpp" />
     <ClCompile Include="JSONValue.cpp" />
+    <ClCompile Include="socket.c" />
     <ClCompile Include="xal\xal.cpp" />
     <ClCompile Include="xassets.cpp" />
     <ClCompile Include="xav\xav.cpp" />

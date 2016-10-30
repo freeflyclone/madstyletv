@@ -237,5 +237,7 @@ void XGLSharedFBO::Render(int w, int h) {
 		ScaleToOutputSize();
 		CopyOutputToShared();
 	}
-	encoder->EncodeFrame(mappedBuffer, pHeader->width, pHeader->height, 3);
+
+	if (encoder != NULL)
+		encoder->EncodeFrame(mappedBuffer, pHeader->width, pHeader->height, 3);
 }
