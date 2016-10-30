@@ -7,17 +7,13 @@
 
 #define socket_error printf
 
-
-#ifdef _WIN32
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#ifdef _WIN32
 #include <WinSock2.h>
 #include <ws2ipdef.h>
-
-
 #endif
 
 int SocketsSetup();

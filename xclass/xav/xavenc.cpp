@@ -1,7 +1,7 @@
 #include "xavenc.h"
 #include "xutils.h"
 
-XAVEncoder::XAVEncoder(unsigned char *y, unsigned char *u, unsigned char *v) : yBuffer(y), uBuffer(u), vBuffer(v), frameNumber(0), output(NULL) {
+XAVEncoder::XAVEncoder(unsigned char *y, unsigned char *u, unsigned char *v) : yBuffer(y), uBuffer(u), vBuffer(v), frameNumber(0), output(NULL), udpSocket(0) {
 	xprintf("XAVEncoder::XAVEncoder()\n");
 
 	avcodec_register_all();
@@ -39,7 +39,11 @@ XAVEncoder::XAVEncoder(unsigned char *y, unsigned char *u, unsigned char *v) : y
 	if ((output = fopen("test.m4v", "wb")) == NULL)
 		throw std::runtime_error("failed to create output file");
 
-	udpSocket = SocketOpen(INADDR_ANY, 5555, SOCK_DGRAM, IPPROTO_UDP, 0);
+	SocketsSetup();
+	if ((udpSocket = SocketOpen(NULL, 5555, SOCK_DGRAM, IPPROTO_UDP, 0)) <= 0)
+		xprintf("Failed to open udpSocket\n");
+
+	SockAddrIN(&udpDest, "224.1.1.1", 5555);
 }
 
 XAVEncoder::~XAVEncoder() {
@@ -77,5 +81,7 @@ void XAVEncoder::EncodeFrame(unsigned char *img, int width, int height, int dept
 	if (gotOutput) {
 		fwrite(pkt.data, 1, pkt.size, output);
 		fflush(output);
+
+		sendto(udpSocket, (const char *)pkt.data, pkt.size, 0, (const struct sockaddr *)&udpDest, sizeof(udpDest));
 	}
 }
