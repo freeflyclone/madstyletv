@@ -13,13 +13,13 @@
 		"numericArray" : [1.0, 2.0, 3.0, "Test"]
 	},
 	"Encoder" : {
-		"preset" : "fast",
+		"preset" : "faster",
 		"bitrate" : 8000000,
 		"width" : 1280,
 		"height" : 720,
 		"timebase" : [1, 60],
-		"gopsize" : 10,
-		"max_b_frames" : 1,
+		"gopsize" : 20,
+		"max_b_frames" : 4,
 		"pixelFormat" : "AV_PIX_FMT_YUV444P",
 		"udpaddress" : "224.1.1.1",
 		"udpport" : 5555

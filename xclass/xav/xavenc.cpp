@@ -108,6 +108,33 @@ void XAVEncoder::EncodeFrame(unsigned char *img, int width, int height, int dept
 		fwrite(pkt.data, 1, pkt.size, output);
 		fflush(output);
 
-		sendto(udpSocket, (const char *)pkt.data, pkt.size, 0, (const struct sockaddr *)&udpDest, sizeof(udpDest));
+		{
+			unsigned char *buffer = pkt.data;
+			int pktSize = pkt.size;
+			int maxSendSize = 32768;
+			int nSent;
+
+			if (pktSize > maxSendSize) {
+				do {
+					nSent = sendto(udpSocket, (const char *)buffer, maxSendSize, 0, (const struct sockaddr *)&udpDest, sizeof(udpDest));
+					if (nSent != maxSendSize) {
+						xprintf("problem sending maxSendSize: %d, %d, %d\n", pktSize, nSent, errno);
+					}
+					pktSize -= maxSendSize;
+					buffer += maxSendSize;
+				} while (pktSize > maxSendSize);
+
+				if (pktSize) {
+					nSent = sendto(udpSocket, (const char *)buffer, pktSize, 0, (const struct sockaddr *)&udpDest, sizeof(udpDest));
+					if (nSent != pktSize)
+						xprintf("problem sending pktSize: %d, %d, %d\n", pktSize, nSent, errno);
+				}
+			}
+			else {
+				nSent = sendto(udpSocket, (const char *)buffer, pktSize, 0, (const struct sockaddr *)&udpDest, sizeof(udpDest));
+				if (nSent != pktSize)
+					xprintf("problem sending pktSize: %d, %d, %d\n", pktSize, nSent, errno);
+			}
+		}
 	}
 }
