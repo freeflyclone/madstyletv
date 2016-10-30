@@ -49,6 +49,11 @@ JSONValue* XAssets::Find(std::wstring name) const {
 	return NULL;
 }
 
+std::string XAssets::WideToBytes(const std::wstring &wstr){
+	// found this on Stack Overflow. 
+	return std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t>().to_bytes(wstr);
+}
+
 void XAssets::DebugDump() {
 	DebugDump(root);
 }

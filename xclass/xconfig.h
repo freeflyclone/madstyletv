@@ -15,7 +15,8 @@
 class XConfig : public XAssets {
 public:
 	// guard against XCLASS_DIR environment variable not being set, as that causes a seg fault
-	XConfig(std::string fileName = std::getenv("XCLASS_DIR")?std::getenv("XCLASS_DIR"):"." + std::string("/../assets/config.json")) : XAssets(fileName) {};
+	// assume default install: DIR/bin - where this executable is, DIR/assets - where the config.json is
+	XConfig(std::string fileName = (std::getenv("XCLASS_DIR")?std::getenv("XCLASS_DIR"):".") + std::string("/../assets/config.json")) : XAssets(fileName) {};
 };
 
 #endif

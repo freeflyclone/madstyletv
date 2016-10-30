@@ -17,6 +17,8 @@
 
 #include "JSON.h"
 #include <string>
+#include <locale>
+#include <codecvt>
 #include <iostream>
 #include <sstream>
 
@@ -30,6 +32,8 @@ public:
 
 	void DebugDump();
 	void DebugDump(JSONValue *value);
+
+	std::string WideToBytes(const std::wstring &wstr);
 
 private:
 	JSONValue *root;
