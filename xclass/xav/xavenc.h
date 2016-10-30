@@ -36,6 +36,7 @@ public:
 	int frameNumber;
 	FILE *output;
 	SOCKET udpSocket;
+	SOCKADDR_IN udpDest;
 };
 
 #endif
