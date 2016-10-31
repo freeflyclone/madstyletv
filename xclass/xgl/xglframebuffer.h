@@ -12,6 +12,8 @@
 #include "xshmem.h"
 #include "xavenc.h"
 
+// the dimensions of the FBO buffer images.  This is GPU video memory.
+// You've been advised. Tested to 3840 by 2160
 #define RENDER_WIDTH	1920
 #define RENDER_HEIGHT	1080
 
@@ -75,6 +77,9 @@ public:
 	int vpWidth, vpHeight;
 
 	XAVEncoder *encoder;
+
+	// TODO: manage these better for systems with reduced memory available.
+	// (who has that these days and why are they trying to run this code?)
 	unsigned char yBuffer[RENDER_WIDTH*RENDER_HEIGHT];
 	unsigned char uBuffer[RENDER_WIDTH*RENDER_HEIGHT];
 	unsigned char vBuffer[RENDER_WIDTH*RENDER_HEIGHT];
