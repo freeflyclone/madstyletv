@@ -16,7 +16,9 @@ extern "C" {
 #ifdef _WIN32
 #include <winsock.h>
 #else
-#error fix this: need this systems includes for socket stuff
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
 #endif
 
 int SocketsSetup();
