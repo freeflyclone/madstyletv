@@ -19,6 +19,8 @@ extern "C" {
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
+#include <netdb.h>
+#include <arpa/net.h>
 #define SOCKET int
 #define SOCKADDR_IN struct sockaddr_in
 #define MAX_PATH 256
