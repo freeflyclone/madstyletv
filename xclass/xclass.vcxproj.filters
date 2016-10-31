@@ -182,9 +182,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="xutils.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="xgl\xglbuffer.cpp">
       <Filter>xgl\Source Files</Filter>
     </ClCompile>
@@ -273,6 +270,9 @@
       <Filter>xav\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="socket.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xutils.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
