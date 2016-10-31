@@ -21,6 +21,7 @@ extern "C" {
 #include <netinet/ip.h>
 #define SOCKET int
 #define SOCKADDR_IN struct sockaddr_in
+#define MAX_PATH 256
 #endif
 
 int SocketsSetup();
