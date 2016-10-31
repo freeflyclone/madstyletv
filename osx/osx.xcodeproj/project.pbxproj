@@ -38,6 +38,10 @@
 		5919975C1D63F261003F62FF /* xglshapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 591997381D63F00D003F62FF /* xglshapes.cpp */; };
 		5919975D1D63F261003F62FF /* xgluniform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5919973A1D63F00D003F62FF /* xgluniform.cpp */; };
 		5919975E1D63F2AB003F62FF /* xclass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 591996171D63F00D003F62FF /* xclass.cpp */; };
+		594FA8221DC6CCD60071DE06 /* socket.c in Sources */ = {isa = PBXBuildFile; fileRef = 594FA8201DC6CCD60071DE06 /* socket.c */; };
+		594FA8231DC6CD100071DE06 /* socket.c in Sources */ = {isa = PBXBuildFile; fileRef = 594FA8201DC6CCD60071DE06 /* socket.c */; };
+		594FA8261DC6CD280071DE06 /* xavenc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 594FA8241DC6CD280071DE06 /* xavenc.cpp */; };
+		594FA8271DC6CD3E0071DE06 /* xavenc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 594FA8241DC6CD280071DE06 /* xavenc.cpp */; };
 		5956427B1DB6A640002A756F /* Example01.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5956427A1DB6A640002A756F /* Example01.cpp */; };
 		5956427C1DB6A8A5002A756F /* xassets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59DA3B991DB6987900767298 /* xassets.cpp */; };
 		5956427D1DB6A8A5002A756F /* JSON.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59DA3B8D1DB697E300767298 /* JSON.cpp */; };
@@ -518,6 +522,10 @@
 		591997401D63F00D003F62FF /* xutils.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = xutils.c; sourceTree = "<group>"; };
 		591997411D63F00D003F62FF /* xutils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xutils.h; sourceTree = "<group>"; };
 		591997461D63F05D003F62FF /* libxclass.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libxclass.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		594FA8201DC6CCD60071DE06 /* socket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = socket.c; sourceTree = "<group>"; };
+		594FA8211DC6CCD60071DE06 /* socket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = socket.h; sourceTree = "<group>"; };
+		594FA8241DC6CD280071DE06 /* xavenc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xavenc.cpp; path = xav/xavenc.cpp; sourceTree = "<group>"; };
+		594FA8251DC6CD280071DE06 /* xavenc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xavenc.h; path = xav/xavenc.h; sourceTree = "<group>"; };
 		595642751DB6A166002A756F /* xglframebuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = xglframebuffer.cpp; sourceTree = "<group>"; };
 		595642761DB6A166002A756F /* xglframebuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xglframebuffer.h; sourceTree = "<group>"; };
 		5956427A1DB6A640002A756F /* Example01.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Example01.cpp; path = ../../examples/Example01/Example01.cpp; sourceTree = "<group>"; };
@@ -631,6 +639,8 @@
 		5912EC6C1DB83E9B006837B9 /* xav */ = {
 			isa = PBXGroup;
 			children = (
+				594FA8241DC6CD280071DE06 /* xavenc.cpp */,
+				594FA8251DC6CD280071DE06 /* xavenc.h */,
 				5912EC6D1DB83EF6006837B9 /* xav.cpp */,
 				5912EC6E1DB83EF6006837B9 /* xavfile.cpp */,
 				5912EC6F1DB83EF6006837B9 /* xavsrc.cpp */,
@@ -645,6 +655,8 @@
 		5919959B1D63F00D003F62FF /* xclass */ = {
 			isa = PBXGroup;
 			children = (
+				594FA8201DC6CCD60071DE06 /* socket.c */,
+				594FA8211DC6CCD60071DE06 /* socket.h */,
 				59B41FD21DB83C7000787183 /* xfifo.h */,
 				59DA3B991DB6987900767298 /* xassets.cpp */,
 				59DA3B9A1DB6987900767298 /* xassets.h */,
@@ -1641,6 +1653,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				594FA8271DC6CD3E0071DE06 /* xavenc.cpp in Sources */,
+				594FA8231DC6CD100071DE06 /* socket.c in Sources */,
 				5912EC771DB84092006837B9 /* xav.cpp in Sources */,
 				5912EC781DB84092006837B9 /* xavfile.cpp in Sources */,
 				5912EC791DB84092006837B9 /* xavsrc.cpp in Sources */,
@@ -1678,9 +1692,11 @@
 			files = (
 				5962D3891D6B81D8006BCD52 /* main.m in Sources */,
 				599FCC601D6654EB00C57873 /* ExampleXGL.cpp in Sources */,
+				594FA8261DC6CD280071DE06 /* xavenc.cpp in Sources */,
 				5962D3851D6B80AB006BCD52 /* OpenGLView.mm in Sources */,
 				5912EC741DB83EF6006837B9 /* xav.cpp in Sources */,
 				59B41FBA1DB8386F00787183 /* OpenCVWebcamBuildScene.cpp in Sources */,
+				594FA8221DC6CCD60071DE06 /* socket.c in Sources */,
 				5912EC751DB83EF6006837B9 /* xavfile.cpp in Sources */,
 				59BEB3E31D6B7FBF00CD09FF /* AppDelegate.m in Sources */,
 				599A90FE1DB7E0AD00EAD8C9 /* OpenALTestBuildScene.cpp in Sources */,
