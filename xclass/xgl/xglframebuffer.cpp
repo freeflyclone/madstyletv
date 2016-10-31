@@ -150,7 +150,15 @@ void XGLSharedFBO::MakeFlipQuad() {
 void XGLSharedFBO::RenderFlipQuad() {
 	glBindFramebuffer(GL_FRAMEBUFFER, outFbo->fbo);
 	glViewport(0, 0, RENDER_WIDTH, RENDER_HEIGHT);
+
+	// calculate how far to vertically offset the flipQuad so it's rendered correctly
+	// in the shared-mem buffer(s). This amounts to a 2D translation in screen space
+	int heightDiff = RENDER_HEIGHT - pHeader->height;
+	float yOffset = -(2*((float)heightDiff / (float)RENDER_HEIGHT));
+	flipQuad->model = glm::translate(glm::mat4(), glm::vec3(0.0, yOffset, 0.0));
+
 	flipQuad->Render(0.0);
+
 	glViewport(0, 0, vpWidth, vpHeight);
 }
 
