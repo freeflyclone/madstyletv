@@ -130,16 +130,17 @@ XGLSharedFBO::XGLSharedFBO(XGL *context) : XSharedMem(DEFAULT_FILE_NAME), pXGL(c
 
 	ssFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
 	scaleFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
-	outFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
+	sharedFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
+	encoderFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
 
 	// add additional color atachments for RGB -> YUV planar for XAVEncoder
-	outFbo->AddColorAttachment(0, GL_TEXTURE_2D, GL_RED, GL_R8);
-	outFbo->AddColorAttachment(0, GL_TEXTURE_2D, GL_RED, GL_R8);
-	outFbo->AddColorAttachment(0, GL_TEXTURE_2D, GL_RED, GL_R8);
+	encoderFbo->AddColorAttachment(0, GL_TEXTURE_2D, GL_RED, GL_R8);
+	encoderFbo->AddColorAttachment(0, GL_TEXTURE_2D, GL_RED, GL_R8);
+	encoderFbo->AddColorAttachment(0, GL_TEXTURE_2D, GL_RED, GL_R8);
 
 	MakeFlipQuad();
 
-	//encoder = new XAVEncoder(&(pXGL->config), yBuffer, uBuffer, vBuffer);
+	encoder = new XAVEncoder(&(pXGL->config), yBuffer, uBuffer, vBuffer);
 }
 
 void XGLSharedFBO::MakeFlipQuad() {
@@ -148,7 +149,14 @@ void XGLSharedFBO::MakeFlipQuad() {
 }
 
 void XGLSharedFBO::RenderFlipQuad() {
-	glBindFramebuffer(GL_FRAMEBUFFER, outFbo->fbo);
+	// render it to the "sharedFbo" for the DirectShow Vcam source filter
+	glBindFramebuffer(GL_FRAMEBUFFER, sharedFbo->fbo);
+	glViewport(0, 0, RENDER_WIDTH, RENDER_HEIGHT);
+	flipQuad->model = glm::scale(glm::mat4(), glm::vec3(1.0, -1.0, 1.0));
+	flipQuad->Render(0.0);
+
+	// render it again to the "encoderFbo" for RGB -> YUV conversion
+	glBindFramebuffer(GL_FRAMEBUFFER, encoderFbo->fbo);
 	glViewport(0, 0, RENDER_WIDTH, RENDER_HEIGHT);
 
 	// calculate how far to vertically offset the flipQuad so it's rendered correctly
@@ -198,15 +206,19 @@ void XGLSharedFBO::ScaleToOutputSize(){
 void XGLSharedFBO::CopyOutputToShared(){
 	RenderFlipQuad();
 
-	glBindFramebuffer(GL_FRAMEBUFFER, outFbo->fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, sharedFbo->fbo);
 	GL_CHECK("glBindFramebuffer() failed");
 
-	// enabling GPU profiling below reveals that this takes several milliseconds.
-	// Will measure again when async PBO's are in place.
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	glReadPixels(0, 0, pHeader->width, pHeader->height, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);
 	GL_CHECK("glReadPixels() failed\n");
 
+
+	glBindFramebuffer(GL_FRAMEBUFFER, encoderFbo->fbo);
+	GL_CHECK("glBindFramebuffer() failed");
+
+	// enabling GPU profiling below reveals that this takes several milliseconds.
+	// Will measure again when async PBO's are in place.
 	glReadBuffer(GL_COLOR_ATTACHMENT1);
 	glReadPixels(0, 0, pHeader->width, pHeader->height, GL_RED, GL_UNSIGNED_BYTE, yBuffer);
 	GL_CHECK("glReadPixels() failed\n");
