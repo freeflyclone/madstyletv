@@ -67,7 +67,8 @@ public:
 	XGLFramebuffer *msFbo;
 	XGLFramebuffer *ssFbo;
 	XGLFramebuffer *scaleFbo;
-	XGLFramebuffer *outFbo;
+	XGLFramebuffer *sharedFbo;
+	XGLFramebuffer *encoderFbo;
 	GLuint texture;
 
 	XGLTexQuad *flipQuad;
