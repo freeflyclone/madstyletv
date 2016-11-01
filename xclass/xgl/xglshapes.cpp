@@ -646,56 +646,6 @@ void XGLTextureAtlas::Draw() {
 	GL_CHECK("glDisable(GL_BLEND) failed");
 }
 
-XGLTexQuad::XGLTexQuad(std::string fileName) {
-	SetName("XTexQuad");
-	const XGLColor white = { 1, 1, 1, 1 };
-
-	v.push_back({ { -1.0, -1.0, 0 }, { 0, 1 }, {}, white });
-	v.push_back({ { -1.0, 1.0, 0 }, { 0, 0 }, {}, white });
-	v.push_back({ { 1.0, -1.0, 0 }, { 1, 1 }, {}, white });
-	v.push_back({ { 1.0, 1.0, 0 }, { 1, 0 }, {}, white });
-
-	idx.push_back(0);
-	idx.push_back(1);
-	idx.push_back(2);
-	idx.push_back(3);
-
-	AddTexture(fileName);
-}
-
-XGLTexQuad::XGLTexQuad(std::string texName, int width, int height, int channels, GLubyte *img, bool flipColors) {
-	SetName("XTexQuad");
-	const XGLColor white = { 1, 1, 1, 1 };
-
-	v.push_back({ { -1.0, -1.0, 0 }, { 0, 1 }, {}, white });
-	v.push_back({ { -1.0, 1.0, 0 }, { 0, 0 }, {}, white });
-	v.push_back({ { 1.0, -1.0, 0 }, { 1, 1 }, {}, white });
-	v.push_back({ { 1.0, 1.0, 0 }, { 1, 0 }, {}, white });
-
-	idx.push_back(0);
-	idx.push_back(1);
-	idx.push_back(2);
-	idx.push_back(3);
-
-	AddTexture(texName, width, height, channels, img, flipColors);
-}
-XGLTexQuad::XGLTexQuad(int width, int height, int channels) {
-	SetName("XTexQuad");
-	const XGLColor white = { 1, 1, 1, 1 };
-
-	v.push_back({ { -1.0, -1.0, 0 }, { 0, 1 }, {}, white });
-	v.push_back({ { -1.0, 1.0, 0 }, { 0, 0 }, {}, white });
-	v.push_back({ { 1.0, -1.0, 0 }, { 1, 1 }, {}, white });
-	v.push_back({ { 1.0, 1.0, 0 }, { 1, 0 }, {}, white });
-
-	idx.push_back(0);
-	idx.push_back(1);
-	idx.push_back(2);
-	idx.push_back(3);
-
-	AddTexture(width, height, channels);
-}
-
 XGLTexQuad::XGLTexQuad() {
 	SetName("XTexQuad");
 	const XGLColor white = { 1, 1, 1, 1 };
@@ -709,6 +659,20 @@ XGLTexQuad::XGLTexQuad() {
 	idx.push_back(1);
 	idx.push_back(2);
 	idx.push_back(3);
+}
+
+XGLTexQuad::XGLTexQuad(std::string fileName) {
+	XGLTexQuad();
+	AddTexture(fileName);
+}
+
+XGLTexQuad::XGLTexQuad(std::string texName, int width, int height, int channels, GLubyte *img, bool flipColors) {
+	XGLTexQuad();
+	AddTexture(texName, width, height, channels, img, flipColors);
+}
+XGLTexQuad::XGLTexQuad(int width, int height, int channels) {
+	XGLTexQuad();
+	AddTexture(width, height, channels);
 }
 
 void XGLTexQuad::Draw() {
