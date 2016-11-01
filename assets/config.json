@@ -13,7 +13,7 @@
 		"numericArray" : [1.0, 2.0, 3.0, "Test"]
 	},
 	"Encoder" : {
-		"enabled" : true,
+		"enabled" : false,
 		"preset" : "medium",
 		"bitrate" : 8000000,
 		"width" : 320,
