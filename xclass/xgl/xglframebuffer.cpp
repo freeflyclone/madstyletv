@@ -154,7 +154,7 @@ void XGLSharedFBO::MakeFlipQuad() {
 	flipQuad->AddTexture(scaleFbo->textures[0]);
 }
 
-void XGLSharedFBO::RenderFlipQuad() {
+void XGLSharedFBO::RenderFlipQuadToShared() {
 	// render it to the "sharedFbo" for the DirectShow Vcam source filter
 	glBindFramebuffer(GL_FRAMEBUFFER, sharedFbo->fbo);
 	glViewport(0, 0, RENDER_WIDTH, RENDER_HEIGHT);
@@ -165,19 +165,27 @@ void XGLSharedFBO::RenderFlipQuad() {
 	// render it again to the "encoderFbo" for RGB -> YUV conversion
 	glBindFramebuffer(GL_FRAMEBUFFER, encoderFbo->fbo);
 	glViewport(0, 0, RENDER_WIDTH, RENDER_HEIGHT);
+}
 
+void XGLSharedFBO::RenderFlipQuadToEncoder() {
 	// calculate how far to vertically offset the flipQuad so it's rendered correctly
-	// in the shared-mem buffer(s). This amounts to a 2D translation in screen space
+	// in the encoder buffer(s). This amounts to a 2D translation in screen space
 	int heightDiff = RENDER_HEIGHT - encHeight;
 	float yOffset = (2 * ((float)heightDiff / (float)RENDER_HEIGHT));
 
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(1, -1, 1));
-	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0.0, yOffset, 0.0));
+	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, yOffset, 0));
+
 	flipQuad->model = scale * translate;
 
 	flipQuad->Render(0.0);
 
 	glViewport(0, 0, vpWidth, vpHeight);
+}
+
+void XGLSharedFBO::RenderFlipQuad() {
+	RenderFlipQuadToShared();
+	RenderFlipQuadToEncoder();
 }
 
 void XGLSharedFBO::CopyScreenToFBO(){
@@ -209,7 +217,7 @@ void XGLSharedFBO::ScaleToOutputSize(){
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, scaleFbo->fbo);
 	GL_CHECK("glBindFrameBuffer(DRAW) failed");
 
-	glBlitFramebuffer(0, 0, vpWidth, vpHeight, 0, 0, pHeader->width, pHeader->height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	glBlitFramebuffer(0, 0, vpWidth, vpHeight, 0, 0, encWidth, encHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 	GL_CHECK("glBlitFramebuffer() failed");
 }
 
