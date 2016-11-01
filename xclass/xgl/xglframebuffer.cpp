@@ -112,7 +112,7 @@ void XGLFramebuffer::Render(XGLFBORender renderFunc){
 
 #define SAMPLES 8
 
-XGLSharedFBO::XGLSharedFBO(XGL *context) : XSharedMem(DEFAULT_FILE_NAME), pXGL(context), msFbo(NULL), ssFbo(NULL), encoder(NULL) {
+XGLSharedFBO::XGLSharedFBO(XGL *context) : XSharedMem(DEFAULT_FILE_NAME), pXGL(context), msFbo(NULL), ssFbo(NULL), encoder(NULL), encWidth(0), encHeight(0) {
 	// blit only FBO, no depth needed, adding multisampled color attachment
 	msFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, false, false);
 
@@ -140,7 +140,13 @@ XGLSharedFBO::XGLSharedFBO(XGL *context) : XSharedMem(DEFAULT_FILE_NAME), pXGL(c
 
 	MakeFlipQuad();
 
-	encoder = new XAVEncoder(&(pXGL->config), yBuffer, uBuffer, vBuffer);
+	if (pXGL->config.Find(L"Encoder.enabled")->AsBool()) {
+		if ((encoder = new XAVEncoder(&(pXGL->config), yBuffer, uBuffer, vBuffer)) != NULL) {
+			encWidth = encoder->ctx->width;
+			encHeight = encoder->ctx->height;
+			xprintf("Encoder is set to %d by %d\n", encWidth, encHeight);
+		}
+	}
 }
 
 void XGLSharedFBO::MakeFlipQuad() {
@@ -220,15 +226,15 @@ void XGLSharedFBO::CopyOutputToShared(){
 	// enabling GPU profiling below reveals that this takes several milliseconds.
 	// Will measure again when async PBO's are in place.
 	glReadBuffer(GL_COLOR_ATTACHMENT1);
-	glReadPixels(0, 0, pHeader->width, pHeader->height, GL_RED, GL_UNSIGNED_BYTE, yBuffer);
+	glReadPixels(0, 0, encWidth, encHeight, GL_RED, GL_UNSIGNED_BYTE, yBuffer);
 	GL_CHECK("glReadPixels() failed\n");
 
 	glReadBuffer(GL_COLOR_ATTACHMENT2);
-	glReadPixels(0, 0, pHeader->width, pHeader->height, GL_RED, GL_UNSIGNED_BYTE, uBuffer);
+	glReadPixels(0, 0, encWidth, encHeight, GL_RED, GL_UNSIGNED_BYTE, uBuffer);
 	GL_CHECK("glReadPixels() failed\n");
 
 	glReadBuffer(GL_COLOR_ATTACHMENT3);
-	glReadPixels(0, 0, pHeader->width, pHeader->height, GL_RED, GL_UNSIGNED_BYTE, vBuffer);
+	glReadPixels(0, 0, encWidth, encHeight, GL_RED, GL_UNSIGNED_BYTE, vBuffer);
 	GL_CHECK("glReadPixels() failed\n");
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

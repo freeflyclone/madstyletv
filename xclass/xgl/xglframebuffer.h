@@ -78,6 +78,7 @@ public:
 	int vpWidth, vpHeight;
 
 	XAVEncoder *encoder;
+	int encWidth, encHeight;
 
 	// TODO: manage these better for systems with reduced memory available.
 	// (who has that these days and why are they trying to run this code?)
