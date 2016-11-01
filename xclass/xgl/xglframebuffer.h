@@ -68,7 +68,8 @@ public:
 	XGL *pXGL;
 	XGLFramebuffer *msFbo;
 	XGLFramebuffer *ssFbo;
-	XGLFramebuffer *scaleFbo;
+	XGLFramebuffer *scaleSharedFbo;
+	XGLFramebuffer *scaleEncoderFbo;
 	XGLFramebuffer *sharedFbo;
 	XGLFramebuffer *encoderFbo;
 	GLuint texture;
