@@ -129,7 +129,8 @@ XGLSharedFBO::XGLSharedFBO(XGL *context) : XSharedMem(DEFAULT_FILE_NAME), pXGL(c
 	msFbo->AddColorAttachment(texture, GL_TEXTURE_2D_MULTISAMPLE);
 
 	ssFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
-	scaleFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
+	scaleSharedFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
+	scaleEncoderFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
 	sharedFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
 	encoderFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
 
@@ -151,7 +152,9 @@ XGLSharedFBO::XGLSharedFBO(XGL *context) : XSharedMem(DEFAULT_FILE_NAME), pXGL(c
 
 void XGLSharedFBO::MakeFlipQuad() {
 	pXGL->CreateShape("shaders/imageflip", [&]() { flipQuad = new XGLTexQuad(); return flipQuad; });
-	flipQuad->AddTexture(scaleFbo->textures[0]);
+	flipQuad->AddTexture(scaleEncoderFbo->textures[0]);
+
+	// there probably needs to be another one here for the scaleSharedFbo rendered texture
 }
 
 void XGLSharedFBO::RenderFlipQuadToShared() {
@@ -161,13 +164,13 @@ void XGLSharedFBO::RenderFlipQuadToShared() {
 
 	flipQuad->model = glm::mat4(1);
 	flipQuad->Render(0.0);
-
-	// render it again to the "encoderFbo" for RGB -> YUV conversion
-	glBindFramebuffer(GL_FRAMEBUFFER, encoderFbo->fbo);
-	glViewport(0, 0, RENDER_WIDTH, RENDER_HEIGHT);
 }
 
 void XGLSharedFBO::RenderFlipQuadToEncoder() {
+	// render it again to the "encoderFbo" for RGB -> YUV conversion
+	glBindFramebuffer(GL_FRAMEBUFFER, encoderFbo->fbo);
+	glViewport(0, 0, RENDER_WIDTH, RENDER_HEIGHT);
+
 	// calculate how far to vertically offset the flipQuad so it's rendered correctly
 	// in the encoder buffer(s). This amounts to a 2D translation in screen space
 	int heightDiff = RENDER_HEIGHT - encHeight;
@@ -214,7 +217,13 @@ void XGLSharedFBO::ScaleToOutputSize(){
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, ssFbo->fbo);
 	GL_CHECK("glBindFrameBuffer(0) failed");
 
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, scaleFbo->fbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, scaleSharedFbo->fbo);
+	GL_CHECK("glBindFrameBuffer(DRAW) failed");
+
+	glBlitFramebuffer(0, 0, vpWidth, vpHeight, 0, 0, pHeader->width, pHeader->height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	GL_CHECK("glBlitFramebuffer() failed");
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, scaleEncoderFbo->fbo);
 	GL_CHECK("glBindFrameBuffer(DRAW) failed");
 
 	glBlitFramebuffer(0, 0, vpWidth, vpHeight, 0, 0, encWidth, encHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
@@ -230,7 +239,6 @@ void XGLSharedFBO::CopyOutputToShared(){
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	glReadPixels(0, 0, pHeader->width, pHeader->height, GL_BGR, GL_UNSIGNED_BYTE, mappedBuffer);
 	GL_CHECK("glReadPixels() failed\n");
-
 
 	glBindFramebuffer(GL_FRAMEBUFFER, encoderFbo->fbo);
 	GL_CHECK("glBindFramebuffer() failed");
