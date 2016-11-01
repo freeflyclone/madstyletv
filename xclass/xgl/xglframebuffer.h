@@ -62,6 +62,8 @@ public:
 
 	void MakeFlipQuad();
 	void RenderFlipQuad();
+	void RenderFlipQuadToShared();
+	void RenderFlipQuadToEncoder();
 
 	XGL *pXGL;
 	XGLFramebuffer *msFbo;

@@ -14,10 +14,10 @@
 	},
 	"Encoder" : {
 		"enabled" : true,
-		"preset" : "faster",
+		"preset" : "medium",
 		"bitrate" : 8000000,
-		"width" : 1280,
-		"height" : 720,
+		"width" : 960,
+		"height" : 540,
 		"timebase" : [1, 60],
 		"gopsize" : 20,
 		"max_b_frames" : 4,
