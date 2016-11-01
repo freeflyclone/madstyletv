@@ -16,11 +16,13 @@ layout(location = 3) out vec4 color3;
 // these MUST be setup with glUniform1i() prior to main rendering pass
 // in order to have access to the FBO pass results
 uniform sampler2D texUnit0;
+uniform sampler2D texUnit1;
 
 void main(void)
 {
     vec4 tc0 = texture(texUnit0, UV);
-	color0 = tc0;
+	vec4 tc1 = texture(texUnit1, UV);
+	color0 = tc1;
 
 	float y = tc0.r * 0.299 + tc0.g * 0.587 + tc0.b * 0.114;
 	float u = (tc0.b - y) + 0.5;

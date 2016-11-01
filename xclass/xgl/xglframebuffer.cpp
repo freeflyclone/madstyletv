@@ -153,8 +153,7 @@ XGLSharedFBO::XGLSharedFBO(XGL *context) : XSharedMem(DEFAULT_FILE_NAME), pXGL(c
 void XGLSharedFBO::MakeFlipQuad() {
 	pXGL->CreateShape("shaders/imageflip", [&]() { flipQuad = new XGLTexQuad(); return flipQuad; });
 	flipQuad->AddTexture(scaleEncoderFbo->textures[0]);
-
-	// there probably needs to be another one here for the scaleSharedFbo rendered texture
+	flipQuad->AddTexture(scaleSharedFbo->textures[0]);
 }
 
 void XGLSharedFBO::RenderFlipQuadToShared() {
@@ -187,6 +186,9 @@ void XGLSharedFBO::RenderFlipQuadToEncoder() {
 }
 
 void XGLSharedFBO::RenderFlipQuad() {
+	glProgramUniform1i(flipQuad->shader->programId, glGetUniformLocation(flipQuad->shader->programId, "texUnit0"), 0);
+	glProgramUniform1i(flipQuad->shader->programId, glGetUniformLocation(flipQuad->shader->programId, "texUnit1"), 1);
+
 	RenderFlipQuadToShared();
 	RenderFlipQuadToEncoder();
 }
