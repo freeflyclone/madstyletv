@@ -13,10 +13,11 @@
 		"numericArray" : [1.0, 2.0, 3.0, "Test"]
 	},
 	"Encoder" : {
+		"enabled" : false,
 		"preset" : "faster",
 		"bitrate" : 8000000,
-		"width" : 1280,
-		"height" : 720,
+		"width" : 320,
+		"height" : 180,
 		"timebase" : [1, 60],
 		"gopsize" : 20,
 		"max_b_frames" : 4,
