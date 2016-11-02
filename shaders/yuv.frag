@@ -7,11 +7,23 @@ in  vec2 UV;
 
 out vec4 out_Color;
 
-uniform sampler2D texUnit;
+uniform sampler2D texUnit0;
+uniform sampler2D texUnit1;
+uniform sampler2D texUnit2;
+uniform sampler2D texUnit3;
 
 void main(void)
 {
-    //out_Color = ex_Color;
-    vec4 tc = texture(texUnit,UV);
-    out_Color = vec4(tc.r, tc.r, tc.r, 1.0) * ex_Color;
+	float y = texture(texUnit0,UV).r;
+	float u = texture(texUnit1,UV).r;
+	float v = texture(texUnit2,UV).r;
+
+	u = (u - 0.5) * 1.0;
+	v = (v - 0.5) * 1.0;
+
+	float r = y + (1.5958 * v);
+	float g = y - (0.39173 * u) - (0.81290 * v);
+	float b = y + (2.017 * u);
+
+	out_Color = vec4(r,g,b,1.0);
 }
