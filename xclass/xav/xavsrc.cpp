@@ -20,7 +20,7 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES), streamIdx
 		xprintf("              height: %d\n", pCodecCtx->height);
 		numBytes = av_image_get_buffer_size(pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height,8) * 4;
 
-		AllocateBufferPool(XAV_NUM_FRAMES, numBytes, 1);
+		AllocateBufferPool(XAV_NUM_FRAMES, numBytes, 3);
 		width = pCodecCtx->width;
 		height = pCodecCtx->height;
 	}
@@ -63,10 +63,6 @@ void XAVStream::AllocateBufferPool(int number, int size, int channels) {
 		throwXAVException("channels count is out of bounds: "+std::to_string(channels));
 
 	for (int i = 0; i < number; i++) {
-		unsigned char *buffer = (unsigned char *)av_malloc(size);
-		memset(buffer, 0, size);
-		frames[i].buffer = buffer;
-
 		for (int j = 0; j < channels; j++) {
 			unsigned char *buffer = (unsigned char *)av_malloc(size);
 			frames[i].buffers[j] = buffer;
@@ -89,13 +85,21 @@ bool XAVStream::Decode(AVPacket *packet)
 		if( frameFinished ) {
 			freeBuffs.wait_for(200);
 			int frameIdx = (nFramesDecoded - 1) & (XAV_NUM_FRAMES - 1);
-			XAVBuffer xb = frames[frameIdx];
-			int size = pCodecCtx->height * pFrame->linesize[0];
-			memcpy(xb.buffer, pFrame->data[0], size);
 
-			// for 4:2:0
-			memcpy(xb.buffer+size, pFrame->data[1], size/4);
-			memcpy(xb.buffer+size + (size/4), pFrame->data[2], size/4);
+			XAVBuffer xb = frames[frameIdx];
+
+			// get luminance channel
+			int ySize = pCodecCtx->height * pFrame->linesize[0];
+			memcpy(xb.buffers[0], pFrame->data[0], ySize);
+			
+			// get U chrominance channel
+			int uSize = pCodecCtx->height * pFrame->linesize[1];
+			memcpy(xb.buffers[1], pFrame->data[1], uSize);
+
+			// get V chrominance channel
+			int vSize = pCodecCtx->height * pFrame->linesize[2];
+			memcpy(xb.buffers[2], pFrame->data[2], uSize);
+
 			nFramesDecoded++;
 			usedBuffs.notify();
 		}

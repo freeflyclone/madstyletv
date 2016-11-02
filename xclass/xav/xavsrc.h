@@ -35,7 +35,6 @@ extern "C" {
 #define XAV_MAX_CHANNELS 8
 
 typedef struct {
-	unsigned char *buffer;
 	unsigned char *buffers[XAV_MAX_CHANNELS];
 	int nChannels;
 	int size;
