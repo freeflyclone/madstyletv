@@ -12,10 +12,11 @@
 		},
 		"numericArray" : [1.0, 2.0, 3.0, "Test"]
 	},
+	"SharedMemory" : false,
 	"Encoder" : {
-		"enabled" : false,
+		"enabled" : true,
 		"preset" : "medium",
-		"bitrate" : 8000000,
+		"bitrate" : 600000,
 		"width" : 320,
 		"height" : 180,
 		"timebase" : [1, 60],
