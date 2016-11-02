@@ -12,7 +12,7 @@
 #include <iostream>
 
 typedef struct {
-	unsigned char b[1920 * 1620];
+	unsigned char y[1920 * 1080];
 	int width, height;
 } ImageBuff;
 
@@ -25,11 +25,11 @@ public:
 	void Run() {
 		while (IsRunning()) {
 			XAVBuffer image = stream->GetBuffer();
-			if (image.buffer == NULL) {
+			if (image.buffers[0] == NULL) {
 				Stop();
 				break;
 			}
-			memcpy(&ib.b, image.buffer, sizeof(ib.b));
+			memcpy(&ib.y, image.buffers[0], sizeof(ib.y));
 			ib.width = stream->width;
 			ib.height = stream->height;
 		}
@@ -95,7 +95,7 @@ public:
 			int idx = bufferId - 1;
 			XAVBuffer audio = stream->GetBuffer();
 
-			if (audio.buffer == NULL) {
+			if (audio.buffers[0] == NULL) {
 				alSourceStop(source);
 				Stop();
 				break;
@@ -174,10 +174,13 @@ public:
 
 AVPlayer *pavp;
 
+#define VIDEO_WIDTH 1920
+#define VIDEO_HEIGHT 1080
+#define VIDEO_CHANNELS 4
+
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
-	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
 	std::string videoPath = pathToAssets + "/assets/CulturalPhenomenon.mp4";
 
 	AddShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
@@ -190,7 +193,10 @@ void ExampleXGL::BuildScene() {
 		s->model = translate * rotate;
 	});
 
-	AddShape("shaders/yuv", [&](){ shape = new XGLTexQuad(imgPath); return shape; });
+	AddShape("shaders/yuv", [&](){ shape = new XGLTexQuad(VIDEO_WIDTH,VIDEO_HEIGHT,VIDEO_CHANNELS); return shape; });
+	shape->AddTexture(VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_CHANNELS);
+	shape->AddTexture(VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_CHANNELS);
+
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 4.0f, 5.625f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -198,7 +204,7 @@ void ExampleXGL::BuildScene() {
 
 	XGLShape::AnimaFunk transform = [&](XGLShape *s, float clock) {
 		if (pavp != NULL && pavp->IsRunning()) {
-			unsigned char *image = ib.b;
+			unsigned char *image = ib.y;
 
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.width, ib.height, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)image);
 			GL_CHECK("glGetTexImage() didn't work");
