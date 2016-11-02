@@ -661,17 +661,14 @@ XGLTexQuad::XGLTexQuad() {
 	idx.push_back(3);
 }
 
-XGLTexQuad::XGLTexQuad(std::string fileName) {
-	XGLTexQuad();
+XGLTexQuad::XGLTexQuad(std::string fileName) : XGLTexQuad() {
 	AddTexture(fileName);
 }
 
-XGLTexQuad::XGLTexQuad(std::string texName, int width, int height, int channels, GLubyte *img, bool flipColors) {
-	XGLTexQuad();
+XGLTexQuad::XGLTexQuad(std::string texName, int width, int height, int channels, GLubyte *img, bool flipColors) : XGLTexQuad() {
 	AddTexture(texName, width, height, channels, img, flipColors);
 }
-XGLTexQuad::XGLTexQuad(int width, int height, int channels) {
-	XGLTexQuad();
+XGLTexQuad::XGLTexQuad(int width, int height, int channels) : XGLTexQuad() {
 	AddTexture(width, height, channels);
 }
 
