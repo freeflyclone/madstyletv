@@ -18,7 +18,7 @@ out vec2 UV;
 
 void main(void)
 {
-    gl_Position = projector * view * model * vec4(in_Position, 1.0);
+    gl_Position = projector * view * model * vec4(in_Position.x, -in_Position.y, in_Position.z, 1.0);
     ex_Color = vec4(in_Color, 1.0);
     UV = in_TexCoord;
 }
