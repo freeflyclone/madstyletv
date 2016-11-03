@@ -23,6 +23,14 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES), streamIdx
 		AllocateBufferPool(XAV_NUM_FRAMES, numBytes, 3);
 		width = pCodecCtx->width;
 		height = pCodecCtx->height;
+
+		// figure out the chroma sub-sampling of the pixel format
+		int pixelFormat = pCodecCtx->pix_fmt;
+		const AVPixFmtDescriptor *pixDesc = av_pix_fmt_desc_get((AVPixelFormat)pixelFormat);
+
+		// save it so our clients can know
+		chromaWidth = pCodecCtx->width / (1 << pixDesc->log2_chroma_w);
+		chromaHeight = pCodecCtx->height / (1 << pixDesc->log2_chroma_h);
 	}
 	else if (pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO) {
 		xprintf("Found AVMEDIA_TYPE_AUDIO\n");
@@ -93,11 +101,11 @@ bool XAVStream::Decode(AVPacket *packet)
 			memcpy(xb.buffers[0], pFrame->data[0], ySize);
 			
 			// get U chrominance channel
-			int uSize = pCodecCtx->height * pFrame->linesize[1];
+			int uSize = chromaWidth * chromaHeight;
 			memcpy(xb.buffers[1], pFrame->data[1], uSize);
 
 			// get V chrominance channel
-			int vSize = pCodecCtx->height * pFrame->linesize[2];
+			int vSize = chromaWidth * chromaHeight;
 			memcpy(xb.buffers[2], pFrame->data[2], uSize);
 
 			nFramesDecoded++;
@@ -131,7 +139,7 @@ bool XAVStream::Decode(AVPacket *packet)
 
 XAVBuffer XAVStream::GetBuffer() {
 	if (!usedBuffs.wait_for(200)) 
-		return XAVBuffer {NULL, 0, 0};
+		return XAVBuffer{ { NULL, NULL, NULL }, 0, 0 };
 
 	int frameIdx = nFramesRead & (XAV_NUM_FRAMES - 1);
 	XAVBuffer xb = frames[frameIdx];
@@ -198,6 +206,7 @@ XAVSrc::XAVSrc(const std::string name, bool video=true, bool audio=true) :
 		else
 			xprintf("Unknown codec type: %d, id: %d\n", pFormatCtx->streams[i]->codec->codec_type, pFormatCtx->streams[i]->codec);
 	}
+	xprintf("XAVSrc::XAVSrc() complete, %s video, %s audio\n", (mVideoStream == NULL) ? "does not have" : "has", (mAudioStream == NULL) ? "does not have" : "has");
 }
 
 XAVSrc::XAVSrc() :

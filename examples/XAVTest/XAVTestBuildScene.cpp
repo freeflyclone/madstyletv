@@ -20,6 +20,7 @@ typedef struct {
 	unsigned char u[VIDEO_WIDTH * VIDEO_HEIGHT];
 	unsigned char v[VIDEO_WIDTH * VIDEO_HEIGHT];
 	int width, height;
+	int chromaWidth, chromaHeight;
 } ImageBuff;
 
 ImageBuff ib;
@@ -40,6 +41,8 @@ public:
 			memcpy(&ib.v, image.buffers[2], sizeof(ib.v));
 			ib.width = stream->width;
 			ib.height = stream->height;
+			ib.chromaWidth = stream->chromaWidth;
+			ib.chromaHeight = stream->chromaHeight;
 		}
 	}
 
@@ -222,7 +225,7 @@ void ExampleXGL::BuildScene() {
 	shape->model = translate * rotate * scale;
 
 	XGLShape::AnimaFunk transform = [&](XGLShape *s, float clock) {
-		if (pavp != NULL && pavp->IsRunning()) {
+		if (pavp != NULL && pavp->IsRunning() && (ib.width != 0)) {
 
 			glProgramUniform1i(s->shader->programId, glGetUniformLocation(s->shader->programId, "texUnit0"), 0);
 			glProgramUniform1i(s->shader->programId, glGetUniformLocation(s->shader->programId, "texUnit1"), 1);
@@ -235,12 +238,12 @@ void ExampleXGL::BuildScene() {
 
 			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D, s->texIds[1]);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.width / 2, ib.height / 2, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)ib.u);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.chromaWidth, ib.chromaHeight, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)ib.u);
 			GL_CHECK("glGetTexImage() didn't work");
 
 			glActiveTexture(GL_TEXTURE2);
 			glBindTexture(GL_TEXTURE_2D, s->texIds[2]);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.width / 2, ib.height / 2, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)ib.v);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.chromaWidth, ib.chromaHeight, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)ib.v);
 			GL_CHECK("glGetTexImage() didn't work");
 		}
 	};

@@ -71,6 +71,7 @@ public:
 	int streamIdx;
 
 	int width, height;
+	int chromaWidth, chromaHeight;
 
 private:
 	AVCodecContext *pCodecCtx;
