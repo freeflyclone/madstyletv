@@ -13,6 +13,7 @@
 		"numericArray" : [1.0, 2.0, 3.0, "Test"]
 	},
 	"SharedMemory" : false,
+	"VideoFile" : "assets/GOPR0541.MP4",
 	"Encoder" : {
 		"enabled" : true,
 		"preset" : "medium",
