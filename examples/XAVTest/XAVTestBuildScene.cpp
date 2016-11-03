@@ -8,6 +8,7 @@
 #include <xavfile.h>
 #include <xfifo.h>
 #include <xal.h>
+#include <xtimer.h>
 
 #include <iostream>
 
@@ -43,10 +44,16 @@ public:
 			ib.height = stream->height;
 			ib.chromaWidth = stream->chromaWidth;
 			ib.chromaHeight = stream->chromaHeight;
+			std::this_thread::sleep_for(std::chrono::duration<int, std::micro>(1));
+			double sinceLast = 0.0;
+			do {
+				sinceLast += timer.SinceLast();
+			} while (sinceLast < 0.016666);
 		}
 	}
 
 	std::shared_ptr<XAVStream> stream;
+	XTimer timer;
 };
 
 class AudioStreamThread : public XThread {

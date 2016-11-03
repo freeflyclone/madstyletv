@@ -251,6 +251,7 @@
     <ClInclude Include="xinput.h" />
     <ClInclude Include="xshmem.h" />
     <ClInclude Include="xthread.h" />
+    <ClInclude Include="xtimer.h" />
     <ClInclude Include="xutils.h" />
   </ItemGroup>
   <ItemGroup>
