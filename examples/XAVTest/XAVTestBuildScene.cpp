@@ -197,9 +197,9 @@ void ExampleXGL::BuildScene() {
 		s->model = translate * rotate;
 	});
 
-	AddShape("shaders/yuv", [&](){ shape = new XGLTexQuad(VIDEO_WIDTH,VIDEO_HEIGHT,VIDEO_CHANNELS); return shape; });
-	shape->AddTexture(VIDEO_WIDTH/2, VIDEO_HEIGHT/2, VIDEO_CHANNELS);
-	shape->AddTexture(VIDEO_WIDTH/2, VIDEO_HEIGHT/2, VIDEO_CHANNELS);
+	AddShape("shaders/yuv", [&](){ shape = new XGLTexQuad(VIDEO_WIDTH,VIDEO_HEIGHT,1); return shape; });
+	shape->AddTexture(VIDEO_WIDTH/2, VIDEO_HEIGHT/2, 1);
+	shape->AddTexture(VIDEO_WIDTH/2, VIDEO_HEIGHT/2, 1);
 
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 4.0f, 5.625f));
