@@ -156,28 +156,43 @@ class AVPlayer : public XGLObject, public XThread {
 public:
 	AVPlayer(std::string url) : XGLObject("AVPlayer"), XThread("AVPlayerThread") {
 		xavSrc = std::make_shared<XAVSrc>(url, true, true);
+		hasVideo = xavSrc->mVideoStream != NULL;
+		hasAudio = xavSrc->mAudioStream != NULL;
+
 		xav.AddSrc(xavSrc);
-		vst = new VideoStreamThread(xavSrc->mVideoStream);
-		ast = new AudioStreamThread(xavSrc->mAudioStream);
+
+		if (hasVideo)
+			vst = new VideoStreamThread(xavSrc->mVideoStream);
+
+		if (hasAudio)
+			ast = new AudioStreamThread(xavSrc->mAudioStream);
+
 		xav.Start();
 	}
 
 	void Run() {
-		vst->Start();
-		ast->Start();
+		if (hasVideo)
+			vst->Start();
+
+		if (hasAudio)
+			ast->Start();
 
 		while ( xav.IsRunning() && IsRunning() ) {
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
 		}
 
-		vst->Stop();
-		ast->Stop();
+		if (hasVideo)
+			vst->Stop();
+
+		if (hasAudio)
+			ast->Stop();
 	}
 
 	XAV xav;
 	VideoStreamThread *vst;
 	AudioStreamThread *ast;
 	std::shared_ptr<XAVSrc> xavSrc;
+	bool hasVideo, hasAudio;
 };
 
 AVPlayer *pavp;
