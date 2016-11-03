@@ -13,13 +13,13 @@
 		"numericArray" : [1.0, 2.0, 3.0, "Test"]
 	},
 	"SharedMemory" : false,
-	"VideoFile" : "assets/GOPR0541.MP4",
+	"VideoFile" : "bin/test14.mp4",
 	"Encoder" : {
 		"enabled" : false,
-		"preset" : "medium",
-		"bitrate" : 600000,
-		"width" : 320,
-		"height" : 180,
+		"preset" : "faster",
+		"bitrate" : 6000000,
+		"width" : 1280,
+		"height" : 720,
 		"timebase" : [1, 60],
 		"gopsize" : 20,
 		"max_b_frames" : 4,
