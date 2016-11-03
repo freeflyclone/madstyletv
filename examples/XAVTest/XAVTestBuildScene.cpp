@@ -185,7 +185,7 @@ AVPlayer *pavp;
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
-	std::string videoPath = pathToAssets + "/assets/CulturalPhenomenon.mp4";
+	std::string videoPath = pathToAssets + "/" + config.WideToBytes(config.Find(L"VideoFile")->AsString());
 
 	AddShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
 	shape->attributes.diffuseColor = { 0.025, 0.025, 0.025, 1 };
