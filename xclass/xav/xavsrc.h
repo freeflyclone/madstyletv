@@ -30,7 +30,9 @@ extern "C" {
 #include "xavexcept.h"
 
 // this must be a power of 2, and preferrably rather small.
-#define XAV_NUM_FRAMES 4
+// 4 results in choppiness of video when a timer is used with streams
+// that have audio.  8 results in buttery smooth 60 fps on GoPro footage.
+#define XAV_NUM_FRAMES 8
 // this is the max number of "data" channels in an AVFrame (video or audio)
 #define XAV_MAX_CHANNELS 8
 
