@@ -15,7 +15,7 @@
 	"SharedMemory" : false,
 	"VideoFile" : "assets/GOPR0541.MP4",
 	"Encoder" : {
-		"enabled" : true,
+		"enabled" : false,
 		"preset" : "medium",
 		"bitrate" : 600000,
 		"width" : 320,
