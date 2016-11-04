@@ -34,24 +34,21 @@ void CheckAlError(const char *, int, std::string);
 #define XAL_MAX_BUFFERS	16
 
 typedef struct {
-	float left;
-	float right;
-} AudioSampleFloat, AudioSampleFloatBuffer[AUDIO_SAMPLES];
-
-typedef struct {
 	short left;
 	short right;
-} AudioSampleShort, AudioSampleShortBuffer[AUDIO_SAMPLES];
+} AudioSampleShort;
+
+typedef std::vector<AudioSampleShort> AudioSampleShortBuffer;
+typedef std::vector<AudioSampleShortBuffer> XALShortBuffer;
 
 typedef std::vector<std::string> XALDeviceList;
-typedef std::vector<AudioSampleFloatBuffer> XALFloatBuffer;
-typedef std::vector<AudioSampleShortBuffer> XALShortBuffer;
 
 class XAL {
 public:
 	XAL(ALCchar *dn = (NULL), int sr = 48000, int fmt = AL_FORMAT_STEREO16, int nb=1);
 	virtual ~XAL();
 
+	void AddBuffers(int count);
 	void Play();
 	void Pause();
 	void Stop();
@@ -73,6 +70,7 @@ private:
 	int format;
 	int nBuffers;
 	AudioSampleShort testToneBuffer[48000];
+	XALShortBuffer shortBuffers;
 };
 
 #endif

@@ -17,7 +17,7 @@ XAL *pXal;
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
-	pXal = new XAL();
+	pXal = new XAL(NULL,48000,AL_FORMAT_STEREO16, 8);
 
 	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
 
@@ -36,7 +36,7 @@ void ExampleXGL::BuildScene() {
 		s->model = translate * rotate * scale;
 	};
 	shape->SetTheFunk(transform);
-
-	pXal->TestTone();
+	
+	pXal->AddBuffers(8);
 	pXal->Play();
 }
