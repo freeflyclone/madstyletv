@@ -39,7 +39,15 @@ XAL::XAL(ALCchar *dn, int sr, int fmt, int nb) : deviceName(dn), sampleRate(sr),
 }
 
 XAL::~XAL() {
+	ALint errorCode;
 	xprintf("XAL::~XAL()\n");
+	alDeleteSources(1, &alSourceId);
+	alDeleteBuffers(nBuffers, alBufferIds);
+	errorCode = alGetError();
+	alcMakeContextCurrent(NULL);
+	errorCode = alGetError();
+	alcDestroyContext(audioContext);
+	alcCloseDevice(audioDevice);
 }
 
 void XAL::AddBuffers(int count) {
@@ -48,9 +56,14 @@ void XAL::AddBuffers(int count) {
 
 	for (int i = 0; i < count; i++)
 		shortBuffers.push_back(AudioSampleShortBuffer(AUDIO_SAMPLES));
+}
 
-	for (int i = 0; i < count; i++) {
-		alBufferData(alBufferIds[i], format, shortBuffers[i].data(), AUDIO_SAMPLES*sizeof(AudioSampleShort), sampleRate);
+void XAL::QueueBuffers() {
+	XALShortBuffer::iterator it;
+	int i = 0;
+
+	for (it = shortBuffers.begin(); it != shortBuffers.end(); it++) {
+		alBufferData(alBufferIds[i++], format, it->data(), AUDIO_SAMPLES*sizeof(AudioSampleShort), sampleRate);
 		AL_CHECK("alBufferData() failed");
 	}
 }
@@ -70,20 +83,18 @@ void XAL::Stop() {
 	alSourceStop(alSourceId);
 }
 
-void XAL::TestTone() {
-	int NSAMPLES = sizeof(testToneBuffer) / sizeof(testToneBuffer[0]);
+void XAL::TestTone(int count) {
+	XALShortBuffer::iterator it;
+	int i;
 
-	memset(testToneBuffer, 0, sizeof(testToneBuffer));
+	for (i=0, it = shortBuffers.begin(); (it != shortBuffers.end()) && (i<count); it++,i++) {
+		AudioSampleShort *s = it->data();
 
-	for (int i = 0; i < NSAMPLES; i++) {
-		double value = 2.0 * (double)i / (double)128 * M_PI;
-		testToneBuffer[i].left = (short)(sin(value) * 32767.0);
-		testToneBuffer[i].right = (short)(sin(value) * 32767.0);
-	}
-
-	for (int i = 0; i < nBuffers; i++) {
-		alBufferData(alBufferIds[i], format, testToneBuffer, sizeof(testToneBuffer), sampleRate);
-		AL_CHECK("alBufferData() failed");
+		for (int j = 0; j < AUDIO_SAMPLES; j++) {
+			double value = 2.0 * (double)j / (double)128 * M_PI;
+			s[j].left = (short)(sin(value) * 32767.0);
+			s[j].right = (short)(sin(value) * 32767.0);
+		}
 	}
 }
 
