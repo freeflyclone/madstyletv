@@ -36,4 +36,7 @@ void ExampleXGL::BuildScene() {
 		s->model = translate * rotate * scale;
 	};
 	shape->SetTheFunk(transform);
+
+	pXal->TestTone();
+	pXal->Play();
 }

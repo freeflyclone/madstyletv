@@ -16,7 +16,7 @@ void CheckAlError(const char *file, int line, std::string what){
 	}
 }
 
-XAL::XAL() : deviceName(NULL), sampleRate(48000) {
+XAL::XAL(ALCchar *dn, int sr, int fmt, int nb) : deviceName(dn), sampleRate(sr), format(fmt), nBuffers(nb) {
 	EnumerateDevices();
 
 	for (int i = 0; i < deviceList.size(); i++)
@@ -31,27 +31,11 @@ XAL::XAL() : deviceName(NULL), sampleRate(48000) {
 	alcMakeContextCurrent(audioContext);
 	alGetError();
 
-	alGenBuffers(1, &alBufferId);
-	if ((alError = alGetError()) != AL_NO_ERROR)
-		throw std::runtime_error("alGenBuffers() failed to create a buffer");
+	alGenBuffers(nBuffers, alBufferIds);
+	AL_CHECK("alGenBuffers() failed to create a buffer");
 
 	alGenSources(1, &alSourceId);
-	if ((alError = alGetError()) != AL_NO_ERROR)
-		throw std::runtime_error("alGenSources() failed");
-
-	memset(testToneBuffer, 0, sizeof(testToneBuffer));
-
-	TestTone();
-
-	alBufferData(alBufferId, AL_FORMAT_MONO16, testToneBuffer, sizeof(testToneBuffer), sampleRate);
-	if ((alError = alGetError()) != AL_NO_ERROR)
-		throw std::runtime_error("alBufferData() failed");
-
-	alSourcei(alSourceId, AL_BUFFER, alBufferId);
-	if ((alError = alGetError()) != AL_NO_ERROR)
-		throw std::runtime_error("alSource() failed");
-
-	Play();
+	AL_CHECK("alGenSources() failed");
 }
 
 XAL::~XAL() {
@@ -59,6 +43,9 @@ XAL::~XAL() {
 }
 
 void XAL::Play() {
+	alSourceQueueBuffers(alSourceId, nBuffers, alBufferIds);
+	AL_CHECK("alSourceQueueBuffers() failed");
+
 	alSourcePlay(alSourceId);
 }
 
@@ -72,9 +59,18 @@ void XAL::Stop() {
 
 void XAL::TestTone() {
 	int NSAMPLES = sizeof(testToneBuffer) / sizeof(testToneBuffer[0]);
+
+	memset(testToneBuffer, 0, sizeof(testToneBuffer));
+
 	for (int i = 0; i < NSAMPLES; i++) {
 		double value = 2.0 * (double)i / (double)128 * M_PI;
-		testToneBuffer[i] = (short)(sin(value) * 32767.0);
+		testToneBuffer[i].left = (short)(sin(value) * 32767.0);
+		testToneBuffer[i].right = (short)(sin(value*3) * 32767.0);
+	}
+
+	for (int i = 0; i < nBuffers; i++) {
+		alBufferData(alBufferIds[i], format, testToneBuffer, sizeof(testToneBuffer), sampleRate);
+		AL_CHECK("alBufferData() failed");
 	}
 }
 
