@@ -42,6 +42,19 @@ XAL::~XAL() {
 	xprintf("XAL::~XAL()\n");
 }
 
+void XAL::AddBuffers(int count) {
+	if (count != nBuffers)
+		throw std::runtime_error("AddBuffers: 'count' != 'nBuffers'");
+
+	for (int i = 0; i < count; i++)
+		shortBuffers.push_back(AudioSampleShortBuffer(AUDIO_SAMPLES));
+
+	for (int i = 0; i < count; i++) {
+		alBufferData(alBufferIds[i], format, shortBuffers[i].data(), AUDIO_SAMPLES*sizeof(AudioSampleShort), sampleRate);
+		AL_CHECK("alBufferData() failed");
+	}
+}
+
 void XAL::Play() {
 	alSourceQueueBuffers(alSourceId, nBuffers, alBufferIds);
 	AL_CHECK("alSourceQueueBuffers() failed");
@@ -65,7 +78,7 @@ void XAL::TestTone() {
 	for (int i = 0; i < NSAMPLES; i++) {
 		double value = 2.0 * (double)i / (double)128 * M_PI;
 		testToneBuffer[i].left = (short)(sin(value) * 32767.0);
-		testToneBuffer[i].right = (short)(sin(value*3) * 32767.0);
+		testToneBuffer[i].right = (short)(sin(value) * 32767.0);
 	}
 
 	for (int i = 0; i < nBuffers; i++) {
