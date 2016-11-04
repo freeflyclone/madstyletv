@@ -17,7 +17,7 @@
 	"Encoder" : {
 		"enabled" : false,
 		"preset" : "faster",
-		"bitrate" : 6000000,
+		"bitrate" : 4000000,
 		"width" : 1280,
 		"height" : 720,
 		"timebase" : [1, 60],
