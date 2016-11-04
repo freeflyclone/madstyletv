@@ -1,8 +1,7 @@
 /**************************************************************
 ** OpenALTestBuildScene.cpp
 **
-** This is a copy of Example05, but utilizing OpenCV to load
-** the image instead, and unit testing of XAL.
+** This is a copy of Example05, with unit testing of XAL.
 **
 ** This *should* emit a tone for 4 seconds.
 **
@@ -11,9 +10,6 @@
 ** correctly.
 **************************************************************/
 #include "ExampleXGL.h"
-//#include <opencv2/core/core.hpp>
-//#include <opencv2/highgui/highgui.hpp>
-
 #include "xal.h"
 
 XAL *pXal;
