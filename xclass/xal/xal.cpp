@@ -16,7 +16,7 @@ void CheckAlError(const char *file, int line, std::string what){
 	}
 }
 
-XAL::XAL() : deviceName(NULL) {
+XAL::XAL() : deviceName(NULL), sampleRate(48000) {
 	EnumerateDevices();
 
 	for (int i = 0; i < deviceList.size(); i++)
@@ -43,7 +43,7 @@ XAL::XAL() : deviceName(NULL) {
 
 	TestTone();
 
-	alBufferData(alBufferId, AL_FORMAT_MONO16, testToneBuffer, sizeof(testToneBuffer), 48000);
+	alBufferData(alBufferId, AL_FORMAT_MONO16, testToneBuffer, sizeof(testToneBuffer), sampleRate);
 	if ((alError = alGetError()) != AL_NO_ERROR)
 		throw std::runtime_error("alBufferData() failed");
 

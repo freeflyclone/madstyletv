@@ -68,6 +68,7 @@ private:
 	ALuint alBufferId;
 	ALuint alSourceId;
 	ALenum alError;
+	int sampleRate;
 
 	short testToneBuffer[48000 * 4];
 };
