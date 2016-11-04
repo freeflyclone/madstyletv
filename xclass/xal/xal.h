@@ -31,6 +31,7 @@ void CheckAlError(const char *, int, std::string);
 #define AL_CHECK(what) CheckAlError(__FILE__,__LINE__,what)
 
 #define AUDIO_SAMPLES 1024
+#define XAL_MAX_BUFFERS	16
 
 typedef struct {
 	float left;
@@ -48,7 +49,7 @@ typedef std::vector<AudioSampleShortBuffer> XALShortBuffer;
 
 class XAL {
 public:
-	XAL();
+	XAL(ALCchar *dn = (NULL), int sr = 48000, int fmt = AL_FORMAT_STEREO16, int nb=1);
 	virtual ~XAL();
 
 	void Play();
@@ -65,12 +66,13 @@ private:
 	ALCchar *deviceName;
 	ALCdevice *audioDevice;
 	ALCcontext *audioContext;
-	ALuint alBufferId;
+	ALuint alBufferIds[XAL_MAX_BUFFERS];
 	ALuint alSourceId;
 	ALenum alError;
 	int sampleRate;
-
-	short testToneBuffer[48000 * 4];
+	int format;
+	int nBuffers;
+	AudioSampleShort testToneBuffer[48000];
 };
 
 #endif
