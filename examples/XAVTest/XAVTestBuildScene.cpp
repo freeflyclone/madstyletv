@@ -65,12 +65,11 @@ public:
 		pXal->Play();
 	}
 
-	void Run() {
-		//int totalBytes = 0;
-		//int bufferIdx = 0;
-		//ALuint bufferId;
-		//ALint val;
+	~AudioStreamThread() {
+		delete pXal;
+	}
 
+	void Run() {
 		while (IsRunning()) {
 			pXal->WaitForProcessedBuffer();
 
@@ -86,11 +85,9 @@ public:
 			pXal->Buffer();
 			pXal->Restart();
 		}
-		xprintf("Audio Thread done\n");
 	}
 
 	std::shared_ptr<XAVStream> stream;
-
 	XAL *pXal;
 };
 
