@@ -58,12 +58,12 @@ void XAL::AddBuffers(int count) {
 		shortBuffers.push_back(AudioSampleShortBuffer(AUDIO_SAMPLES));
 }
 
-void XAL::QueueBuffers() {
+void XAL::QueueBuffers(int numSamplesToQueue, int numBuffsToQueue) {
 	XALShortBuffer::iterator it;
-	int i = 0;
+	int i;
 
-	for (it = shortBuffers.begin(); it != shortBuffers.end(); it++) {
-		alBufferData(alBufferIds[i++], format, it->data(), AUDIO_SAMPLES*sizeof(AudioSampleShort), sampleRate);
+	for (i=0, it = shortBuffers.begin(); (it != shortBuffers.end()) && (i<numBuffsToQueue); it++,i++) {
+		alBufferData(alBufferIds[i], format, it->data(), numSamplesToQueue * sizeof(AudioSampleShort), sampleRate);
 		AL_CHECK("alBufferData() failed");
 	}
 }
@@ -81,6 +81,53 @@ void XAL::Pause() {
 
 void XAL::Stop() {
 	alSourceStop(alSourceId);
+}
+
+ALuint XAL::WaitForProcessedBuffer() {
+	ALint val;
+	do {
+		alGetSourcei(alSourceId, AL_BUFFERS_PROCESSED, &val);
+		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
+	} while (val == 0);
+
+	alSourceUnqueueBuffers(alSourceId, 1, &dequeuedBuff);
+
+	return dequeuedBuff;
+}
+
+void XAL::Convert(float *left, float *right) {
+	float *pLeft = left;
+	float *pRight = right;
+
+	AudioSampleShort *pass = shortBuffers[dequeuedBuff - 1].data();
+
+	// convert to signed short
+	for (int i = 0; i < AUDIO_SAMPLES; i++) {
+		pass->left = (short)(*pLeft * 31000.0f);
+		pass->right = (short)(*pRight * 31000.0f);
+		pass++;
+		pLeft++;
+		pRight++;
+	}
+}
+
+void XAL::Buffer() {
+	ALuint idx = dequeuedBuff - 1;
+
+	alBufferData(dequeuedBuff, format, shortBuffers[idx].data(), AUDIO_SAMPLES * sizeof(AudioSampleShort), sampleRate);
+	AL_CHECK("alBufferData() failed");
+
+	alSourceQueueBuffers(alSourceId, 1, &dequeuedBuff);
+	AL_CHECK("alSourceQueueBuffers() failed");
+
+}
+
+void XAL::Restart() {
+	ALint state;
+
+	alGetSourcei(alSourceId, AL_SOURCE_STATE, &state);
+	if (state != AL_PLAYING)
+		alSourcePlay(alSourceId);
 }
 
 void XAL::TestTone(int count) {

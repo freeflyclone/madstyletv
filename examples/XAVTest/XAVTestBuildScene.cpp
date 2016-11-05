@@ -58,114 +58,47 @@ public:
 
 class AudioStreamThread : public XThread {
 public:
-	AudioStreamThread(std::shared_ptr<XAVStream> s) : XThread("AudioStreamThread"), stream(s) {
-		//int sampleSize = stream->formatSize * stream->channels;
-
-		sampleRate = stream->sampleRate;
-
-		if ((audioDevice = alcOpenDevice(NULL)) == NULL)
-			throw std::runtime_error("alcOpenDevice() failed");
-
-		if ((audioContext = alcCreateContext(audioDevice, NULL)) == NULL)
-			throw std::runtime_error("alcCreateContext() failed");
-
-		alcMakeContextCurrent(audioContext);
-		alGetError();
-
-		alGenBuffers(XAV_NUM_FRAMES, bufferIDs);
-		AL_CHECK("alGenBuffers() failed");
-
-		alGenSources(1, &source);
-		AL_CHECK("alGenSource() failed");
-
-		alSourcei(source, AL_LOOPING, AL_FALSE);
-		AL_CHECK("alSourcei() failed");
-
-		memset(audioBuffer, 0, sizeof(audioBuffer));
-
-		for (int i = 0; i < XAV_NUM_FRAMES; i++) {
-			alBufferData(bufferIDs[i], AL_FORMAT_STEREO16, audioBuffer, 4, sampleRate);
-			AL_CHECK("alBufferData() failed");
-		}
-
-		alSourceQueueBuffers(source, XAV_NUM_FRAMES, bufferIDs);
-		AL_CHECK("alSourceQueueBuffers() failed");
+	AudioStreamThread(std::shared_ptr<XAVStream> s) : XThread("AudioStreamThread"), stream(s), pXal(NULL) {
+		pXal = new XAL(NULL, stream->sampleRate, AL_FORMAT_STEREO16, XAV_NUM_FRAMES);
+		pXal->AddBuffers(XAV_NUM_FRAMES);
+		pXal->QueueBuffers(4);
+		pXal->Play();
 	}
 
 	void Run() {
-		int totalBytes = 0;
-		int bufferIdx = 0;
-		ALuint bufferId;
-		ALint val;
-
-		alSourcePlay(source);
-		AL_CHECK("alSourcePlay() failed");
+		//int totalBytes = 0;
+		//int bufferIdx = 0;
+		//ALuint bufferId;
+		//ALint val;
 
 		while (IsRunning()) {
-			do {
-				alGetSourcei(source, AL_BUFFERS_PROCESSED, &val);
-				std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
-			} while (val == 0);
+			pXal->WaitForProcessedBuffer();
 
-			alSourceUnqueueBuffers(source, 1, &bufferId);
-
-			// need a better mapping for this, good enough development tests for now
-			int idx = bufferId - 1;
 			XAVBuffer audio = stream->GetBuffer();
 
 			if (audio.buffers[0] == NULL) {
-				alSourceStop(source);
+				pXal->Stop();
 				Stop();
 				break;
 			}
-			float *pLeft = (float *)audio.buffers[0];
-			float *pRight = (float *)audio.buffers[1];
-			AudioSampleShort *pass = (AudioSampleShort *)audioBuffers[idx];
 
-			// convert to signed short
-			for (int i = 0; i < AUDIO_SAMPLES; i++) {
-				pass->left = (short)(*pLeft * 31000.0f);
-				pass->right = (short)(*pRight * 31000.0f);
-				pass++;
-				pLeft++;
-				pRight++;
-			}
-
-			totalBytes += audio.count;
-			bufferIdx++;
-
-			alBufferData(bufferId, AL_FORMAT_STEREO16, audioBuffers[idx], AUDIO_SAMPLES * 4, sampleRate);
-			AL_CHECK("alBufferData() failed");
-			alSourceQueueBuffers(source, 1, &bufferId);
-			AL_CHECK("alSourceQueueBuffers() failed");
-
-			// may need to restart here if initial queueing was too short 
-			// ie: we ran out and stopped before we got here
-			if (1) {
-				ALint state;
-				alGetSourcei(source, AL_SOURCE_STATE, &state);
-				if (state != AL_PLAYING)
-					alSourcePlay(source);
-			}
+			pXal->Convert((float *)audio.buffers[0], (float *)audio.buffers[1]);
+			pXal->Buffer();
+			pXal->Restart();
 		}
+		xprintf("Audio Thread done\n");
 	}
 
 	std::shared_ptr<XAVStream> stream;
 
-	ALCdevice *audioDevice;
-	ALCcontext *audioContext;
-	ALuint bufferIDs[XAV_NUM_FRAMES];
-	ALenum error;
-	ALuint source = 0;
-	int sampleRate;
-	short audioBuffer[AUDIO_SAMPLES];
-	AudioSampleShort audioBuffers[XAV_NUM_FRAMES][AUDIO_SAMPLES];
+	XAL *pXal;
 };
 
 class AVPlayer : public XGLObject, public XThread {
 public:
 	AVPlayer(std::string url) : XGLObject("AVPlayer"), XThread("AVPlayerThread") {
 		xavSrc = std::make_shared<XAVSrc>(url, true, true);
+		// once xavSrc has been constructed, it has parsed the stream looking for video & audio
 		hasVideo = xavSrc->mVideoStream != NULL;
 		hasAudio = xavSrc->mAudioStream != NULL;
 

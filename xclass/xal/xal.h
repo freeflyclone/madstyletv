@@ -12,6 +12,9 @@
 #include <memory>
 #include <sstream>
 #include <stdexcept>
+#include <chrono>
+#include <ctime>
+#include <thread>
 
 #include <string.h>
 #include <math.h>
@@ -26,6 +29,7 @@
 #endif
 
 #include "xutils.h"
+//#include "xtimer.h"
 
 void CheckAlError(const char *, int, std::string);
 #define AL_CHECK(what) CheckAlError(__FILE__,__LINE__,what)
@@ -49,16 +53,21 @@ public:
 	virtual ~XAL();
 
 	void AddBuffers(int count);
-	void QueueBuffers();
+	void QueueBuffers(int spq = AUDIO_SAMPLES, int ntq = XAL_MAX_BUFFERS);
 	void Play();
 	void Pause();
 	void Stop();
+
+	ALuint WaitForProcessedBuffer();
+	void Convert(float *, float *);
+	void Buffer();
+	void Restart();
 
 	void TestTone(int count);
 
 	XALDeviceList EnumerateDevices();
 
-private:
+//private:
 	XALDeviceList deviceList;
 
 	ALCchar *deviceName;
@@ -71,6 +80,7 @@ private:
 	int format;
 	int nBuffers;
 	XALShortBuffer shortBuffers;
+	ALuint dequeuedBuff;
 };
 
 #endif
