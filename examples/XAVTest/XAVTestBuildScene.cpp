@@ -58,44 +58,43 @@ public:
 
 class AudioStreamThread : public XThread {
 public:
-	AudioStreamThread(std::shared_ptr<XAVStream> s) : XThread("AudioStreamThread"), stream(s), pXal(NULL) {
-		pXal = new XAL(NULL, stream->sampleRate, AL_FORMAT_STEREO16, XAV_NUM_FRAMES);
-		pXal->AddBuffers(XAV_NUM_FRAMES);
-		pXal->QueueBuffers(4);
-		pXal->Play();
-	}
-
-	~AudioStreamThread() {
-		delete pXal;
+	AudioStreamThread(std::shared_ptr<XAVStream> s) : 
+		XThread("AudioStreamThread"), stream(s), xal(NULL, s->sampleRate, AL_FORMAT_STEREO16, XAV_NUM_FRAMES) 
+	{
+		xal.AddBuffers(XAV_NUM_FRAMES);
+		xal.QueueBuffers(4);
+		xal.Play();
 	}
 
 	void Run() {
 		while (IsRunning()) {
-			pXal->WaitForProcessedBuffer();
+			xal.WaitForProcessedBuffer();
 
 			XAVBuffer audio = stream->GetBuffer();
 
 			if (audio.buffers[0] == NULL) {
-				pXal->Stop();
+				xal.Stop();
 				Stop();
 				break;
 			}
 
-			pXal->Convert((float *)audio.buffers[0], (float *)audio.buffers[1]);
-			pXal->Buffer();
-			pXal->Restart();
+			xal.Convert((float *)audio.buffers[0], (float *)audio.buffers[1]);
+			xal.Buffer();
+			xal.Restart();
 		}
 	}
 
+	XAL xal;
 	std::shared_ptr<XAVStream> stream;
-	XAL *pXal;
 };
 
 class AVPlayer : public XGLObject, public XThread {
 public:
 	AVPlayer(std::string url) : XGLObject("AVPlayer"), XThread("AVPlayerThread") {
+		// once XAVSrc is constructed, it has parsed the stream looking for video & audio
+		// (or else it threw an exception)
 		xavSrc = std::make_shared<XAVSrc>(url, true, true);
-		// once xavSrc has been constructed, it has parsed the stream looking for video & audio
+
 		hasVideo = xavSrc->mVideoStream != NULL;
 		hasAudio = xavSrc->mAudioStream != NULL;
 
@@ -135,7 +134,9 @@ public:
 	bool hasVideo, hasAudio;
 };
 
-AVPlayer *pavp;
+namespace {
+	AVPlayer *pavp;
+};
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
