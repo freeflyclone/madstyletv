@@ -29,7 +29,6 @@
 #endif
 
 #include "xutils.h"
-//#include "xtimer.h"
 
 void CheckAlError(const char *, int, std::string);
 #define AL_CHECK(what) CheckAlError(__FILE__,__LINE__,what)
@@ -67,7 +66,7 @@ public:
 
 	XALDeviceList EnumerateDevices();
 
-//private:
+private:
 	XALDeviceList deviceList;
 
 	ALCchar *deviceName;
