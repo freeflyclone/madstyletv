@@ -14,8 +14,8 @@
 
 // the dimensions of the FBO buffer images.  This is GPU video memory.
 // You've been advised. Tested to 3840 by 2160
-#define RENDER_WIDTH	1920
-#define RENDER_HEIGHT	1080
+#define RENDER_WIDTH	3840
+#define RENDER_HEIGHT	2160
 
 typedef std::function<void()> XGLFBORender;
 

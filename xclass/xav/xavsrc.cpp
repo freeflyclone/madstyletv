@@ -96,17 +96,49 @@ bool XAVStream::Decode(AVPacket *packet)
 
 			XAVBuffer xb = frames[frameIdx];
 
-			// get luminance channel
-			int ySize = pCodecCtx->height * pFrame->linesize[0];
-			memcpy(xb.buffers[0], pFrame->data[0], ySize);
-			
-			// get U chrominance channel
-			int uSize = chromaWidth * chromaHeight;
-			memcpy(xb.buffers[1], pFrame->data[1], uSize);
+			// if linesize[x] == width, we can copy the frame with a single memcpy()
+			if (pFrame->linesize[0] == width) {
+				// luminance Y
+				int ySize = height * pFrame->linesize[0];
+				memcpy(xb.buffers[0], pFrame->data[0], ySize);
 
-			// get V chrominance channel
-			int vSize = chromaWidth * chromaHeight;
-			memcpy(xb.buffers[2], pFrame->data[2], uSize);
+				// chrominance U
+				int uSize = chromaWidth * chromaHeight;
+				memcpy(xb.buffers[1], pFrame->data[1], uSize);
+
+				// chrominance V
+				int vSize = chromaWidth * chromaHeight;
+				memcpy(xb.buffers[2], pFrame->data[2], uSize);
+			}
+			// ... otherwise it has to be scanline at a time.
+			else {
+				// luminance Y
+				unsigned char *s = pFrame->data[0];
+				unsigned char *d = xb.buffers[0];
+				for (int i = 0; i < height; i++) {
+					memcpy(d, s, pFrame->linesize[0]);
+					s += pFrame->linesize[0];
+					d += width;
+				}
+
+				// chrominance U
+				s = pFrame->data[1];
+				d = xb.buffers[1];
+				for (int i = 0; i < chromaHeight; i++) {
+					memcpy(d, s, pFrame->linesize[1]);
+					s += pFrame->linesize[1];
+					d += chromaWidth;
+				}
+
+				// chrominance V
+				s = pFrame->data[2];
+				d = xb.buffers[2];
+				for (int i = 0; i < chromaHeight; i++) {
+					memcpy(d, s, pFrame->linesize[2]);
+					s += pFrame->linesize[2];
+					d += chromaWidth;
+				}
+			}
 
 			nFramesDecoded++;
 			usedBuffs.notify();

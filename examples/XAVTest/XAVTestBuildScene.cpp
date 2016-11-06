@@ -12,8 +12,8 @@
 
 #include <iostream>
 
-#define VIDEO_WIDTH 1920
-#define VIDEO_HEIGHT 1080
+#define VIDEO_WIDTH 3840
+#define VIDEO_HEIGHT 2160
 #define VIDEO_CHANNELS 4
 
 typedef struct {
