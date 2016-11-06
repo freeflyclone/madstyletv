@@ -2,6 +2,10 @@
 
 XAV::XAV() : XThread("XAV") {
 	av_register_all();
+	// a URL for a source is unlikely to work without this.
+	// It at least is complaining loudly that doing so
+	// will be a requirement in the future.
+	avformat_network_init();
 }
 
 void XAV::AddSrc(const std::shared_ptr<XAVSrc> src) {

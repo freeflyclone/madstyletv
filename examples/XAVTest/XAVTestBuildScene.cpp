@@ -141,7 +141,13 @@ namespace {
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
-	std::string videoPath = pathToAssets + "/" + config.WideToBytes(config.Find(L"VideoFile")->AsString());
+	// build a full path including "pathToAssets", unless it's a url that starts with "http"
+	std::string videoUrl = config.WideToBytes(config.Find(L"VideoFile")->AsString());
+	std::string videoPath;
+	if (videoUrl.find("http") != std::string::npos)
+		videoPath = videoUrl;
+	else
+		videoPath = pathToAssets + "/" + videoUrl;
 
 	AddShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
 	shape->attributes.diffuseColor = { 0.025, 0.025, 0.025, 1 };
