@@ -26,6 +26,18 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	// Features of the framework are incrementally introduced by enhancing this function
 	// on a per example basis.
 	BuildScene();
+
+	XInputKeyFunc PresentGuiCanvas = [&](int key, int flags) {
+		const bool isDown = (flags & 0x8000) == 0;
+		const bool isRepeat = (flags & 0x4000) != 0;
+		static bool wireFrameMode = false;
+
+		xprintf("presentGuiCanvas(): '%c'\n", key);
+	};
+
+	AddKeyFunc('`', PresentGuiCanvas);
+	AddKeyFunc('~', PresentGuiCanvas);
+
 }
 
 void ExampleXGL::CameraTracker(XGLCamera *c){
