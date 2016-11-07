@@ -112,12 +112,14 @@ public:
 
 	void PreRender();
 	virtual void Display();
-	virtual void RenderScene();
+	virtual void RenderScene(XGLShapesMap *);
 	virtual void Idle() {};
 
+	XGLShape* CreateShape(XGLShapesMap *s, std::string shaderName, XGLNewShapeLambda fn);
 	XGLShape* CreateShape(std::string shaderName, XGLNewShapeLambda fn);
 	void AddShape(std::string shaderName, XGLNewShapeLambda fn);
-    void IterateShapesMap();
+	void AddGuiShape(std::string shaderName, XGLNewShapeLambda fn);
+	void IterateShapesMap();
 
 	// query the OpenGL context for various implementation limits, and dump output
 	void QueryContext();
@@ -133,6 +135,8 @@ public:
 
     // all the scene objects, mapped by XGLShader name
     XGLShapesMap shapes;
+
+	XGLShapesMap guiShapes;
 
     // encapsulate the camera and projection tranforms (view,perspectiv matrices)
     XGLCamera camera;

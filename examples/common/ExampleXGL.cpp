@@ -30,7 +30,9 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	// shapes are sorted in an std::map by name, and I want the GUI canvas to be
 	// rendered last so the transparency will actually work.
 	// TODO: A better way is needed than depending on sort order of the shader name.
-	AddShape("shaders/zz-gui", [&]() { shape = new XGLGuiCanvas(16, 9); return shape; });
+	AddGuiShape("shaders/zz-gui", [&]() { shape = new XGLGuiCanvas(16, 9); return shape; });
+	shape->AddTexture(pathToAssets + "/assets/8bit.png");
+	shape->model = glm::scale(glm::mat4(), glm::vec3(0.9, 0.8, 1.0));
 
 	// set the canvas color alpha to less than 1.0 for some transparency
 	shape->SetColor({ 1.0, 1.0, 1.0, 0.5 });
