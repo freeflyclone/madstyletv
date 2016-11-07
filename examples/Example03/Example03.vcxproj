@@ -178,6 +178,8 @@
   <ItemGroup>
     <None Include="..\..\shaders\diffuse.frag" />
     <None Include="..\..\shaders\diffuse.vert" />
+    <None Include="..\..\shaders\gui.frag" />
+    <None Include="..\..\shaders\gui.vert" />
     <None Include="..\..\shaders\imageflip.frag" />
     <None Include="..\..\shaders\imageflip.vert" />
     <None Include="..\..\shaders\lighting.frag" />
@@ -186,6 +188,8 @@
     <None Include="..\..\shaders\simple.vert" />
     <None Include="..\..\shaders\specular.frag" />
     <None Include="..\..\shaders\specular.vert" />
+    <None Include="..\..\shaders\tex.frag" />
+    <None Include="..\..\shaders\tex.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
