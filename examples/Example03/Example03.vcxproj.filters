@@ -59,5 +59,17 @@
     <None Include="..\..\shaders\imageflip.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\shaders\tex.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\tex.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\gui.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\gui.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

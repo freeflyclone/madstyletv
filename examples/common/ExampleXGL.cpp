@@ -38,6 +38,9 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	AddKeyFunc('`', PresentGuiCanvas);
 	AddKeyFunc('~', PresentGuiCanvas);
 
+	AddShape("shaders/gui", [&]() { shape = new XGLGuiCanvas(16,9); return shape; });
+	shape->SetColor({ 1.0, 0.0, 1.0, 0.5 });
+	shape->AddTexture(pathToAssets + "/assets/AndroidDemo.png");
 }
 
 void ExampleXGL::CameraTracker(XGLCamera *c){
