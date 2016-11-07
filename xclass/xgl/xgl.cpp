@@ -156,10 +156,8 @@ XGL::~XGL(){
     }
 }
 
-void XGL::RenderScene() {
+void XGL::RenderScene(XGLShapesMap *shapes) {
 	camera.Animate();
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// set the projection,view,model,mvp matrices in the matrix UBO
 	shaderMatrix.view = camera.GetViewMatrix();
@@ -176,7 +174,7 @@ void XGL::RenderScene() {
     // pointer to an XGLShape from the perShape iterator
     XGLShape *shape;
 
-	for (perShader = shapes.begin(); perShader != shapes.end(); perShader++) {
+	for (perShader = shapes->begin(); perShader != shapes->end(); perShader++) {
 		XGLShapeList *shapeList = perShader->second;
 		std::string name = perShader->first;
 		XGLShader *shader = shaderMap[name];
@@ -198,11 +196,19 @@ void XGL::RenderScene() {
 void XGL::Display(){
 	PreRender();
 
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	GL_CHECK("glClear() failed");
+
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, matrixUbo);
 	GL_CHECK("glBindBuffer() failed");
 
 	projector.Reshape();
-	RenderScene();
+
+	// render the world
+	RenderScene(&shapes);
+
+	// render the GUI
+	RenderScene(&guiShapes);
 
 	if (fb)
 		fb->Render(projector.width, projector.height);
@@ -236,16 +242,15 @@ void XGL::PreRender() {
 	}
 }
 
-
-XGLShape* XGL::CreateShape(std::string shName, XGLNewShapeLambda fn){
+XGLShape* XGL::CreateShape(XGLShapesMap *shapes, std::string shName, XGLNewShapeLambda fn){
 	std::string shaderName = pathToAssets + "/" + shName;
 	if (shaderMap.count(shaderName) == 0) {
 		shaderMap.emplace(shaderName, new XGLShader(shaderName));
 		shaderMap[shaderName]->Compile(shaderName);
 	}
 
-	if (shapes.count(shaderName) == 0) {
-		shapes.emplace(shaderName, new XGLShapeList);
+	if (shapes->count(shaderName) == 0) {
+		shapes->emplace(shaderName, new XGLShapeList);
 	}
 
 	XGLShape *pShape = fn();
@@ -258,6 +263,11 @@ XGLShape* XGL::CreateShape(std::string shName, XGLNewShapeLambda fn){
 	return pShape;
 }
 
+
+XGLShape* XGL::CreateShape(std::string shName, XGLNewShapeLambda fn){
+	return CreateShape(&shapes, shName, fn);
+}
+
 void XGL::AddShape(std::string shName, XGLNewShapeLambda fn){
 	XGLShape *pShape = CreateShape(shName, fn);
 
@@ -266,6 +276,13 @@ void XGL::AddShape(std::string shName, XGLNewShapeLambda fn){
 	AddChild(pShape);
 }
 
+void XGL::AddGuiShape(std::string shName, XGLNewShapeLambda fn){
+	XGLShape *pShape = CreateShape(&guiShapes, shName, fn);
+
+	guiShapes[pShape->shader->Name()]->push_back(pShape);
+
+	AddChild(pShape);
+}
 void XGL::IterateShapesMap(){
     // iterate through all of the shapes, according to which shader they use
     XGLShapesMap::iterator perShader = shapes.begin();
