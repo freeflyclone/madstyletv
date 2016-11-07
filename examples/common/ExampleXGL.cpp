@@ -20,33 +20,28 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	// add key event handling (XInput class) function mapping
 	AddKeyFunc(std::make_pair('A','Z'), std::bind(&ExampleXGL::KeyFunc, this, _1, _2));
 
-	// add a default "ground" plane grid.
-	AddShape("shaders/simple", [&](){ shape = new XYPlaneGrid(); return shape; });
-
-	// Features of the framework are incrementally introduced by enhancing this function
-	// on a per example basis.
-	BuildScene();
-
-	// shapes are sorted in an std::map by name, and I want the GUI canvas to be
-	// rendered last so the transparency will actually work.
-	// TODO: A better way is needed than depending on sort order of the shader name.
+	// add a GUI layer, this is essentially the same as the world layer.
+	// with just a "model" transform in the vertex shader, it becomes 2D
 	AddGuiShape("shaders/zz-gui", [&]() { shape = new XGLGuiCanvas(16, 9); return shape; });
-	shape->AddTexture(pathToAssets + "/assets/8bit.png");
 	shape->model = glm::scale(glm::mat4(), glm::vec3(0.9, 0.8, 1.0));
-
-	// set the canvas color alpha to less than 1.0 for some transparency
-	shape->SetColor({ 1.0, 1.0, 1.0, 0.5 });
+	shape->SetColor({ 0.0, 0.0, 0.0, 0.5 });
 
 	XInputKeyFunc PresentGuiCanvas = [&](int key, int flags) {
 		const bool isDown = (flags & 0x8000) == 0;
 		const bool isRepeat = (flags & 0x4000) != 0;
-		static bool wireFrameMode = false;
 
 		xprintf("presentGuiCanvas(): '%c'\n", key);
 	};
 
 	AddKeyFunc('`', PresentGuiCanvas);
 	AddKeyFunc('~', PresentGuiCanvas);
+
+	// add a default "ground" plane grid.
+	AddShape("shaders/simple", [&](){ shape = new XYPlaneGrid(); return shape; });
+
+	// Features of the framework are incrementally introduced by enhancing this function
+	// on a per example basis.
+	BuildScene();
 }
 
 void ExampleXGL::CameraTracker(XGLCamera *c){

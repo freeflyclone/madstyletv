@@ -3,7 +3,8 @@
 XGLGuiCanvas::XGLGuiCanvas(int w, int h) :
 	XGLTexQuad(),
 	width(w),
-	height(h)
+	height(h),
+	isVisible(true)
 {
 	xprintf("XGLGuiCanvas::XGLGuiCanvas()\n");
 }
