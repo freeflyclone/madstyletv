@@ -134,4 +134,14 @@ class XGLTransformer : public XGLShape {
 public:
 	XGLTransformer();
 };
+
+class XGLGuiCanvas : public XGLTexQuad {
+public:
+	XGLGuiCanvas(int w, int h);
+
+	~XGLGuiCanvas();
+private:
+	int width, height;
+};
+
 #endif // XGLSHAPES_H

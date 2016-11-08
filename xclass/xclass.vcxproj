@@ -238,7 +238,6 @@
     <ClInclude Include="xgl\xglexcept.h" />
     <ClInclude Include="xgl\xglfont.h" />
     <ClInclude Include="xgl\xglframebuffer.h" />
-    <ClInclude Include="xgl\xglgui.h" />
     <ClInclude Include="xgl\xgllight.h" />
     <ClInclude Include="xgl\xglmaterial.h" />
     <ClInclude Include="xgl\xglobject.h" />
@@ -275,7 +274,6 @@
     <ClCompile Include="xgl\xglcamera.cpp" />
     <ClCompile Include="xgl\xglfont.cpp" />
     <ClCompile Include="xgl\xglframebuffer.cpp" />
-    <ClCompile Include="xgl\xglgui.cpp" />
     <ClCompile Include="xgl\xgllight.cpp" />
     <ClCompile Include="xgl\xglmaterial.cpp" />
     <ClCompile Include="xgl\xglobject.cpp" />
