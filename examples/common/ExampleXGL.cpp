@@ -21,10 +21,8 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	AddKeyFunc(std::make_pair('A','Z'), std::bind(&ExampleXGL::KeyFunc, this, _1, _2));
 
 	// add a GUI layer, this is essentially the same as the world layer.
-	// with just a "model" transform in the vertex shader, it becomes 2D
+	// With just a "model" transform in the vertex shader, it becomes 2D
 	AddGuiShape("shaders/zz-gui", [&]() { shape = new XGLGuiCanvas(16, 9); return shape; });
-	shape->model = glm::scale(glm::mat4(), glm::vec3(0.9, 0.8, 1.0));
-	shape->SetColor({ 0.0, 0.0, 0.0, 0.5 });
 
 	XInputKeyFunc PresentGuiCanvas = [&](int key, int flags) {
 		const bool isDown = (flags & 0x8000) == 0;
