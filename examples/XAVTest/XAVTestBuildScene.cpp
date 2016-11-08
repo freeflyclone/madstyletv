@@ -50,6 +50,7 @@ public:
 				sinceLast += timer.SinceLast();
 			} while (sinceLast < 0.016666);
 		}
+		xprintf("VideoStreamThread done.\n");
 	}
 
 	std::shared_ptr<XAVStream> stream;
@@ -82,6 +83,7 @@ public:
 			xal.Buffer();
 			xal.Restart();
 		}
+		xprintf("AudioStreamThread done.\n");
 	}
 
 	XAL xal;
