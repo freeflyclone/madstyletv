@@ -7,6 +7,11 @@ in  vec2 UV;
 
 out vec4 out_Color;
 
+uniform vec4 ambient;
+uniform vec4 diffuse;
+uniform vec4 specular;
+uniform float shininess;
+
 uniform sampler2D texUnit0;
 uniform sampler2D texUnit1;
 uniform sampler2D texUnit2;
@@ -23,5 +28,5 @@ void main(void)
 	)
 		out_Color = vec4(1.0, 1.0, 1.0, 0.7);
 	else
-		out_Color = ex_Color * tc;
+		out_Color = diffuse * tc;
 }

@@ -61,7 +61,7 @@ XGL::XGL(int *argcp, char **argv) {
 }
 #endif
 
-XGL::XGL() : XGLObject("XGL"), clock(0.0f), pb(NULL), fb(NULL), renderGui(false) {
+XGL::XGL() : XGLObject("XGL"), clock(0.0f), pb(NULL), fb(NULL), renderGui(false), guiRoot(NULL) {
     xprintf("OpenGL version: %s\n", glGetString(GL_VERSION));
 	glGetError();
 
@@ -283,7 +283,11 @@ void XGL::AddGuiShape(std::string shName, XGLNewShapeLambda fn){
 	guiShapes[pShape->shader->Name()]->push_back(pShape);
 
 	AddChild(pShape);
+
+	if (guiRoot == NULL)
+		guiRoot = (XGLGuiCanvas *)pShape;
 }
+
 void XGL::IterateShapesMap(){
     // iterate through all of the shapes, according to which shader they use
     XGLShapesMap::iterator perShader = shapes.begin();

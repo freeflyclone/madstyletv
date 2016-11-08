@@ -133,6 +133,7 @@ public:
 
 	void RenderGui(bool enable) { renderGui = enable; }
 	bool IsGuiActive() { return renderGui; }
+	XGLGuiCanvas *GetGuiRoot() { return guiRoot; }
 
     XConfig config;
 
@@ -159,6 +160,7 @@ private:
     XGLShader *currentShader;
 	GLuint matrixUbo, lightUbo;
 	bool renderGui;
+	XGLGuiCanvas *guiRoot;
 
     // these are used by GLUT implementations
 #ifdef USE_GLUT
