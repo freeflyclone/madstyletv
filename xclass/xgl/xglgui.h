@@ -10,6 +10,5 @@ public:
 	~XGLGuiCanvas();
 private:
 	int width, height;
-	bool isVisible;
 };
 #endif

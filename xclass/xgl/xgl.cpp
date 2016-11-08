@@ -61,7 +61,7 @@ XGL::XGL(int *argcp, char **argv) {
 }
 #endif
 
-XGL::XGL() : XGLObject("XGL"), clock(0.0f), pb(NULL), fb(NULL) {
+XGL::XGL() : XGLObject("XGL"), clock(0.0f), pb(NULL), fb(NULL), renderGui(false) {
     xprintf("OpenGL version: %s\n", glGetString(GL_VERSION));
 	glGetError();
 
@@ -208,7 +208,8 @@ void XGL::Display(){
 	RenderScene(&shapes);
 
 	// render the GUI
-	RenderScene(&guiShapes);
+	if (renderGui)
+		RenderScene(&guiShapes);
 
 	if (fb)
 		fb->Render(projector.width, projector.height);

@@ -30,7 +30,10 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 		const bool isDown = (flags & 0x8000) == 0;
 		const bool isRepeat = (flags & 0x4000) != 0;
 
-		xprintf("presentGuiCanvas(): '%c'\n", key);
+		if (isDown && IsGuiActive())
+			RenderGui(false);
+		else if (isDown)
+			RenderGui(true);
 	};
 
 	AddKeyFunc('`', PresentGuiCanvas);

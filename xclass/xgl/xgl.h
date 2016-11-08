@@ -131,6 +131,9 @@ public:
 	XGLShader *GetShader(std::string name) { return shaderMap[pathToAssets + "/" + name]; }
 	XGLShaderMatrixData *GetMatrix() { return &shaderMatrix; }
 
+	void RenderGui(bool enable) { renderGui = enable; }
+	bool IsGuiActive() { return renderGui; }
+
     XConfig config;
 
     // all the scene objects, mapped by XGLShader name
@@ -155,6 +158,7 @@ private:
     // this is returned by GetShader().  Use of GetShader() feels funky, like my structure design blows chunks.
     XGLShader *currentShader;
 	GLuint matrixUbo, lightUbo;
+	bool renderGui;
 
     // these are used by GLUT implementations
 #ifdef USE_GLUT
