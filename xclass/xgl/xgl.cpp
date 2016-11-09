@@ -257,13 +257,17 @@ XGLShape* XGL::CreateShape(XGLShapesMap *shapes, std::string shName, XGLNewShape
 	XGLShape *pShape = fn();
 	XGLShader *shader = shaderMap[shaderName];
 
+	// XGLBuffer::Load() also makes this assignment, but for
+	// geometryless shapes, it won't get called.  Do it here
+	// just to be safe.
+	pShape->shader = shader;
+
 	if (pShape->v.size() > 0) {
 		pShape->Load(shader, pShape->v, pShape->idx);
 		pShape->uniformLocations = shader->materialLocations;
 	}
 	return pShape;
 }
-
 
 XGLShape* XGL::CreateShape(std::string shName, XGLNewShapeLambda fn){
 	return CreateShape(&shapes, shName, fn);
