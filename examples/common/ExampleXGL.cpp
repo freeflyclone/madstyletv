@@ -22,7 +22,8 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 
 	// add a GUI layer, this is essentially the same as the world layer.
 	// With just a "model" transform in the vertex shader, it becomes 2D
-	AddGuiShape("shaders/zz-gui", [&]() { shape = new XGLGuiCanvas(16, 9); return shape; });
+	//AddGuiShape("shaders/zz-gui", [&]() { shape = new XGLGuiCanvas(16, 9); return shape; });
+	AddGuiShape("shaders/zz-gui", [&]() { shape = new XGLTransformer(); return shape; });
 
 	XInputKeyFunc PresentGuiCanvas = [&](int key, int flags) {
 		const bool isDown = (flags & 0x8000) == 0;

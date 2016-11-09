@@ -131,7 +131,7 @@ public:
 	XGLShader *GetShader(std::string name) { return shaderMap[pathToAssets + "/" + name]; }
 	XGLShaderMatrixData *GetMatrix() { return &shaderMatrix; }
 
-	void RenderGui(bool enable) { renderGui = enable; }
+	void RenderGui(bool enable) { renderGui = enable; xprintf("GUI is %s\n", enable ? "on" : "off"); }
 	bool IsGuiActive() { return renderGui; }
 	XGLGuiCanvas *GetGuiRoot() { return guiRoot; }
 
