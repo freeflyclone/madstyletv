@@ -1,19 +1,8 @@
 { 
 	"AssetFolder" : "assets",
 	"ShaderFolder" : "shaders",
-	"Light0" : {
-		"x" : 0.0,
-		"y" : -10.0,
-		"z" : 20.0,
-		"diffuse" : {
-			"r" : 1.0,
-			"g" : 1.0,
-			"b" : 1.0
-		},
-		"numericArray" : [1.0, 2.0, 3.0, "Test"]
-	},
 	"SharedMemory" : false,
-	"VideoFile" : "bin/gopro.mp4",
+	"VideoFile" : "assets/gopr0181.mp4",
 	"Encoder" : {
 		"enabled" : false,
 		"preset" : "faster",
