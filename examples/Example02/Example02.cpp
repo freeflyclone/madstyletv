@@ -99,4 +99,7 @@ void ExampleXGL::BuildScene() {
 		}
 	};
 	AddMouseFunc(worldCursorMouse);
+
+	CreateShape(&guiShapes, "shaders/zz-gui", [&]() { child1 = new XGLGuiCanvas(16, 9); return child1; });
+	GetGuiRoot()->AddChild(child1);
 }

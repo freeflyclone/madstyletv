@@ -20,9 +20,8 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	// add key event handling (XInput class) function mapping
 	AddKeyFunc(std::make_pair('A','Z'), std::bind(&ExampleXGL::KeyFunc, this, _1, _2));
 
-	// add a GUI layer, this is essentially the same as the world layer.
+	// add a GUI layer. This is essentially the same as the world layer.
 	// With just a "model" transform in the vertex shader, it becomes 2D
-	//AddGuiShape("shaders/zz-gui", [&]() { shape = new XGLGuiCanvas(16, 9); return shape; });
 	AddGuiShape("shaders/zz-gui", [&]() { shape = new XGLTransformer(); return shape; });
 
 	XInputKeyFunc PresentGuiCanvas = [&](int key, int flags) {
