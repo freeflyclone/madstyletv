@@ -44,11 +44,16 @@ public:
 			ib.height = stream->height;
 			ib.chromaWidth = stream->chromaWidth;
 			ib.chromaHeight = stream->chromaHeight;
-			std::this_thread::sleep_for(std::chrono::duration<int, std::micro>(1));
-			double sinceLast = 0.0;
-			do {
-				sinceLast += timer.SinceLast();
-			} while (sinceLast < 0.016666);
+//			std::this_thread::sleep_for(std::chrono::duration<int, std::micro>(10000));
+//			double sinceLast = 0.0;
+//			do {
+//				sinceLast += timer.SinceLast();
+//			} while (sinceLast < 0.016);
+			xprintf("Video buffered: %d, %c frame,", stream->nFramesDecoded - stream->nFramesRead, " IPB"[stream->pFrame->pict_type]);
+			if (stream->pFrame->pkt_pts != stream->pFrame->pkt_dts)
+				xprintf(" pts: %d, dts: %d\n", stream->pFrame->pkt_pts, stream->pFrame->pkt_dts);
+			else
+				xprintf("\n");
 		}
 		xprintf("VideoStreamThread done.\n");
 	}
@@ -63,7 +68,7 @@ public:
 		XThread("AudioStreamThread"), stream(s), xal(NULL, s->sampleRate, AL_FORMAT_STEREO16, XAV_NUM_FRAMES) 
 	{
 		xal.AddBuffers(XAV_NUM_FRAMES);
-		xal.QueueBuffers(4);
+		xal.QueueBuffers();
 		xal.Play();
 	}
 
@@ -82,6 +87,7 @@ public:
 			xal.Convert((float *)audio.buffers[0], (float *)audio.buffers[1]);
 			xal.Buffer();
 			xal.Restart();
+			//xprintf("Audio buffered: %d, Time: %0.8f\n", stream->nFramesDecoded - stream->nFramesRead, stream->streamTime);
 		}
 		xprintf("AudioStreamThread done.\n");
 	}
@@ -112,11 +118,11 @@ public:
 	}
 
 	void Run() {
-		if (hasVideo)
-			vst->Start();
-
 		if (hasAudio)
 			ast->Start();
+
+		if (hasVideo)
+			vst->Start();
 
 		while ( xav.IsRunning() && IsRunning() ) {
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));

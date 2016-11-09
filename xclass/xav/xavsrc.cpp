@@ -1,6 +1,6 @@
 #include "xavsrc.h"
 
-XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES), streamIdx(0) {
+XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES), pStream(NULL), streamIdx(0), streamTime(0.0) {
 	pCodecCtx = ctx;
 
 	pCodec=avcodec_find_decoder(pCodecCtx->codec_id);
@@ -18,7 +18,7 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES), streamIdx
 		xprintf("Found AVMEDIA_TYPE_VIDEO\n");
 		xprintf("               width: %d\n", pCodecCtx->width);
 		xprintf("              height: %d\n", pCodecCtx->height);
-		numBytes = av_image_get_buffer_size(pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height,8) * 4;
+		numBytes = av_image_get_buffer_size(pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height,8) * 2;
 
 		AllocateBufferPool(XAV_NUM_FRAMES, numBytes, 3);
 		width = pCodecCtx->width;
@@ -161,6 +161,7 @@ bool XAVStream::Decode(AVPacket *packet)
 			for (int i = 0; i < channels; i++)
 				memcpy(xb.buffers[i], pFrame->data[i], xb.size);
 
+			streamTime += (double)pFrame->nb_samples / (double)pFrame->sample_rate;
 			nFramesDecoded++;
 			usedBuffs.notify();
 		}
@@ -170,8 +171,10 @@ bool XAVStream::Decode(AVPacket *packet)
 }
 
 XAVBuffer XAVStream::GetBuffer() {
-	if (!usedBuffs.wait_for(200)) 
+	if (!usedBuffs.wait_for(1000)) {
+		xprintf("XAVStream::GetBuffer() timed out\n");
 		return XAVBuffer{ { NULL, NULL, NULL }, 0, 0 };
+	}
 
 	int frameIdx = nFramesRead & (XAV_NUM_FRAMES - 1);
 	XAVBuffer xb = frames[frameIdx];
@@ -219,6 +222,7 @@ XAVSrc::XAVSrc(const std::string name, bool video=true, bool audio=true) :
 			if(!mVideoStream) {
 				if (doVideo) {
 					mVideoStream = std::make_shared<XAVStream>(pFormatCtx->streams[i]->codec);
+					mVideoStream->pStream = pFormatCtx->streams[i];
 					mVideoStream->streamIdx = i;
 					mStreams.emplace_back(mVideoStream);
 					mUsedStreams++;
@@ -229,6 +233,7 @@ XAVSrc::XAVSrc(const std::string name, bool video=true, bool audio=true) :
 			if (!mAudioStream) {
 				if (doAudio) {
 					mAudioStream = std::make_shared<XAVStream>(pFormatCtx->streams[i]->codec);
+					mAudioStream->pStream = pFormatCtx->streams[i];
 					mAudioStream->streamIdx = i;
 					mStreams.emplace_back(mAudioStream);
 					mUsedStreams++;
