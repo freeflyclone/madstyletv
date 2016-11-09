@@ -101,5 +101,16 @@ void ExampleXGL::BuildScene() {
 	AddMouseFunc(worldCursorMouse);
 
 	CreateShape(&guiShapes, "shaders/zz-gui", [&]() { child1 = new XGLGuiCanvas(16, 9); return child1; });
+	translate = glm::translate(glm::mat4(), glm::vec3(-0.5, 0.5f, 0));
+	glm::mat4 model = glm::scale(translate, glm::vec3(0.4, 0.4, 1.0));
+	child1->model = model;
+	GetGuiRoot()->AddChild(child1);
+
+	CreateShape(&guiShapes, "shaders/zz-gui", [&]() { child1 = new XGLGuiCanvas(16, 9); return child1; });
+	translate = glm::translate(glm::mat4(), glm::vec3(0.5, 0.5f, 0));
+	model = glm::scale(translate, glm::vec3(0.4, 0.4, 1.0));
+	child1->model = model;
+	child1->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.5 };
+	child1->AddTexture(pathToAssets + "/assets/AndroidDemo.png");
 	GetGuiRoot()->AddChild(child1);
 }
