@@ -208,8 +208,11 @@ void XGL::Display(){
 	RenderScene(&shapes);
 
 	// render the GUI
-	if (renderGui)
+	if (renderGui) {
+		glDisable(GL_DEPTH_TEST);
 		RenderScene(&guiShapes);
+		glEnable(GL_DEPTH_TEST);
+	}
 
 	if (fb)
 		fb->Render(projector.width, projector.height);

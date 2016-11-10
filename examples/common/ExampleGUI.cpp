@@ -1,7 +1,7 @@
 #include "ExampleXGL.h"
 
 void ExampleXGL::BuildGUI() {
-	XGLShape *shape, *child1;
+	XGLShape *shape, *child1,*child2;
 	glm::mat4 translate, model;
 
 	// add a GUI layer. This is essentially the same as the world layer.
@@ -42,4 +42,36 @@ void ExampleXGL::BuildGUI() {
 	child1->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.5 };
 	child1->AddTexture(pathToAssets + "/assets/AndroidDemo.png");
 	GetGuiRoot()->AddChild(child1);
+
+	CreateShape(&guiShapes, "shaders/zz-gui", [&]() { child2 = new XGLTexQuad(); return child2; });
+	translate = glm::translate(glm::mat4(), glm::vec3(-0.5, 0.5, 0));
+	model = glm::scale(translate, glm::vec3(0.5, 0.5, 1.0));
+	child2->model = model;
+	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 1.0 };
+	child2->AddTexture(pathToAssets + "/assets/yellow.png");
+	child1->AddChild(child2);
+
+	CreateShape(&guiShapes, "shaders/zz-gui", [&]() { child2 = new XGLTexQuad(); return child2; });
+	translate = glm::translate(glm::mat4(), glm::vec3(0.5, 0.5, 0));
+	model = glm::scale(translate, glm::vec3(0.5, 0.5, 1.0));
+	child2->model = model;
+	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 1.0 };
+	child2->AddTexture(pathToAssets + "/assets/green.png");
+	child1->AddChild(child2);
+
+	CreateShape(&guiShapes, "shaders/zz-gui", [&]() { child2 = new XGLTexQuad(); return child2; });
+	translate = glm::translate(glm::mat4(), glm::vec3(-0.5, -0.5, 0));
+	model = glm::scale(translate, glm::vec3(0.5, 0.5, 1.0));
+	child2->model = model;
+	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 1.0 };
+	child2->AddTexture(pathToAssets + "/assets/red.png");
+	child1->AddChild(child2);
+
+	CreateShape(&guiShapes, "shaders/zz-gui", [&]() { child2 = new XGLTexQuad(); return child2; });
+	translate = glm::translate(glm::mat4(), glm::vec3(0.5, -0.5, 0));
+	model = glm::scale(translate, glm::vec3(0.5, 0.5, 1.0));
+	child2->model = model;
+	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 1.0 };
+	child2->AddTexture(pathToAssets + "/assets/blue.png");
+	child1->AddChild(child2);
 }
