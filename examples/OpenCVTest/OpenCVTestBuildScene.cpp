@@ -24,7 +24,7 @@ void ExampleXGL::BuildScene() {
 		exit(-1);
 	}
 
-	AddShape("shaders/tex", [&](){ shape = new XGLTexQuad(imgPath, image.cols, image.rows, image.channels(), image.data, true); return shape; });
+	AddShape("shaders/tex", [&](){ shape = new XGLTexQuad(image.cols, image.rows, image.channels(), image.data, true); return shape; });
 
 	// have the upright texture scaled up and made 16:9 aspect, and orbiting the origin
 	// to highlight use of the callback function for animation of a shape.  Note that this function

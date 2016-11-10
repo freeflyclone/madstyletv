@@ -151,12 +151,12 @@ void XGLBuffer::AddTexture(std::string texName){
     if ((img = SOIL_load_image(texName.c_str(), &width, &height, &channels, 0)) == NULL)
         throwXGLException("SOIL_load_image() failed: " + texName);
 
-    AddTexture(texName, width, height, channels, img);
+    AddTexture(width, height, channels, img);
 
     SOIL_free_image_data(img);
 }
 
-void XGLBuffer::AddTexture(std::string texName, int width, int height, int channels, GLubyte *img, bool flipColors){
+void XGLBuffer::AddTexture(int width, int height, int channels, GLubyte *img, bool flipColors){
 	GLenum format = GL_RGBA;
 	GLuint texId;
 

@@ -619,7 +619,7 @@ XGLTextureAtlas::XGLTextureAtlas() {
 			idx.push_back(index + 2);
 			idx.push_back(index + 3);
 
-			AddTexture(FONT_NAME, font.atlasWidth, font.atlasHeight, 1, font.bitmapPages[i]);
+			AddTexture(font.atlasWidth, font.atlasHeight, 1, font.bitmapPages[i]);
 			i++;
 			if (i == font.atlasPageCount)
 				break;
@@ -665,8 +665,8 @@ XGLTexQuad::XGLTexQuad(std::string fileName) : XGLTexQuad() {
 	AddTexture(fileName);
 }
 
-XGLTexQuad::XGLTexQuad(std::string texName, int width, int height, int channels, GLubyte *img, bool flipColors) : XGLTexQuad() {
-	AddTexture(texName, width, height, channels, img, flipColors);
+XGLTexQuad::XGLTexQuad(int width, int height, int channels, GLubyte *img, bool flipColors) : XGLTexQuad() {
+	AddTexture(width, height, channels, img, flipColors);
 }
 XGLTexQuad::XGLTexQuad(int width, int height, int channels) : XGLTexQuad() {
 	AddTexture(width, height, channels);
