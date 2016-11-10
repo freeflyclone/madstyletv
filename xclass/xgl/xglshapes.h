@@ -116,7 +116,6 @@ public:
 	XGLTextureAtlas();
 	virtual void Draw();
 private:
-	XGLFont font;
 	float gridCellWidth, gridCellHeight;
 	int gridXsize, gridYsize;
 };
