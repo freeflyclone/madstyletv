@@ -25,6 +25,7 @@ public:
 	ExampleXGL();
 
 	void BuildScene();
+	virtual void BuildGUI();
 
 	void Reshape(int w, int h);
 
