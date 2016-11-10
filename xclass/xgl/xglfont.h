@@ -24,7 +24,18 @@
 #endif
 
 class XGLFont {
-    typedef std::map<FT_ULong, FT_UInt> CharMap;
+	// define everything we may need in order to render glyphs
+	// directly from pages of bitmap textures
+	struct  XGLGlyph {
+		FT_UInt index;		// In case we need to call FT_Load_Glyph
+		int	page;			// the atlas page for this glyph's bitmap
+		int row;			// the row on that page
+		int xOff, yOff;		// the X,Y coords of the upper left corner
+		int width, height;	// it's dimensions
+	};
+
+	typedef std::map<FT_ULong, FT_UInt> CharMap;
+	typedef std::map<FT_ULong, XGLGlyph> GlyphMap;
 
 public:
 
@@ -36,6 +47,7 @@ public:
     FT_GlyphSlot g;
 
     CharMap charMap;
+	GlyphMap glyphMap;
 
     // there may be many pages (2D bitmaps) of
     // texture atlasses, particularly for
