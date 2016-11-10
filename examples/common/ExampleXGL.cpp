@@ -5,6 +5,9 @@
 ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	XGLShape *shape;
 
+	// add 2D shapes to the guiShapes list.
+	BuildGUI();
+
 	// Initialize the Camera matrix
 	glm::vec3 cameraPosition(-15, 25, 15);
 	glm::vec3 cameraDirection = glm::normalize(cameraPosition*-1.0f);
@@ -19,23 +22,6 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 
 	// add key event handling (XInput class) function mapping
 	AddKeyFunc(std::make_pair('A','Z'), std::bind(&ExampleXGL::KeyFunc, this, _1, _2));
-
-	// add a GUI layer. This is essentially the same as the world layer.
-	// With just a "model" transform in the vertex shader, it becomes 2D
-	AddGuiShape("shaders/zz-gui", [&]() { shape = new XGLTransformer(); return shape; });
-
-	XInputKeyFunc PresentGuiCanvas = [&](int key, int flags) {
-		const bool isDown = (flags & 0x8000) == 0;
-		const bool isRepeat = (flags & 0x4000) != 0;
-
-		if (isDown && IsGuiActive())
-			RenderGui(false);
-		else if (isDown)
-			RenderGui(true);
-	};
-
-	AddKeyFunc('`', PresentGuiCanvas);
-	AddKeyFunc('~', PresentGuiCanvas);
 
 	// add a default "ground" plane grid.
 	AddShape("shaders/simple", [&](){ shape = new XYPlaneGrid(); return shape; });

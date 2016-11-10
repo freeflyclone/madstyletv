@@ -42,8 +42,6 @@ public:
     // Chinese fonts.
     GLubyte **bitmapPages;
 
-    GLuint tex;
-    GLuint vbo;
     GLuint atlasWidth;
     GLuint atlasHeight;
     GLuint atlasPageCount;
