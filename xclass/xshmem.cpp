@@ -5,8 +5,6 @@
 #ifdef WIN32
 
 XSharedMem::XSharedMem(std::string n) : fileBackingName(n) {
-	xprintf("XSharedMem::XSharedMem(): %s\n", fileBackingName.c_str());
-
 	hFile = CreateFile(TEXT("C:\\vcam_buffer.dat"), (GENERIC_READ | GENERIC_WRITE), (FILE_SHARE_READ | FILE_SHARE_WRITE), NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE)
 		xprintf("Failed to open file mapping file C:\\vcam_buffer.dat\n");

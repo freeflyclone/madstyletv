@@ -65,7 +65,7 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f), pb(NULL), fb(NULL), renderGui(false)
     xprintf("OpenGL version: %s\n", glGetString(GL_VERSION));
 	glGetError();
 
-	QueryContext();
+	//QueryContext();
 
 	// for now, create one point light, for diffuse lighting shader development
 	// position, pad1, color, pad2, attenuation, ambientCoefficient
