@@ -699,55 +699,57 @@ XGLTransformer::XGLTransformer(){
 };
 
 XGLGuiCanvas::XGLGuiCanvas(int w, int h) :
-XGLTexQuad(),
-width(w),
-height(h)
+	XGLTexQuad(),
+	width(w),
+	height(h),
+	penX(10),
+	penY(64),
+	buffer(NULL)
 {
 	attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.5 };
 	model = glm::scale(glm::mat4(), glm::vec3(0.95, 0.89, 1.0));
-	xprintf("XGLGuiCanvas::XGLGuiCanvas()\n");
+
+	// our base class is a dimensionless XGLTexQuad with no texture map
+	// but we want a texture map that's easily accessible for GUI work
+	// so create a host memory buffer and add it to our base XGLTexQuad
+	if ((buffer = new GLubyte[width*height]()) == NULL)
+		throwXGLException("failed to allocate a buffer for the XGLGuiCanvas");
+
+	memset(buffer, 0, width*height);
+	AddTexture(width, height, 1, buffer);
 }
 
-XGLGuiCanvas::~XGLGuiCanvas() {
-	xprintf("XGLGuiCanvas::~XglGuiCanvas()\n");
-}
+XGLGuiCanvas::~XGLGuiCanvas() {}
 
-void XGLTextLine::Draw() {
-	glEnable(GL_BLEND);
-	GL_CHECK("glEnable(GL_BLEND) failed");
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	GL_CHECK("glBlendFunc() failed");
-
-	glActiveTexture(GL_TEXTURE0);
-	GL_CHECK("glActiveTexture() failed");
-
-	glBindTexture(GL_TEXTURE_2D, texIds[0]);
-	GL_CHECK("glBindTexture() failed");
-
-	glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
-	GL_CHECK("glDrawElements() failed");
-
-	glDisable(GL_BLEND);
-	GL_CHECK("glDisable(GL_BLEND) failed");
-}
-
-XGLTextLine::XGLTextLine(std::wstring t) : text(t) {
-	SetName("XTextLine");
+void XGLGuiCanvas::RenderText(std::wstring text) {
+	FT_GlyphSlot g = font.face->glyph;
+	GLubyte *src, *dest;
 	int numGlyphs = (int)text.size();
 
-	xprintf("there are %d characters\n", numGlyphs);
-	xprintf("total: %d, maxAscend: %d, maxDescend: %d\n", 
-		font.maxAscend + font.maxDescend, font.maxAscend, font.maxDescend);
+	// Render the string...
+	for (int i = 0; i < numGlyphs; i++){
+		if (text[i] == L'\n') {
+			xprintf("Found a newline\n");
+			penX = 10;
+			penY += 68;
+		}
+		else {
+			FT_Load_Glyph(font.face, font.charMap[text[i]], FT_LOAD_RENDER);
+			dest = buffer + (penY - g->bitmap_top) * width + penX;
+			src = (GLubyte *)g->bitmap.buffer;
 
-	for (int i = 0; i < numGlyphs; i++) {
-		FT_Load_Glyph(font.face, font.charMap[text[i]], FT_LOAD_RENDER);
-
-		FT_GlyphSlot g = font.face->glyph;
-
-		int w = g->bitmap.width;
-		int h = g->bitmap.rows;
-		int l = g->bitmap_left;
-		int t = g->bitmap_top;
-		int a = g->advance.x / 64;
+			// 2D blit the glyph into the texture at penX,penY
+			for (unsigned int i = 0; i < g->bitmap.rows; i++) {
+				memcpy(dest + (i*width), src, g->bitmap.width);
+				src += g->bitmap.width;
+			}
+			penX += g->advance.x / 64;
+		}
 	}
+
+	// this should probably be done with just the rectangle of the line in question
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texIds[0]);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, buffer);
+	GL_CHECK("glGetTexImage() didn't work");
 }
