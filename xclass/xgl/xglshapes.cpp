@@ -711,3 +711,63 @@ height(h)
 XGLGuiCanvas::~XGLGuiCanvas() {
 	xprintf("XGLGuiCanvas::~XglGuiCanvas()\n");
 }
+
+void XGLTextLine::Draw() {
+	glEnable(GL_BLEND);
+	GL_CHECK("glEnable(GL_BLEND) failed");
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	GL_CHECK("glBlendFunc() failed");
+
+	glActiveTexture(GL_TEXTURE0);
+	GL_CHECK("glActiveTexture() failed");
+
+	glBindTexture(GL_TEXTURE_2D, texIds[0]);
+	GL_CHECK("glBindTexture() failed");
+
+	glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
+	GL_CHECK("glDrawElements() failed");
+
+	glDisable(GL_BLEND);
+	GL_CHECK("glDisable(GL_BLEND) failed");
+}
+
+XGLTextLine::XGLTextLine(std::wstring t) : text(t) {
+	SetName("XTextLine");
+	int numGlyphs = text.size();
+	float glyphWidth = 1.0f / (float)numGlyphs;
+
+	xprintf("there are %d characters\n", numGlyphs);
+	xprintf("the font has %d pages, %d by %d\n", font.atlasPageCount, font.atlasWidth, font.atlasHeight);
+
+	for (int i = 0; i < font.atlasPageCount; i++)
+		AddTexture(font.atlasWidth, font.atlasHeight, 1, font.bitmapPages[i]);
+
+	for (int i = 0; i < numGlyphs; i++) {
+		XGLFont::XGLGlyph *pg = font.GetGlyph(text[i]);
+
+		xprintf("%d,%d,%d - %d,%d - %d,%d\n",
+			pg->index,
+			pg->page,
+			pg->row,
+			pg->xOff,
+			pg->yOff,
+			pg->width,
+			pg->height
+			);
+
+		float l = (float)pg->xOff / (float)font.atlasWidth;
+		float r = l + (float)pg->width / (float)font.atlasWidth;
+		float t = (float)pg->yOff / (float)font.atlasHeight;
+		float b = t + (float)pg->height / (float)font.atlasHeight;
+
+		v.push_back({ { i*glyphWidth, 0.0, 0 }, { l, t }, {}, white });
+		v.push_back({ { i*glyphWidth, 1.0, 0 }, { l, b }, {}, white });
+		v.push_back({ { (i+1)*glyphWidth, 0.0, 0 }, { r, t }, {}, white });
+		v.push_back({ { (i + 1)*glyphWidth, 1.0, 0 }, { r, b }, {}, white });
+
+		idx.push_back((i * 4) + 0);
+		idx.push_back((i * 4) + 1);
+		idx.push_back((i * 4) + 2);
+		idx.push_back((i * 4) + 3);
+	}
+}

@@ -138,9 +138,23 @@ class XGLGuiCanvas : public XGLTexQuad {
 public:
 	XGLGuiCanvas(int w, int h);
 
+	void SetFocus(bool enable) { hasFocus = enable; }
+	bool HasFocus() { return hasFocus; }
+
 	~XGLGuiCanvas();
 private:
 	int width, height;
+	bool hasFocus;
+};
+
+class XGLTextLine : public XGLShape {
+public:
+	XGLTextLine(std::wstring t);
+
+	void Draw();
+
+private:
+	std::wstring text;
 };
 
 #endif // XGLSHAPES_H
