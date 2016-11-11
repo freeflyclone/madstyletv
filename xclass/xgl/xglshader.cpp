@@ -136,10 +136,7 @@ bool XGLShader::Compile(std::string name) {
 
 	idx = glGetUniformBlockIndex(programId, "LightData");
 	GL_CHECK("glGetUniformBlockIndex() failed");
-	if (idx == GL_INVALID_INDEX) {
-		xprintf("LightData not found in '%s'\n", name.c_str());
-	}
-	else {
+	if (idx != GL_INVALID_INDEX) {
 		// assign to uniform block 1
 		glUniformBlockBinding(programId, idx, 1);
 		GL_CHECK("glUniformBlockBinding() failed");
@@ -147,10 +144,7 @@ bool XGLShader::Compile(std::string name) {
 
 	idx = glGetUniformBlockIndex(programId, "MaterialData");
 	GL_CHECK("glGetUniformBlockIndex() failed");
-	if (idx == GL_INVALID_INDEX) {
-		xprintf("LightData not found in '%s'\n", name.c_str());
-	}
-	else {
+	if (idx != GL_INVALID_INDEX) {
 		// assign to uniform block 1
 		glUniformBlockBinding(programId, idx, 2);
 		GL_CHECK("glUniformBlockBinding() failed");

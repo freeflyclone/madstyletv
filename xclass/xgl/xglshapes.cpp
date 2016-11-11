@@ -729,7 +729,6 @@ void XGLGuiCanvas::RenderText(std::wstring text) {
 	// Render the string...
 	for (int i = 0; i < numGlyphs; i++){
 		if (text[i] == L'\n') {
-			xprintf("Found a newline\n");
 			penX = 10;
 			penY += 68;
 		}
