@@ -68,10 +68,22 @@
     <None Include="..\..\shaders\tex.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\shaders\zz-gui.vert">
+    <None Include="..\..\shaders\gui.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\gui.vert">
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\..\shaders\zz-gui.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\zz-gui.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\gui-tex.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\gui-tex.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
