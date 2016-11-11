@@ -140,21 +140,16 @@ public:
 
 	void SetFocus(bool enable) { hasFocus = enable; }
 	bool HasFocus() { return hasFocus; }
+	void RenderText(std::wstring t);
 
 	~XGLGuiCanvas();
 private:
 	int width, height;
+	GLubyte *buffer;
 	bool hasFocus;
-};
 
-class XGLTextLine : public XGLShape {
-public:
-	XGLTextLine(std::wstring t);
-
-	void Draw();
-
-private:
-	std::wstring text;
+	// text rendering stuff
+	int penX, penY;
 };
 
 #endif // XGLSHAPES_H
