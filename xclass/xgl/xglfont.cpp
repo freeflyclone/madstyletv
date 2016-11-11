@@ -37,7 +37,7 @@ static void DebugString(FT_Face face, std::string c){
         DebugChar(face, c.c_str()[i]);
 }
 
-XGLFont::XGLFont() : atlasWidth(0), atlasHeight(0), atlasPageCount(0), bitmapPages(NULL) {
+XGLFont::XGLFont() : atlasWidth(0), atlasHeight(0), atlasPageCount(0), bitmapPages(NULL), maxAscend(0), maxDescend(0) {
     if (FT_Init_FreeType(&ft))
         throwXGLException("Init of FreeType failed");
 
@@ -88,10 +88,17 @@ XGLFont::XGLFont() : atlasWidth(0), atlasHeight(0), atlasPageCount(0), bitmapPag
 			int rowHeight = 0;
 			int rowWidth = 0;
 			for (int j = 0; j < glyphsPerRow && it != charMap.end(); j++, it++) {
-				FT_Load_Glyph(face, it->second, FT_LOAD_DEFAULT);
+				FT_Load_Glyph(face, it->second, FT_LOAD_RENDER);
 				if (g->metrics.height / 64 > rowHeight)
 					rowHeight = g->metrics.height / 64;
 				rowWidth += g->metrics.width / 64;
+
+				int h = g->bitmap.rows;
+				int t = g->bitmap_top;
+				if ((h - t)>maxDescend)
+					maxDescend = h - t;
+				if (t > maxAscend)
+					maxAscend = t;
 			}
 			if (it == charMap.end())
 				break;

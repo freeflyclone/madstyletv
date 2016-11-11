@@ -733,47 +733,21 @@ void XGLTextLine::Draw() {
 
 XGLTextLine::XGLTextLine(std::wstring t) : text(t) {
 	SetName("XTextLine");
-	int numGlyphs = text.size();
-	float glyphWidth = 1.0f / (float)numGlyphs;
+	int numGlyphs = (int)text.size();
 
 	xprintf("there are %d characters\n", numGlyphs);
-	xprintf("the font has %d pages, %d by %d\n", font.atlasPageCount, font.atlasWidth, font.atlasHeight);
-
-	for (int i = 0; i < font.atlasPageCount; i++)
-		AddTexture(font.atlasWidth, font.atlasHeight, 1, font.bitmapPages[i]);
-
-	float xAdvance = 0.0f;
+	xprintf("total: %d, maxAscend: %d, maxDescend: %d\n", 
+		font.maxAscend + font.maxDescend, font.maxAscend, font.maxDescend);
 
 	for (int i = 0; i < numGlyphs; i++) {
-		XGLFont::XGLGlyph *pg = font.GetGlyph(text[i]);
+		FT_Load_Glyph(font.face, font.charMap[text[i]], FT_LOAD_RENDER);
 
-		xprintf("%d,%d,%d - %d,%d - %d,%d\n",
-			pg->index,
-			pg->page,
-			pg->row,
-			pg->xOff,
-			pg->yOff,
-			pg->width,
-			pg->height
-			);
+		FT_GlyphSlot g = font.face->glyph;
 
-		float l = (float)pg->xOff / (float)font.atlasWidth;
-		float w = (float)pg->width / (float)font.atlasWidth;
-		float r = l + w;
-		float t = (float)pg->yOff / (float)font.atlasHeight;
-		float h = (float)pg->height / (float)font.atlasHeight;
-		float b = t + h;
-
-		v.push_back({ { xAdvance, 0.0, 0 }, { l, t }, {}, white });
-		v.push_back({ { xAdvance, 1.0, 0 }, { l, b }, {}, white });
-		v.push_back({ { xAdvance+w, 0.0, 0 }, { r, t }, {}, white });
-		v.push_back({ { xAdvance+w, 1.0, 0 }, { r, b }, {}, white });
-
-		idx.push_back((i * 4) + 0);
-		idx.push_back((i * 4) + 1);
-		idx.push_back((i * 4) + 2);
-		idx.push_back((i * 4) + 3);
-
-		xAdvance += w;
+		int w = g->bitmap.width;
+		int h = g->bitmap.rows;
+		int l = g->bitmap_left;
+		int t = g->bitmap_top;
+		int a = g->advance.x / 64;
 	}
 }
