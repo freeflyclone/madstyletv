@@ -27,6 +27,13 @@ void ExampleXGL::BuildGUI() {
 	child1->model = model;
 	GetGuiRoot()->AddChild(child1);
 
+	CreateShape(&guiShapes, "shaders/zz-gui", [&]() { child2 = new XGLTextLine(L"Now is the time for "); return child2; });
+	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 1.0 };
+	child2->AddTexture(pathToAssets + "/assets/yellow.png");
+	translate = glm::translate(glm::mat4(), glm::vec3(-1, 0, 0));
+	child2->model = glm::scale(translate, glm::vec3(2, 1, 1));
+	child1->AddChild(child2);
+
 	CreateShape(&guiShapes, "shaders/zz-gui", [&]() { child1 = new XGLGuiCanvas(16, 9); return child1; });
 	translate = glm::translate(glm::mat4(), glm::vec3(0.5, 0.5f, 0));
 	model = glm::scale(translate, glm::vec3(0.4, 0.4, 1.0));
@@ -35,7 +42,7 @@ void ExampleXGL::BuildGUI() {
 	child1->AddTexture(pathToAssets + "/assets/AndroidDemo.png");
 	GetGuiRoot()->AddChild(child1);
 
-	CreateShape(&guiShapes, "shaders/zz-gui", [&]() { child1 = new XGLTexQuad(); return child1; });
+	CreateShape(&guiShapes, "shaders/zz-gui", [&]() { child1 = new XGLGuiCanvas(16,9); return child1; });
 	translate = glm::translate(glm::mat4(), glm::vec3(0.5, -0.5f, 0));
 	model = glm::scale(translate, glm::vec3(0.48, 0.48, 1.0));
 	child1->model = model;
@@ -47,7 +54,7 @@ void ExampleXGL::BuildGUI() {
 	translate = glm::translate(glm::mat4(), glm::vec3(-0.5, 0.5, 0));
 	model = glm::scale(translate, glm::vec3(0.5, 0.5, 1.0));
 	child2->model = model;
-	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 1.0 };
+	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.3 };
 	child2->AddTexture(pathToAssets + "/assets/yellow.png");
 	child1->AddChild(child2);
 
@@ -55,7 +62,7 @@ void ExampleXGL::BuildGUI() {
 	translate = glm::translate(glm::mat4(), glm::vec3(0.5, 0.5, 0));
 	model = glm::scale(translate, glm::vec3(0.5, 0.5, 1.0));
 	child2->model = model;
-	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 1.0 };
+	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.3 };
 	child2->AddTexture(pathToAssets + "/assets/green.png");
 	child1->AddChild(child2);
 
@@ -63,7 +70,7 @@ void ExampleXGL::BuildGUI() {
 	translate = glm::translate(glm::mat4(), glm::vec3(-0.5, -0.5, 0));
 	model = glm::scale(translate, glm::vec3(0.5, 0.5, 1.0));
 	child2->model = model;
-	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 1.0 };
+	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.3 };
 	child2->AddTexture(pathToAssets + "/assets/red.png");
 	child1->AddChild(child2);
 
@@ -71,7 +78,7 @@ void ExampleXGL::BuildGUI() {
 	translate = glm::translate(glm::mat4(), glm::vec3(0.5, -0.5, 0));
 	model = glm::scale(translate, glm::vec3(0.5, 0.5, 1.0));
 	child2->model = model;
-	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 1.0 };
+	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.3 };
 	child2->AddTexture(pathToAssets + "/assets/blue.png");
 	child1->AddChild(child2);
 }

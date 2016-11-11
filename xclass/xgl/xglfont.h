@@ -24,6 +24,7 @@
 #endif
 
 class XGLFont {
+public:
 	// define everything we may need in order to render glyphs
 	// directly from pages of bitmap textures
 	struct  XGLGlyph {
@@ -34,15 +35,15 @@ class XGLFont {
 		int width, height;	// it's dimensions
 	};
 
-	typedef std::map<FT_ULong, FT_UInt> CharMap;
-	typedef std::map<FT_ULong, XGLGlyph> GlyphMap;
-
-public:
-
     XGLFont();
     ~XGLFont();
 
-    FT_Library ft;
+	XGLGlyph *GetGlyph(int c) { return &glyphMap[c]; }
+
+	typedef std::map<FT_ULong, FT_UInt> CharMap;
+	typedef std::map<FT_ULong, XGLGlyph> GlyphMap;
+
+	FT_Library ft;
     FT_Face face;
     FT_GlyphSlot g;
 
@@ -57,6 +58,7 @@ public:
     GLuint atlasWidth;
     GLuint atlasHeight;
     GLuint atlasPageCount;
+	GLuint texIds[50];  // largest to date had 42,934 glyphs, 1024 glyphs per page
 };
 
 #endif

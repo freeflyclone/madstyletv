@@ -19,7 +19,9 @@ uniform sampler2D texUnit3;
 
 void main(void)
 {
-    vec4 tc = texture(texUnit0,UV);
+    vec4 tc0 = texture(texUnit0,UV);
+	vec4 tc1 = texture(texUnit1,UV);
+
 	if( 
 		(UV.y <= 3.0/1080.0) || 
 		(UV.y >= (1.0 - 3.0/1080.0)) ||
@@ -28,5 +30,5 @@ void main(void)
 	)
 		out_Color = vec4(1.0, 1.0, 1.0, 0.7);
 	else
-		out_Color = diffuse * tc;
+		out_Color = diffuse * tc0;
 }
