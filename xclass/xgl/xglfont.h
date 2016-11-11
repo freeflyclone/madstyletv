@@ -58,7 +58,7 @@ public:
     GLuint atlasWidth;
     GLuint atlasHeight;
     GLuint atlasPageCount;
-	GLuint texIds[50];  // largest to date had 42,934 glyphs, 1024 glyphs per page
+	int maxAscend, maxDescend;
 };
 
 #endif
