@@ -8,7 +8,7 @@ void ExampleXGL::BuildGUI() {
 
 	// add a GUI layer. This is essentially the same as the world layer.
 	// With just a "model" transform in the vertex shader, it becomes 2D
-	AddGuiShape("shaders/zz-gui", [&]() { shape = new XGLTransformer(); return shape; });
+	AddGuiShape("shaders/gui", [&]() { shape = new XGLTransformer(); return shape; });
 
 	XInputKeyFunc PresentGuiCanvas = [&](int key, int flags) {
 		const bool isDown = (flags & 0x8000) == 0;
@@ -37,7 +37,7 @@ void ExampleXGL::BuildGUI() {
 	child1->model = model;
 	child1->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
 	GetGuiRoot()->AddChild(child1);
-	child1->RenderText(L"Really BIG text.\nReally really big text.\nSeriously big.\nSERIOUSLY! It's big.\nYuge even.");
+	child1->RenderText(L"Really BIG text.\nReally really big text.\nSeriously big.\nSERIOUSLY! It's big.\nHuge even.");
 
 	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child1 = new XGLGuiCanvas(1920, 1080); return child1; });
 	translate = glm::translate(glm::mat4(), glm::vec3(0.5, -0.5f, 0));
