@@ -706,6 +706,7 @@ XGLGuiCanvas::XGLGuiCanvas(int w, int h) :
 	penY(64),
 	buffer(NULL)
 {
+	SetName("XGLGuiCanvas");
 	attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.5 };
 	model = glm::scale(glm::mat4(), glm::vec3(0.95, 0.89, 1.0));
 
@@ -720,6 +721,17 @@ XGLGuiCanvas::XGLGuiCanvas(int w, int h) :
 }
 
 XGLGuiCanvas::~XGLGuiCanvas() {}
+
+void XGLGuiCanvas::SetMouseFunc(XGLGuiCanvas::MouseFunc fn){
+	mouseFunc = fn;
+}
+
+void XGLGuiCanvas::MouseEvent(float x, float y, int flags) {
+	if (mouseFunc) {
+		glm::vec4 mc = model * glm::vec4(x, y, 1, 1);
+		mouseFunc(this, mc.x, mc.y, flags);
+	}
+}
 
 void XGLGuiCanvas::RenderText(std::wstring text) {
 	FT_GlyphSlot g = font.face->glyph;
