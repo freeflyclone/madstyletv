@@ -14,7 +14,7 @@ void ExampleXGL::BuildGUI() {
 		const bool isDown = (flags & 0x8000) == 0;
 		const bool isRepeat = (flags & 0x4000) != 0;
 
-		if (isDown && IsGuiActive())
+		if (isDown && GuiIsActive())
 			RenderGui(false);
 		else if (isDown)
 			RenderGui(true);
@@ -29,6 +29,10 @@ void ExampleXGL::BuildGUI() {
 	child1->model = model;
 	child1->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
 	GetGuiRoot()->AddChild(child1);
+	child1->SetMouseFunc([&](XGLGuiCanvas *s, float x, float y, int flags) {
+		xprintf("In MouseFunc() for %s : %0.4f, %0.4f\n", s->name.c_str(), x, y);
+	});
+
 	child1->RenderText(L"Now is the time for all good men \nto come to the aid of their country.");
 
 	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child1 = new XGLGuiCanvas(640, 360); return child1; });
@@ -38,6 +42,9 @@ void ExampleXGL::BuildGUI() {
 	child1->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
 	GetGuiRoot()->AddChild(child1);
 	child1->RenderText(L"Really BIG text.\nReally really big text.\nSeriously big.\nSERIOUSLY! It's big.\nHuge even.");
+	child1->SetMouseFunc([&](XGLGuiCanvas *s, float x, float y, int flags) {
+		xprintf("In MouseFunc() for %s : %0.4f, %0.4f\n", s->name.c_str(), x, y);
+	});
 
 	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child1 = new XGLGuiCanvas(1920, 1080); return child1; });
 	translate = glm::translate(glm::mat4(), glm::vec3(0.5, -0.5f, 0));
@@ -45,6 +52,9 @@ void ExampleXGL::BuildGUI() {
 	child1->model = model;
 	child1->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
 	GetGuiRoot()->AddChild(child1);
+	child1->SetMouseFunc([&](XGLGuiCanvas *s, float x, float y, int flags) {
+		xprintf("In MouseFunc() for %s : %0.4f, %0.4f\n", s->name.c_str(), x, y);
+	});
 
 	child1->RenderText(L"This text *might* show up.\n");
 	child1->RenderText(L"It might not.\n\n");

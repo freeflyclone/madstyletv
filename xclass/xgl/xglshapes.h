@@ -136,17 +136,30 @@ public:
 
 class XGLGuiCanvas : public XGLTexQuad {
 public:
+	typedef std::function<void(XGLGuiCanvas *, float x, float y, int f)> MouseFunc;
+
 	XGLGuiCanvas(int w, int h);
 
 	void SetFocus(bool enable) { hasFocus = enable; }
 	bool HasFocus() { return hasFocus; }
+
+	void SetHasMouse(bool enable) { hasMouse = enable; }
+	bool HasMouse() { return hasMouse; }
+
+	void SetMouseFunc(XGLGuiCanvas::MouseFunc);
+	void MouseEvent(float x, float y, int flags);
+
 	void RenderText(std::wstring t);
 
 	~XGLGuiCanvas();
+
+	XGLGuiCanvas::MouseFunc mouseFunc;
+
 private:
 	int width, height;
 	GLubyte *buffer;
 	bool hasFocus;
+	bool hasMouse;
 
 	// text rendering stuff
 	int penX, penY;

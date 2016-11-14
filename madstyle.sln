@@ -45,6 +45,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{1A5C1CC4-9FE3-496C-9856-D269B05C278E}"
 	ProjectSection(SolutionItems) = preProject
 		examples\common\ExampleXGL.h = examples\common\ExampleXGL.h
+		examples\common\InputTrackers.h = examples\common\InputTrackers.h
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ThreadsTest", "examples\ThreadsTest\ThreadsTest.vcxproj", "{536373B5-E6CC-47A9-8F52-00C34683D2A9}"

@@ -132,7 +132,7 @@ public:
 	XGLShaderMatrixData *GetMatrix() { return &shaderMatrix; }
 
 	void RenderGui(bool enable) { renderGui = enable; }
-	bool IsGuiActive() { return renderGui; }
+	bool GuiIsActive() { return renderGui; }
 	XGLGuiCanvas *GetGuiRoot() { return guiRoot; }
 
     XConfig config;
