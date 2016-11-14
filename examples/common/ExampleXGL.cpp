@@ -96,7 +96,9 @@ void ExampleXGL::MouseFunc(int x, int y, int flags){
 			// see if mouse is inside it.
 			if (X >= ll.x && Y >= ll.y && X <= ur.x && Y <= ur.y) {
 				w->SetHasMouse(true);
-				w->MouseEvent(X, Y, flags);
+				// convert to window-relative coordinates
+				glm::vec4 mc = glm::inverse(w->model) * glm::vec4(X, Y, 1, 1);
+				w->MouseEvent(mc.x, mc.y, flags);
 				return;
 			}
 			else {
