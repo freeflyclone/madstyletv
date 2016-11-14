@@ -2,8 +2,8 @@
 
 void ExampleXGL::BuildGUI() {
 	XGLShape *shape;
-	XGLGuiCanvas *child1;
-	XGLShape *child2;
+	XGLGuiCanvas *child1,*child2;
+	XGLShape *child3;
 	glm::mat4 translate, model;
 
 	// add a GUI layer. This is essentially the same as the world layer.
@@ -34,6 +34,18 @@ void ExampleXGL::BuildGUI() {
 	});
 
 	child1->RenderText(L"Now is the time for all good men \nto come to the aid of their country.");
+
+	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child2 = new XGLGuiCanvas(1280, 720); return child2; });
+	translate = glm::translate(glm::mat4(), glm::vec3(-0.5, -0.5f, 0));
+	model = glm::scale(translate, glm::vec3(0.4, 0.4, 1.0));
+	child2->model = model;
+	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
+	child1->AddChild(child2);
+	child2->SetMouseFunc([&](XGLGuiCanvas *s, float x, float y, int flags) {
+		xprintf("In MouseFunc() for %s : %0.4f, %0.4f\n", s->name.c_str(), x, y);
+	});
+
+	child2->RenderText(L"Smaller canvas window inside larger one.");
 
 	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child1 = new XGLGuiCanvas(640, 360); return child1; });
 	translate = glm::translate(glm::mat4(), glm::vec3(0.5, 0.5f, 0));
@@ -68,35 +80,35 @@ void ExampleXGL::BuildGUI() {
 	child1->RenderText(L"expound the actual teachings of the great explorer of\n");
 	child1->RenderText(L"the truth, the master - builder of human happiness.\n");
 	
-	CreateShape(&guiShapes, "shaders/gui", [&]() { child2 = new XGLTexQuad(); return child2; });
+	CreateShape(&guiShapes, "shaders/gui", [&]() { child3 = new XGLTexQuad(); return child3; });
 	translate = glm::translate(glm::mat4(), glm::vec3(-0.5, 0.5, 0));
 	model = glm::scale(translate, glm::vec3(0.5, 0.5, 1.0));
-	child2->model = model;
-	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.1 };
-	child2->AddTexture(pathToAssets + "/assets/yellow.png");
-	child1->AddChild(child2);
+	child3->model = model;
+	child3->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.1 };
+	child3->AddTexture(pathToAssets + "/assets/yellow.png");
+	child1->AddChild(child3);
 
-	CreateShape(&guiShapes, "shaders/gui", [&]() { child2 = new XGLTexQuad(); return child2; });
+	CreateShape(&guiShapes, "shaders/gui", [&]() { child3 = new XGLTexQuad(); return child3; });
 	translate = glm::translate(glm::mat4(), glm::vec3(0.5, 0.5, 0));
 	model = glm::scale(translate, glm::vec3(0.5, 0.5, 1.0));
-	child2->model = model;
-	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.1 };
-	child2->AddTexture(pathToAssets + "/assets/green.png");
-	child1->AddChild(child2);
+	child3->model = model;
+	child3->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.1 };
+	child3->AddTexture(pathToAssets + "/assets/green.png");
+	child1->AddChild(child3);
 
-	CreateShape(&guiShapes, "shaders/gui", [&]() { child2 = new XGLTexQuad(); return child2; });
+	CreateShape(&guiShapes, "shaders/gui", [&]() { child3 = new XGLTexQuad(); return child3; });
 	translate = glm::translate(glm::mat4(), glm::vec3(-0.5, -0.5, 0));
 	model = glm::scale(translate, glm::vec3(0.5, 0.5, 1.0));
-	child2->model = model;
-	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.1 };
-	child2->AddTexture(pathToAssets + "/assets/red.png");
-	child1->AddChild(child2);
+	child3->model = model;
+	child3->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.1 };
+	child3->AddTexture(pathToAssets + "/assets/red.png");
+	child1->AddChild(child3);
 
-	CreateShape(&guiShapes, "shaders/gui", [&]() { child2 = new XGLTexQuad(); return child2; });
+	CreateShape(&guiShapes, "shaders/gui", [&]() { child3 = new XGLTexQuad(); return child3; });
 	translate = glm::translate(glm::mat4(), glm::vec3(0.5, -0.5, 0));
 	model = glm::scale(translate, glm::vec3(0.5, 0.5, 1.0));
-	child2->model = model;
-	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.1 };
-	child2->AddTexture(pathToAssets + "/assets/blue.png");
-	child1->AddChild(child2);
+	child3->model = model;
+	child3->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.1 };
+	child3->AddTexture(pathToAssets + "/assets/blue.png");
+	child1->AddChild(child3);
 }

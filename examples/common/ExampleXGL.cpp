@@ -76,36 +76,8 @@ void ExampleXGL::CameraTracker(XGLCamera *c){
 }
 
 void ExampleXGL::MouseFunc(int x, int y, int flags){
-	if (GuiIsActive()) {
-		std::vector<XGLObject *>topLevel = GetGuiRoot()->Children();
-		std::vector<XGLObject *>::iterator it;
-		float X = (float)x / (float)width * 2 - 1.0f;
-		float Y = -(float)y / (float)height * 2 + 1.0f;
-		glm::vec4 ll,ur;
-		int i;
-
-		// By (unenforced) convention, all top level windows must be derived from
-		// XGLGuiCanvas. It's a 2 unit (-1.0 to 1.0) 2D square.
-		for (i=1,it = topLevel.begin(); it != topLevel.end(); i++,it++) {
-			XGLGuiCanvas *w = (XGLGuiCanvas *)*it;
-
-			// translate window corners to unit screen space
-			ll = w->model * glm::vec4(-1, -1, 1, 1);
-			ur = w->model * glm::vec4(1, 1, 1, 1);
-
-			// see if mouse is inside it.
-			if (X >= ll.x && Y >= ll.y && X <= ur.x && Y <= ur.y) {
-				w->SetHasMouse(true);
-				// convert to window-relative coordinates
-				glm::vec4 mc = glm::inverse(w->model) * glm::vec4(X, Y, 1, 1);
-				w->MouseEvent(mc.x, mc.y, flags);
-				return;
-			}
-			else {
-				w->SetHasMouse(false);
-			}
-		}
-	}
+	if (GuiIsActive())
+		GuiResolve(GetGuiRoot()->Children(), x, y, flags);
 
 	mt.Event(x, y, flags);
 }
