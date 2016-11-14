@@ -38,7 +38,4 @@ public:
 	MouseTracker mt;
 	KeyboardTracker kt;
 	XGLWorldCursor wc;
-
-	// dimensions of our window (it can change)
-	int width, height;
 };
