@@ -727,10 +727,8 @@ void XGLGuiCanvas::SetMouseFunc(XGLGuiCanvas::MouseFunc fn){
 }
 
 void XGLGuiCanvas::MouseEvent(float x, float y, int flags) {
-	if (mouseFunc) {
-		glm::vec4 mc = model * glm::vec4(x, y, 1, 1);
-		mouseFunc(this, mc.x, mc.y, flags);
-	}
+	if (mouseFunc)
+		mouseFunc(this, x, y, flags);
 }
 
 void XGLGuiCanvas::RenderText(std::wstring text) {
