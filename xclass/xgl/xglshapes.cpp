@@ -720,6 +720,15 @@ XGLGuiCanvas::XGLGuiCanvas(int w, int h) :
 	AddTexture(width, height, 1, buffer);
 }
 
+XGLGuiCanvas::XGLGuiCanvas() :
+	XGLTexQuad(),
+	buffer(NULL)
+{
+	SetName("XGLGuiCanvas");
+	attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.8 };
+	model = glm::mat4(1.0);
+}
+
 XGLGuiCanvas::~XGLGuiCanvas() {}
 
 void XGLGuiCanvas::SetMouseFunc(XGLGuiCanvas::MouseFunc fn){

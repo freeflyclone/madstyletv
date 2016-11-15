@@ -61,14 +61,24 @@ void ExampleXGL::BuildGUI() {
 		return true;
 	});
 
-	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child1 = new XGLGuiCanvas(1920, 1080); return child1; });
-	translate = glm::translate(glm::mat4(), glm::vec3(-0., -0.8f, 0));
+	CreateShape(&guiShapes, "shaders/gui", [&]() { child1 = new XGLGuiCanvas(); return child1; });
+	translate = glm::translate(glm::mat4(), glm::vec3(-0., -0.9f, 0));
 	model = glm::scale(translate, glm::vec3(0.99, 0.05, 1.0));
 	child1->model = model;
-	child1->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
+	child1->attributes.diffuseColor = { 0.5, 0.5, 0.5, 0.3 };
 	GetGuiRoot()->AddChild(child1);
 	child1->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
 		xprintf("In MouseFunc() for %s : %0.4f, %0.4f\n", s->name.c_str(), x, y);
 		return true;
+	});
+
+	CreateShape(&guiShapes, "shaders/gui", [&]() { child2 = new XGLGuiCanvas(); return child2; });
+	model = glm::scale(glm::mat4(), glm::vec3(0.02, 0.5, 1.0));
+	child2->model = model;
+	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
+	child1->AddChild(child2);
+	child2->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
+		xprintf("In MouseFunc() for %s : %0.6f, %0.6f\n", s->name.c_str(), x, y);
+		return false;
 	});
 }

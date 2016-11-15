@@ -139,6 +139,7 @@ public:
 	typedef std::function<bool(XGLShape *, float x, float y, int f)> MouseFunc;
 
 	XGLGuiCanvas(int w, int h);
+	XGLGuiCanvas();
 
 	void SetFocus(bool enable) { hasFocus = enable; }
 	bool HasFocus() { return hasFocus; }

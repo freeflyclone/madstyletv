@@ -19,6 +19,5 @@ uniform sampler2D texUnit3;
 
 void main(void)
 {
-    vec4 tc = texture(texUnit0,UV);
-	out_Color = diffuse * tc;
+	out_Color = diffuse;
 }
