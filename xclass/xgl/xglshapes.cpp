@@ -704,7 +704,8 @@ XGLGuiCanvas::XGLGuiCanvas(int w, int h) :
 	height(h),
 	penX(10),
 	penY(64),
-	buffer(NULL)
+	buffer(NULL),
+	childEvent(false)
 {
 	SetName("XGLGuiCanvas");
 	attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.5 };
@@ -722,7 +723,8 @@ XGLGuiCanvas::XGLGuiCanvas(int w, int h) :
 
 XGLGuiCanvas::XGLGuiCanvas() :
 	XGLTexQuad(),
-	buffer(NULL)
+	buffer(NULL),
+	childEvent(false)
 {
 	SetName("XGLGuiCanvas");
 	attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.8 };

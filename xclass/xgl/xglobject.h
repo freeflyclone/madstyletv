@@ -42,6 +42,7 @@ public:
 
 	std::unique_ptr<std::vector<XGLObject *>> uchildren;
 	std::string name;
+	XGLObject *parent;
 };
 
 typedef std::vector<XGLObject *> XGLObjectChildren;

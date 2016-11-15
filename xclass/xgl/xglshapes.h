@@ -155,6 +155,7 @@ public:
 	~XGLGuiCanvas();
 
 	XGLGuiCanvas::MouseFunc mouseFunc;
+	bool childEvent;
 
 private:
 	int width, height;
