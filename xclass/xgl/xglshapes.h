@@ -136,7 +136,7 @@ public:
 
 class XGLGuiCanvas : public XGLTexQuad {
 public:
-	typedef std::function<void(XGLShape *, float x, float y, int f)> MouseFunc;
+	typedef std::function<bool(XGLShape *, float x, float y, int f)> MouseFunc;
 
 	XGLGuiCanvas(int w, int h);
 
@@ -147,7 +147,7 @@ public:
 	bool HasMouse() { return hasMouse; }
 
 	void SetMouseFunc(XGLGuiCanvas::MouseFunc);
-	void MouseEvent(float x, float y, int flags);
+	bool MouseEvent(float x, float y, int flags);
 
 	void RenderText(std::wstring t);
 

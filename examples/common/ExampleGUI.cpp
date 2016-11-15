@@ -31,6 +31,7 @@ void ExampleXGL::BuildGUI() {
 	GetGuiRoot()->AddChild(child1);
 	child1->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
 		xprintf("In MouseFunc() for %s : %0.4f, %0.4f\n", s->name.c_str(), x, y);
+		return true;
 	});
 
 	child1->RenderText(L"Now is the time for all good men \nto come to the aid of their country.");
@@ -43,6 +44,7 @@ void ExampleXGL::BuildGUI() {
 	child1->AddChild(child2);
 	child2->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
 		xprintf("In MouseFunc() for %s : %0.4f, %0.4f\n", s->name.c_str(), x, y);
+		return false;
 	});
 
 	child2->RenderText(L"Smaller canvas window inside larger one.");
@@ -56,6 +58,7 @@ void ExampleXGL::BuildGUI() {
 	child1->RenderText(L"Really BIG text.\nReally really big text.\nSeriously big.\nSERIOUSLY! It's big.\nHuge even.");
 	child1->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
 		xprintf("In MouseFunc() for %s : %0.4f, %0.4f\n", s->name.c_str(), x, y);
+		return true;
 	});
 
 	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child1 = new XGLGuiCanvas(1920, 1080); return child1; });
@@ -66,5 +69,6 @@ void ExampleXGL::BuildGUI() {
 	GetGuiRoot()->AddChild(child1);
 	child1->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
 		xprintf("In MouseFunc() for %s : %0.4f, %0.4f\n", s->name.c_str(), x, y);
+		return true;
 	});
 }
