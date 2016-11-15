@@ -4,7 +4,7 @@ namespace {
 	std::map<std::string, int> namesMap;
 }
 
-XGLObject::XGLObject(std::string n) {
+XGLObject::XGLObject(std::string n) : parent(NULL) {
 	uchildren = std::make_unique<XGLObjectChildren>();
 }
 
@@ -17,6 +17,7 @@ void XGLObject::SetName(std::string n) {
 }
 
 void XGLObject::AddChild(XGLObject *c) {
+	c->parent = this;
 	uchildren->push_back(c);
 }
 
