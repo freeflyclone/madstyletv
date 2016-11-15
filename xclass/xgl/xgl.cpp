@@ -317,11 +317,12 @@ void XGL::IterateShapesMap(){
     }
 }
 
-void XGL::GuiResolve(std::vector<XGLObject *>gc, float x, float y, int flags) {
+bool XGL::GuiResolve(std::vector<XGLObject *>gc, float x, float y, int flags) {
 	std::vector<XGLObject *>::iterator it;
 	std::vector<XGLObject *>children;
 	glm::vec4 ll, ur;
 	int i;
+	bool handledByChild = false;
 
 	// By convention, all top level windows are derived from XGLGuiCanvas.
 	for (i = 1, it = gc.begin(); it != gc.end(); i++, it++) {
@@ -339,17 +340,19 @@ void XGL::GuiResolve(std::vector<XGLObject *>gc, float x, float y, int flags) {
 			glm::vec4 mc = glm::inverse(w->model) * glm::vec4(x, y, 1, 1);
 
 			// recurse into child stack (if there is one)
-			if (children.size() > 0) {
-				GuiResolve(children, mc.x, mc.y, flags);
-			}
-			else {
+			if (children.size() > 0)
+				handledByChild = GuiResolve(children, mc.x, mc.y, flags);
+
+			if (!handledByChild) {
 				w->SetHasMouse(true);
 				w->MouseEvent(mc.x, mc.y, flags);
+				return true;
 			}
 		}
 		else
 			w->SetHasMouse(false);
 	}
+	return handledByChild;
 }
 
 #define QUERY_GLCONTEXT( x, v ) { glGetIntegerv((x),&(v)); GL_CHECK("glGetIntegerv() failed"); xprintf("%s: %d\n", #x,(v)); }
