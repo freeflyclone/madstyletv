@@ -317,17 +317,14 @@ void XGL::IterateShapesMap(){
     }
 }
 
-void XGL::GuiResolve(std::vector<XGLObject *>gc, int x, int y, int flags) {
-	std::vector<XGLObject *>topLevel = GetGuiRoot()->Children();
+void XGL::GuiResolve(std::vector<XGLObject *>gc, float x, float y, int flags) {
 	std::vector<XGLObject *>::iterator it;
-	float X = (float)x / (float)width * 2 - 1.0f;
-	float Y = -(float)y / (float)height * 2 + 1.0f;
+	std::vector<XGLObject *>children;
 	glm::vec4 ll, ur;
 	int i;
 
-	// By (unenforced) convention, all top level windows must be derived from
-	// XGLGuiCanvas. It's a 2 unit (-1.0 to 1.0) 2D square.
-	for (i = 1, it = topLevel.begin(); it != topLevel.end(); i++, it++) {
+	// By convention, all top level windows are derived from XGLGuiCanvas.
+	for (i = 1, it = gc.begin(); it != gc.end(); i++, it++) {
 		XGLGuiCanvas *w = (XGLGuiCanvas *)*it;
 
 		// translate window corners to unit screen space
@@ -335,16 +332,20 @@ void XGL::GuiResolve(std::vector<XGLObject *>gc, int x, int y, int flags) {
 		ur = w->model * glm::vec4(1, 1, 1, 1);
 
 		// see if mouse is inside it.
-		if (X >= ll.x && Y >= ll.y && X <= ur.x && Y <= ur.y) {
-			w->SetHasMouse(true);
-			// convert to window-relative coordinates
-			glm::vec4 mc = glm::inverse(w->model) * glm::vec4(X, Y, 1, 1);
-			w->MouseEvent(mc.x, mc.y, flags);
-			return;
+		if (x >= ll.x && y >= ll.y && x <= ur.x && y <= ur.y) {
+			children = w->Children();
+			if (children.size() > 0) {
+				xprintf("This one had babies\n");
+			}
+			else {
+				w->SetHasMouse(true);
+				// convert to window-relative coordinates
+				glm::vec4 mc = glm::inverse(w->model) * glm::vec4(x, y, 1, 1);
+				w->MouseEvent(mc.x, mc.y, flags);
+			}
 		}
-		else {
+		else
 			w->SetHasMouse(false);
-		}
 	}
 }
 

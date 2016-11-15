@@ -100,11 +100,6 @@ extern std::string pathToAssets;
 class XGL : public XGLObject
 {
 public:
-#ifdef USE_GLUT
-    // this one is for GLUT applications (probably Linux and/or Mac OS)
-    XGL(int *argcp, char **argv);
-#endif
-
     // this one is for Windows (wgl)
     XGL(void);
 
@@ -134,13 +129,12 @@ public:
 	void RenderGui(bool enable) { renderGui = enable; }
 	bool GuiIsActive() { return renderGui; }
 	XGLGuiCanvas *GetGuiRoot() { return guiRoot; }
-	void GuiResolve(std::vector<XGLObject *>, int, int, int);
+	void GuiResolve(std::vector<XGLObject *>, float, float, int);
 
-    XConfig config;
+	XConfig config;
 
-    // all the scene objects, mapped by XGLShader name
+	// all the scene objects and GUI objects , mapped by XGLShader name
     XGLShapesMap shapes;
-
 	XGLShapesMap guiShapes;
 
     // encapsulate the camera and projection tranforms (view,perspectiv matrices)
@@ -166,13 +160,6 @@ private:
 	GLuint matrixUbo, lightUbo;
 	bool renderGui;
 	XGLGuiCanvas *guiRoot;
-
-    // these are used by GLUT implementations
-#ifdef USE_GLUT
-    static void display();
-	static void reshape(int w, int h);
-	static void idle();
-#endif
 };
 
 #endif // XGL_H
