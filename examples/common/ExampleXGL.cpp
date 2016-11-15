@@ -76,14 +76,16 @@ void ExampleXGL::CameraTracker(XGLCamera *c){
 }
 
 void ExampleXGL::MouseFunc(int x, int y, int flags){
+	bool handledByChild = false;
 	if (GuiIsActive()) {
 		float X = (float)x / (float)width * 2 - 1.0f;
 		float Y = -(float)y / (float)height * 2 + 1.0f;
 
-		GuiResolve(GetGuiRoot()->Children(), X, Y, flags);
+		handledByChild = GuiResolve(GetGuiRoot()->Children(), X, Y, flags);
 	}
 
-	mt.Event(x, y, flags);
+	if (!handledByChild)
+		mt.Event(x, y, flags);
 }
 
 void ExampleXGL::KeyFunc(int key, int flags){
