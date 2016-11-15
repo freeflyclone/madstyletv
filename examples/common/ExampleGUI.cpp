@@ -29,7 +29,7 @@ void ExampleXGL::BuildGUI() {
 	child1->model = model;
 	child1->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
 	GetGuiRoot()->AddChild(child1);
-	child1->SetMouseFunc([&](XGLGuiCanvas *s, float x, float y, int flags) {
+	child1->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
 		xprintf("In MouseFunc() for %s : %0.4f, %0.4f\n", s->name.c_str(), x, y);
 	});
 
@@ -41,7 +41,7 @@ void ExampleXGL::BuildGUI() {
 	child2->model = model;
 	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
 	child1->AddChild(child2);
-	child2->SetMouseFunc([&](XGLGuiCanvas *s, float x, float y, int flags) {
+	child2->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
 		xprintf("In MouseFunc() for %s : %0.4f, %0.4f\n", s->name.c_str(), x, y);
 	});
 
@@ -54,7 +54,7 @@ void ExampleXGL::BuildGUI() {
 	child1->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
 	GetGuiRoot()->AddChild(child1);
 	child1->RenderText(L"Really BIG text.\nReally really big text.\nSeriously big.\nSERIOUSLY! It's big.\nHuge even.");
-	child1->SetMouseFunc([&](XGLGuiCanvas *s, float x, float y, int flags) {
+	child1->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
 		xprintf("In MouseFunc() for %s : %0.4f, %0.4f\n", s->name.c_str(), x, y);
 	});
 
@@ -64,7 +64,7 @@ void ExampleXGL::BuildGUI() {
 	child1->model = model;
 	child1->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
 	GetGuiRoot()->AddChild(child1);
-	child1->SetMouseFunc([&](XGLGuiCanvas *s, float x, float y, int flags) {
+	child1->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
 		xprintf("In MouseFunc() for %s : %0.4f, %0.4f\n", s->name.c_str(), x, y);
 	});
 
@@ -79,7 +79,7 @@ void ExampleXGL::BuildGUI() {
 	child1->RenderText(L"I will give you a complete account of the system, and\n");
 	child1->RenderText(L"expound the actual teachings of the great explorer of\n");
 	child1->RenderText(L"the truth, the master - builder of human happiness.\n");
-	/*
+
 	CreateShape(&guiShapes, "shaders/gui", [&]() { child3 = new XGLTexQuad(); return child3; });
 	translate = glm::translate(glm::mat4(), glm::vec3(-0.5, 0.5, 0));
 	model = glm::scale(translate, glm::vec3(0.5, 0.5, 1.0));
@@ -88,6 +88,7 @@ void ExampleXGL::BuildGUI() {
 	child3->AddTexture(pathToAssets + "/assets/yellow.png");
 	child1->AddChild(child3);
 
+	/*
 	CreateShape(&guiShapes, "shaders/gui", [&]() { child3 = new XGLTexQuad(); return child3; });
 	translate = glm::translate(glm::mat4(), glm::vec3(0.5, 0.5, 0));
 	model = glm::scale(translate, glm::vec3(0.5, 0.5, 1.0));

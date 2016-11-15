@@ -52,6 +52,7 @@
 #include <functional>
 #include <vector>
 #include <cmath>
+#include <type_traits>
 #include "glm.hpp"
 #include "matrix_transform.hpp"
 #include "type_ptr.hpp"

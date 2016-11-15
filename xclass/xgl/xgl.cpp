@@ -326,7 +326,7 @@ bool XGL::GuiResolve(std::vector<XGLObject *>gc, float x, float y, int flags) {
 
 	// By convention, all top level windows are derived from XGLGuiCanvas.
 	for (i = 1, it = gc.begin(); it != gc.end(); i++, it++) {
-		XGLGuiCanvas *w = (XGLGuiCanvas *)*it;
+		XGLShape *w = (XGLShape *)*it;
 
 		// translate window corners to unit screen space
 		ll = w->model * glm::vec4(-1, -1, 1, 1);
@@ -344,13 +344,22 @@ bool XGL::GuiResolve(std::vector<XGLObject *>gc, float x, float y, int flags) {
 				handledByChild = GuiResolve(children, mc.x, mc.y, flags);
 
 			if (!handledByChild) {
-				w->SetHasMouse(true);
-				w->MouseEvent(mc.x, mc.y, flags);
+				// don't try to call XGLGuiCanvas methods on non-XGLGuiCanvas (or derived) shapes
+				if (dynamic_cast<XGLGuiCanvas *>(w)) {
+					XGLGuiCanvas *gc = (XGLGuiCanvas*)w;
+					gc->SetHasMouse(true);
+					gc->MouseEvent(mc.x, mc.y, flags);
+				}
 				return true;
 			}
 		}
-		else
-			w->SetHasMouse(false);
+		else {
+			// same as above
+			if (dynamic_cast<XGLGuiCanvas *>(w)) {
+				XGLGuiCanvas *gc = (XGLGuiCanvas*)w;
+				gc->SetHasMouse(false);
+			}
+		}
 	}
 	return handledByChild;
 }
