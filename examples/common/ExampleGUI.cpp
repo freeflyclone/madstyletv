@@ -79,7 +79,7 @@ void ExampleXGL::BuildGUI() {
 	child1->RenderText(L"I will give you a complete account of the system, and\n");
 	child1->RenderText(L"expound the actual teachings of the great explorer of\n");
 	child1->RenderText(L"the truth, the master - builder of human happiness.\n");
-	
+	/*
 	CreateShape(&guiShapes, "shaders/gui", [&]() { child3 = new XGLTexQuad(); return child3; });
 	translate = glm::translate(glm::mat4(), glm::vec3(-0.5, 0.5, 0));
 	model = glm::scale(translate, glm::vec3(0.5, 0.5, 1.0));
@@ -111,4 +111,5 @@ void ExampleXGL::BuildGUI() {
 	child3->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.1 };
 	child3->AddTexture(pathToAssets + "/assets/blue.png");
 	child1->AddChild(child3);
+	*/
 }
