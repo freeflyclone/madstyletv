@@ -334,13 +334,16 @@ void XGL::GuiResolve(std::vector<XGLObject *>gc, float x, float y, int flags) {
 		// see if mouse is inside it.
 		if (x >= ll.x && y >= ll.y && x <= ur.x && y <= ur.y) {
 			children = w->Children();
+
+			// convert to window-relative coordinates
+			glm::vec4 mc = glm::inverse(w->model) * glm::vec4(x, y, 1, 1);
+
+			// recurse into child stack (if there is one)
 			if (children.size() > 0) {
-				xprintf("This one had babies\n");
+				GuiResolve(children, mc.x, mc.y, flags);
 			}
 			else {
 				w->SetHasMouse(true);
-				// convert to window-relative coordinates
-				glm::vec4 mc = glm::inverse(w->model) * glm::vec4(x, y, 1, 1);
 				w->MouseEvent(mc.x, mc.y, flags);
 			}
 		}
