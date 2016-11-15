@@ -64,6 +64,18 @@ static void cursor_position_callback(GLFWwindow *window, double x, double y) {
 		exgl->MouseEvent((int)x, (int)y, state);
 }
 
+static void mouse_button_callback(GLFWwindow *window, int button, int action, int mods) {
+	int state = 0;
+	double x, y;
+
+	glfwGetCursorPos(window, &x, &y);
+	state |= glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+	state |= glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) << 1;
+
+	if (exgl != NULL)
+		exgl->MouseEvent((int)x, (int)y, state);
+}
+
 static void window_size_callback(GLFWwindow *window, int width, int height) {
 	if (exgl != NULL)
 		exgl->Reshape(width, height);
@@ -106,6 +118,7 @@ int main(void) {
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetCursorPosCallback(window, cursor_position_callback);
 	glfwSetWindowSizeCallback(window, window_size_callback);
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
 	glfwSwapInterval(1);
 

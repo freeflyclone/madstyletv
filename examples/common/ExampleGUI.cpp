@@ -62,31 +62,33 @@ void ExampleXGL::BuildGUI() {
 	});
 
 	CreateShape(&guiShapes, "shaders/gui", [&]() { child1 = new XGLGuiCanvas(); return child1; });
-	translate = glm::translate(glm::mat4(), glm::vec3(-0., -0.9f, 0));
+	translate = glm::translate(glm::mat4(), glm::vec3(0, -0.9f, 0));
 	model = glm::scale(translate, glm::vec3(0.99, 0.05, 1.0));
 	child1->model = model;
 	child1->attributes.diffuseColor = { 0.5, 0.5, 0.5, 0.3 };
 	GetGuiRoot()->AddChild(child1);
 	child1->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
 		XGLGuiCanvas *gc = (XGLGuiCanvas *)s;
-		xprintf("In MouseFunc() for %s : %0.4f, %0.4f %s\n", s->name.c_str(), x, y,gc->childEvent?"childEvent":"");
+		XGLGuiCanvas *cgc = (XGLGuiCanvas *)s->Children()[0];
+
+		// if mouse is down
+		if (flags & 1)
+			// adjust the X coordinate of translation row of child's model matrix
+			cgc->model[3].x = x;
+
 		gc->childEvent = false;
 		return true;
 	});
 
 	CreateShape(&guiShapes, "shaders/gui", [&]() { child2 = new XGLGuiCanvas(); return child2; });
 	scale = glm::scale(glm::mat4(), glm::vec3(0.02, 0.5, 1.0));
-	translate = glm::translate(glm::mat4(), glm::vec3(0.98, 0, 0));
-	child2->model = translate*scale;
+	child2->model = scale;
 	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
 	child1->AddChild(child2);
 	child2->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
+		// parent is known to be XGLGuiCanvas.  We just did that above
 		XGLGuiCanvas *p = (XGLGuiCanvas *)s->parent;
-		// strictly speaking the test for parent being XGLGuiCanvas is superfluous
-		// since we just added this child to a parent known to be such.
-		if (dynamic_cast<XGLGuiCanvas *>(p)) {
-			p->childEvent = true;
-		}
+		p->childEvent = true;
 		return false;
 	});
 }
