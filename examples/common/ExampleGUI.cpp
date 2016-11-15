@@ -72,9 +72,13 @@ void ExampleXGL::BuildGUI() {
 		XGLGuiCanvas *cgc = (XGLGuiCanvas *)s->Children()[0];
 
 		// if mouse is down
-		if (flags & 1)
+		if (flags & 1) {
 			// adjust the X coordinate of translation row of child's model matrix
 			cgc->model[3].x = x;
+			mouseCaptured = s;
+		}
+		else
+			mouseCaptured = NULL;
 
 		gc->childEvent = false;
 		return true;

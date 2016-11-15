@@ -61,7 +61,7 @@ XGL::XGL(int *argcp, char **argv) {
 }
 #endif
 
-XGL::XGL() : XGLObject("XGL"), clock(0.0f), pb(NULL), fb(NULL), renderGui(false), guiRoot(NULL) {
+XGL::XGL() : XGLObject("XGL"), clock(0.0f), pb(NULL), fb(NULL), renderGui(false), guiRoot(NULL), mouseCaptured(NULL) {
     xprintf("OpenGL version: %s\n", glGetString(GL_VERSION));
 	glGetError();
 
@@ -324,40 +324,50 @@ bool XGL::GuiResolve(std::vector<XGLObject *>gc, float x, float y, int flags) {
 	int i;
 	bool handledByChild = false;
 
-	// By convention, all top level windows are derived from XGLGuiCanvas.
-	for (i = 1, it = gc.begin(); it != gc.end(); i++, it++) {
-		XGLShape *w = (XGLShape *)*it;
-
-		// translate window corners to unit screen space
-		ll = w->model * glm::vec4(-1, -1, 1, 1);
-		ur = w->model * glm::vec4(1, 1, 1, 1);
-
-		// see if mouse is inside it.
-		if (x >= ll.x && y >= ll.y && x <= ur.x && y <= ur.y) {
-			children = w->Children();
-
+	if (mouseCaptured != NULL) {
+		if (dynamic_cast<XGLGuiCanvas *>(mouseCaptured)) {
+			XGLGuiCanvas *captured = (XGLGuiCanvas *)mouseCaptured;
 			// convert to window-relative coordinates
-			glm::vec4 mc = glm::inverse(w->model) * glm::vec4(x, y, 1, 1);
+			glm::vec4 mc = glm::inverse(captured->model) * glm::vec4(x, y, 1, 1);
+			handledByChild = captured->MouseEvent(mc.x, mc.y, flags);
+		}
+	}
+	else {
+		// By convention, all top level windows are derived from XGLGuiCanvas.
+		for (i = 1, it = gc.begin(); it != gc.end(); i++, it++) {
+			XGLShape *w = (XGLShape *)*it;
 
-			// recurse into child stack (if there is one)
-			if (children.size() > 0)
-				handledByChild = GuiResolve(children, mc.x, mc.y, flags);
+			// translate window corners to unit screen space
+			ll = w->model * glm::vec4(-1, -1, 1, 1);
+			ur = w->model * glm::vec4(1, 1, 1, 1);
 
-			if (!handledByChild) {
-				// don't try to call XGLGuiCanvas methods on non-XGLGuiCanvas (or derived) shapes
-				if (dynamic_cast<XGLGuiCanvas *>(w)) {
-					XGLGuiCanvas *gc = (XGLGuiCanvas*)w;
-					gc->SetHasMouse(true);
-					handledByChild = gc->MouseEvent(mc.x, mc.y, flags);
-					break;
+			// see if mouse is inside it.
+			if (x >= ll.x && y >= ll.y && x <= ur.x && y <= ur.y) {
+				children = w->Children();
+
+				// convert to window-relative coordinates
+				glm::vec4 mc = glm::inverse(w->model) * glm::vec4(x, y, 1, 1);
+
+				// recurse into child stack (if there is one)
+				if (children.size() > 0)
+					handledByChild = GuiResolve(children, mc.x, mc.y, flags);
+
+				if (!handledByChild) {
+					// don't try to call XGLGuiCanvas methods on non-XGLGuiCanvas (or derived) shapes
+					if (dynamic_cast<XGLGuiCanvas *>(w)) {
+						XGLGuiCanvas *gc = (XGLGuiCanvas*)w;
+						gc->SetHasMouse(true);
+						handledByChild = gc->MouseEvent(mc.x, mc.y, flags);
+						break;
+					}
 				}
 			}
-		}
-		else {
-			// same as above
-			if (dynamic_cast<XGLGuiCanvas *>(w)) {
-				XGLGuiCanvas *gc = (XGLGuiCanvas*)w;
-				gc->SetHasMouse(false);
+			else {
+				// same as above
+				if (dynamic_cast<XGLGuiCanvas *>(w)) {
+					XGLGuiCanvas *gc = (XGLGuiCanvas*)w;
+					gc->SetHasMouse(false);
+				}
 			}
 		}
 	}

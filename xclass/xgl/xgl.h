@@ -154,6 +154,7 @@ public:
 
 	// dimensions of our window (it can change)
 	int width, height;
+	XGLShape *mouseCaptured;
 
 private:
     // this is returned by GetShader().  Use of GetShader() feels funky, like my structure design blows chunks.
