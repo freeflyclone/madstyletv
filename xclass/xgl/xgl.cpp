@@ -348,9 +348,9 @@ bool XGL::GuiResolve(std::vector<XGLObject *>gc, float x, float y, int flags) {
 				if (dynamic_cast<XGLGuiCanvas *>(w)) {
 					XGLGuiCanvas *gc = (XGLGuiCanvas*)w;
 					gc->SetHasMouse(true);
-					gc->MouseEvent(mc.x, mc.y, flags);
+					handledByChild = gc->MouseEvent(mc.x, mc.y, flags);
+					break;
 				}
-				return true;
 			}
 		}
 		else {

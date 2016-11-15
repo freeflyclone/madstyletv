@@ -726,9 +726,11 @@ void XGLGuiCanvas::SetMouseFunc(XGLGuiCanvas::MouseFunc fn){
 	mouseFunc = fn;
 }
 
-void XGLGuiCanvas::MouseEvent(float x, float y, int flags) {
+bool XGLGuiCanvas::MouseEvent(float x, float y, int flags) {
 	if (mouseFunc)
-		mouseFunc(this, x, y, flags);
+		return mouseFunc(this, x, y, flags);
+
+	return false;
 }
 
 void XGLGuiCanvas::RenderText(std::wstring text) {
