@@ -136,7 +136,7 @@ public:
 
 class XGLGuiCanvas : public XGLTexQuad {
 public:
-	typedef std::function<void(XGLGuiCanvas *, float x, float y, int f)> MouseFunc;
+	typedef std::function<void(XGLShape *, float x, float y, int f)> MouseFunc;
 
 	XGLGuiCanvas(int w, int h);
 
