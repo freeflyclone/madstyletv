@@ -23,18 +23,21 @@ void ExampleXGL::BuildGUI() {
 	AddKeyFunc('`', PresentGuiCanvas);
 	AddKeyFunc('~', PresentGuiCanvas);
 
-	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child1 = new XGLGuiCanvas(1280, 720); return child1; });
+	CreateShape(&guiShapes, "shaders/gui", [&]() { child1 = new XGLGuiCanvas(); return child1; });
 	translate = glm::translate(glm::mat4(), glm::vec3(-0.5, 0.5f, 0));
 	model = glm::scale(translate, glm::vec3(0.4, 0.4, 1.0));
 	child1->model = model;
-	child1->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
+	child1->attributes.diffuseColor = { 0.5, 0.5, 0.5, 0.7 };
 	GetGuiRoot()->AddChild(child1);
 	child1->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
 		xprintf("In MouseFunc() for %s : %0.4f, %0.4f\n", s->name.c_str(), x, y);
 		return true;
 	});
 
-	child1->RenderText(L"Now is the time for all good men \nto come to the aid of their country.");
+	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child2 = new XGLGuiCanvas(1920,1080); return child2; });
+	child1->AddChild(child2);
+	child2->RenderText(L"Now is the time for all good men \nto come to the aid of their country.");
+
 
 	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child2 = new XGLGuiCanvas(1280, 720); return child2; });
 	translate = glm::translate(glm::mat4(), glm::vec3(-0.5, -0.5f, 0));
@@ -53,7 +56,7 @@ void ExampleXGL::BuildGUI() {
 	translate = glm::translate(glm::mat4(), glm::vec3(0.5, 0.5f, 0));
 	model = glm::scale(translate, glm::vec3(0.4, 0.4, 1.0));
 	child1->model = model;
-	child1->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
+	child1->attributes.diffuseColor = { 1.0, 1.0, 0.0, 0.7 };
 	GetGuiRoot()->AddChild(child1);
 	child1->RenderText(L"Really BIG text.\nReally really big text.\nSeriously big.\nSERIOUSLY! It's big.\nHuge even.");
 	child1->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
@@ -70,6 +73,7 @@ void ExampleXGL::BuildGUI() {
 	child1->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
 		XGLGuiCanvas *gc = (XGLGuiCanvas *)s;
 		XGLGuiCanvas *cgc = (XGLGuiCanvas *)s->Children()[0];
+		static float oldX = 0.0f;
 
 		// if mouse is down
 		if (flags & 1) {
@@ -89,6 +93,11 @@ void ExampleXGL::BuildGUI() {
 			cgc->model[3].y = y;
 
 			mouseCaptured = s;
+
+			if (x != oldX) {
+				xprintf("Slider: %0.5f\n", (1.0f + (x / (1.0f - cgc->model[0].x))) / 2.0f);
+				oldX = x;
+			}
 		}
 		else
 			mouseCaptured = NULL;
@@ -98,7 +107,7 @@ void ExampleXGL::BuildGUI() {
 	});
 
 	CreateShape(&guiShapes, "shaders/gui", [&]() { child2 = new XGLGuiCanvas(); return child2; });
-	scale = glm::scale(glm::mat4(), glm::vec3(0.2, 1, 1.0));
+	scale = glm::scale(glm::mat4(), glm::vec3(0.02, 1, 1.0));
 	child2->model = scale;
 	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
 	child1->AddChild(child2);

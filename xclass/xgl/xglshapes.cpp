@@ -698,18 +698,21 @@ XGLTransformer::XGLTransformer(){
 	SetName("XGLTransformer");
 };
 
-XGLGuiCanvas::XGLGuiCanvas(int w, int h) :
-	XGLTexQuad(),
-	width(w),
-	height(h),
-	penX(10),
-	penY(64),
-	buffer(NULL),
-	childEvent(false)
+XGLGuiCanvas::XGLGuiCanvas() :
+XGLTexQuad(),
+buffer(NULL),
+childEvent(false)
 {
 	SetName("XGLGuiCanvas");
 	attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.5 };
-	model = glm::scale(glm::mat4(), glm::vec3(0.95, 0.89, 1.0));
+}
+
+XGLGuiCanvas::XGLGuiCanvas(int w, int h) : XGLGuiCanvas()
+{
+	width = w;
+	height = h;
+	penX = 10;
+	penY = 64;
 
 	// our base class is a dimensionless XGLTexQuad with no texture map
 	// but we want a texture map that's easily accessible for GUI work
@@ -719,16 +722,6 @@ XGLGuiCanvas::XGLGuiCanvas(int w, int h) :
 
 	memset(buffer, 0, width*height);
 	AddTexture(width, height, 1, buffer);
-}
-
-XGLGuiCanvas::XGLGuiCanvas() :
-	XGLTexQuad(),
-	buffer(NULL),
-	childEvent(false)
-{
-	SetName("XGLGuiCanvas");
-	attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.8 };
-	model = glm::mat4(1.0);
 }
 
 XGLGuiCanvas::~XGLGuiCanvas() {}
@@ -748,6 +741,10 @@ void XGLGuiCanvas::RenderText(std::wstring text) {
 	FT_GlyphSlot g = font.face->glyph;
 	GLubyte *src, *dest;
 	int numGlyphs = (int)text.size();
+
+	// this canvas must have a backing buffer
+	if (buffer == NULL)
+		return;
 
 	// Render the string...
 	for (int i = 0; i < numGlyphs; i++){
