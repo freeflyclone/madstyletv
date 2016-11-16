@@ -75,7 +75,6 @@
 #include "xglmaterial.h"
 #include "xglbuffer.h"
 #include "xglshapes.h"
-#include "xglgui.h"
 #include "xglcamera.h"
 #include "xglprojector.h"
 #include "xglframebuffer.h"
