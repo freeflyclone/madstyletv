@@ -63,7 +63,7 @@ void ExampleXGL::BuildGUI() {
 
 	CreateShape(&guiShapes, "shaders/gui", [&]() { child1 = new XGLGuiCanvas(); return child1; });
 	translate = glm::translate(glm::mat4(), glm::vec3(0, -0.9f, 0));
-	model = glm::scale(translate, glm::vec3(0.99, 0.05, 1.0));
+	model = glm::scale(translate, glm::vec3(0.99, 0.025, 1.0));
 	child1->model = model;
 	child1->attributes.diffuseColor = { 0.5, 0.5, 0.5, 0.3 };
 	GetGuiRoot()->AddChild(child1);
@@ -73,8 +73,21 @@ void ExampleXGL::BuildGUI() {
 
 		// if mouse is down
 		if (flags & 1) {
-			// adjust the X coordinate of translation row of child's model matrix
+			// contain thumb inside track
+			if (x < (-1 + cgc->model[0].x))
+				x = -1 + cgc->model[0].x;
+			if (x >(1 - cgc->model[0].x))
+				x = 1 - cgc->model[0].x;
+
+			if (y < (-1 + cgc->model[1].y))
+				y = -1 + cgc->model[1].y;
+			if (y >(1 - cgc->model[1].y))
+				y = 1 - cgc->model[1].y;
+
+			// adjust the X,Y coordinates of translation row of thumb's model matrix
 			cgc->model[3].x = x;
+			cgc->model[3].y = y;
+
 			mouseCaptured = s;
 		}
 		else
@@ -85,7 +98,7 @@ void ExampleXGL::BuildGUI() {
 	});
 
 	CreateShape(&guiShapes, "shaders/gui", [&]() { child2 = new XGLGuiCanvas(); return child2; });
-	scale = glm::scale(glm::mat4(), glm::vec3(0.02, 0.5, 1.0));
+	scale = glm::scale(glm::mat4(), glm::vec3(0.2, 1, 1.0));
 	child2->model = scale;
 	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
 	child1->AddChild(child2);
