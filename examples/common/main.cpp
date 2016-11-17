@@ -2,6 +2,8 @@
 // The console window is immediately closed.
 #ifdef _WIN32
 #include <Windows.h>
+#else
+#include <unistd.h>
 #endif
 #include <stdio.h>
 
@@ -13,6 +15,7 @@
 
 static ExampleXGL *exgl = NULL;
 
+#ifdef _WIN32
 void SetGlobalWorkingDirectoryName()
 {
 	DWORD sizeNeeded = GetCurrentDirectory(0, NULL);
@@ -36,6 +39,16 @@ void SetGlobalWorkingDirectoryName()
 	// So we got that going for us.
 	pathToAssets = currentWorkingDir.substr(0, currentWorkingDir.rfind("\\bin"));
 }
+
+#else
+void SetGlobalWorkingDirectoryName() {
+	char buff[FILENAME_MAX];
+
+	getcwd(buff, sizeof(buff));
+	currentWorkingDir = std::string(buff);
+	xprintf("Cwd: %s\n", currentWorkingDir.c_str());
+}
+#endif
 
 void error_callback(int error, const char *description) {
 	fprintf(stderr, "Error: %s\n", description);
@@ -132,7 +145,7 @@ int main(void) {
 	glfwGetFramebufferSize(window, &width, &height);
 
 	SetGlobalWorkingDirectoryName();
-	pathToAssets = currentWorkingDir + "\\..";
+	pathToAssets = currentWorkingDir + "/..";
 
 	try {
 		exgl = new ExampleXGL();
