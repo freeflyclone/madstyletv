@@ -94,7 +94,7 @@ PHYSX_LIBS=-lPhysX3Extensions -lPhysX3Common_x64 -lPhysX3_x64 -lPhysX3Cooking_x6
 
 all: Example02 OpenCVTest OpenCVWebcam OpenALTest PhysXTest
 
-PhysXTest: ${LIB} ${EXAMPLESDIR}/common/ExampleXGL.o physx-main.o ${EXAMPLESDIR}/PhysXTest/PhysXTestBuildScene.o ${EXAMPLESDIR}/PhysXTest/physx-xgl.o
+PhysXTest: ${LIB} ${EXAMPLESDIR}/common/ExampleGUI.o ${EXAMPLESDIR}/common/ExampleXGL.o physx-main.o ${EXAMPLESDIR}/PhysXTest/PhysXTestBuildScene.o ${EXAMPLESDIR}/PhysXTest/physx-xgl.o
 	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} ${PHYSX_LIBS} -o $@
 
 OpenCVWebcam: ${COMMONOBJS} ${LIB} ${EXAMPLESDIR}/OpenCVWebcam/OpenCVWebcamBuildScene.o
