@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5912EC541DB83DC2006837B9 /* XAVTestBuildScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5912EC531DB83DC2006837B9 /* XAVTestBuildScene.cpp */; };
 		5912EC5A1DB83DCB006837B9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3881D6B81D8006BCD52 /* main.m */; };
 		5912EC5B1DB83DCB006837B9 /* ExampleXGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 599FCC4A1D6645B300C57873 /* ExampleXGL.cpp */; };
 		5912EC5C1DB83DCB006837B9 /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3841D6B80AB006BCD52 /* OpenGLView.mm */; };
@@ -18,9 +17,6 @@
 		5912EC631DB83DCB006837B9 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 59FDE31F1D6B845200AE8BD0 /* Info.plist */; };
 		5912EC641DB83DCB006837B9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5993CC301D6B9031006105A9 /* MainMenu.xib */; };
 		5912EC6B1DB83E79006837B9 /* XAVTestBuildScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5912EC531DB83DC2006837B9 /* XAVTestBuildScene.cpp */; };
-		5912EC741DB83EF6006837B9 /* xav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5912EC6D1DB83EF6006837B9 /* xav.cpp */; };
-		5912EC751DB83EF6006837B9 /* xavfile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5912EC6E1DB83EF6006837B9 /* xavfile.cpp */; };
-		5912EC761DB83EF6006837B9 /* xavsrc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5912EC6F1DB83EF6006837B9 /* xavsrc.cpp */; };
 		5912EC771DB84092006837B9 /* xav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5912EC6D1DB83EF6006837B9 /* xav.cpp */; };
 		5912EC781DB84092006837B9 /* xavfile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5912EC6E1DB83EF6006837B9 /* xavfile.cpp */; };
 		5912EC791DB84092006837B9 /* xavsrc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5912EC6F1DB83EF6006837B9 /* xavsrc.cpp */; };
@@ -38,9 +34,6 @@
 		5919975C1D63F261003F62FF /* xglshapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 591997381D63F00D003F62FF /* xglshapes.cpp */; };
 		5919975D1D63F261003F62FF /* xgluniform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5919973A1D63F00D003F62FF /* xgluniform.cpp */; };
 		5919975E1D63F2AB003F62FF /* xclass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 591996171D63F00D003F62FF /* xclass.cpp */; };
-		594FA8221DC6CCD60071DE06 /* socket.c in Sources */ = {isa = PBXBuildFile; fileRef = 594FA8201DC6CCD60071DE06 /* socket.c */; };
-		594FA8231DC6CD100071DE06 /* socket.c in Sources */ = {isa = PBXBuildFile; fileRef = 594FA8201DC6CCD60071DE06 /* socket.c */; };
-		594FA8261DC6CD280071DE06 /* xavenc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 594FA8241DC6CD280071DE06 /* xavenc.cpp */; };
 		594FA8271DC6CD3E0071DE06 /* xavenc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 594FA8241DC6CD280071DE06 /* xavenc.cpp */; };
 		5956427B1DB6A640002A756F /* Example01.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5956427A1DB6A640002A756F /* Example01.cpp */; };
 		5956427C1DB6A8A5002A756F /* xassets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59DA3B991DB6987900767298 /* xassets.cpp */; };
@@ -61,9 +54,7 @@
 		599A90F31DB7DDB900EAD8C9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5984BD941D6B88650047DF80 /* Assets.xcassets */; };
 		599A90F41DB7DDB900EAD8C9 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 59FDE31F1D6B845200AE8BD0 /* Info.plist */; };
 		599A90F51DB7DDB900EAD8C9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5993CC301D6B9031006105A9 /* MainMenu.xib */; };
-		599A90FE1DB7E0AD00EAD8C9 /* OpenALTestBuildScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 599A90FD1DB7E0AD00EAD8C9 /* OpenALTestBuildScene.cpp */; };
 		599A90FF1DB7E0CD00EAD8C9 /* OpenALTestBuildScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 599A90FD1DB7E0AD00EAD8C9 /* OpenALTestBuildScene.cpp */; };
-		599A91031DB7E39B00EAD8C9 /* xal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 599A91011DB7E39B00EAD8C9 /* xal.cpp */; };
 		599FCC4D1D6645B300C57873 /* ExampleXGL.h in Headers */ = {isa = PBXBuildFile; fileRef = 599FCC4B1D6645B300C57873 /* ExampleXGL.h */; };
 		599FCC5B1D66508D00C57873 /* libxclass.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 591997461D63F05D003F62FF /* libxclass.a */; };
 		599FCC601D6654EB00C57873 /* ExampleXGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 599FCC4A1D6645B300C57873 /* ExampleXGL.cpp */; };
@@ -76,7 +67,6 @@
 		599FCC6E1D66706600C57873 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FCC6D1D66706600C57873 /* libfreetype.a */; };
 		599FCC7D1D667CCB00C57873 /* libpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FCC7C1D667CCB00C57873 /* libpng.a */; };
 		599FCC7F1D667F0400C57873 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 599FCC7E1D667F0400C57873 /* libbz2.a */; };
-		59B41FBA1DB8386F00787183 /* OpenCVWebcamBuildScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59B41FB91DB8386F00787183 /* OpenCVWebcamBuildScene.cpp */; };
 		59B41FC01DB8387800787183 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3881D6B81D8006BCD52 /* main.m */; };
 		59B41FC11DB8387800787183 /* ExampleXGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 599FCC4A1D6645B300C57873 /* ExampleXGL.cpp */; };
 		59B41FC21DB8387800787183 /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3841D6B80AB006BCD52 /* OpenGLView.mm */; };
@@ -522,7 +512,6 @@
 		591997401D63F00D003F62FF /* xutils.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = xutils.c; sourceTree = "<group>"; };
 		591997411D63F00D003F62FF /* xutils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xutils.h; sourceTree = "<group>"; };
 		591997461D63F05D003F62FF /* libxclass.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libxclass.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		594FA8201DC6CCD60071DE06 /* socket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = socket.c; sourceTree = "<group>"; };
 		594FA8211DC6CCD60071DE06 /* socket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = socket.h; sourceTree = "<group>"; };
 		594FA8241DC6CD280071DE06 /* xavenc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xavenc.cpp; path = xav/xavenc.cpp; sourceTree = "<group>"; };
 		594FA8251DC6CD280071DE06 /* xavenc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xavenc.h; path = xav/xavenc.h; sourceTree = "<group>"; };
@@ -655,7 +644,6 @@
 		5919959B1D63F00D003F62FF /* xclass */ = {
 			isa = PBXGroup;
 			children = (
-				594FA8201DC6CCD60071DE06 /* socket.c */,
 				594FA8211DC6CCD60071DE06 /* socket.h */,
 				59B41FD21DB83C7000787183 /* xfifo.h */,
 				59DA3B991DB6987900767298 /* xassets.cpp */,
@@ -1654,7 +1642,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				594FA8271DC6CD3E0071DE06 /* xavenc.cpp in Sources */,
-				594FA8231DC6CD100071DE06 /* socket.c in Sources */,
 				5912EC771DB84092006837B9 /* xav.cpp in Sources */,
 				5912EC781DB84092006837B9 /* xavfile.cpp in Sources */,
 				5912EC791DB84092006837B9 /* xavsrc.cpp in Sources */,
@@ -1692,18 +1679,9 @@
 			files = (
 				5962D3891D6B81D8006BCD52 /* main.m in Sources */,
 				599FCC601D6654EB00C57873 /* ExampleXGL.cpp in Sources */,
-				594FA8261DC6CD280071DE06 /* xavenc.cpp in Sources */,
 				5962D3851D6B80AB006BCD52 /* OpenGLView.mm in Sources */,
-				5912EC741DB83EF6006837B9 /* xav.cpp in Sources */,
-				59B41FBA1DB8386F00787183 /* OpenCVWebcamBuildScene.cpp in Sources */,
-				594FA8221DC6CCD60071DE06 /* socket.c in Sources */,
-				5912EC751DB83EF6006837B9 /* xavfile.cpp in Sources */,
 				59BEB3E31D6B7FBF00CD09FF /* AppDelegate.m in Sources */,
-				599A90FE1DB7E0AD00EAD8C9 /* OpenALTestBuildScene.cpp in Sources */,
-				599A91031DB7E39B00EAD8C9 /* xal.cpp in Sources */,
 				5956427B1DB6A640002A756F /* Example01.cpp in Sources */,
-				5912EC761DB83EF6006837B9 /* xavsrc.cpp in Sources */,
-				5912EC541DB83DC2006837B9 /* XAVTestBuildScene.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1960,6 +1938,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				"OTHER_CFLAGS[arch=*]" = "-I";
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
@@ -2006,6 +1985,7 @@
 				"LIBRARY_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/**";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
@@ -2023,6 +2003,7 @@
 				HEADER_SEARCH_PATHS = "";
 				"LIBRARY_SEARCH_PATHS[arch=*]" = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OTHER_LDFLAGS = "";
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "";
 			};
 			name = Debug;
@@ -2038,6 +2019,7 @@
 				HEADER_SEARCH_PATHS = "";
 				"LIBRARY_SEARCH_PATHS[arch=*]" = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OTHER_LDFLAGS = "";
 			};
 			name = Release;
 		};
@@ -2090,6 +2072,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-lavcodec";
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.Example01;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -2143,6 +2126,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "-lavcodec";
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.Example01;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
