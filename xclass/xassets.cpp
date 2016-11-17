@@ -51,10 +51,10 @@ JSONValue* XAssets::Find(std::wstring name) const {
 
 std::string XAssets::WideToBytes(const std::wstring &wstr){
 	// found this on Stack Overflow, but it doesn't work on gcc 4.9.1
-	//return std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t>().to_bytes(wstr);
+	return std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t>().to_bytes(wstr);
 
 	// Also found this on Stack Overflow.  gcc 4.9.1 compatibility is unknown.
-	return std::wstring_convert<std::codecvt<wchar_t, char,std::mbstate_t>, wchar_t>().to_bytes(wstr);
+	//return std::wstring_convert<std::codecvt<wchar_t, char,std::mbstate_t>, wchar_t>().to_bytes(wstr);
 }
 
 void XAssets::DebugDump() {

@@ -4,6 +4,7 @@ PHYSXDIR=${PHYSX_DIR}
 
 XGLDIR=${XCLASSDIR}/xgl
 XALDIR=${XCLASSDIR}/xal
+XAVDIR=${XCLASSDIR}/xav
 EXAMPLESDIR=${XCLASSDIR}/../examples
 THIRDPARTYDIR=${XCLASSDIR}/3rdParty
 
@@ -11,6 +12,7 @@ LIB=libxclass.a
 
 CPPFLAGS +=-std=c++14\
 	-I${XALDIR} \
+	-I${XAVDIR} \
 	-I${XGLDIR} \
 	-I${XGLDIR}/glm \
 	-I${XGLDIR}/glm/gtc \
@@ -30,6 +32,7 @@ CPPFLAGS +=-std=c++14\
 
 CFLAGS +=-std=c11 \
 	-I${XALDIR} \
+	-I${XAVDIR} \
 	-I${XGLDIR} \
 	-I${XGLDIR}/glm \
 	-I${XCLASSDIR} \
@@ -51,6 +54,7 @@ CPPSOURCES=${XGLDIR}/xgl.cpp \
 	${XGLDIR}/xgluniform.cpp \
 	${XGLDIR}/xglworldcursor.cpp \
 	${XALDIR}/xal.cpp \
+	${XAVDIR}/xavenc.cpp \
 	${XCLASSDIR}/xassets.cpp \
 	${XCLASSDIR}/xinput.cpp \
 	${XCLASSDIR}/JSON.cpp \
@@ -66,7 +70,7 @@ CSOURCES=${XGLDIR}/glew.c \
 	${THIRDPARTYDIR}/soil/src/stb_image_aug.c \
 
 
-COMMON=main.cpp ${EXAMPLESDIR}/common/ExampleXGL.cpp
+COMMON=main.cpp ${EXAMPLESDIR}/common/ExampleXGL.cpp ${EXAMPLESDIR}/common/ExampleGUI.cpp
 
 OBJS = $(patsubst %.cpp,%.o,${CPPSOURCES})
 OBJS += $(patsubst %.c,%.o,${CSOURCES})
@@ -80,7 +84,7 @@ LDFLAGS +=\
 	-L${PHYSXDIR}/Bin/linux64 \
 	-L/usr/lib/x86_64-linux-gnu
 
-LIBS=-lxclass -lglfw3 -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXinerama -lXcursor -lpthread -lexpat -lfreetype -lopencv_core -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d 
+LIBS=-lxclass -lglfw3 -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXinerama -lXcursor -lpthread -lexpat -lfreetype -lopencv_core -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d -lavformat -lavcodec -lavutil
 
 OPENCV_LIBS=-lopencv_flann -lopencv_gpu -lopencv_highgui -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_objdetect -lopencv_ocl -lopencv_photo -lopencv_stitching -lopencv_superres -lopencv_ts -lopencv_video -lopencv_videostab
 

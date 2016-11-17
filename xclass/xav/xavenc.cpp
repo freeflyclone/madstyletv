@@ -63,6 +63,7 @@ XAVEncoder::XAVEncoder(XConfig *cfg, unsigned char *y, unsigned char *u, unsigne
 	if ((output = fopen("test.m4v", "wb")) == NULL)
 		throw std::runtime_error("failed to create output file");
 
+/*
 	SocketsSetup();
 
 	if ((udpSocket = SocketOpen(NULL, udpPort, SOCK_DGRAM, IPPROTO_UDP, 0)) <= 0)
@@ -70,6 +71,7 @@ XAVEncoder::XAVEncoder(XConfig *cfg, unsigned char *y, unsigned char *u, unsigne
 
 	// UDP requires sendto(2), which requires a destination address
 	SockAddrIN(&udpDest, (char *)udpAddress, udpPort);
+*/
 }
 
 XAVEncoder::~XAVEncoder() {
@@ -108,6 +110,7 @@ void XAVEncoder::EncodeFrame(unsigned char *img, int width, int height, int dept
 		fwrite(pkt.data, 1, pkt.size, output);
 		fflush(output);
 
+		if(0)
 		{
 			unsigned char *buffer = pkt.data;
 			int pktSize = pkt.size;
