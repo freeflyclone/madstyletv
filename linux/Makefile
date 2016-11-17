@@ -70,7 +70,8 @@ CSOURCES=${XGLDIR}/glew.c \
 	${THIRDPARTYDIR}/soil/src/stb_image_aug.c \
 
 
-COMMON=main.cpp ${EXAMPLESDIR}/common/ExampleXGL.cpp ${EXAMPLESDIR}/common/ExampleGUI.cpp
+#COMMON=main.cpp ${EXAMPLESDIR}/common/ExampleXGL.cpp ${EXAMPLESDIR}/common/ExampleGUI.cpp
+COMMON=${EXAMPLESDIR}/common/main.cpp ${EXAMPLESDIR}/common/ExampleXGL.cpp ${EXAMPLESDIR}/common/ExampleGUI.cpp
 
 OBJS = $(patsubst %.cpp,%.o,${CPPSOURCES})
 OBJS += $(patsubst %.c,%.o,${CSOURCES})
