@@ -17,6 +17,9 @@ void CheckAlError(const char *file, int line, std::string what){
 }
 
 XAL::XAL(ALCchar *dn, int sr, int fmt, int nb) : deviceName(dn), sampleRate(sr), format(fmt), nBuffers(nb) {
+	if (nBuffers & (nBuffers - 1) != nBuffers)
+		throw std::runtime_error("Number of audio buffers must be power of 2");
+
 	EnumerateDevices();
 
 	for (int i = 0; i < deviceList.size(); i++)
