@@ -100,11 +100,16 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
 }
 
 - (void) mouseDown: (NSEvent *) theEvent {
+    NSPoint loc = [theEvent locationInWindow];
+    NSUInteger buttons = [NSEvent pressedMouseButtons];
+    
+    exgl->MouseEvent((int)loc.x, exgl->height - (int)loc.y, (int)buttons);
 }
 - (void) mouseUp: (NSEvent *) theEvent {
+    NSPoint loc = [theEvent locationInWindow];
     NSUInteger buttons = [NSEvent pressedMouseButtons];
     if (buttons==0) {
-        exgl->MouseEvent(0,0,0);
+        exgl->MouseEvent((int)loc.x, exgl->height - (int)loc.y, 0);
     }
 }
 
@@ -112,7 +117,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink, const CVTimeSt
     NSPoint loc = [theEvent locationInWindow];
     NSUInteger buttons = [NSEvent pressedMouseButtons];
     
-    exgl->MouseEvent((int)loc.x, -(int)loc.y, (int)buttons);
+    exgl->MouseEvent((int)loc.x, exgl->height - (int)loc.y, (int)buttons);
 }
 
 - (void) keyDown: (NSEvent *) theEvent {
