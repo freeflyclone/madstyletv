@@ -91,7 +91,19 @@ ALuint XAL::WaitForProcessedBuffer() {
 	} while (val == 0);
 
 	alSourceUnqueueBuffers(alSourceId, 1, &dequeuedBuff);
+	AL_CHECK("alSourceUnqueueBuffers() failed");
 
+	// for small nBuffers, this won't kill us performance wise.
+	// maybe not even for XAL_MAX_BUFFERS.
+	// it was discoverd that on Mac OS bufferId values and index
+	// values are not off by one, which was what previous code
+	// assumed would always be true.
+	for (int i = 0; i < nBuffers; i++) {
+		if (alBufferIds[i] == dequeuedBuff) {
+			dequeuedBuff = i;
+			break;
+		}
+	}
 	return dequeuedBuff;
 }
 
@@ -99,7 +111,7 @@ void XAL::Convert(float *left, float *right) {
 	float *pLeft = left;
 	float *pRight = right;
 
-	AudioSampleShort *pass = shortBuffers[dequeuedBuff - 1].data();
+	AudioSampleShort *pass = shortBuffers[dequeuedBuff].data();
 
 	// convert to signed short
 	for (int i = 0; i < AUDIO_SAMPLES; i++) {
@@ -112,12 +124,12 @@ void XAL::Convert(float *left, float *right) {
 }
 
 void XAL::Buffer() {
-	ALuint idx = dequeuedBuff - 1;
+	ALuint idx = dequeuedBuff;
 
-	alBufferData(dequeuedBuff, format, shortBuffers[idx].data(), AUDIO_SAMPLES * sizeof(AudioSampleShort), sampleRate);
+	alBufferData(alBufferIds[dequeuedBuff], format, shortBuffers[idx].data(), AUDIO_SAMPLES * sizeof(AudioSampleShort), sampleRate);
 	AL_CHECK("alBufferData() failed");
 
-	alSourceQueueBuffers(alSourceId, 1, &dequeuedBuff);
+	alSourceQueueBuffers(alSourceId, 1, &alBufferIds[dequeuedBuff]);
 	AL_CHECK("alSourceQueueBuffers() failed");
 
 }
