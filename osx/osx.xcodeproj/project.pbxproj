@@ -42,6 +42,10 @@
 		5956427F1DB6A8A5002A756F /* xshmem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59DA3B911DB697E300767298 /* xshmem.cpp */; };
 		595642801DB6A931002A756F /* xglframebuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 595642751DB6A166002A756F /* xglframebuffer.cpp */; };
 		595642811DB6A931002A756F /* xglworldcursor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 59DA3B961DB6983D00767298 /* xglworldcursor.cpp */; };
+		595714CB1DDE9529003B0695 /* ExampleGUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 596DEB8F1DDE7EC2001D604C /* ExampleGUI.cpp */; };
+		595714CC1DDE9536003B0695 /* ExampleGUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 596DEB8F1DDE7EC2001D604C /* ExampleGUI.cpp */; };
+		595714CD1DDE9546003B0695 /* ExampleGUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 596DEB8F1DDE7EC2001D604C /* ExampleGUI.cpp */; };
+		595714CE1DDE9553003B0695 /* ExampleGUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 596DEB8F1DDE7EC2001D604C /* ExampleGUI.cpp */; };
 		5962D3851D6B80AB006BCD52 /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3841D6B80AB006BCD52 /* OpenGLView.mm */; };
 		5962D3891D6B81D8006BCD52 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3881D6B81D8006BCD52 /* main.m */; };
 		596DEB901DDE7EC2001D604C /* ExampleGUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 596DEB8F1DDE7EC2001D604C /* ExampleGUI.cpp */; };
@@ -522,7 +526,7 @@
 		5962D3831D6B80AB006BCD52 /* OpenGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OpenGLView.h; path = common/OpenGLView.h; sourceTree = SOURCE_ROOT; };
 		5962D3841D6B80AB006BCD52 /* OpenGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenGLView.mm; path = common/OpenGLView.mm; sourceTree = SOURCE_ROOT; };
 		5962D3881D6B81D8006BCD52 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = common/main.m; sourceTree = SOURCE_ROOT; };
-		596DEB8F1DDE7EC2001D604C /* ExampleGUI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ExampleGUI.cpp; path = ../common/ExampleGUI.cpp; sourceTree = "<group>"; };
+		596DEB8F1DDE7EC2001D604C /* ExampleGUI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExampleGUI.cpp; sourceTree = "<group>"; };
 		5984BD941D6B88650047DF80 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = common/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		598A6CEB1D6636CA005BC5D9 /* Example01.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example01.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5993CC311D6B9031006105A9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = common/Base.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
@@ -1218,7 +1222,6 @@
 		598A6CEC1D6636CA005BC5D9 /* Example01 */ = {
 			isa = PBXGroup;
 			children = (
-				596DEB8F1DDE7EC2001D604C /* ExampleGUI.cpp */,
 				5956427A1DB6A640002A756F /* Example01.cpp */,
 			);
 			path = Example01;
@@ -1319,6 +1322,7 @@
 		59E575901D6400BF0093ADFE /* common */ = {
 			isa = PBXGroup;
 			children = (
+				596DEB8F1DDE7EC2001D604C /* ExampleGUI.cpp */,
 				599FCC4A1D6645B300C57873 /* ExampleXGL.cpp */,
 				599FCC4B1D6645B300C57873 /* ExampleXGL.h */,
 				59E575911D6400BF0093ADFE /* InputTrackers.h */,
@@ -1632,6 +1636,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				595714CE1DDE9553003B0695 /* ExampleGUI.cpp in Sources */,
 				5912EC6B1DB83E79006837B9 /* XAVTestBuildScene.cpp in Sources */,
 				5912EC5A1DB83DCB006837B9 /* main.m in Sources */,
 				5912EC5B1DB83DCB006837B9 /* ExampleXGL.cpp in Sources */,
@@ -1693,6 +1698,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				595714CC1DDE9536003B0695 /* ExampleGUI.cpp in Sources */,
 				599A90FF1DB7E0CD00EAD8C9 /* OpenALTestBuildScene.cpp in Sources */,
 				599A90EC1DB7DDB900EAD8C9 /* main.m in Sources */,
 				599A90ED1DB7DDB900EAD8C9 /* ExampleXGL.cpp in Sources */,
@@ -1705,6 +1711,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				595714CD1DDE9546003B0695 /* ExampleGUI.cpp in Sources */,
 				59B41FD11DB83A2100787183 /* OpenCVWebcamBuildScene.cpp in Sources */,
 				59B41FC01DB8387800787183 /* main.m in Sources */,
 				59B41FC11DB8387800787183 /* ExampleXGL.cpp in Sources */,
@@ -1717,6 +1724,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				595714CB1DDE9529003B0695 /* ExampleGUI.cpp in Sources */,
 				59C7C7F41D6B9ACD000F4E87 /* Example02.cpp in Sources */,
 				59C7C7E21D6B9A5A000F4E87 /* main.m in Sources */,
 				59C7C7E31D6B9A5A000F4E87 /* ExampleXGL.cpp in Sources */,
@@ -2193,14 +2201,21 @@
 				LIBRARY_SEARCH_PATHS = (
 					"../xclass/3rdParty/**",
 					"$(PROJECT_DIR)/Debug",
+					/usr/local/lib,
 				);
 				"LIBRARY_SEARCH_PATHS[arch=*]" = (
 					"../xclass/3rdParty/**",
 					"$(PROJECT_DIR)/Debug",
+					/usr/local/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.OpenALTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx10.11;
@@ -2246,14 +2261,21 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"../xclass/3rdParty/**",
-					"$(PROJECT_DIR)/Debug",
+					"$(PROJECT_DIR)/Release",
+					/usr/local/lib,
 				);
 				"LIBRARY_SEARCH_PATHS[arch=*]" = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Debug",
+					"../xclass/3rdParty/**",
+					"$(PROJECT_DIR)/Release",
+					/usr/local/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = (
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.OpenALTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx10.11;
@@ -2315,6 +2337,9 @@
 				OTHER_LDFLAGS = (
 					"-lopencv_highgui",
 					"-lopencv_core",
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.OpenCVWebcam;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2374,6 +2399,9 @@
 				OTHER_LDFLAGS = (
 					"-lopencv_highgui",
 					"-lopencv_core",
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.OpenCVWebcam;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2423,14 +2451,21 @@
 				LIBRARY_SEARCH_PATHS = (
 					"../xclass/3rdParty/**",
 					"$(PROJECT_DIR)/Debug",
+					/usr/local/lib,
 				);
 				"LIBRARY_SEARCH_PATHS[arch=*]" = (
 					"../xclass/3rdParty/**",
 					"$(PROJECT_DIR)/Debug",
+					/usr/local/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.Example02;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx10.11;
@@ -2476,14 +2511,16 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"../xclass/3rdParty/**",
-					"$(PROJECT_DIR)/Debug",
-				);
-				"LIBRARY_SEARCH_PATHS[arch=*]" = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Debug",
+					"$(PROJECT_DIR)/Release",
+					/usr/local/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = (
+					"-lavformat",
+					"-lavcodec",
+					"-lavutil",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.Example02;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx10.11;
