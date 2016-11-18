@@ -2,6 +2,7 @@
 
 uniform vec3 cameraPosition;
 uniform mat4 model;
+
 uniform vec4 ambient;
 uniform vec4 diffuse;
 uniform vec4 specular;
@@ -27,9 +28,7 @@ in vec4 fragColor;
 out vec4 finalColor;
 
 void main() {
-    //calculate normal in world coordinates
-    mat3 normalMatrix = transpose(inverse(mat3(model)));
-    vec3 normal = normalize(normalMatrix * fragNormal);
+    vec3 normal = normalize(fragNormal);
 
 	vec3 surfacePos = vec3(model * vec4(fragVert, 1));
 	vec4 surfaceColor = diffuse;
