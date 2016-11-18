@@ -16,7 +16,7 @@ void CheckAlError(const char *file, int line, std::string what){
 	}
 }
 
-XAL::XAL(ALCchar *dn, int sr, int fmt, int nb) : deviceName(dn), sampleRate(sr), format(fmt), nBuffers(nb) {
+XAL::XAL(ALCchar *dn, int sr, int fmt, int nb) : deviceName(dn), sampleRate(sr), format(fmt), nBuffers(nb), dqueuedIdx(0) {
 	if (nBuffers & (nBuffers - 1) != nBuffers)
 		throw std::runtime_error("Number of audio buffers must be power of 2");
 
@@ -88,33 +88,33 @@ void XAL::Stop() {
 
 ALuint XAL::WaitForProcessedBuffer() {
 	ALint val;
+	ALuint bufferId;
+
 	do {
 		alGetSourcei(alSourceId, AL_BUFFERS_PROCESSED, &val);
 		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
 	} while (val == 0);
 
-	alSourceUnqueueBuffers(alSourceId, 1, &dequeuedBuff);
+	alSourceUnqueueBuffers(alSourceId, 1, &bufferId);
 	AL_CHECK("alSourceUnqueueBuffers() failed");
 
-	// for small nBuffers, this won't kill us performance wise.
-	// maybe not even for XAL_MAX_BUFFERS.
-	// it was discoverd that on Mac OS bufferId values and index
-	// values are not off by one, which was what previous code
-	// assumed would always be true.
+	// it's highly likely that this for loop will always iterate only once,
+	// regardles of nBuffers value.  (which is enforced to be power-of-2)
 	for (int i = 0; i < nBuffers; i++) {
-		if (alBufferIds[i] == dequeuedBuff) {
-			dequeuedBuff = i;
+		int nextIdx = (dqueuedIdx + 1 + i) & (nBuffers - 1);
+		if (alBufferIds[nextIdx] == bufferId) {
+			dqueuedIdx = nextIdx;
 			break;
 		}
 	}
-	return dequeuedBuff;
+	return dqueuedIdx;
 }
 
 void XAL::Convert(float *left, float *right) {
 	float *pLeft = left;
 	float *pRight = right;
 
-	AudioSampleShort *pass = shortBuffers[dequeuedBuff].data();
+	AudioSampleShort *pass = shortBuffers[dqueuedIdx].data();
 
 	// convert to signed short
 	for (int i = 0; i < AUDIO_SAMPLES; i++) {
@@ -127,12 +127,12 @@ void XAL::Convert(float *left, float *right) {
 }
 
 void XAL::Buffer() {
-	ALuint idx = dequeuedBuff;
+	ALuint idx = dqueuedIdx;
 
-	alBufferData(alBufferIds[dequeuedBuff], format, shortBuffers[idx].data(), AUDIO_SAMPLES * sizeof(AudioSampleShort), sampleRate);
+	alBufferData(alBufferIds[dqueuedIdx], format, shortBuffers[idx].data(), AUDIO_SAMPLES * sizeof(AudioSampleShort), sampleRate);
 	AL_CHECK("alBufferData() failed");
 
-	alSourceQueueBuffers(alSourceId, 1, &alBufferIds[dequeuedBuff]);
+	alSourceQueueBuffers(alSourceId, 1, &alBufferIds[dqueuedIdx]);
 	AL_CHECK("alSourceQueueBuffers() failed");
 
 }
