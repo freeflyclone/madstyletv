@@ -2,6 +2,11 @@
 
 precision highp float;
 
+layout (std140) uniform MatrixData {
+	mat4 projector;
+	mat4 view;
+};
+
 in  vec4 ex_Color;
 in  vec2 UV;
 
