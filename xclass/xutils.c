@@ -19,7 +19,6 @@ int xprintf(char *fmt,...)
     OutputDebugStringA(buff);
 #else
     vsprintf(buff,fmt,ap);
-    strcat(buff, "\n");
     printf("%s", buff);
 #endif
 	return 0;
