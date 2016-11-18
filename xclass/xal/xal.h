@@ -79,7 +79,7 @@ private:
 	int format;
 	int nBuffers;
 	XALShortBuffer shortBuffers;
-	ALuint dequeuedBuff;
+	ALuint dqueuedIdx;
 };
 
 #endif
