@@ -8,7 +8,7 @@
 #include <xavfile.h>
 #include <xfifo.h>
 #include <xal.h>
-#include <xtimer.h>
+//#include <xtimer.h>
 
 #include <iostream>
 
@@ -59,7 +59,7 @@ public:
 	}
 
 	std::shared_ptr<XAVStream> stream;
-	XTimer timer;
+	//XTimer timer;
 };
 
 class AudioStreamThread : public XThread {
