@@ -5,6 +5,7 @@
     <ExpatIncludes Include="expat\include\*.h" />
     <FreetypeIncludes Include="freetype\include\**\*.h"/>
     <SOILIncludes Include="soil\src\*.h"/>
+    <GlyphyIncludes Include="glyphy\include\*.h*"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -14,18 +15,23 @@
     <FreetypeLib32 Include="freetype\lib32\freetype.lib" />
     <GLFWLib64 Include="glfw\lib64\glfw3.lib" />
     <GLFWLib32 Include="glfw\lib32\glfw3.lib" />
+    <GlyphyLib64 Include="glyphy\lib64\glyphy.lib" />
+    <GlyphyLib32 Include="glyphy\lib32\glyphy.lib" />
   </ItemGroup>
 
   <Target Name="3rdParty">
     <Copy SourceFiles="@(ExpatIncludes)" DestinationFolder="..\include" />
     <Copy SourceFiles="@(FreetypeIncludes)" DestinationFiles="@(FreetypeIncludes->'..\include\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Copy SourceFiles="@(SOILIncludes)" DestinationFiles="@(SOILIncludes->'..\include\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(GlyphyIncludes)" DestinationFiles="@(GlyphyIncludes->'..\include\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Copy SourceFiles="@(ExpatLib64)" DestinationFolder="..\lib\x64" />
     <Copy SourceFiles="@(ExpatLib32)" DestinationFolder="..\lib\x86" />
     <Copy SourceFiles="@(FreetypeLib64)" DestinationFolder="..\lib\x64" />
     <Copy SourceFiles="@(FreetypeLib32)" DestinationFolder="..\lib\x86" />
     <Copy SourceFiles="@(GLFWLib64)" DestinationFolder="..\lib\x64" />
     <Copy SourceFiles="@(GLFWLib32)" DestinationFolder="..\lib\x86" />
+    <Copy SourceFiles="@(GlyphyLib64)" DestinationFolder="..\lib\x64" />
+    <Copy SourceFiles="@(GlyphyLib32)" DestinationFolder="..\lib\x86" />
   </Target>
 
 </Project>
