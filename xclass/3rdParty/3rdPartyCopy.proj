@@ -15,8 +15,8 @@
     <FreetypeLib32 Include="freetype\lib32\freetype.lib" />
     <GLFWLib64 Include="glfw\lib64\glfw3.lib" />
     <GLFWLib32 Include="glfw\lib32\glfw3.lib" />
-    <GlyphyLib64 Include="glyphy\lib64\glyphy.lib" />
-    <GlyphyLib32 Include="glyphy\lib32\glyphy.lib" />
+    <GlyphyLib64 Include="glyphy\lib64\**\glyphy.lib" />
+    <GlyphyLib32 Include="glyphy\lib32\**\glyphy.lib" />
   </ItemGroup>
 
   <Target Name="3rdParty">
@@ -30,8 +30,8 @@
     <Copy SourceFiles="@(FreetypeLib32)" DestinationFolder="..\lib\x86" />
     <Copy SourceFiles="@(GLFWLib64)" DestinationFolder="..\lib\x64" />
     <Copy SourceFiles="@(GLFWLib32)" DestinationFolder="..\lib\x86" />
-    <Copy SourceFiles="@(GlyphyLib64)" DestinationFolder="..\lib\x64" />
-    <Copy SourceFiles="@(GlyphyLib32)" DestinationFolder="..\lib\x86" />
+    <Copy SourceFiles="@(GlyphyLib64)" DestinationFiles="@(GlyphyLib64->'..\lib\x64\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(GlyphyLib32)" DestinationFiles="@(GlyphyLib32->'..\lib\x86\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 
 </Project>
