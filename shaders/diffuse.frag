@@ -25,9 +25,7 @@ in vec4 fragColor;
 out vec4 finalColor;
 
 void main() {
-    //calculate normal in world coordinates
-    mat3 normalMatrix = transpose(inverse(mat3(model)));
-    vec3 normal = normalize(normalMatrix * fragNormal);
+    vec3 normal = normalize(fragNormal);
     
     //calculate the location of this fragment (pixel) in world coordinates
     vec3 fragPosition = vec3(model * vec4(fragVert, 1));
