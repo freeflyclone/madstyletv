@@ -73,6 +73,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{526A4A
 		assets\config.json = assets\config.json
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GlyphyTest", "examples\GlyphyTest\GlyphyTest.vcxproj", "{27E22844-E5E0-4D63-B4D5-39946171A155}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -177,6 +179,14 @@ Global
 		{3482FD1F-C417-41CB-93D8-46856BEF7F17}.Release|Win32.Build.0 = Release|Win32
 		{3482FD1F-C417-41CB-93D8-46856BEF7F17}.Release|x64.ActiveCfg = Release|x64
 		{3482FD1F-C417-41CB-93D8-46856BEF7F17}.Release|x64.Build.0 = Release|x64
+		{27E22844-E5E0-4D63-B4D5-39946171A155}.Debug|Win32.ActiveCfg = Debug|Win32
+		{27E22844-E5E0-4D63-B4D5-39946171A155}.Debug|Win32.Build.0 = Debug|Win32
+		{27E22844-E5E0-4D63-B4D5-39946171A155}.Debug|x64.ActiveCfg = Debug|x64
+		{27E22844-E5E0-4D63-B4D5-39946171A155}.Debug|x64.Build.0 = Debug|x64
+		{27E22844-E5E0-4D63-B4D5-39946171A155}.Release|Win32.ActiveCfg = Release|Win32
+		{27E22844-E5E0-4D63-B4D5-39946171A155}.Release|Win32.Build.0 = Release|Win32
+		{27E22844-E5E0-4D63-B4D5-39946171A155}.Release|x64.ActiveCfg = Release|x64
+		{27E22844-E5E0-4D63-B4D5-39946171A155}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -194,5 +204,6 @@ Global
 		{AD968A04-D2CC-40C0-85D3-DEE6FB2FFBAC} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 		{E7E845DE-F82B-446B-877D-6FEF448F6038} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 		{3482FD1F-C417-41CB-93D8-46856BEF7F17} = {24EAE59C-1779-4D00-8819-415B4A41868E}
+		{27E22844-E5E0-4D63-B4D5-39946171A155} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 	EndGlobalSection
 EndGlobal
