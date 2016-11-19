@@ -18,9 +18,12 @@ out vec3 fragNormal;
 out vec4 fragColor;
 
 void main() {
+ 	// more efficient to do this here instead of fragment shader
+    mat3 normalMatrix = transpose(inverse(mat3(model)));
+
     // Pass some variables to the fragment shader
     fragTexCoord = vertTexCoord;
-    fragNormal = vertNormal;
+    fragNormal = normalMatrix * vertNormal;
     fragVert = vert;
 	fragColor = vertColor;
     
