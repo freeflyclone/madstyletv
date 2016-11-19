@@ -282,5 +282,6 @@
   <ItemGroup>
     <None Include="3rdParty\3rdPartyCopy.proj" />
     <None Include="xclass-copy.proj" />
+    <None Include="xclass.props" />
   </ItemGroup>
 </Project>

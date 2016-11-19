@@ -27,5 +27,58 @@
     <ClCompile Include="..\common\ExampleGUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="demo-glstate.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="demo-atlas.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="demo-shader.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="default-text.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="demo-atlas.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="demo-atlas-glsl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="demo-buffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="demo-common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="demo-font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="demo-fshader-glsl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="demo-glstate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="demo-shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="demo-view.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="demo-vshader-glsl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix4x4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="trackball.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
