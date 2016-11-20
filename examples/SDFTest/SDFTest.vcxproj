@@ -177,10 +177,13 @@
     <ClCompile Include="SDFTestBuildScene.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\shaders\textSdf.frag" />
-    <None Include="..\..\shaders\textSdf.vert" />
+    <None Include="..\..\shaders\text-sdf.frag" />
+    <None Include="..\..\shaders\text-sdf.vert" />
     <None Include="..\..\shaders\tex.frag" />
     <None Include="..\..\shaders\tex.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="arial.ttf_sdf.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
