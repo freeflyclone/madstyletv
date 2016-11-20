@@ -24,7 +24,7 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	AddKeyFunc(std::make_pair('A','Z'), std::bind(&ExampleXGL::KeyFunc, this, _1, _2));
 
 	// add a default "ground" plane grid.
-	AddShape("shaders/simple", [&](){ shape = new XYPlaneGrid(); return shape; });
+	AddShape("shaders/000-simple", [&](){ shape = new XYPlaneGrid(); return shape; });
 
 	// Features of the framework are incrementally introduced by enhancing this function
 	// on a per example basis.

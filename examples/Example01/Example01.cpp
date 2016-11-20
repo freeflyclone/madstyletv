@@ -8,5 +8,5 @@
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
-	AddShape("shaders/simple", [&](){ shape = new XGLTriangle(); return shape; });
+	AddShape("shaders/000-simple", [&](){ shape = new XGLTriangle(); return shape; });
 }
