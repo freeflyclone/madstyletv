@@ -290,7 +290,9 @@
     <None Include="xclass-copy.proj">
       <SubType>Designer</SubType>
     </None>
-    <None Include="xclass.props" />
+    <None Include="xclass.props">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
