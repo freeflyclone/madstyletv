@@ -177,8 +177,8 @@
     <ClCompile Include="SDFTestBuildScene.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\shaders\sdf.frag" />
-    <None Include="..\..\shaders\sdf.vert" />
+    <None Include="..\..\shaders\textSdf.frag" />
+    <None Include="..\..\shaders\textSdf.vert" />
     <None Include="..\..\shaders\tex.frag" />
     <None Include="..\..\shaders\tex.vert" />
   </ItemGroup>

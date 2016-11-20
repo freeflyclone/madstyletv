@@ -13,16 +13,13 @@ void main(void)
 {
     vec4 tc = texture(texUnit,UV);
 	float mask = tc.a;
-	vec4 color;
-	
-	color.rgb = ex_Color.rgb;
 
-	if(mask < 0.5)
-		color.a = 0.0;
+	if (mask < 0.5)
+		tc.a = 0;
 	else
-		color.a = 1.0;
+		tc.a = 1.0;
 
-	color.a *= smoothstep(0.25, 0.75, mask);
+	tc.a *= smoothstep(0.2, 0.8, mask);
 
-    out_Color = color;
+    out_Color = tc * ex_Color;
 }
