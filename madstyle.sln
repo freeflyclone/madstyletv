@@ -73,6 +73,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{526A4A
 		assets\config.json = assets\config.json
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDFTest", "examples\SDFTest\SDFTest.vcxproj", "{F11ACB28-85F0-456F-BFC5-C4E174890746}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AC4080D2-1C42-4812-943D-79CA13A1D86C} = {AC4080D2-1C42-4812-943D-79CA13A1D86C}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -177,6 +182,14 @@ Global
 		{3482FD1F-C417-41CB-93D8-46856BEF7F17}.Release|Win32.Build.0 = Release|Win32
 		{3482FD1F-C417-41CB-93D8-46856BEF7F17}.Release|x64.ActiveCfg = Release|x64
 		{3482FD1F-C417-41CB-93D8-46856BEF7F17}.Release|x64.Build.0 = Release|x64
+		{F11ACB28-85F0-456F-BFC5-C4E174890746}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F11ACB28-85F0-456F-BFC5-C4E174890746}.Debug|Win32.Build.0 = Debug|Win32
+		{F11ACB28-85F0-456F-BFC5-C4E174890746}.Debug|x64.ActiveCfg = Debug|x64
+		{F11ACB28-85F0-456F-BFC5-C4E174890746}.Debug|x64.Build.0 = Debug|x64
+		{F11ACB28-85F0-456F-BFC5-C4E174890746}.Release|Win32.ActiveCfg = Release|Win32
+		{F11ACB28-85F0-456F-BFC5-C4E174890746}.Release|Win32.Build.0 = Release|Win32
+		{F11ACB28-85F0-456F-BFC5-C4E174890746}.Release|x64.ActiveCfg = Release|x64
+		{F11ACB28-85F0-456F-BFC5-C4E174890746}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -194,5 +207,6 @@ Global
 		{AD968A04-D2CC-40C0-85D3-DEE6FB2FFBAC} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 		{E7E845DE-F82B-446B-877D-6FEF448F6038} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 		{3482FD1F-C417-41CB-93D8-46856BEF7F17} = {24EAE59C-1779-4D00-8819-415B4A41868E}
+		{F11ACB28-85F0-456F-BFC5-C4E174890746} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 	EndGlobalSection
 EndGlobal
