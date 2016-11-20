@@ -32,7 +32,7 @@ void ExampleXGL::BuildScene() {
 	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	child4->model = translate * rotate;
 
-	CreateShape("shaders/simple", [&](){ child1 = new XGLTransformer(); return child1; });
+	CreateShape("shaders/000-simple", [&](){ child1 = new XGLTransformer(); return child1; });
 	child1->SetTheFunk([&](XGLShape *s, float clock) {
 		float translateFunction = sin(clock / 180.0f);
 		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 30.0f, glm::vec3(0.0f, 0.0f, 1.0f));
