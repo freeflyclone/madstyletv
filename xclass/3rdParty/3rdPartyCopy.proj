@@ -4,6 +4,7 @@
   <ItemGroup>
     <ExpatIncludes Include="expat\include\*.h" />
     <FreetypeIncludes Include="freetype\include\**\*.h"/>
+    <ATBIncludes Include="anttweakbar\include\*.h" />
     <SOILIncludes Include="soil\src\*.h"/>
   </ItemGroup>
 
@@ -14,6 +15,8 @@
     <FreetypeLib32 Include="freetype\lib32\freetype.lib" />
     <GLFWLib64 Include="glfw\lib64\glfw3.lib" />
     <GLFWLib32 Include="glfw\lib32\glfw3.lib" />
+    <ATBLib64 Include="anttweakbar\lib64\**\anttweakbar.lib" />
+    <ATBLib32 Include="anttweakbar\lib32\**\anttweakbar.lib" />
   </ItemGroup>
 
   <Target Name="3rdParty">
@@ -26,6 +29,8 @@
     <Copy SourceFiles="@(FreetypeLib32)" DestinationFolder="..\lib\x86" />
     <Copy SourceFiles="@(GLFWLib64)" DestinationFolder="..\lib\x64" />
     <Copy SourceFiles="@(GLFWLib32)" DestinationFolder="..\lib\x86" />
+    <Copy SourceFiles="@(ATBLib32)" DestinationFiles="@(ATBLib32->'..\lib\x86\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(ATBLib64)" DestinationFiles="@(ATBLib64->'..\lib\x64\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 
 </Project>
