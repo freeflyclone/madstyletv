@@ -159,6 +159,8 @@ int main(void) {
 			exgl->Display();
 		}
 
+		delete exgl;
+
 		glfwTerminate();
 	}
 	catch (std::runtime_error e) {
