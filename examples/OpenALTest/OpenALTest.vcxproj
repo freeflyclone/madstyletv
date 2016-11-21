@@ -184,6 +184,9 @@
     <ClCompile Include="..\common\main.cpp" />
     <ClCompile Include="OpenALTestBuildScene.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\xclass\OpenAL.props" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

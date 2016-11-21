@@ -7,12 +7,12 @@ namespace {
 };
 
 XGLShape::XGLShape() {
-	//DebugPrintf("XGLShape::XGLShape()\n");
+	//xprintf("XGLShape::XGLShape()\n");
 	SetName("XGLShape");
 }
 
 XGLShape::~XGLShape(){
-    //DebugPrintf("XGLShape::~XGLShape()\n");
+    //xprintf("XGLShape::~XGLShape()\n");
 }
 
 void XGLShape::SetTheFunk(XGLShape::AnimaFunk fn){

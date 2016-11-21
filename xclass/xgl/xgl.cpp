@@ -136,7 +136,7 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f), pb(NULL), fb(NULL), renderGui(false)
 
 XGL::~XGL(){
     // iterate through all of the shapes, according to which shader they use
-    XGLShapesMap::iterator perShader = shapes.begin();
+    XGLShapesMap::iterator perShader;
 
     // iterate through all shapes associated with a particular shader 
     XGLShapeList::iterator perShape;
@@ -144,7 +144,17 @@ XGL::~XGL(){
     // pointer to an XGLShader from the shaderMap
     XGLShader *shader;
 
-    for (perShader = shapes.begin(); perShader != shapes.end(); perShader++) {
+	for (perShader = guiShapes.begin(); perShader != guiShapes.end(); perShader++) {
+		std::string name = perShader->first;
+		shader = shaderMap[name];
+
+		for (perShape = perShader->second->begin(); perShape != perShader->second->end(); perShape++) {
+			XGLShape *shape = *perShape;
+			delete shape;
+		}
+	}
+	
+	for (perShader = shapes.begin(); perShader != shapes.end(); perShader++) {
         std::string name = perShader->first;
         shader = shaderMap[name];
 
