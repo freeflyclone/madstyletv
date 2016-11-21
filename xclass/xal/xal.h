@@ -33,8 +33,9 @@
 void CheckAlError(const char *, int, std::string);
 #define AL_CHECK(what) CheckAlError(__FILE__,__LINE__,what)
 
+// these must both be powers of 2
 #define AUDIO_SAMPLES 1024
-#define XAL_MAX_BUFFERS	48
+#define XAL_MAX_BUFFERS	64
 
 typedef struct {
 	short left;
