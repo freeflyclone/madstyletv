@@ -2,11 +2,15 @@
 
 class XGLProjector {
 public:
-    XGLProjector() : width(1), height(1) {};
+	typedef std::function<void(int, int)> ReshapeFunc;
+
+	XGLProjector() : width(1), height(1) {};
     void Reshape(int w, int h);
 	void Reshape();
 	glm::mat4 GetProjectionMatrix();
+	void AddReshapeCallback(ReshapeFunc);
 
 	int width, height;
+	ReshapeFunc reshapeCallback;
 };
 

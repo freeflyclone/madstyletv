@@ -213,8 +213,6 @@ void XGL::Display(){
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, matrixUbo);
 	GL_CHECK("glBindBuffer() failed");
 
-	projector.Reshape();
-
 	// render the world
 	RenderScene(&shapes);
 
