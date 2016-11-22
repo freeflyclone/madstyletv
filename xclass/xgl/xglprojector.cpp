@@ -12,12 +12,18 @@ void XGLProjector::Reshape() {
 	glViewport(0, 0, width, height);
 	GL_CHECK("glViewport() failed");
 
-	if (reshapeCallback)
-		reshapeCallback(width, height);
+	if (callbacks.size() > 0) {
+		ReshapeCallbackList::iterator cbi;
+
+		for (cbi = callbacks.begin(); cbi < callbacks.end(); cbi++) {
+			ReshapeFunc fn = *cbi;
+			fn(width, height);
+		}
+	}
 }
 
 void XGLProjector::AddReshapeCallback(ReshapeFunc fn) {
-	reshapeCallback = fn;
+	callbacks.push_back(fn);
 }
 
 glm::mat4 XGLProjector::GetProjectionMatrix() {

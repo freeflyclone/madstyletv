@@ -3,6 +3,7 @@
 class XGLProjector {
 public:
 	typedef std::function<void(int, int)> ReshapeFunc;
+	typedef std::vector<ReshapeFunc> ReshapeCallbackList;
 
 	XGLProjector() : width(1), height(1) {};
     void Reshape(int w, int h);
@@ -11,6 +12,6 @@ public:
 	void AddReshapeCallback(ReshapeFunc);
 
 	int width, height;
-	ReshapeFunc reshapeCallback;
+	ReshapeCallbackList callbacks;
 };
 
