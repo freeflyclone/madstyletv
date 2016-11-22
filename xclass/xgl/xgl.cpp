@@ -294,7 +294,8 @@ void XGL::IterateShapesMap(){
     }
 }
 
-bool XGL::GuiResolve(std::vector<XGLObject *>gc, float x, float y, int flags) {
+bool XGL::GuiResolve(XGLShape *shape, float x, float y, int flags) {
+	std::vector<XGLObject *>gc = shape->Children();
 	std::vector<XGLObject *>::iterator it;
 	std::vector<XGLObject *>children;
 	glm::vec4 ll, ur;
@@ -320,14 +321,12 @@ bool XGL::GuiResolve(std::vector<XGLObject *>gc, float x, float y, int flags) {
 
 			// see if mouse is inside it.
 			if (x >= ll.x && y >= ll.y && x <= ur.x && y <= ur.y) {
-				children = w->Children();
-
 				// convert to window-relative coordinates
 				glm::vec4 mc = glm::inverse(w->model) * glm::vec4(x, y, 1, 1);
 
 				// recurse into child stack (if there is one)
-				if (children.size() > 0)
-					handledByChild = GuiResolve(children, mc.x, mc.y, flags);
+				if (w->Children().size() > 0)
+					handledByChild = GuiResolve(w, mc.x, mc.y, flags);
 
 				if (!handledByChild) {
 					// don't try to call XGLGuiCanvas methods on non-XGLGuiCanvas (or derived) shapes

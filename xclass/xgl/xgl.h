@@ -129,7 +129,7 @@ public:
 	void RenderGui(bool enable) { renderGui = enable; }
 	bool GuiIsActive() { return renderGui; }
 	XGLGuiCanvas *GetGuiRoot() { return guiRoot; }
-	bool GuiResolve(std::vector<XGLObject *>, float, float, int);
+	bool GuiResolve(XGLShape *, float, float, int);
 
 	XConfig config;
 
