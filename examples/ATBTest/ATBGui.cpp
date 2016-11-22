@@ -3,13 +3,15 @@
 
 class ATBShape : public XGLShape {
 public:
-	ATBShape(ExampleXGL *xgl) : pxgl(xgl), flags(0) { //, speed(1.0), time(1.0) {
+	ATBShape(ExampleXGL *xgl) : pxgl(xgl), flags(0), speed(1.0), time(1.0) {
 		TwInit(TW_OPENGL_CORE, NULL);
-		TwBar *bar = TwNewBar("MadStyle TV");
-		/*
+		TwBar *bar = TwNewBar("MadStyle");
+
+		TwDefine("MadStyle color='63 63 63' label='MadStyle TV AntTweakBar Integration Testing' size='400 300'");
+
 		// Add 'speed' to 'bar': it is a modifable (RW) variable of type TW_TYPE_DOUBLE. Its key shortcuts are [s] and [S].
 		TwAddVarRW(bar, "speed", TW_TYPE_DOUBLE, &speed,
-			" label='Rot speed' min=0 max=2 step=0.01 keyIncr=s keyDecr=S help='Rotation speed (turns/second)' ");
+			" label='Rotation speed' min=0 max=2 step=0.01 keyIncr=s keyDecr=S help='Rotation speed (turns/second)' ");
 
 		// Add 'wire' to 'bar': it is a modifable variable of type TW_TYPE_BOOL32 (32 bits boolean). Its key shortcut is [w].
 		TwAddVarRW(bar, "wire", TW_TYPE_BOOL32, &wire,
@@ -24,7 +26,7 @@ public:
 		// Add 'cubeColor' to 'bar': it is a modifable variable of type TW_TYPE_COLOR32 (32 bits color) with alpha
 		TwAddVarRW(bar, "cubeColor", TW_TYPE_COLOR32, &cubeColor,
 			" label='Cube color' alpha help='Color and transparency of the cube.' ");
-		*/
+
 		pxgl->projector.AddReshapeCallback(std::bind(&ATBShape::Reshape, this, _1, _2));
 		pxgl->AddMouseFunc(std::bind(&ATBShape::MouseMotion, this, _1, _2, _3));
 
@@ -70,12 +72,10 @@ public:
 
 	ExampleXGL *pxgl;
 	int flags;
-	/*
 	double speed;
 	bool wire;
 	double time;
 	glm::vec3 bgColor,cubeColor;
-	*/
 };
 
 void ExampleXGL::BuildGUI() {
