@@ -79,5 +79,21 @@ public:
 };
 
 void ExampleXGL::BuildGUI() {
+	XGLGuiCanvas *child1;
+	glm::mat4 translate, model;
+
 	AddGuiShape("shaders/000-simple", [&]() { return new ATBShape(this); });
+
+	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child1 = new XGLGuiCanvas(640, 360); return child1; });
+	translate = glm::translate(glm::mat4(), glm::vec3(0.5, 0.5f, 0));
+	model = glm::scale(translate, glm::vec3(0.4, 0.4, 1.0));
+	child1->model = model;
+	child1->attributes.diffuseColor = { 1.0, 1.0, 0.0, 0.7 };
+	GetGuiRoot()->AddChild(child1);
+	child1->RenderText(L"XGLGuiCanvas\nReally really big text.\nSeriously big.\nSERIOUSLY! It's big.\nHuge even.");
+	child1->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
+		xprintf("In MouseFunc() for %s : %0.4f, %0.4f\n", s->name.c_str(), x, y);
+		return true;
+	});
+
 }
