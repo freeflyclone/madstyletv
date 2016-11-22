@@ -11,6 +11,13 @@ void XGLProjector::Reshape(int w, int h)
 void XGLProjector::Reshape() {
 	glViewport(0, 0, width, height);
 	GL_CHECK("glViewport() failed");
+
+	if (reshapeCallback)
+		reshapeCallback(width, height);
+}
+
+void XGLProjector::AddReshapeCallback(ReshapeFunc fn) {
+	reshapeCallback = fn;
 }
 
 glm::mat4 XGLProjector::GetProjectionMatrix() {
