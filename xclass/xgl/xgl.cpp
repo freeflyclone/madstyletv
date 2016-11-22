@@ -29,38 +29,6 @@ void CheckGlStatus(const char *file, int line) {
 	}
 }
 
-// for GLUT runtimes
-#ifdef USE_GLUT
-XGL::XGL(int *argcp, char **argv) {
-    instance.reset(this);
-
-    glutInitDisplayMode( GLUT_3_2_CORE_PROFILE | GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-    glutInitWindowPosition(50,50);
-    glutInitWindowSize(1280,720);
-    glutInit(argcp, argv);
-    glutCreateWindow("GLUT Window");
-
-#ifndef OSX
-	glewExperimental = GL_TRUE;
-
-	if (glewInit() != GLEW_OK)
-		throwXGLException("glewInit() failed");
-
-	if (!GLEW_VERSION_2_1)
-		throwXGLException("Requires OpenGL version 2.1 or greater");
-#endif
-
-    glutDisplayFunc(display);
-    glutIdleFunc(idle);
-    glutReshapeFunc(reshape);
-
-	
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-}
-#endif
-
 XGL::XGL() : XGLObject("XGL"), clock(0.0f), pb(NULL), fb(NULL), renderGui(false), guiRoot(NULL), mouseCaptured(NULL) {
     xprintf("OpenGL version: %s\n", glGetString(GL_VERSION));
 	glGetError();
@@ -395,20 +363,3 @@ void XGL::QueryContext() {
 	QUERY_GLCONTEXT(GL_MAX_GEOMETRY_UNIFORM_BLOCKS, value);
 	QUERY_GLCONTEXT(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, value);
 }
-
-#ifdef USE_GLUT
-void XGL::display() {
-	std::shared_ptr<XGL> px = getInstance();
-	px->Display();
-	glutSwapBuffers();
-}
-void XGL::reshape(int w, int h) {
-	std::shared_ptr<XGL> px = getInstance();
-	px->projector.Reshape(w,h);
-}
-void XGL::idle() {
-	std::shared_ptr<XGL> px = getInstance();
-	px->Idle();
-	glutPostRedisplay();
-}
-#endif
