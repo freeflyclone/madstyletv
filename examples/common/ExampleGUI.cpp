@@ -2,13 +2,13 @@
 
 void ExampleXGL::BuildGUI() {
 	XGLShape *shape;
-	XGLGuiCanvas *child1,*child2;
+	XGLGuiCanvas *child1,*child2,*child3;
 	//XGLShape *child3;
 	glm::mat4 translate, scale, model;
 
 	// add a GUI layer. This is essentially the same as the world layer.
 	// With just a "model" transform in the vertex shader, it becomes 2D
-	AddGuiShape("shaders/gui", [&]() { shape = new XGLTransformer(); return shape; });
+	AddGuiShape("shaders/gui", [&]() { shape = new XGLShape(); return shape; });
 
 	XInputKeyFunc PresentGuiCanvas = [&](int key, int flags) {
 		const bool isDown = (flags & 0x8000) == 0;
@@ -39,18 +39,18 @@ void ExampleXGL::BuildGUI() {
 	child2->RenderText(L"Now is the time for all good men \nto come to the aid of their country.");
 
 
-	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child2 = new XGLGuiCanvas(1280, 720); return child2; });
+	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child3 = new XGLGuiCanvas(1280, 720); return child3; });
 	translate = glm::translate(glm::mat4(), glm::vec3(-0.5, -0.5f, 0));
 	model = glm::scale(translate, glm::vec3(0.4, 0.4, 1.0));
-	child2->model = model;
-	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
-	child1->AddChild(child2);
-	child2->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
+	child3->model = model;
+	child3->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
+	child2->AddChild(child3);
+	child3->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
 		xprintf("In MouseFunc() for %s : %0.4f, %0.4f\n", s->name.c_str(), x, y);
-		return false;
+		return true;
 	});
 
-	child2->RenderText(L"Smaller canvas window inside larger one.");
+	child3->RenderText(L"Smaller canvas window inside larger one.");
 
 	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child1 = new XGLGuiCanvas(640, 360); return child1; });
 	translate = glm::translate(glm::mat4(), glm::vec3(0.5, 0.5f, 0));
