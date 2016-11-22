@@ -270,6 +270,8 @@ void XGL::AddGuiShape(std::string shName, XGLNewShapeLambda fn){
 
 	if (guiRoot == NULL)
 		guiRoot = (XGLGuiCanvas *)pShape;
+	else
+		guiRoot->AddChild(pShape);
 }
 
 void XGL::IterateShapesMap(){
