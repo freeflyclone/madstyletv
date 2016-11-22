@@ -29,7 +29,7 @@ public:
 
 		pxgl->projector.AddReshapeCallback(std::bind(&ATBShape::Reshape, this, _1, _2));
 		pxgl->AddMouseFunc(std::bind(&ATBShape::MouseMotion, this, _1, _2, _3));
-
+		
 		XInput::XInputKeyFunc PresentGuiCanvas = [&](int key, int flags) {
 			const bool isDown = (flags & 0x8000) == 0;
 			const bool isRepeat = (flags & 0x4000) != 0;
@@ -42,20 +42,11 @@ public:
 
 		pxgl->AddKeyFunc('`', PresentGuiCanvas);
 		pxgl->AddKeyFunc('~', PresentGuiCanvas);
-
 	}
 
-	~ATBShape() {
-		TwTerminate();
-	}
-
-	void Draw() {
-		TwDraw();
-	}
-
-	void Reshape(int w, int h) {
-		TwWindowSize(w, h);
-	}
+	~ATBShape() { TwTerminate(); }
+	void Draw() { TwDraw();	}
+	void Reshape(int w, int h) { TwWindowSize(w, h); }
 
 	void MouseMotion(int x, int y, int f) {
 		int button = (f ^ flags);
@@ -79,21 +70,18 @@ public:
 };
 
 void ExampleXGL::BuildGUI() {
-	XGLGuiCanvas *child1;
-	glm::mat4 translate, model;
+	AddGuiShape("shaders/000-simple", [&]() { return new XGLTransformer(); });
 
-	AddGuiShape("shaders/000-simple", [&]() { return new ATBShape(this); });
+	// set a background XGLGuiCanvas that's completely transparent, just to capture mouse events
+	AddGuiShape("shaders/000-simple", [&]() { 
+		XGLGuiCanvas *s = new XGLGuiCanvas(1920, 1080);
 
-	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child1 = new XGLGuiCanvas(640, 360); return child1; });
-	translate = glm::translate(glm::mat4(), glm::vec3(0.5, 0.5f, 0));
-	model = glm::scale(translate, glm::vec3(0.4, 0.4, 1.0));
-	child1->model = model;
-	child1->attributes.diffuseColor = { 1.0, 1.0, 0.0, 0.7 };
-	GetGuiRoot()->AddChild(child1);
-	child1->RenderText(L"XGLGuiCanvas\nReally really big text.\nSeriously big.\nSERIOUSLY! It's big.\nHuge even.");
-	child1->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
-		xprintf("In MouseFunc() for %s : %0.4f, %0.4f\n", s->name.c_str(), x, y);
-		return true;
+		s->attributes.diffuseColor = { 0.0, 0.0, 0.0, 0.0 };
+		s->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {	return true; });
+
+		return s;
 	});
 
+	// add the AntTweakBar shape on top of the XGLGuiCanvas
+	AddGuiShape("shaders/tex", [&]() { return new ATBShape(this); });
 }
