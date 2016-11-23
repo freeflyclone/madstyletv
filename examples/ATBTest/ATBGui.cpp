@@ -69,19 +69,42 @@ public:
 	glm::vec3 bgColor,cubeColor;
 };
 
+class XGLGuiCanvasWithReshape : public XGLGuiCanvas {
+public:
+	XGLGuiCanvasWithReshape(int w, int h) : XGLGuiCanvas(w, h), ww(w), wh(h), wx(0), wy(0) {
+		attributes.diffuseColor = { 0.0, 0.0, 0.0, 0.0 };
+
+		SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
+			wx = (int)((1.0 + x) / 2.0 * (float)ww);
+			wy = (int)((1.0 - y) / 2.0 * (float)wh);
+
+			//xprintf("%d, %d, %08X\n", wx, wy, flags);
+			if (Children().size())
+				xprintf("There are children\n");
+
+			return true; 
+		});
+	}
+
+	// So we will know the shape of the window we're in.
+	void Reshape(int w, int h) { ww = w; 	wh = h; }
+
+	int ww, wh, wx,wy;
+};
+
 void ExampleXGL::BuildGUI() {
+	XGLGuiCanvasWithReshape *gc;
 	AddGuiShape("shaders/000-simple", [&]() { return new XGLTransformer(); });
 
-	// set a background XGLGuiCanvas that's completely transparent, just to capture mouse events
 	AddGuiShape("shaders/000-simple", [&]() { 
-		XGLGuiCanvas *s = new XGLGuiCanvas(1920, 1080);
+		gc = new XGLGuiCanvasWithReshape(projector.width, projector.height);
 
-		s->attributes.diffuseColor = { 0.0, 0.0, 0.0, 0.0 };
-		s->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {	return true; });
+		gc->SetXGL(this);
+		projector.AddReshapeCallback(std::bind(&XGLGuiCanvasWithReshape::Reshape, gc, _1, _2));
 
-		return s;
+		return gc;
 	});
 
-	// add the AntTweakBar shape on top of the XGLGuiCanvas
+	// add the AntTweakBar shape on top of the XGLGuiCanvasWithReshape
 	AddGuiShape("shaders/tex", [&]() { return new ATBShape(this); });
 }

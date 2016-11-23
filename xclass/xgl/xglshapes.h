@@ -141,6 +141,7 @@ public:
 	XGLGuiCanvas(int w, int h);
 	XGLGuiCanvas();
 
+	void SetXGL(XGL *xgl) { pxgl = xgl; }
 	void SetFocus(bool enable) { hasFocus = enable; }
 	bool HasFocus() { return hasFocus; }
 
@@ -165,6 +166,8 @@ private:
 
 	// text rendering stuff
 	int penX, penY;
+
+	XGL *pxgl;
 };
 
 #endif // XGLSHAPES_H

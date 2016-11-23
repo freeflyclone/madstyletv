@@ -699,9 +699,10 @@ XGLTransformer::XGLTransformer(){
 };
 
 XGLGuiCanvas::XGLGuiCanvas() :
-XGLTexQuad(),
-buffer(NULL),
-childEvent(false)
+	XGLTexQuad(),
+	buffer(NULL),
+	pxgl(NULL),
+	childEvent(false)
 {
 	SetName("XGLGuiCanvas");
 	attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.5 };
