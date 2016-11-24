@@ -12,9 +12,9 @@
 
 #include <iostream>
 
-#define VIDEO_WIDTH 1280
-#define VIDEO_HEIGHT 720
-#define VIDEO_CHANNELS 4
+#define VIDEO_WIDTH 3840
+#define VIDEO_HEIGHT 2160
+#define VIDEO_CHANNELS 3
 
 typedef struct {
 	unsigned char y[VIDEO_WIDTH * VIDEO_HEIGHT];
@@ -31,19 +31,25 @@ public:
 	VideoStreamThread(std::shared_ptr<XAVStream> s) : XThread("VideoStreamThread"), stream(s) {}
 
 	void Run() {
+		int size;
 		while (IsRunning()) {
 			XAVBuffer image = stream->GetBuffer();
 			if (image.buffers[0] == NULL) {
 				Stop();
 				break;
 			}
-			memcpy(&ib.y, image.buffers[0], sizeof(ib.y));
-			memcpy(&ib.u, image.buffers[1], sizeof(ib.u));
-			memcpy(&ib.v, image.buffers[2], sizeof(ib.v));
+			size = stream->width * stream->height;
+			memcpy(&ib.y, image.buffers[0], size);
+
+			size = stream->chromaWidth * stream->chromaHeight;
+			memcpy(&ib.u, image.buffers[1], size);
+			memcpy(&ib.v, image.buffers[2], size);
+
 			ib.width = stream->width;
 			ib.height = stream->height;
 			ib.chromaWidth = stream->chromaWidth;
 			ib.chromaHeight = stream->chromaHeight;
+
 //			std::this_thread::sleep_for(std::chrono::duration<int, std::micro>(10000));
 //			double sinceLast = 0.0;
 //			do {
