@@ -18,7 +18,7 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES), pStream(N
 		xprintf("Found AVMEDIA_TYPE_VIDEO\n");
 		xprintf("               width: %d\n", pCodecCtx->width);
 		xprintf("              height: %d\n", pCodecCtx->height);
-		numBytes = av_image_get_buffer_size(pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height,8) * 2;
+		numBytes = av_image_get_buffer_size(pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height,8);
 
 		AllocateBufferPool(XAV_NUM_FRAMES, numBytes, 3);
 		width = pCodecCtx->width;

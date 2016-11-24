@@ -111,7 +111,7 @@ void ExampleXGL::BuildGUI() {
 	});
 
 	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child2 = new XGLGuiCanvas(1920, 1080); return child2; });
-	translate = glm::translate(glm::mat4(), glm::vec3(0.5, -0.5f, 0));
+	translate = glm::translate(glm::mat4(), glm::vec3(0.5, -0.4f, 0));
 	model = glm::scale(translate, glm::vec3(0.4, 0.4, 1.0));
 	child2->model = model;
 	gc->AddChild(child2);
