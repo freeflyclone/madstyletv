@@ -1,5 +1,7 @@
 #include "xgl.h"
 
+XGLFont font;
+
 std::string currentWorkingDir;
 std::string pathToAssets;
 
