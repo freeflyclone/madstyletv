@@ -768,3 +768,67 @@ void XGLGuiCanvas::RenderText(std::wstring text) {
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, buffer);
 	GL_CHECK("glGetTexImage() didn't work");
 }
+
+XGLGuiCanvasWithReshape::XGLGuiCanvasWithReshape(int w, int h) : XGLGuiCanvas(w, h), ww(w), wh(h), wx(0), wy(0) {
+	attributes.diffuseColor = { 0.0, 0.0, 0.0, 0.0 };
+
+	SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
+		wx = (int)((1.0 + x) / 2.0 * (float)ww);
+		wy = (int)((1.0 - y) / 2.0 * (float)wh);
+		return true;
+	});
+}
+
+void XGLGuiCanvasWithReshape::Reshape(int w, int h) {
+	ww = w;
+	wh = h;
+}
+
+XGLAntTweakBar::XGLAntTweakBar(XGL *xgl) : pxgl(xgl), flags(0) {
+	TwInit(TW_OPENGL_CORE, NULL);
+	TwBar *bar = TwNewBar("MadStyle");
+
+	TwDefine("MadStyle color='63 63 63' label='MadStyle TV AntTweakBar Integration Testing' size='400 300'");
+
+	pxgl->projector.AddReshapeCallback(std::bind(&XGLAntTweakBar::Reshape, this, _1, _2));
+	pxgl->AddMouseFunc(std::bind(&XGLAntTweakBar::MouseMotion, this, _1, _2, _3));
+
+	XInput::XInputKeyFunc PresentGuiCanvas = [&](int key, int flags) {
+		const bool isDown = (flags & 0x8000) == 0;
+		const bool isRepeat = (flags & 0x4000) != 0;
+
+		if (isDown && pxgl->GuiIsActive())
+			pxgl->RenderGui(false);
+		else if (isDown)
+			pxgl->RenderGui(true);
+	};
+
+	pxgl->AddKeyFunc('`', PresentGuiCanvas);
+	pxgl->AddKeyFunc('~', PresentGuiCanvas);
+}
+
+XGLAntTweakBar::~XGLAntTweakBar() { 
+	TwTerminate(); 
+}
+
+void XGLAntTweakBar::Draw() {
+	TwDraw(); 
+}
+
+void XGLAntTweakBar::Reshape(int w, int h) {
+	TwWindowSize(w, h); 
+}
+
+void XGLAntTweakBar::MouseMotion(int x, int y, int f) {
+	int button = (f ^ flags);
+	int action = (f & 0xF) ? 1 : 0;
+
+	if (button) {
+		button--;
+		TwEventMouseButtonGLFW(button, action);
+	}
+
+	TwEventMousePosGLFW(x, y);
+	flags = f;
+}
+

@@ -12,6 +12,7 @@
 #include "xglbuffer.h"
 #include "xglshader.h"
 #include "xglmaterial.h"
+#include "AntTweakBar.h"
 
 class XGLShape : public XGLObject , public XGLBuffer, public XGLMaterial {
 public:
@@ -169,5 +170,29 @@ private:
 
 	XGL *pxgl;
 };
+
+class XGLGuiCanvasWithReshape : public XGLGuiCanvas {
+public:
+	XGLGuiCanvasWithReshape(int w, int h);
+
+	void Reshape(int w, int h);
+
+	int ww, wh, wx, wy;
+};
+
+
+class XGLAntTweakBar : public XGLShape {
+public:
+	XGLAntTweakBar(XGL *xgl);
+	~XGLAntTweakBar();
+
+	void Draw();
+	void Reshape(int w, int h);
+	void MouseMotion(int x, int y, int f);
+
+	XGL *pxgl;
+	int flags;
+};
+
 
 #endif // XGLSHAPES_H
