@@ -8,6 +8,7 @@
 #include <xavfile.h>
 #include <xfifo.h>
 #include <xal.h>
+
 //#include <xtimer.h>
 
 #include <iostream>
@@ -28,43 +29,69 @@ ImageBuff ib;
 
 class VideoStreamThread : public XThread {
 public:
-	VideoStreamThread(std::shared_ptr<XAVStream> s) : XThread("VideoStreamThread"), stream(s) {}
+	VideoStreamThread(std::shared_ptr<XAVStream> s) : XThread("VideoStreamThread"), stream(s) {
+		memset(ib.y, 0, sizeof(ib.y));
+		memset(ib.u, 127, sizeof(ib.u));
+		memset(ib.v, 127, sizeof(ib.v));
+		ib.width = VIDEO_WIDTH;
+		ib.height = VIDEO_HEIGHT;
+		ib.chromaWidth = VIDEO_WIDTH / 2;
+		ib.chromaHeight = VIDEO_HEIGHT / 2;
+		penX = 0;
+		penY = 34;
+	}
 
 	void Run() {
-		int size;
-		while (IsRunning()) {
-			XAVBuffer image = stream->GetBuffer();
-			if (image.buffers[0] == NULL) {
-				Stop();
-				break;
+		try {
+			int size;
+
+			while (IsRunning()) {
+				XAVBuffer image = stream->GetBuffer();
+				if (image.buffers[0] == NULL) {
+					Stop();
+					break;
+				}
+
+				size = stream->width * stream->height;
+				if (size > (VIDEO_WIDTH*VIDEO_HEIGHT))
+					throwXAVException(" Buffer size exceeded. Ensure that\n VIDEO_WIDTH & VIDEO_HEIGHT\n are sufficient for the video chosen.");
+
+				memcpy(&ib.y, image.buffers[0], size);
+
+				size = stream->chromaWidth * stream->chromaHeight;
+				memcpy(&ib.u, image.buffers[1], size);
+				memcpy(&ib.v, image.buffers[2], size);
+
+				ib.width = stream->width;
+				ib.height = stream->height;
+				ib.chromaWidth = stream->chromaWidth;
+				ib.chromaHeight = stream->chromaHeight;
+
+				//			std::this_thread::sleep_for(std::chrono::duration<int, std::micro>(10000));
+				//			double sinceLast = 0.0;
+				//			do {
+				//				sinceLast += timer.SinceLast();
+				//			} while (sinceLast < 0.016);
+				xprintf("Video buffered: %d, %c frame,", stream->nFramesDecoded - stream->nFramesRead, "UIPB"[stream->pFrame->pict_type]);
+				if (stream->pFrame->pkt_pts != stream->pFrame->pkt_dts)
+					xprintf(" pts: %d, dts: %d\n", stream->pFrame->pkt_pts, stream->pFrame->pkt_dts);
+				else
+					xprintf("\n");
 			}
-			size = stream->width * stream->height;
-			memcpy(&ib.y, image.buffers[0], size);
-
-			size = stream->chromaWidth * stream->chromaHeight;
-			memcpy(&ib.u, image.buffers[1], size);
-			memcpy(&ib.v, image.buffers[2], size);
-
-			ib.width = stream->width;
-			ib.height = stream->height;
-			ib.chromaWidth = stream->chromaWidth;
-			ib.chromaHeight = stream->chromaHeight;
-
-//			std::this_thread::sleep_for(std::chrono::duration<int, std::micro>(10000));
-//			double sinceLast = 0.0;
-//			do {
-//				sinceLast += timer.SinceLast();
-//			} while (sinceLast < 0.016);
-			xprintf("Video buffered: %d, %c frame,", stream->nFramesDecoded - stream->nFramesRead, " IPB"[stream->pFrame->pict_type]);
-			if (stream->pFrame->pkt_pts != stream->pFrame->pkt_dts)
-				xprintf(" pts: %d, dts: %d\n", stream->pFrame->pkt_pts, stream->pFrame->pkt_dts);
-			else
-				xprintf("\n");
+			xprintf("VideoStreamThread done.\n");
 		}
-		xprintf("VideoStreamThread done.\n");
+		catch (std::runtime_error e) {
+			// render the exception what() string into the video buffer.
+			font.SetPixelSize(32);
+			font.RenderText(std::string("VideoStreamThread:\n") + e.what(), ib.y, ib.width, ib.height, &penX, &penY);
+
+			Stop();
+		}
 	}
 
 	std::shared_ptr<XAVStream> stream;
+	int penX;
+	int penY;
 	//XTimer timer;
 };
 
@@ -131,6 +158,10 @@ public:
 			vst->Start();
 
 		while ( xav.IsRunning() && IsRunning() ) {
+			if (hasVideo && !vst->IsRunning())
+				break;
+			if (hasAudio && !ast->IsRunning())
+				break;
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
 		}
 

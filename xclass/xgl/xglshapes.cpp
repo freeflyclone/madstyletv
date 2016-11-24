@@ -1,10 +1,5 @@
 #include "xgl.h"
 
-// a single XGLFont for all shapes.
-// (this may be smelly)
-namespace {
-	XGLFont font;
-};
 
 XGLShape::XGLShape() {
 	//xprintf("XGLShape::XGLShape()\n");

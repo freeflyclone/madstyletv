@@ -39,6 +39,8 @@ public:
     ~XGLFont();
 
 	XGLGlyph *GetGlyph(int c) { return &glyphMap[c]; }
+	void RenderText(std::string, unsigned char *, int, int, int *, int *);
+	void SetPixelSize(int);
 
 	typedef std::map<FT_ULong, FT_UInt> CharMap;
 	typedef std::map<FT_ULong, XGLGlyph> GlyphMap;
@@ -59,6 +61,7 @@ public:
     GLuint atlasHeight;
     GLuint atlasPageCount;
 	int maxAscend, maxDescend;
+	int pixelSize;
 };
 
 #endif

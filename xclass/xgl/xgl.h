@@ -96,6 +96,8 @@ typedef std::function<XGLShape *()> XGLNewShapeLambda;
 extern std::string currentWorkingDir;
 extern std::string pathToAssets;
 
+extern XGLFont font;
+
 // Manage a GL context, platform independently
 class XGL : public XGLObject
 {
