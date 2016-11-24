@@ -734,33 +734,8 @@ bool XGLGuiCanvas::MouseEvent(float x, float y, int flags) {
 }
 
 void XGLGuiCanvas::RenderText(std::wstring text) {
-	FT_GlyphSlot g = font.face->glyph;
-	GLubyte *src, *dest;
-	int numGlyphs = (int)text.size();
-
-	// this canvas must have a backing buffer
-	if (buffer == NULL)
-		return;
-
-	// Render the string...
-	for (int i = 0; i < numGlyphs; i++){
-		if (text[i] == L'\n') {
-			penX = 10;
-			penY += 68;
-		}
-		else {
-			FT_Load_Glyph(font.face, font.charMap[text[i]], FT_LOAD_RENDER);
-			dest = buffer + (penY - g->bitmap_top) * width + penX;
-			src = (GLubyte *)g->bitmap.buffer;
-
-			// 2D blit the glyph into the texture at penX,penY
-			for (unsigned int i = 0; i < g->bitmap.rows; i++) {
-				memcpy(dest + (i*width), src, g->bitmap.width);
-				src += g->bitmap.width;
-			}
-			penX += g->advance.x / 64;
-		}
-	}
+	font.SetPixelSize(64);
+	font.RenderText(text, buffer, width, height, &penX, &penY);
 
 	// this should probably be done with just the rectangle of the line in question
 	glActiveTexture(GL_TEXTURE0);

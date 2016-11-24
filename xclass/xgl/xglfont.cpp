@@ -197,12 +197,46 @@ XGLFont::~XGLFont(){
 
     free(bitmapPages);
 }
+
+void XGLFont::SetPixelSize(int size) {
+	pixelSize = size;
+	FT_Set_Pixel_Sizes(face, 0, pixelSize);
+}
+
 void XGLFont::RenderText(std::string text, unsigned char *buffer, int width, int height, int *penX, int *penY) {
 	FT_GlyphSlot g = font.face->glyph;
 	GLubyte *src, *dest;
 	int numGlyphs = (int)text.size();
 
-	// this canvas must have a backing buffer
+	if (buffer == NULL)
+		return;
+
+	// Render the string...
+	for (int i = 0; i < numGlyphs; i++){
+		if (text[i] == '\n') {
+			*penX = 10;
+			*penY += pixelSize + (pixelSize / 16);
+		}
+		else {
+			FT_Load_Glyph(font.face, font.charMap[text[i]], FT_LOAD_RENDER);
+			dest = buffer + (*penY - g->bitmap_top) * width + *penX;
+			src = (GLubyte *)g->bitmap.buffer;
+
+			// 2D blit the glyph into the texture at penX,penY
+			for (unsigned int i = 0; i < g->bitmap.rows; i++) {
+				memcpy(dest + (i*width), src, g->bitmap.width);
+				src += g->bitmap.width;
+			}
+			*penX += g->advance.x / 64;
+		}
+	}
+}
+
+void XGLFont::RenderText(std::wstring text, unsigned char *buffer, int width, int height, int *penX, int *penY) {
+	FT_GlyphSlot g = font.face->glyph;
+	GLubyte *src, *dest;
+	int numGlyphs = (int)text.size();
+
 	if (buffer == NULL)
 		return;
 
@@ -225,9 +259,4 @@ void XGLFont::RenderText(std::string text, unsigned char *buffer, int width, int
 			*penX += g->advance.x / 64;
 		}
 	}
-}
-
-void XGLFont::SetPixelSize(int size) {
-	pixelSize = size;
-	FT_Set_Pixel_Sizes(face, 0, pixelSize);
 }
