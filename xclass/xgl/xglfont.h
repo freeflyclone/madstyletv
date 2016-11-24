@@ -40,6 +40,7 @@ public:
 
 	XGLGlyph *GetGlyph(int c) { return &glyphMap[c]; }
 	void RenderText(std::string, unsigned char *, int, int, int *, int *);
+	void RenderText(std::wstring, unsigned char *, int, int, int *, int *);
 	void SetPixelSize(int);
 
 	typedef std::map<FT_ULong, FT_UInt> CharMap;
