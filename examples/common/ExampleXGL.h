@@ -20,7 +20,7 @@
 #include "xglworldcursor.h"
 #include "InputTrackers.h"
 
-class ExampleXGL : public XGL, public XInput {
+class ExampleXGL : public XGL {
 public:
 	ExampleXGL();
 

@@ -63,6 +63,7 @@
 
 #include "xutils.h"
 #include "xthread.h"
+#include "xinput.h"
 #include "xglobject.h"
 #include "xconfig.h"
 #include "xglexcept.h"
@@ -99,7 +100,7 @@ extern std::string pathToAssets;
 extern XGLFont font;
 
 // Manage a GL context, platform independently
-class XGL : public XGLObject
+class XGL : public XGLObject, public XInput
 {
 public:
     // this one is for Windows (wgl)
