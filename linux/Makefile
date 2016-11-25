@@ -54,7 +54,9 @@ CPPSOURCES=${XGLDIR}/xgl.cpp \
 	${XGLDIR}/xgluniform.cpp \
 	${XGLDIR}/xglworldcursor.cpp \
 	${XALDIR}/xal.cpp \
+	${XAVDIR}/xav.cpp \
 	${XAVDIR}/xavenc.cpp \
+	${XAVDIR}/xavsrc.cpp \
 	${XCLASSDIR}/xassets.cpp \
 	${XCLASSDIR}/xinput.cpp \
 	${XCLASSDIR}/JSON.cpp \
@@ -110,6 +112,9 @@ OpenALTest: ${COMMONOBJS} ${LIB} ${EXAMPLESDIR}/OpenALTest/OpenALTestBuildScene.
 
 Example02: ${COMMONOBJS} ${LIB} ${EXAMPLESDIR}/Example02/Example02.o
 	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} -o $@
+
+XAVTest: ${COMMONOBJS} ${LIB} ${EXAMPLESDIR}/XAVTest/XAVTestBuildScene.o
+	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} ${OPENAL_LIBS} -o $@
 
 ${LIB}: ${OBJS}
 	${AR} rcs ${LIB} $? 
