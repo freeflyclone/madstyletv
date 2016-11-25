@@ -1,0 +1,16 @@
+.
+3rdParty/anttweakbar/include
+3rdParty/bzip2/include
+3rdParty/expat/include
+3rdParty/freetype/include/freetype2
+3rdParty/freetype/include/freetype2/freetype
+3rdParty/freetype/include/freetype2/freetype/config
+3rdParty/libpng/include
+3rdParty/soil
+3rdParty/soil/src
+3rdParty/zlib/include
+xal
+xav
+xgl
+xgl/GL
+xgl/GLFW
