@@ -43,9 +43,15 @@ void SetGlobalWorkingDirectoryName()
 #else
 void SetGlobalWorkingDirectoryName() {
 	char buff[FILENAME_MAX];
+    char *xclass_dir = getenv("XCLASS_DIR");
 
-	getcwd(buff, sizeof(buff));
-	currentWorkingDir = std::string(buff);
+    if (xclass_dir) {
+        currentWorkingDir = std::string(xclass_dir);
+    }
+    else {
+        getcwd(buff, sizeof(buff));
+        currentWorkingDir = std::string(buff);
+    }
 	xprintf("Cwd: %s\n", currentWorkingDir.c_str());
 }
 #endif
