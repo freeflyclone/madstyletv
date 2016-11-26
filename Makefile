@@ -1,4 +1,4 @@
-SUBDIRS=xclass
+SUBDIRS=xclass examples
 
 .PHONY: clean all
 
