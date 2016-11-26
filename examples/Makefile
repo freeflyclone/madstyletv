@@ -4,11 +4,11 @@ SUBDIRS=Example02
 
 all: $(SUBDIRS)
 	for subdir in $(SUBDIRS); do \
-		$(MAKE) -C $$subdir -j 12 all ; \
+                $(MAKE) -C $$subdir all ; \
 	done
 
 clean: $(SUBDIRS)
 	for subdir in $(SUBDIRS); do \
-		$(MAKE) -C $$subdir -j 12 clean ; \
+                $(MAKE) -C $$subdir clean ; \
 	done
 
