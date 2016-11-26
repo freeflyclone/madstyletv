@@ -3,6 +3,7 @@ examples/Example01
 examples/Example02
 examples/PhysXTest
 examples/SDFTest
+osx/common
 xclass
 xclass/3rdParty/anttweakbar/include
 xclass/3rdParty/bzip2/include
@@ -20,3 +21,4 @@ xclass/xgl
 xclass/xgl/GL
 xclass/xgl/GLFW
 .
+examples
