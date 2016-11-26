@@ -35,7 +35,16 @@ bool XGLShaderComponent::Compile(std::string name, GLuint type)
 {
     char *sourceText;
 	GLint sourceLength;
-	mFileName = name + (const char *)((type==GL_VERTEX_SHADER)?".vert":".frag");
+	std::string ext;
+
+	if (type == GL_VERTEX_SHADER)
+		ext.assign(".vert");
+	else if (type == GL_FRAGMENT_SHADER)
+		ext.assign(".frag");
+	else
+		ext.assign("");
+
+	mFileName = name + ext;
 	TextFileRead();
 	
     sourceText = (char *)mSourceString.c_str();
@@ -155,6 +164,45 @@ bool XGLShader::Compile(std::string name) {
 
 	//DebugPrintf("XGLShader::Compile(%s) shader #: %d\n", name.c_str(), shader);
     return true;
+}
+
+bool XGLShader::CompileCompute(std::string name) {
+	GLint status;
+
+	xprintf("XGLShader::CompileCompute(%s)\n", name.c_str());
+
+	if (!mCShader.Compile(name, GL_COMPUTE_SHADER))
+		throwXGLException("Compiling compute shader failed.");
+
+	programId = glCreateProgram();
+	GL_CHECK("glCreateProgram() failed");
+
+	glAttachShader(programId, mCShader.mShader);
+	GL_CHECK("glAttachShader(COMPUTE) failed");
+
+	glLinkProgram(programId);
+	GL_CHECK("glLinkProgram() failed");
+	glValidateProgram(programId);
+	GL_CHECK("glValidateProgram() failed");
+
+	glGetProgramiv(programId, GL_LINK_STATUS, &status);
+	GL_CHECK("glGetProgramiv() failed");
+	if (status != GL_TRUE)
+		throwXGLException("compile failed in the link stage");
+	glGetProgramiv(programId, GL_VALIDATE_STATUS, &status);
+	GL_CHECK("glGetProgramiv() failed");
+	glGetProgramiv(programId, GL_ATTACHED_SHADERS, &status);
+	GL_CHECK("glGetProgramiv() failed");
+	glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &status);
+	GL_CHECK("glGetProgramiv() failed");
+
+	glUseProgram(programId);
+	GL_CHECK("glUseProgram() failed");
+
+	glUniform1i(glGetUniformLocation(programId, "destTex"), 0);
+	GL_CHECK("glUniform1i() failed");
+
+	return true;
 }
 
 void XGLShader::InfoLog() {

@@ -39,6 +39,7 @@ public:
     ~XGLShader();
 
     bool Compile(std::string name);
+	bool CompileCompute(std::string name);
     void InfoLog();
     void Reshape(int w, int h);
     void Use();
@@ -55,6 +56,7 @@ public:
 private:
 	std::string shaderName;
     XGLShaderComponent mVShader, mFShader;
+	XGLShaderComponent mCShader;
 };
 
 
