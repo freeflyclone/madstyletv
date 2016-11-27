@@ -37,7 +37,7 @@ void ExampleXGL::BuildScene() {
 	glBindImageTexture(0, texHandle, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32F);
 	GL_CHECK("Gen texture");
 
-	shape->texIds.push_back(texHandle);
+	shape->AddTexture(texHandle);
 
 	shape->preRenderFunction = [&](XGLShape *s, float clock) {
 		glUseProgram(computeShader->programId);
