@@ -13,15 +13,15 @@ void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 	glm::mat4 translate, scale, rotate;
 
-	computeShader = new XGLShader("shaders/compute-shader");
-	computeShader->CompileCompute(pathToAssets + "/shaders/compute-shader");
-
 	AddShape("shaders/csdraw", [&](){ shape = new XGLTexQuad(); return shape; });
 	scale = glm::scale(glm::mat4(), glm::vec3(5.0f,5.0f,1.0f));
 	translate = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 5.0f));
 	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
 	shape->model = translate*rotate*scale;
 	shape->SetColor({ 1, 1, 1, 0.5 });
+
+	computeShader = new XGLShader("shaders/compute-shader");
+	computeShader->CompileCompute(pathToAssets + "/shaders/compute-shader");
 
 	GLuint texHandle;
 	glGenTextures(1, &texHandle);
@@ -41,7 +41,7 @@ void ExampleXGL::BuildScene() {
 
 	shape->preRenderFunction = [&](XGLShape *s, float clock) {
 		glUseProgram(computeShader->programId);
-		glUniform1f(glGetUniformLocation(computeShader->programId, "roll"), (float)clock*0.01f);
+		glUniform1f(glGetUniformLocation(computeShader->programId, "roll"), (float)clock*0.05f);
 		glDispatchCompute(512 / 16, 512 / 16, 1); // 512^2 threads in blocks of 16^2
 		GL_CHECK("Dispatch compute shader");
 	};
