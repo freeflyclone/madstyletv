@@ -153,6 +153,7 @@ public:
 	bool MouseEvent(float x, float y, int flags);
 
 	void RenderText(std::wstring t);
+	void Fill(GLubyte val);
 
 	~XGLGuiCanvas();
 

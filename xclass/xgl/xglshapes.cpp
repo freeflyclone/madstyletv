@@ -744,6 +744,14 @@ void XGLGuiCanvas::RenderText(std::wstring text) {
 	GL_CHECK("glGetTexImage() didn't work");
 }
 
+void XGLGuiCanvas::Fill(GLubyte val)  { 
+	memset(buffer, val, width*height); 
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texIds[0]);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, buffer);
+	GL_CHECK("glGetTexImage() didn't work");
+}
+
 XGLGuiCanvasWithReshape::XGLGuiCanvasWithReshape(int w, int h) : XGLGuiCanvas(w, h), ww(w), wh(h), wx(0), wy(0) {
 	attributes.diffuseColor = { 0.0, 0.0, 0.0, 0.0 };
 
