@@ -35,5 +35,11 @@
     <None Include="..\..\shaders\compute-shader">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\shaders\csdraw.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\csdraw.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
