@@ -181,6 +181,8 @@
     <ClCompile Include="ComputeShaderTestBuildScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\shaders\000-simple.frag" />
+    <None Include="..\..\shaders\000-simple.vert" />
     <None Include="..\..\shaders\compute-shader" />
     <None Include="..\..\shaders\csdraw.frag" />
     <None Include="..\..\shaders\csdraw.vert" />
