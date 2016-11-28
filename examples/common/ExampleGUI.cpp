@@ -16,6 +16,8 @@ void ExampleXGL::BuildGUI() {
 		projector.AddReshapeCallback(std::bind(&XGLGuiCanvasWithReshape::Reshape, gc, _1, _2));
 		return gc;
 	});
+	// make sure this shape is invisible. MUST be done after the above function, not inside it.
+	gc->SetColor({ 0.0, 0.0, 0.0, 0.0 });
 
 	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child2 = new XGLGuiCanvas(1920, 1080); return child2; });
 	translate = glm::translate(glm::mat4(), glm::vec3(0.5, -0.4f, 0));
