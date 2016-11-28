@@ -27,7 +27,7 @@
     <ClCompile Include="ComputeShaderTestBuildScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cs-main.cpp">
+    <ClCompile Include="..\common\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
