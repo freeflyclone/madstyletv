@@ -14,6 +14,13 @@
 #include <ExampleXGL.h>
 
 static ExampleXGL *exgl = NULL;
+#ifndef OPENGL_MAJOR_VERSION
+#define OPENGL_MAJOR_VERSION 3
+#endif
+
+#ifndef OPENGL_MINOR_VERSION
+#define OPENGL_MINOR_VERSION 2
+#endif
 
 #ifdef _WIN32
 void SetGlobalWorkingDirectoryName()
@@ -121,8 +128,8 @@ int main(void) {
 
 	glfwSetErrorCallback(error_callback);
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, OPENGL_MAJOR_VERSION);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, OPENGL_MINOR_VERSION);
 	glfwWindowHint(GLFW_SAMPLES, 8);
 
 	window = glfwCreateWindow(1280, 720, "Mad Style TV Example", NULL, NULL);
