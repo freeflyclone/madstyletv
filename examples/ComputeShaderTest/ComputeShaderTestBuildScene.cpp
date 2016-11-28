@@ -18,7 +18,7 @@ void ExampleXGL::BuildScene() {
 	translate = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 5.0f));
 	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
 	shape->model = translate*rotate*scale;
-	shape->SetColor({ 1, 1, 1, 0.5 });
+	shape->attributes.diffuseColor = { 1, 1, 1, 1.0 };
 
 	computeShader = new XGLShader("shaders/compute-shader");
 	computeShader->CompileCompute(pathToAssets + "/shaders/compute-shader");
