@@ -48,6 +48,7 @@ public:
 	std::string Name();
 	GLint Attrib(std::string name);
 	GLint Uniform(std::string name);
+	void SetUniform(std::string name, GLint v);
 
 	GLint programId;
 	GLint modelUniformLocation;

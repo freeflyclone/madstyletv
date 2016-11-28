@@ -47,5 +47,17 @@
     <None Include="..\..\shaders\000-simple.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\shaders\gui.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\gui.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\gui-tex.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\gui-tex.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

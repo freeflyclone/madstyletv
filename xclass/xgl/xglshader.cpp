@@ -259,3 +259,8 @@ GLint XGLShader::Uniform(std::string name) {
 		throwXGLException("Program uniform '" + name + "' not found in '" + shaderName + "'");
 	return uniform;
 }
+
+void XGLShader::SetUniform(std::string name, GLint v){
+	glUniform1i(glGetUniformLocation(programId, name.c_str()), v);
+	GL_CHECK("glUniform1i() failed");
+}
