@@ -19,5 +19,5 @@ void main() {
 	float g = 0.5 - globalGCoef * localCoef;
 	float b = 0.5 - globalBCoef * localCoef;
 
-	imageStore(destTex, storePos, vec4(r, g, b, 0.5));
+	imageStore(destTex, storePos, vec4(r, g, b, 1.0));
 }
