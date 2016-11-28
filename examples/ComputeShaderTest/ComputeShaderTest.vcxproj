@@ -186,6 +186,10 @@
     <None Include="..\..\shaders\compute-shader" />
     <None Include="..\..\shaders\csdraw.frag" />
     <None Include="..\..\shaders\csdraw.vert" />
+    <None Include="..\..\shaders\gui-tex.frag" />
+    <None Include="..\..\shaders\gui-tex.vert" />
+    <None Include="..\..\shaders\gui.frag" />
+    <None Include="..\..\shaders\gui.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
