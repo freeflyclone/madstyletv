@@ -8,7 +8,16 @@ layout (local_size_x = 16, local_size_y = 16) in;
 
 void main() {
 	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
+
 	float localCoef = length(vec2(ivec2(gl_LocalInvocationID.xy)-8)/8.0);
-	float globalCoef = sin(float(gl_WorkGroupID.x+gl_WorkGroupID.y)*0.1 + roll)*0.5;
-	imageStore(destTex, storePos, vec4(0.5-globalCoef*localCoef, 0.0, 0.0, 0.0));
+
+	float globalRCoef = sin(float(gl_WorkGroupID.x+gl_WorkGroupID.y)*0.1 + roll)*0.5;
+	float globalGCoef = sin(float(gl_WorkGroupID.x+gl_WorkGroupID.y)*0.05 + roll)*0.5;
+	float globalBCoef = sin(float(gl_WorkGroupID.x+gl_WorkGroupID.y)*0.2 + roll)*0.5;
+
+	float r = 0.5 - globalRCoef * localCoef;
+	float g = 0.5 - globalGCoef * localCoef;
+	float b = 0.5 - globalBCoef * localCoef;
+
+	imageStore(destTex, storePos, vec4(r, g, b, 1.0));
 }
