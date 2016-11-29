@@ -165,6 +165,8 @@ public:
 	bool childEvent;
 	int width, height;
 	int xOrig, yOrig;
+	int windowWidth, windowHeight;
+	glm::mat4 orthoProjection;
 
 private:
 	GLubyte *buffer;

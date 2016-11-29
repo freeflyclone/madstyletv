@@ -88,7 +88,7 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f), pb(NULL), fb(NULL), renderGui(false)
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	GL_CHECK("glBindBuffer(0) failed");
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	glDepthFunc(GL_LESS);
 	glEnable(GL_DEPTH_TEST);
 	//glEnable(GL_BLEND);
@@ -296,6 +296,54 @@ void XGL::IterateShapesMap(){
 			xprintf("   shape->b: vao:%d, vbo:%d, program:%d\n", shape->vao, shape->vbo, shape->shader->programId);
         }
     }
+}
+
+bool XGL::GuiResolve(XGLShape *shape, int x, int y, int flags) {
+	std::vector<XGLObject *>guiChildren = shape->Children();
+	std::vector<XGLObject *>::iterator it;
+	bool handledByChild = false;
+	glm::vec4 ul, lr;
+	glm::vec4 mc;
+
+	if (mouseCaptured != NULL) {
+		if(dynamic_cast<XGLGuiCanvas *>(shape)) {
+			XGLGuiCanvas *gc = (XGLGuiCanvas *)mouseCaptured;
+			// convert to window-relative coordinates
+			mc = glm::inverse(gc->model) * glm::vec4(x, y, 1, 1);
+			handledByChild = gc->MouseEvent(mc.x, mc.y, flags);
+		}
+	}
+	else {
+		for (it = guiChildren.begin(); it != guiChildren.end(); it++) {
+			XGLShape *shape = (XGLShape *)*it;
+
+			if (dynamic_cast<XGLGuiCanvas *>(shape)) {
+				XGLGuiCanvas *gc = (XGLGuiCanvas *)shape;
+				ul = gc->model * glm::vec4(gc->xOrig, gc->yOrig, 0.0, 1.0);
+				lr = gc->model * glm::vec4(gc->xOrig + gc->width, gc->yOrig + gc->height, 0.0, 1.0);
+
+				if ((x >= ul.x && x <= lr.x) && (y >= ul.y && y <= lr.y)){
+					// convert to window-relative coordinates
+					mc = glm::inverse(gc->model) * glm::vec4(x, y, 1.0, 1.0);
+
+					// recurse into child stack (if there is one)
+					if (gc->Children().size() > 0)
+						handledByChild = GuiResolve(gc, (int)(mc.x), (int)(mc.y), flags);
+
+					if (!handledByChild) {
+						gc->SetHasMouse(true);
+						handledByChild = gc->MouseEvent(mc.x, mc.y, flags);
+						break;
+					}
+				}
+				else {
+					gc->SetHasMouse(false);
+				}
+			}
+		}
+	}
+
+	return handledByChild;
 }
 
 bool XGL::GuiResolve(XGLShape *shape, float x, float y, int flags) {
