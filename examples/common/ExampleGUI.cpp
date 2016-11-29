@@ -11,7 +11,7 @@ void ExampleXGL::BuildGUI() {
 	AddGuiShape("shaders/tex", [&]() { return new XGLAntTweakBar(this); });
 
 	AddGuiShape("shaders/000-simple", [&]() {
-		gc = new XGLGuiCanvasWithReshape(projector.width, projector.height);
+		gc = new XGLGuiCanvasWithReshape(this, projector.width, projector.height);
 		gc->SetXGL(this);
 		projector.AddReshapeCallback(std::bind(&XGLGuiCanvasWithReshape::Reshape, gc, _1, _2));
 		return gc;
@@ -19,14 +19,14 @@ void ExampleXGL::BuildGUI() {
 	// make sure this shape is invisible. MUST be done after the above function, not inside it.
 	gc->SetColor({ 0.0, 0.0, 0.0, 0.0 });
 
-	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child2 = new XGLGuiCanvas(1920, 1080); return child2; });
+	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child2 = new XGLGuiCanvas(this, 1920, 1080); return child2; });
 	translate = glm::translate(glm::mat4(), glm::vec3(0.5, -0.4f, 0));
 	model = glm::scale(translate, glm::vec3(0.4, 0.4, 1.0));
 	child2->model = model;
 	gc->AddChild(child2);
 	child2->RenderText(L"Now is the time for all good men \nto come to the aid of their country.");
 
-	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child1 = new XGLGuiCanvas(640, 360); return child1; });
+	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child1 = new XGLGuiCanvas(this, 640, 360); return child1; });
 	translate = glm::translate(glm::mat4(), glm::vec3(0.5, 0.5f, 0));
 	model = glm::scale(translate, glm::vec3(0.4, 0.4, 1.0));
 	child1->model = model;
@@ -38,7 +38,7 @@ void ExampleXGL::BuildGUI() {
 		return true;
 	});
 
-	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child3 = new XGLGuiCanvas(1280, 720); return child3; });
+	CreateShape(&guiShapes, "shaders/gui-tex", [&]() { child3 = new XGLGuiCanvas(this, 1280, 720); return child3; });
 	translate = glm::translate(glm::mat4(), glm::vec3(-0.5, -0.5f, 0));
 	model = glm::scale(translate, glm::vec3(0.4, 0.4, 1.0));
 	child3->model = model;
@@ -51,7 +51,7 @@ void ExampleXGL::BuildGUI() {
 
 	child3->RenderText(L"Smaller canvas window inside larger one.");
 
-	CreateShape(&guiShapes, "shaders/gui", [&]() { child1 = new XGLGuiCanvas(); return child1; });
+	CreateShape(&guiShapes, "shaders/gui", [&]() { child1 = new XGLGuiCanvas(this); return child1; });
 	translate = glm::translate(glm::mat4(), glm::vec3(0, -0.9f, 0));
 	model = glm::scale(translate, glm::vec3(0.99, 0.025, 1.0));
 	child1->model = model;
@@ -93,7 +93,7 @@ void ExampleXGL::BuildGUI() {
 		return true;
 	});
 
-	CreateShape(&guiShapes, "shaders/gui", [&]() { child2 = new XGLGuiCanvas(); return child2; });
+	CreateShape(&guiShapes, "shaders/gui", [&]() { child2 = new XGLGuiCanvas(this); return child2; });
 	scale = glm::scale(glm::mat4(), glm::vec3(0.02, 1, 1.0));
 	child2->model = scale;
 	child2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
@@ -104,4 +104,7 @@ void ExampleXGL::BuildGUI() {
 		p->childEvent = true;
 		return false;
 	});
+
+	//AddGuiShape("shaders/ortho-tex", [&]() { child1 = new XGLGuiCanvas(this, 440, 20, 360, 640); return child1; });
+	//child1->RenderText(L"Test");
 }

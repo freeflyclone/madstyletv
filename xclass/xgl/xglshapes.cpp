@@ -663,6 +663,21 @@ XGLTexQuad::XGLTexQuad() {
 	idx.push_back(3);
 }
 
+XGLTexQuad::XGLTexQuad(int w, int h) {
+	SetName("XTexQuad");
+	const XGLColor white = { 1, 1, 1, 1 };
+
+	v.push_back({ { 0, 0, 0 }, { 0, 0 }, {}, white });
+	v.push_back({ { 0, h, 0 }, { 0, 1 }, {}, white });
+	v.push_back({ { w, 0, 0 }, { 1, 0 }, {}, white });
+	v.push_back({ { w, h, 0 }, { 1, 1 }, {}, white });
+
+	idx.push_back(0);
+	idx.push_back(1);
+	idx.push_back(2);
+	idx.push_back(3);
+}
+
 XGLTexQuad::XGLTexQuad(std::string fileName) : XGLTexQuad() {
 	AddTexture(fileName);
 }
@@ -693,24 +708,33 @@ XGLTransformer::XGLTransformer(){
 	SetName("XGLTransformer");
 };
 
-XGLGuiCanvas::XGLGuiCanvas() :
+XGLGuiCanvas::XGLGuiCanvas(XGL *xgl) :
 	XGLTexQuad(),
 	buffer(NULL),
-	pxgl(NULL),
+	pxgl(xgl),
 	childEvent(false)
 {
 	SetName("XGLGuiCanvas");
 	attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.5 };
 }
 
-XGLGuiCanvas::XGLGuiCanvas(int w, int h) : XGLGuiCanvas()
+XGLGuiCanvas::XGLGuiCanvas(XGL *xgl, int w, int h) :
+	XGLTexQuad(w, h),
+	buffer(NULL),
+	pxgl(xgl),
+	childEvent(false),
+	xOrig(0),
+	yOrig(0)
 {
+	SetName("XGLGuiCanvas");
+	attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.5 };
+
 	width = w;
 	height = h;
 	penX = 10;
 	penY = 64;
 
-	// our base class is a dimensionless XGLTexQuad with no texture map
+	// our base class is XGLTexQuad with no texture map
 	// but we want a texture map that's easily accessible for GUI work
 	// so create a host memory buffer and add it to our base XGLTexQuad
 	if ((buffer = new GLubyte[width*height]()) == NULL)
@@ -718,6 +742,15 @@ XGLGuiCanvas::XGLGuiCanvas(int w, int h) : XGLGuiCanvas()
 
 	memset(buffer, 0, width*height);
 	AddTexture(width, height, 1, buffer);
+}
+
+XGLGuiCanvas::XGLGuiCanvas(XGL *xgl, int x, int y, int w, int h) : 
+	XGLGuiCanvas(xgl, w, h)
+{
+	xOrig = x;
+	yOrig = y;
+
+	xgl->projector.AddReshapeCallback(std::bind(&XGLGuiCanvas::Reshape, this, _1, _2));
 }
 
 XGLGuiCanvas::~XGLGuiCanvas() {}
@@ -731,6 +764,21 @@ bool XGLGuiCanvas::MouseEvent(float x, float y, int flags) {
 		return mouseFunc(this, x, y, flags);
 
 	return false;
+}
+
+void XGLGuiCanvas::Reshape(int w, int h) {
+	int x, y;
+	if (xOrig < 0)
+		x = w - width + xOrig;
+	else
+		x = xOrig;
+
+	if (yOrig < 0)
+		y = h - height + yOrig;
+	else
+		y = yOrig;
+
+	model = glm::translate(glm::ortho(0.0f, (float)w, (float)h, 0.0f), glm::vec3(x, y, 0.0));
 }
 
 void XGLGuiCanvas::RenderText(std::wstring text) {
@@ -752,7 +800,7 @@ void XGLGuiCanvas::Fill(GLubyte val)  {
 	GL_CHECK("glGetTexImage() didn't work");
 }
 
-XGLGuiCanvasWithReshape::XGLGuiCanvasWithReshape(int w, int h) : XGLGuiCanvas(w, h), ww(w), wh(h), wx(0), wy(0) {
+XGLGuiCanvasWithReshape::XGLGuiCanvasWithReshape(XGL *xgl, int w, int h) : XGLGuiCanvas(xgl, w, h), ww(w), wh(h), wx(0), wy(0) {
 	attributes.diffuseColor = { 0.0, 0.0, 0.0, 0.0 };
 
 	SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {

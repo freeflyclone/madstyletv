@@ -126,6 +126,7 @@ public:
 	XGLTexQuad(std::string fileName);
 	XGLTexQuad(int width, int height, int channels, GLubyte *img, bool flipColors = false);
 	XGLTexQuad(int width, int height, int channels);
+	XGLTexQuad(int width, int height);
 	XGLTexQuad();
 	virtual void Draw();
 };
@@ -139,8 +140,9 @@ class XGLGuiCanvas : public XGLTexQuad {
 public:
 	typedef std::function<bool(XGLShape *, float x, float y, int f)> MouseFunc;
 
-	XGLGuiCanvas(int w, int h);
-	XGLGuiCanvas();
+	XGLGuiCanvas(XGL *xgl, int w, int h);
+	XGLGuiCanvas(XGL *xgl, int x, int y, int w, int h);
+	XGLGuiCanvas(XGL *xgl);
 
 	void SetXGL(XGL *xgl) { pxgl = xgl; }
 	void SetFocus(bool enable) { hasFocus = enable; }
@@ -152,6 +154,8 @@ public:
 	void SetMouseFunc(XGLGuiCanvas::MouseFunc);
 	bool MouseEvent(float x, float y, int flags);
 
+	void Reshape(int w, int h);
+
 	void RenderText(std::wstring t);
 	void Fill(GLubyte val);
 
@@ -159,9 +163,10 @@ public:
 
 	XGLGuiCanvas::MouseFunc mouseFunc;
 	bool childEvent;
+	int width, height;
+	int xOrig, yOrig;
 
 private:
-	int width, height;
 	GLubyte *buffer;
 	bool hasFocus;
 	bool hasMouse;
@@ -174,7 +179,7 @@ private:
 
 class XGLGuiCanvasWithReshape : public XGLGuiCanvas {
 public:
-	XGLGuiCanvasWithReshape(int w, int h);
+	XGLGuiCanvasWithReshape(XGL *, int w, int h);
 
 	void Reshape(int w, int h);
 
