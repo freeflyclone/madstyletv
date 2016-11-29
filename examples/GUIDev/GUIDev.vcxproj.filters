@@ -27,6 +27,9 @@
     <ClCompile Include="GUIDevBuildScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\common\ExampleGUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="GUIDevGUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
