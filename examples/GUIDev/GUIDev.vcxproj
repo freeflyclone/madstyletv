@@ -175,7 +175,6 @@
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
     <ClCompile Include="GUIDevBuildScene.cpp" />
-    <ClCompile Include="GUIDevGUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\shaders\ortho-tex.frag" />

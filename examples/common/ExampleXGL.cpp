@@ -81,7 +81,8 @@ void ExampleXGL::MouseFunc(int x, int y, int flags){
 		float X = (float)x / (float)width * 2 - 1.0f;
 		float Y = -(float)y / (float)height * 2 + 1.0f;
 
-		handledByChild = GuiResolve(GetGuiRoot(), X, Y, flags);
+		//handledByChild = GuiResolve(GetGuiRoot(), X, Y, flags);
+		handledByChild = GuiResolve(GetGuiRoot(), x, y, flags);
 	}
 
 	if (!handledByChild)

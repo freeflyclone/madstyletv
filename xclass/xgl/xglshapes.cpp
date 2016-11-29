@@ -768,6 +768,10 @@ bool XGLGuiCanvas::MouseEvent(float x, float y, int flags) {
 
 void XGLGuiCanvas::Reshape(int w, int h) {
 	int x, y;
+
+	windowWidth = w;
+	windowHeight = h;
+
 	if (xOrig < 0)
 		x = w - width + xOrig;
 	else
@@ -778,7 +782,13 @@ void XGLGuiCanvas::Reshape(int w, int h) {
 	else
 		y = yOrig;
 
-	model = glm::translate(glm::ortho(0.0f, (float)w, (float)h, 0.0f), glm::vec3(x, y, 0.0));
+	orthoProjection = glm::mat4(glm::ortho(0.0f, (float)w, (float)h, 0.0f));
+
+	glUseProgram(shader->programId);
+	GL_CHECK("glUseProgram() failed");
+
+	glUniformMatrix4fv(glGetUniformLocation(shader->programId, "orthoProjection"), 1, GL_FALSE, (float *)glm::value_ptr(orthoProjection));
+	GL_CHECK("glUniformMatrix4fv() failed");
 }
 
 void XGLGuiCanvas::RenderText(std::wstring text) {
