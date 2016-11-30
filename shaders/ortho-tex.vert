@@ -1,11 +1,11 @@
 #version 150
 
 uniform	mat4 model;
-uniform mat4 orthoProjection;
 
 layout (std140) uniform MatrixData {
 	mat4 projector;
 	mat4 view;
+	mat4 orthoProjection;
 };
 
 in  vec3 in_Position;

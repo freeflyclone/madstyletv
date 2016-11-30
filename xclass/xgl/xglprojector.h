@@ -9,6 +9,7 @@ public:
     void Reshape(int w, int h);
 	void Reshape();
 	glm::mat4 GetProjectionMatrix();
+	glm::mat4 GetOrthoMatrix();
 	void AddReshapeCallback(ReshapeFunc);
 
 	int width, height;
