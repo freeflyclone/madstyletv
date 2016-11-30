@@ -341,6 +341,8 @@ bool XGL::GuiResolve(XGLShape *shape, int x, int y, int flags) {
 					gc->SetHasMouse(false);
 				}
 			}
+			else if (!dynamic_cast<XGLTransformer *>(shape))
+				xprintf("It's neither XGLGuiCanvas nor XGLTransformer\n");
 		}
 	}
 

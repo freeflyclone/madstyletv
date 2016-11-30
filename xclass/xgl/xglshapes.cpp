@@ -718,7 +718,7 @@ XGLGuiCanvas::XGLGuiCanvas(XGL *xgl) :
 	attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.5 };
 }
 
-XGLGuiCanvas::XGLGuiCanvas(XGL *xgl, int w, int h) :
+XGLGuiCanvas::XGLGuiCanvas(XGL *xgl, int w, int h, bool addTexture) :
 	XGLTexQuad(w, h),
 	buffer(NULL),
 	pxgl(xgl),
@@ -732,14 +732,16 @@ XGLGuiCanvas::XGLGuiCanvas(XGL *xgl, int w, int h) :
 	penX = 10;
 	penY = 64;
 
-	// our base class is XGLTexQuad with no texture map
-	// but we want a texture map that's easily accessible for GUI work
-	// so create a host memory buffer and add it to our base XGLTexQuad
-	if ((buffer = new GLubyte[width*height]()) == NULL)
-		throwXGLException("failed to allocate a buffer for the XGLGuiCanvas");
+	if (addTexture) {
+		// our base class is XGLTexQuad with no texture map
+		// but we want a texture map that's easily accessible for GUI work
+		// so create a host memory buffer and add it to our base XGLTexQuad
+		if ((buffer = new GLubyte[width*height]()) == NULL)
+			throwXGLException("failed to allocate a buffer for the XGLGuiCanvas");
 
-	memset(buffer, 0, width*height);
-	AddTexture(width, height, 1, buffer);
+		memset(buffer, 0, width*height);
+		AddTexture(width, height, 1, buffer);
+	}
 }
 
 XGLGuiCanvas::~XGLGuiCanvas() {}
