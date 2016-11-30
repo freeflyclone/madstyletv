@@ -722,9 +722,7 @@ XGLGuiCanvas::XGLGuiCanvas(XGL *xgl, int w, int h) :
 	XGLTexQuad(w, h),
 	buffer(NULL),
 	pxgl(xgl),
-	childEvent(false),
-	xOrig(0),
-	yOrig(0)
+	childEvent(false)
 {
 	SetName("XGLGuiCanvas");
 	attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.5 };
@@ -744,15 +742,6 @@ XGLGuiCanvas::XGLGuiCanvas(XGL *xgl, int w, int h) :
 	AddTexture(width, height, 1, buffer);
 }
 
-XGLGuiCanvas::XGLGuiCanvas(XGL *xgl, int x, int y, int w, int h) : 
-	XGLGuiCanvas(xgl, w, h)
-{
-	xOrig = x;
-	yOrig = y;
-
-	xgl->projector.AddReshapeCallback(std::bind(&XGLGuiCanvas::Reshape, this, _1, _2));
-}
-
 XGLGuiCanvas::~XGLGuiCanvas() {}
 
 void XGLGuiCanvas::SetMouseFunc(XGLGuiCanvas::MouseFunc fn){
@@ -766,11 +755,8 @@ bool XGLGuiCanvas::MouseEvent(float x, float y, int flags) {
 	return false;
 }
 
-void XGLGuiCanvas::Reshape(int w, int h) {
-}
-
-void XGLGuiCanvas::RenderText(std::wstring text) {
-	font.SetPixelSize(64);
+void XGLGuiCanvas::RenderText(std::wstring text, int pixelSize) {
+	font.SetPixelSize(pixelSize);
 	font.RenderText(text, buffer, width, height, &penX, &penY);
 
 	// this should probably be done with just the rectangle of the line in question

@@ -320,8 +320,8 @@ bool XGL::GuiResolve(XGLShape *shape, int x, int y, int flags) {
 
 			if (dynamic_cast<XGLGuiCanvas *>(shape)) {
 				XGLGuiCanvas *gc = (XGLGuiCanvas *)shape;
-				ul = gc->model * glm::vec4(gc->xOrig, gc->yOrig, 0.0, 1.0);
-				lr = gc->model * glm::vec4(gc->xOrig + gc->width, gc->yOrig + gc->height, 0.0, 1.0);
+				ul = gc->model * glm::vec4(0.0, 0.0, 0.0, 1.0);
+				lr = gc->model * glm::vec4(gc->width, gc->height, 0.0, 1.0);
 
 				if ((x >= ul.x && x <= lr.x) && (y >= ul.y && y <= lr.y)){
 					// convert to window-relative coordinates

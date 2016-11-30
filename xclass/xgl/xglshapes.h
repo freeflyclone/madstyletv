@@ -141,7 +141,6 @@ public:
 	typedef std::function<bool(XGLShape *, float x, float y, int f)> MouseFunc;
 
 	XGLGuiCanvas(XGL *xgl, int w, int h);
-	XGLGuiCanvas(XGL *xgl, int x, int y, int w, int h);
 	XGLGuiCanvas(XGL *xgl);
 
 	void SetXGL(XGL *xgl) { pxgl = xgl; }
@@ -154,9 +153,7 @@ public:
 	void SetMouseFunc(XGLGuiCanvas::MouseFunc);
 	bool MouseEvent(float x, float y, int flags);
 
-	void Reshape(int w, int h);
-
-	void RenderText(std::wstring t);
+	void RenderText(std::wstring t, int pixelSize=64);
 	void Fill(GLubyte val);
 
 	~XGLGuiCanvas();
@@ -164,7 +161,6 @@ public:
 	XGLGuiCanvas::MouseFunc mouseFunc;
 	bool childEvent;
 	int width, height;
-	int xOrig, yOrig;
 
 private:
 	GLubyte *buffer;
