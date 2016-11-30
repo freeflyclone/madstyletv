@@ -123,11 +123,16 @@ private:
 
 class XGLTexQuad : public XGLShape{
 public:
+	// these constructors build a quad @ -1,-1 to 1,1
+	XGLTexQuad();
 	XGLTexQuad(std::string fileName);
 	XGLTexQuad(int width, int height, int channels, GLubyte *img, bool flipColors = false);
 	XGLTexQuad(int width, int height, int channels);
+
+	// special case: build a quad @ 0,0 to width,height in the vertices
+	// (useful for screenspace (GUI) quads)
 	XGLTexQuad(int width, int height);
-	XGLTexQuad();
+
 	virtual void Draw();
 };
 
@@ -140,8 +145,11 @@ class XGLGuiCanvas : public XGLTexQuad {
 public:
 	typedef std::function<bool(XGLShape *, float x, float y, int f)> MouseFunc;
 
-	XGLGuiCanvas(XGL *xgl, int w, int h);
+	// uses default XGLTexQuad() constructor
 	XGLGuiCanvas(XGL *xgl);
+
+	// uses special XGLTexQuad(int w, int h) constructor
+	XGLGuiCanvas(XGL *xgl, int w, int h, bool addTexture = true);
 
 	void SetXGL(XGL *xgl) { pxgl = xgl; }
 	void SetFocus(bool enable) { hasFocus = enable; }
@@ -156,7 +164,7 @@ public:
 	void RenderText(std::wstring t, int pixelSize=64);
 	void Fill(GLubyte val);
 
-	~XGLGuiCanvas();
+	virtual ~XGLGuiCanvas();
 
 	XGLGuiCanvas::MouseFunc mouseFunc;
 	bool childEvent;
