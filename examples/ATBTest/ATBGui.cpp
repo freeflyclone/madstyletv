@@ -71,14 +71,14 @@ public:
 
 
 void ExampleXGL::BuildGUI() {
-	XGLGuiCanvasWithReshape *gc;
+	XGLGuiCanvas *gc;
 	AddGuiShape("shaders/000-simple", [&]() { return new XGLTransformer(); });
 
 	AddGuiShape("shaders/000-simple", [&]() { 
-		gc = new XGLGuiCanvasWithReshape(projector.width, projector.height);
+		gc = new XGLGuiCanvas(this, projector.width, projector.height);
 
 		gc->SetXGL(this);
-		projector.AddReshapeCallback(std::bind(&XGLGuiCanvasWithReshape::Reshape, gc, _1, _2));
+		projector.AddReshapeCallback(std::bind(&XGLGuiCanvas::Reshape, gc, _1, _2));
 
 		return gc;
 	});
