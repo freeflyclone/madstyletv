@@ -689,6 +689,22 @@ XGLTexQuad::XGLTexQuad(int width, int height, int channels) : XGLTexQuad() {
 	AddTexture(width, height, channels);
 }
 
+void XGLTexQuad::Reshape(int left, int top, int width, int height) {
+	v[0].v.x = left;
+	v[0].v.y = top;
+
+	v[1].v.x = left;
+	v[1].v.y = height;
+
+	v[2].v.x = width;
+	v[2].v.y = top;
+
+	v[3].v.x = width;
+	v[3].v.y = height;
+
+	Load(shader, v, idx);
+}
+
 void XGLTexQuad::Draw() {
 	glEnable(GL_BLEND);
 	GL_CHECK("glEnable(GL_BLEND) failed");
@@ -784,19 +800,6 @@ XGLAntTweakBar::XGLAntTweakBar(XGL *xgl) : pxgl(xgl), flags(0) {
 
 	pxgl->projector.AddReshapeCallback(std::bind(&XGLAntTweakBar::Reshape, this, _1, _2));
 	pxgl->AddMouseFunc(std::bind(&XGLAntTweakBar::MouseMotion, this, _1, _2, _3));
-
-	XInput::XInputKeyFunc PresentGuiCanvas = [&](int key, int flags) {
-		const bool isDown = (flags & 0x8000) == 0;
-		const bool isRepeat = (flags & 0x4000) != 0;
-
-		if (isDown && pxgl->GuiIsActive())
-			pxgl->RenderGui(false);
-		else if (isDown)
-			pxgl->RenderGui(true);
-	};
-
-	pxgl->AddKeyFunc('`', PresentGuiCanvas);
-	pxgl->AddKeyFunc('~', PresentGuiCanvas);
 }
 
 XGLAntTweakBar::~XGLAntTweakBar() { 
