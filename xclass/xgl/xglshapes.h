@@ -133,6 +133,8 @@ public:
 	// (useful for screenspace (GUI) quads)
 	XGLTexQuad(int width, int height);
 
+	void Reshape(int left, int top, int width, int height);
+
 	virtual void Draw();
 };
 
