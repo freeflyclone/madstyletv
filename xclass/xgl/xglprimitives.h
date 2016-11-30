@@ -46,7 +46,7 @@ typedef std::vector<XGLIndex> XGLIndexList;
 typedef struct XGLShaderMatrixData_t {
 	glm::mat4 projection;
 	glm::mat4 view;
-	//glm::mat4 model;
+	glm::mat4 orthoProjection;
 } XGLShaderMatrixData;
 
 // forward reference XGL, so others can have pointers to it.

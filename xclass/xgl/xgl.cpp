@@ -140,9 +140,10 @@ XGL::~XGL(){
 void XGL::RenderScene(XGLShapesMap *shapes) {
 	camera.Animate();
 
-	// set the projection,view,model,mvp matrices in the matrix UBO
+	// set the projection,view,orthoProjection matrices in the matrix UBO
 	shaderMatrix.view = camera.GetViewMatrix();
 	shaderMatrix.projection = projector.GetProjectionMatrix();
+	shaderMatrix.orthoProjection = projector.GetOrthoMatrix();
 
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(shaderMatrix), (GLvoid *)&shaderMatrix, GL_DYNAMIC_DRAW);
 	GL_CHECK("glBufferData() failed");

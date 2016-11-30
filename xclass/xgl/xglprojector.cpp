@@ -30,3 +30,6 @@ glm::mat4 XGLProjector::GetProjectionMatrix() {
 	return glm::perspective(glm::radians(45.0f), float(width) / float(height), 0.1f, 1000.0f);
 }
 
+glm::mat4 XGLProjector::GetOrthoMatrix() {
+	return glm::ortho(0.0f, (float)width, (float)height, 0.0f);
+}

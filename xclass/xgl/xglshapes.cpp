@@ -767,28 +767,6 @@ bool XGLGuiCanvas::MouseEvent(float x, float y, int flags) {
 }
 
 void XGLGuiCanvas::Reshape(int w, int h) {
-	int x, y;
-
-	windowWidth = w;
-	windowHeight = h;
-
-	if (xOrig < 0)
-		x = w - width + xOrig;
-	else
-		x = xOrig;
-
-	if (yOrig < 0)
-		y = h - height + yOrig;
-	else
-		y = yOrig;
-
-	orthoProjection = glm::mat4(glm::ortho(0.0f, (float)w, (float)h, 0.0f));
-
-	glUseProgram(shader->programId);
-	GL_CHECK("glUseProgram() failed");
-
-	glUniformMatrix4fv(glGetUniformLocation(shader->programId, "orthoProjection"), 1, GL_FALSE, (float *)glm::value_ptr(orthoProjection));
-	GL_CHECK("glUniformMatrix4fv() failed");
 }
 
 void XGLGuiCanvas::RenderText(std::wstring text) {
@@ -808,21 +786,6 @@ void XGLGuiCanvas::Fill(GLubyte val)  {
 	glBindTexture(GL_TEXTURE_2D, texIds[0]);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, buffer);
 	GL_CHECK("glGetTexImage() didn't work");
-}
-
-XGLGuiCanvasWithReshape::XGLGuiCanvasWithReshape(XGL *xgl, int w, int h) : XGLGuiCanvas(xgl, w, h), ww(w), wh(h), wx(0), wy(0) {
-	attributes.diffuseColor = { 0.0, 0.0, 0.0, 0.0 };
-
-	SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
-		wx = (int)((1.0 + x) / 2.0 * (float)ww);
-		wy = (int)((1.0 - y) / 2.0 * (float)wh);
-		return true;
-	});
-}
-
-void XGLGuiCanvasWithReshape::Reshape(int w, int h) {
-	ww = w;
-	wh = h;
 }
 
 XGLAntTweakBar::XGLAntTweakBar(XGL *xgl) : pxgl(xgl), flags(0) {

@@ -165,8 +165,6 @@ public:
 	bool childEvent;
 	int width, height;
 	int xOrig, yOrig;
-	int windowWidth, windowHeight;
-	glm::mat4 orthoProjection;
 
 private:
 	GLubyte *buffer;
@@ -178,16 +176,6 @@ private:
 
 	XGL *pxgl;
 };
-
-class XGLGuiCanvasWithReshape : public XGLGuiCanvas {
-public:
-	XGLGuiCanvasWithReshape(XGL *, int w, int h);
-
-	void Reshape(int w, int h);
-
-	int ww, wh, wx, wy;
-};
-
 
 class XGLAntTweakBar : public XGLShape {
 public:
