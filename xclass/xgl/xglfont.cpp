@@ -219,7 +219,7 @@ void XGLFont::RenderText(std::string text, unsigned char *buffer, int width, int
 		}
 		else {
 			FT_Load_Glyph(font.face, font.charMap[text[i]], FT_LOAD_RENDER);
-			dest = buffer + (*penY - g->bitmap_top) * width + *penX;
+			dest = buffer + (*penY - g->bitmap_top) * width + *penX + g->bitmap_left;
 			src = (GLubyte *)g->bitmap.buffer;
 
 			// 2D blit the glyph into the texture at penX,penY
@@ -227,7 +227,7 @@ void XGLFont::RenderText(std::string text, unsigned char *buffer, int width, int
 				memcpy(dest + (i*width), src, g->bitmap.width);
 				src += g->bitmap.width;
 			}
-			*penX += g->advance.x / 64;
+			*penX += (int)((float)g->advance.x / 64.0f + 0.5);
 		}
 	}
 }
@@ -248,7 +248,7 @@ void XGLFont::RenderText(std::wstring text, unsigned char *buffer, int width, in
 		}
 		else {
 			FT_Load_Glyph(font.face, font.charMap[text[i]], FT_LOAD_RENDER);
-			dest = buffer + (*penY - g->bitmap_top) * width + *penX;
+			dest = buffer + (*penY - g->bitmap_top) * width + *penX + g->bitmap_left;
 			src = (GLubyte *)g->bitmap.buffer;
 
 			// 2D blit the glyph into the texture at penX,penY
@@ -256,7 +256,7 @@ void XGLFont::RenderText(std::wstring text, unsigned char *buffer, int width, in
 				memcpy(dest + (i*width), src, g->bitmap.width);
 				src += g->bitmap.width;
 			}
-			*penX += g->advance.x / 64;
+			*penX += (int)((float)g->advance.x / 64.0f + 0.5);
 		}
 	}
 }
