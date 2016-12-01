@@ -777,6 +777,12 @@ bool XGLGuiCanvas::MouseEvent(float x, float y, int flags) {
 	return false;
 }
 
+void XGLGuiCanvas::RenderText(std::string text, int pixelSize) {
+	std::wstringstream ws;
+	ws << text.c_str();
+	RenderText(ws.str(), pixelSize);
+}
+
 void XGLGuiCanvas::RenderText(std::wstring text, int pixelSize) {
 	font.SetPixelSize(pixelSize);
 	font.RenderText(text, buffer, width, height, &penX, &penY);

@@ -112,8 +112,8 @@ void ExampleXGL::BuildGUI() {
 		gm->AddReshapeCallback(g2, [](XGLGuiCanvas *gc, int w, int h) {
 			gc->model = glm::translate(glm::mat4(), glm::vec3(w - gc->width - 20, 20, 1.0));
 		});
-		g2->SetPenPosition(10, 28);
-		g2->RenderText(L"This is a test.\nIt should be possible to\nauto-wrap text, to avoid\nvisual artifacts for long lines.\n", 24);
+		g2->SetPenPosition(10, 24);
+		g2->RenderText("This is a test.\nIt should be possible to\nauto-wrap text, to avoid\nvisual artifacts for long lines.\n", 18);
 	}
 
 	bool exampleHorizontalSlider = true;
@@ -125,7 +125,7 @@ void ExampleXGL::BuildGUI() {
 		// size, so the initial value for width is irrelevant. The ReshapeCallback specifies
 		// the desired layout behavior.
 		g->AddChildShape("shaders/ortho", [&]() { g2 = new XGLGuiCanvas(this, 1, 16); return g2; });
-		g2->attributes.diffuseColor = { 1.0, 0.0, 1.0, 0.1 };
+		g2->attributes.diffuseColor = { 1.0, 0.2, 0.2, 0.1 };
 		gm->AddReshapeCallback(g2, [](XGLGuiCanvas *gc, int w, int h) {
 			int padding = 20;
 			gc->width = w - 2 * padding;
