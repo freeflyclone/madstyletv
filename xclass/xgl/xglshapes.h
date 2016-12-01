@@ -42,6 +42,9 @@ public:
 	glm::mat4 model;
 };
 
+// define a type for passing a lambda that creates an XGLShape as an argument
+typedef std::function<XGLShape *()> XGLNewShapeLambda;
+
 class XYPlaneGrid : public XGLShape {
 public:
 	XYPlaneGrid();
@@ -152,6 +155,8 @@ public:
 
 	// uses special XGLTexQuad(int w, int h) constructor
 	XGLGuiCanvas(XGL *xgl, int w, int h, bool addTexture = true);
+
+	void AddChildShape(std::string shaderName, XGLNewShapeLambda fn);
 
 	void SetXGL(XGL *xgl) { pxgl = xgl; }
 	void SetFocus(bool enable) { hasFocus = enable; }
