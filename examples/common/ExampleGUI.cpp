@@ -67,7 +67,7 @@ public:
 
 void ExampleXGL::BuildGUI() {
 	GuiManager *gm;
-	XGLGuiCanvas *g, *g2;
+	XGLGuiCanvas *g;
 
 	// Instantiate a GuiManager shape, which serves as GuiRoot() shape.
 	// XGL::GuiResolve() requires a "place holder" as the root shape to
@@ -93,27 +93,74 @@ void ExampleXGL::BuildGUI() {
 		gc->Reshape(0, 0, w, h);
 	});
 
-	// All subsequent XGLGuiCanvas items should be children of the background canvas (I think)
-	CreateShape(&guiShapes, "shaders/ortho", [&]() { g2 = new XGLGuiCanvas(this, 360, 640); return g2; });
-	g2->model = glm::translate(glm::mat4(), glm::vec3(800, 20, 0));
-	g2->attributes.diffuseColor = { 1.0, 0.0, 1.0, 0.1 };
-	g2->SetMouseFunc([&](XGLShape *s, float x, float y, int flags){
-		xprintf("In %s(%0.0f,%0.0f)\n", s->name.c_str(), x, y);
-		if (flags & 1)
-			mouseCaptured = (XGLGuiCanvas *)s;
-		else
-			mouseCaptured = NULL;
-		return true;
-	});
-	gm->AddReshapeCallback(g2, [](XGLGuiCanvas *gc, int w, int h) {
-		gc->model = glm::translate(glm::mat4(), glm::vec3(w - gc->width - 20, 20, 1.0));
-	});
-	g->AddChild(g2);
+	// All subsequent XGLGuiCanvas items should be children of the background canvas
+
+	bool exampleTextWindow = true;
+	if (exampleTextWindow) {
+		XGLGuiCanvas *g2;
+		g->AddChildShape("shaders/ortho", [&]() { g2 = new XGLGuiCanvas(this, 360, 640); return g2; });
+		g2->model = glm::translate(glm::mat4(), glm::vec3(800, 20, 0));
+		g2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.1 };
+		g2->SetMouseFunc([&](XGLShape *s, float x, float y, int flags){
+			xprintf("In %s(%0.0f,%0.0f)\n", s->name.c_str(), x, y);
+			if (flags & 1)
+				mouseCaptured = (XGLGuiCanvas *)s;
+			else
+				mouseCaptured = NULL;
+			return true;
+		});
+		gm->AddReshapeCallback(g2, [](XGLGuiCanvas *gc, int w, int h) {
+			gc->model = glm::translate(glm::mat4(), glm::vec3(w - gc->width - 20, 20, 1.0));
+		});
+	}
+
+	bool exampleHorizontalSlider = true;
+	if (exampleHorizontalSlider) {
+		XGLGuiCanvas *g2,*g3;
+
+		// add the "track" for the horizontal slider.  We want it to hug the bottom, therefore
+		// it's height is important to know. However it's width is dynamic according to window
+		// size, so the initial value for width is irrelevant. The ReshapeCallback specifies
+		// the desired layout behavior.
+		g->AddChildShape("shaders/ortho", [&]() { g2 = new XGLGuiCanvas(this, 1, 16); return g2; });
+		g2->attributes.diffuseColor = { 1.0, 0.0, 1.0, 0.1 };
+		gm->AddReshapeCallback(g2, [](XGLGuiCanvas *gc, int w, int h) {
+			int padding = 20;
+			gc->width = w - 2 * padding;
+			gc->model = glm::translate(glm::mat4(), glm::vec3(padding, h - gc->height - padding, 0.0));
+			gc->Reshape(0, 0, gc->width, gc->height);
+		});
+		g2->SetMouseFunc([&](XGLShape *s, float x, float y, int flags){
+			XGLGuiCanvas *gc = (XGLGuiCanvas *)s;
+			if (flags & 1) {
+				XGLGuiCanvas *slider = (XGLGuiCanvas *)(s->Children()[0]);
+				// constrain mouse X coordinate to dimensions of track
+				float xLimited = (x<0)?0:(x>(gc->width-slider->width))?(gc->width-slider->width):x;
+				// scale the value to a percentage
+				float xScaled = xLimited / (gc->width - slider->width) * 100.0f;
+				// only report when the value has actually changed
+				static float previousXscaled = 0.0;
+
+				if (xScaled != previousXscaled) {
+					slider->model = glm::translate(glm::mat4(), glm::vec3(xLimited, 0.0, 0.0));
+					xprintf("Slider: %0.3f\n", xScaled);
+					previousXscaled = xScaled;
+				}
+				mouseCaptured = (XGLGuiCanvas *)s;
+			}
+			else
+				mouseCaptured = NULL;
+			return true;
+		});
+
+		g2->AddChildShape("shaders/ortho", [&]() { g3 = new XGLGuiCanvas(this, 16, 16); return g3; });
+		g3->attributes.diffuseColor = { 1.0, 1.0, 0.0, 0.5 };
+	}
 
 	// The final window in the GUI stack is a wrapper for AntTweakBar, for development
-	// purposes.  Not sure if I'm gonna keep this, but it seemed like a good idea
+	// purposes.  Not sure if I'm going to keep this, but it seemed like a good idea
 	// when I integrated it.  Unfortunately, it doesn't look professional enough
-	// for end-product use, IMHO.
+	// for end-product use, IMHO, and is lacking features that I want.
 	AddGuiShape("shaders/tex", [&]() { return new XGLAntTweakBar(this); });
 
 	return;
