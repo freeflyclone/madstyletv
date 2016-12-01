@@ -1,77 +1,87 @@
 #include "ExampleXGL.h"
 
-class GuiMain : public XGLGuiCanvas {
+class GuiManager : public XGLTransformer {
 public:
-	GuiMain(XGL *xgl, bool addTexture = false) : XGLGuiCanvas(xgl, 1, 1, addTexture), padding(20) {
-		SetName("GuiMain");
+	typedef std::function<void(XGLGuiCanvas *, int, int)> ReshapeFunc;
+	typedef std::pair<XGLGuiCanvas *, ReshapeFunc> ReshapePair;
+	typedef std::vector<ReshapePair> ReshapeCallbackList;
 
-		attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.0 };
+	GuiManager(XGL *xgl, bool addTexture = false) : pxgl(xgl), padding(20) {
+		SetName("GuiManager");
 
-		model = glm::translate(glm::mat4(), glm::vec3(padding, padding, 0.0));
+		XInput::XInputKeyFunc PresentGuiCanvas = [&](int key, int flags) {
+			const bool isDown = (flags & 0x8000) == 0;
+			const bool isRepeat = (flags & 0x4000) != 0;
 
-		SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
-			xprintf("In MouseFunc() for %s : %0.0f, %0.0f\n", s->name.c_str(), x, y);
-			return true;
-		});
+			if (isDown && pxgl->GuiIsActive())
+				pxgl->RenderGui(false);
+			else if (isDown)
+				pxgl->RenderGui(true);
+		};
 
-		xgl->projector.AddReshapeCallback(std::bind(&GuiMain::Reshape, this, _1, _2));
+		pxgl->AddKeyFunc('`', PresentGuiCanvas);
+		pxgl->AddKeyFunc('~', PresentGuiCanvas);
+
+		xgl->projector.AddReshapeCallback(std::bind(&GuiManager::Reshape, this, _1, _2));
+	}
+
+	void AddReshapeCallback(XGLGuiCanvas *s, ReshapeFunc fn) {
+		reshapeCallbacks.push_back(ReshapePair(s, fn));
 	}
 
 	void Reshape(int w, int h) {
-		// here we need to adjust the width & height of this shape to the dimensions of the window to trap the mouse events.
-		// ...AND adjust the dimensions of the rectangle in the vertices themselves.
-		width = w - 2*padding;
-		height = h - 2*padding;
-		XGLTexQuad::Reshape(0, 0, w - 2*padding, h - 2*padding);
+		for (rc = reshapeCallbacks.begin(); rc < reshapeCallbacks.end(); rc++)
+			(rc->second)(rc->first, w, h);
 	}
 
+	XGL *pxgl;
 	int padding;
-	XGLGuiCanvas *gc;
+	ReshapeCallbackList reshapeCallbacks;
+	ReshapeCallbackList::iterator rc;
 };
 
 void ExampleXGL::BuildGUI() {
-	XGLGuiCanvas *g, *g2, *g3;
-	glm::mat4 translate, scale, model;
+	GuiManager *gm;
+	XGLGuiCanvas *g, *g2;
 
-	XInput::XInputKeyFunc PresentGuiCanvas = [&](int key, int flags) {
-		const bool isDown = (flags & 0x8000) == 0;
-		const bool isRepeat = (flags & 0x4000) != 0;
+	AddGuiShape("shaders/ortho", [&]() { gm = new GuiManager(this); return gm; });
 
-		if (isDown && GuiIsActive())
-			RenderGui(false);
-		else if (isDown)
-			RenderGui(true);
-	};
+	AddGuiShape("shaders/ortho", [&]() { g = new XGLGuiCanvas(this, 1, 1, false); return g; });
+	g->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.1 };
+	g->SetMouseFunc([&](XGLShape *s, float x, float y, int flags){
+		xprintf("In %s(%0.0f,%0.0f)\n", s->name.c_str(), x, y);
 
-	AddKeyFunc('`', PresentGuiCanvas);
-	AddKeyFunc('~', PresentGuiCanvas);
+		if (flags & 1)
+			mouseCaptured = (XGLGuiCanvas *)s;
+		else
+			mouseCaptured = NULL;
 
-	// this is here just to create a single shape as the root of the XGLGuiCanvas tree,
-	// for the ease of GuiResolve() method of XGL;
-	AddGuiShape("shaders/000-simple", [&]() { return new XGLTransformer(); });
-
-	AddGuiShape("shaders/ortho", [&]() { g = new GuiMain(this); return g; });
-
-	CreateShape(&guiShapes, "shaders/ortho-tex", [&]() { g2 = new XGLGuiCanvas(this, 360, 640); return g2; });
-	g2->model = glm::translate(glm::mat4(), glm::vec3(800, 20, 0.0));
-	g2->RenderText(L"Test");
-	g2->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
-		xprintf("In MouseFunc() for %s : %0.0f, %0.0f\n", s->name.c_str(), x, y);
 		return true;
+	});
+	gm->AddReshapeCallback(g, [](XGLGuiCanvas *gc, int w, int h) {
+		xprintf("%d,%d in %s\n", w, h, gc->name.c_str());
+		gc->width = w;
+		gc->height = h;
+		gc->Reshape(0, 0, w, h);
+	});
+
+	CreateShape(&guiShapes, "shaders/ortho", [&]() { g2 = new XGLGuiCanvas(this, 360, 640); return g2; });
+	g2->model = glm::translate(glm::mat4(), glm::vec3(800, 20, 0));
+	g2->attributes.diffuseColor = { 1.0, 0.0, 1.0, 0.1 };
+	g2->SetMouseFunc([&](XGLShape *s, float x, float y, int flags){
+		xprintf("In %s(%0.0f,%0.0f)\n", s->name.c_str(), x, y);
+		if (flags & 1)
+			mouseCaptured = (XGLGuiCanvas *)s;
+		else
+			mouseCaptured = NULL;
+		return true;
+	});
+	gm->AddReshapeCallback(g2, [](XGLGuiCanvas *gc, int w, int h) {
+		xprintf("%d,%d in %s\n", w, h, gc->name.c_str());
+		gc->model = glm::translate(glm::mat4(), glm::vec3(w - gc->width - 20, 20, 1.0));
 	});
 	g->AddChild(g2);
 
-	CreateShape(&guiShapes, "shaders/ortho-tex", [&]() { g3 = new XGLGuiCanvas(this, 250, 80); return g3; });
-	g3->model = glm::translate(glm::mat4(), glm::vec3(10, 70, 0.0));
-	g3->attributes.diffuseColor = { 1.0, 1.0, 0.0, 0.8 };
-	g3->RenderText(L"Another");
-	g3->SetMouseFunc([&](XGLShape *s, float x, float y, int flags) {
-		xprintf("In MouseFunc() for %s : %0.0f, %0.0f\n", s->name.c_str(), x, y);
-		return true;
-	});
-	g2->AddChild(g3);
-
-	// add the AntTweakBar shape on top of the XGLGuiCanvasWithReshape
 	AddGuiShape("shaders/tex", [&]() { return new XGLAntTweakBar(this); });
 
 	return;

@@ -88,7 +88,7 @@ XGL::XGL() : XGLObject("XGL"), clock(0.0f), pb(NULL), fb(NULL), renderGui(false)
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	GL_CHECK("glBindBuffer(0) failed");
 
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glDepthFunc(GL_LESS);
 	glEnable(GL_DEPTH_TEST);
 	//glEnable(GL_BLEND);
@@ -303,11 +303,10 @@ bool XGL::GuiResolve(XGLShape *shape, int x, int y, int flags) {
 	std::vector<XGLObject *>guiChildren = shape->Children();
 	std::vector<XGLObject *>::iterator it;
 	bool handledByChild = false;
-	glm::vec4 ul, lr;
-	glm::vec4 mc;
+	glm::vec4 ul, lr, mc;
 
 	if (mouseCaptured != NULL) {
-		if(dynamic_cast<XGLGuiCanvas *>(shape)) {
+		if (dynamic_cast<XGLGuiCanvas *>(mouseCaptured)) {
 			XGLGuiCanvas *gc = (XGLGuiCanvas *)mouseCaptured;
 			// convert to window-relative coordinates
 			mc = glm::inverse(gc->model) * glm::vec4(x, y, 1, 1);
@@ -341,8 +340,6 @@ bool XGL::GuiResolve(XGLShape *shape, int x, int y, int flags) {
 					gc->SetHasMouse(false);
 				}
 			}
-			else if (!dynamic_cast<XGLTransformer *>(shape))
-				xprintf("It's neither XGLGuiCanvas nor XGLTransformer\n");
 		}
 	}
 
