@@ -113,7 +113,7 @@ void ExampleXGL::BuildGUI() {
 			gc->model = glm::translate(glm::mat4(), glm::vec3(w - gc->width - 20, 20, 1.0));
 		});
 		g2->SetPenPosition(10, 28);
-		g2->RenderText(L"This is a test .\nIt should be possible to\nauto-wrap text, to avoid\nvisual artifacts for long lines.\n", 24);
+		g2->RenderText(L"This is a test.\nIt should be possible to\nauto-wrap text, to avoid\nvisual artifacts for long lines.\n", 24);
 	}
 
 	bool exampleHorizontalSlider = true;
