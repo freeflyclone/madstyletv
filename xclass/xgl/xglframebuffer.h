@@ -9,6 +9,7 @@
 #define XGLFRAMEBUFFER_H
 #include "xglobject.h"
 #include "xglprimitives.h"
+#include "xglshapes.h"
 #include "xshmem.h"
 #include "xavenc.h"
 

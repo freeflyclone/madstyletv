@@ -75,11 +75,11 @@
 #include "xgllight.h"
 #include "xglmaterial.h"
 #include "xglbuffer.h"
-#include "xglshapes.h"
 #include "xglcamera.h"
 #include "xglprojector.h"
 #include "xglframebuffer.h"
 #include "xglpixelbuffer.h"
+#include "xglshapes.h"
 
 // want to reference XGLShader by it's name, so use std::map for that
 typedef std::map<std::string, GLint> XGLTextureMap;
@@ -88,9 +88,6 @@ typedef std::map<std::string, XGLShader *> XGLShaderMap;
 // define types for std::vector of shapes ptrs, and the std::map of shapes-lists-by-shader
 typedef std::vector<XGLShape *> XGLShapeList;
 typedef std::map<std::string, XGLShapeList *> XGLShapesMap;
-
-// define a type for passing a lambda that creates an XGLShape as an argument
-typedef std::function<XGLShape *()> XGLNewShapeLambda;
 
 // write code to set these before creating XGL instance, for XGLException messages
 // and to locate assets (ie: shaders) in the local filesystem

@@ -690,17 +690,17 @@ XGLTexQuad::XGLTexQuad(int width, int height, int channels) : XGLTexQuad() {
 }
 
 void XGLTexQuad::Reshape(int left, int top, int width, int height) {
-	v[0].v.x = left;
-	v[0].v.y = top;
+	v[0].v.x = (float)left;
+	v[0].v.y = (float)top;
 
-	v[1].v.x = left;
-	v[1].v.y = height;
+	v[1].v.x = (float)left;
+	v[1].v.y = (float)height;
 
-	v[2].v.x = width;
-	v[2].v.y = top;
+	v[2].v.x = (float)width;
+	v[2].v.y = (float)top;
 
-	v[3].v.x = width;
-	v[3].v.y = height;
+	v[3].v.x = (float)width;
+	v[3].v.y = (float)height;
 
 	Load(shader, v, idx);
 }
@@ -761,6 +761,10 @@ XGLGuiCanvas::XGLGuiCanvas(XGL *xgl, int w, int h, bool addTexture) :
 }
 
 XGLGuiCanvas::~XGLGuiCanvas() {}
+
+void XGLGuiCanvas::AddChildShape(std::string shaderName, XGLNewShapeLambda fn){
+	AddChild(pxgl->CreateShape(&(pxgl->guiShapes), shaderName, fn));
+}
 
 void XGLGuiCanvas::SetMouseFunc(XGLGuiCanvas::MouseFunc fn){
 	mouseFunc = fn;
