@@ -169,6 +169,7 @@ public:
 	bool MouseEvent(float x, float y, int flags);
 
 	void RenderText(std::wstring t, int pixelSize=64);
+	void SetPenPosition(int x, int y) { penX = x; penY = y; }
 	void Fill(GLubyte val);
 
 	virtual ~XGLGuiCanvas();
