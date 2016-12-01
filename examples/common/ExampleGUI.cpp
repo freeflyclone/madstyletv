@@ -98,9 +98,9 @@ void ExampleXGL::BuildGUI() {
 	bool exampleTextWindow = true;
 	if (exampleTextWindow) {
 		XGLGuiCanvas *g2;
-		g->AddChildShape("shaders/ortho", [&]() { g2 = new XGLGuiCanvas(this, 360, 640); return g2; });
+		g->AddChildShape("shaders/ortho-tex", [&]() { g2 = new XGLGuiCanvas(this, 360, 640); return g2; });
 		g2->model = glm::translate(glm::mat4(), glm::vec3(800, 20, 0));
-		g2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.1 };
+		g2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
 		g2->SetMouseFunc([&](XGLShape *s, float x, float y, int flags){
 			xprintf("In %s(%0.0f,%0.0f)\n", s->name.c_str(), x, y);
 			if (flags & 1)
@@ -112,6 +112,8 @@ void ExampleXGL::BuildGUI() {
 		gm->AddReshapeCallback(g2, [](XGLGuiCanvas *gc, int w, int h) {
 			gc->model = glm::translate(glm::mat4(), glm::vec3(w - gc->width - 20, 20, 1.0));
 		});
+		g2->SetPenPosition(10, 28);
+		g2->RenderText(L"This is a test .\nIt should be possible to\nauto-wrap text, to avoid\nvisual artifacts for long lines.\n", 24);
 	}
 
 	bool exampleHorizontalSlider = true;
@@ -161,7 +163,10 @@ void ExampleXGL::BuildGUI() {
 	// purposes.  Not sure if I'm going to keep this, but it seemed like a good idea
 	// when I integrated it.  Unfortunately, it doesn't look professional enough
 	// for end-product use, IMHO, and is lacking features that I want.
-	AddGuiShape("shaders/tex", [&]() { return new XGLAntTweakBar(this); });
+	bool enableAntTweakBar = true;
+	if (enableAntTweakBar) {
+		g->AddChildShape("shaders/tex", [&]() { return new XGLAntTweakBar(this); });
+	}
 
 	return;
 }
