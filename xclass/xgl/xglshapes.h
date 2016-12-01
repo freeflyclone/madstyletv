@@ -132,6 +132,8 @@ public:
 	XGLTexQuad(int width, int height, int channels, GLubyte *img, bool flipColors = false);
 	XGLTexQuad(int width, int height, int channels);
 
+	virtual ~XGLTexQuad(){};
+
 	// special case: build a quad @ 0,0 to width,height in the vertices
 	// (useful for screenspace (GUI) quads)
 	XGLTexQuad(int width, int height);
@@ -169,6 +171,7 @@ public:
 	bool MouseEvent(float x, float y, int flags);
 
 	void RenderText(std::wstring t, int pixelSize=64);
+	void RenderText(std::string t, int pixelSize = 64);
 	void SetPenPosition(int x, int y) { penX = x; penY = y; }
 	void Fill(GLubyte val);
 

@@ -39,7 +39,6 @@ public:
     ~XGLFont();
 
 	XGLGlyph *GetGlyph(int c) { return &glyphMap[c]; }
-	void RenderText(std::string, unsigned char *, int, int, int *, int *);
 	void RenderText(std::wstring, unsigned char *, int, int, int *, int *);
 	void SetPixelSize(int);
 
