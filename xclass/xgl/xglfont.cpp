@@ -213,6 +213,7 @@ void XGLFont::RenderText(std::wstring text, unsigned char *buffer, int width, in
 	FT_GlyphSlot g = font.face->glyph;
 	GLubyte *src, *dest;
 	int numGlyphs = (int)text.size();
+	int buffSize = width * height;
 
 	if (buffer == NULL)
 		return;
@@ -222,10 +223,17 @@ void XGLFont::RenderText(std::wstring text, unsigned char *buffer, int width, in
 		if (text[i] == L'\n') {
 			*penX = 10;
 			*penY += pixelSize + (pixelSize / 16);
+			if (*penY > height)
+				break;
 		}
 		else {
 			FT_Load_Glyph(font.face, font.charMap[text[i]], FT_LOAD_RENDER);
 			dest = buffer + (*penY - g->bitmap_top) * width + *penX + g->bitmap_left;
+
+			// don't overflow the buffer horizontally
+			if (*penX + g->bitmap.width > width)
+				continue;
+
 			src = (GLubyte *)g->bitmap.buffer;
 
 			// 2D blit the glyph into the texture at penX,penY
