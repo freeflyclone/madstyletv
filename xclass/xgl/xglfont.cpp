@@ -203,6 +203,12 @@ void XGLFont::SetPixelSize(int size) {
 	FT_Set_Pixel_Sizes(face, 0, pixelSize);
 }
 
+void XGLFont::RenderText(std::string text, unsigned char *buffer, int width, int height, int *penX, int *penY) {
+	std::wstringstream ws;
+	ws << text.c_str();
+	RenderText(ws.str(), buffer, width, height, penX, penY);
+}
+
 void XGLFont::RenderText(std::wstring text, unsigned char *buffer, int width, int height, int *penX, int *penY) {
 	FT_GlyphSlot g = font.face->glyph;
 	GLubyte *src, *dest;
