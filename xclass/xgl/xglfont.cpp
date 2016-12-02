@@ -214,6 +214,7 @@ void XGLFont::RenderText(std::wstring text, unsigned char *buffer, int width, in
 	GLubyte *src, *dest;
 	int numGlyphs = (int)text.size();
 	int buffSize = width * height;
+	bool waitForNewline = false;
 
 	if (buffer == NULL)
 		return;
@@ -223,16 +224,19 @@ void XGLFont::RenderText(std::wstring text, unsigned char *buffer, int width, in
 		if (text[i] == L'\n') {
 			*penX = 10;
 			*penY += pixelSize + (pixelSize / 16);
+			waitForNewline = false;
 			if (*penY > height)
 				break;
 		}
-		else {
+		else if (!waitForNewline) {
 			FT_Load_Glyph(font.face, font.charMap[text[i]], FT_LOAD_RENDER);
 			dest = buffer + (*penY - g->bitmap_top) * width + *penX + g->bitmap_left;
 
 			// don't overflow the buffer horizontally
-			if (*penX + g->bitmap.width > width)
+			if (*penX + g->bitmap.width > width) {
+				waitForNewline = true;
 				continue;
+			}
 
 			src = (GLubyte *)g->bitmap.buffer;
 
