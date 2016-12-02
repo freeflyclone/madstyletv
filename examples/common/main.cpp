@@ -103,8 +103,11 @@ static void mouse_button_callback(GLFWwindow *window, int button, int action, in
 }
 
 static void window_size_callback(GLFWwindow *window, int width, int height) {
-	if (exgl != NULL)
+	if (exgl != NULL) {
 		exgl->Reshape(width, height);
+		exgl->Display();
+		glfwSwapBuffers(window);
+	}
 }
 
 static void window_refresh_callback(GLFWwindow *window){

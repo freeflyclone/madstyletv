@@ -74,20 +74,11 @@ void ExampleXGL::BuildGUI() {
 	// allow for recursively passing mouse events to the XGLGuiCanvas hierarchy.
 	AddGuiShape("shaders/ortho", [&]() { gm = new GuiManager(this); return gm; });
 
-	// The first XGLGuiCanvas in the stack, henceforth the "background canvas", is the "bottom-most" 
-	// in Z stack order and traps mouse events so that they don't leak into the 
-	// 3D world mouse event handling while the GUI layer is being presented.
+	// The first XGLGuiCanvas in the stack, henceforth the "background canvas", 
+	// is the "bottom-most" in Z stack order.
 	// This shape specifies a ReshapeCallback to allow it to always exactly cover the window
 	gm->AddChildShape("shaders/ortho", [&]() { g = new XGLGuiCanvas(this, 1, 1, false); SetName("GuiBackground");  return g; });
 	g->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.05 };
-	g->SetMouseFunc([&](XGLShape *s, float x, float y, int flags){
-		xprintf("Inside background mouse handler(%0.0f, %0.0f)\n", x, y);
-		if (flags & 1)
-			mouseCaptured = (XGLGuiCanvas *)s;
-		else
-			mouseCaptured = NULL;
-		return false;
-	});
 	gm->AddReshapeCallback(g, [](XGLGuiCanvas *gc, int w, int h) {
 		gc->width = w;
 		gc->height = h;
@@ -109,15 +100,13 @@ void ExampleXGL::BuildGUI() {
 			return true;
 		});
 		g2->SetPenPosition(10, 24);
-		g2->RenderText("This is at the same GUI stack hierarchy level\nas the background canvas.", 18);
+		g2->RenderText("This is at the same GUI stack hierarchy level\nas the background canvas, and therefore\n should be \"under\" what gets created later.", 18);
 	}
-
-	// All subsequent XGLGuiCanvas items should be children of the background canvas
 
 	bool exampleTextWindow2 = true;
 	if (exampleTextWindow2) {
 		XGLGuiCanvas *g2;
-		g->AddChildShape("shaders/ortho-tex", [&]() { g2 = new XGLGuiCanvas(this, 380, 120); return g2; });
+		gm->AddChildShape("shaders/ortho-tex", [&]() { g2 = new XGLGuiCanvas(this, 380, 120); return g2; });
 		g2->model = glm::translate(glm::mat4(), glm::vec3(800, 20, 0));
 		g2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.8 };
 		g2->SetMouseFunc([&](XGLShape *s, float x, float y, int flags){
@@ -143,7 +132,7 @@ void ExampleXGL::BuildGUI() {
 		// it's height is important to know. However it's width is dynamic according to window
 		// size, so the initial value for width is irrelevant. The ReshapeCallback specifies
 		// the desired layout behavior.
-		g->AddChildShape("shaders/ortho", [&]() { g2 = new XGLGuiCanvas(this, 1, 16); return g2; });
+		gm->AddChildShape("shaders/ortho", [&]() { g2 = new XGLGuiCanvas(this, 1, 16); return g2; });
 		g2->SetName("HorizontalSlider");
 		g2->attributes.diffuseColor = { 1.0, 0.2, 0.2, 0.1 };
 		gm->AddReshapeCallback(g2, [](XGLGuiCanvas *gc, int w, int h) {
@@ -185,7 +174,7 @@ void ExampleXGL::BuildGUI() {
 	// for end-product use, IMHO, and is lacking features that I want.
 	bool enableAntTweakBar = false;
 	if (enableAntTweakBar) {
-		g->AddChildShape("shaders/tex", [&]() { return new XGLAntTweakBar(this); });
+		gm->AddChildShape("shaders/tex", [&]() { return new XGLAntTweakBar(this); });
 	}
 
 	return;
