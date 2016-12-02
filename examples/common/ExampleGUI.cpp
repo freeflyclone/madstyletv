@@ -165,7 +165,7 @@ void ExampleXGL::BuildGUI() {
 	// for end-product use, IMHO, and is lacking features that I want.
 	bool enableAntTweakBar = true;
 	if (enableAntTweakBar) {
-		g->AddChildShape("shaders/tex", [&]() { return new XGLAntTweakBar(this); });
+		//g->AddChildShape("shaders/tex", [&]() { return new XGLAntTweakBar(this); });
 	}
 
 	return;
