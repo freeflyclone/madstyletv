@@ -203,6 +203,7 @@ public:
 
 	XGL *pxgl;
 	int flags;
+	TwBar *bar;
 };
 
 

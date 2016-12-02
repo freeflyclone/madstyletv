@@ -25,13 +25,13 @@
 **  as needed for the ReshapeCallback functions, which allows a fine granularity
 **	in functional specificity without excessive sub-classing.
 */
-class GuiManager : public XGLTransformer {
+class GuiManager : public XGLGuiCanvas {
 public:
 	typedef std::function<void(XGLGuiCanvas *, int, int)> ReshapeCallback;
 	typedef std::pair<XGLGuiCanvas *, ReshapeCallback> ReshapePair;
 	typedef std::vector<ReshapePair> ReshapeCallbackList;
 
-	GuiManager(XGL *xgl, bool addTexture = false) : pxgl(xgl), padding(20) {
+	GuiManager(XGL *xgl, bool addTexture = false) : XGLGuiCanvas(xgl), pxgl(xgl), padding(20) {
 		SetName("GuiManager");
 
 		XInput::XInputKeyFunc PresentGuiCanvas = [&](int key, int flags) {
@@ -78,7 +78,7 @@ void ExampleXGL::BuildGUI() {
 	// in Z stack order and traps mouse events so that they don't leak into the 
 	// 3D world mouse event handling while the GUI layer is being presented.
 	// This shape specifies a ReshapeCallback to allow it to always exactly cover the window
-	AddGuiShape("shaders/ortho", [&]() { g = new XGLGuiCanvas(this, 1, 1, false); return g; });
+	gm->AddChildShape("shaders/ortho", [&]() { g = new XGLGuiCanvas(this, 1, 1, false); return g; });
 	g->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.05 };
 	g->SetMouseFunc([&](XGLShape *s, float x, float y, int flags){
 		if (flags & 1)
@@ -165,7 +165,7 @@ void ExampleXGL::BuildGUI() {
 	// for end-product use, IMHO, and is lacking features that I want.
 	bool enableAntTweakBar = true;
 	if (enableAntTweakBar) {
-		//g->AddChildShape("shaders/tex", [&]() { return new XGLAntTweakBar(this); });
+		g->AddChildShape("shaders/tex", [&]() { return new XGLAntTweakBar(this); });
 	}
 
 	return;

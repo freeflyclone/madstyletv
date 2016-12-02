@@ -1,6 +1,7 @@
 #include "xgl.h"
 
-XGLCamera::XGLCamera() : XGLObject("Camera") {
+XGLCamera::XGLCamera() {
+	SetName("XGLCamera");
 }
 
 void XGLCamera::Set(glm::vec3 p, glm::vec3 f, glm::vec3 u) {
