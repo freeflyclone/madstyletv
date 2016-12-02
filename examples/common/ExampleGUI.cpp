@@ -125,6 +125,7 @@ void ExampleXGL::BuildGUI() {
 		// size, so the initial value for width is irrelevant. The ReshapeCallback specifies
 		// the desired layout behavior.
 		g->AddChildShape("shaders/ortho", [&]() { g2 = new XGLGuiCanvas(this, 1, 16); return g2; });
+		g2->SetName("HorizontalSlider");
 		g2->attributes.diffuseColor = { 1.0, 0.2, 0.2, 0.1 };
 		gm->AddReshapeCallback(g2, [](XGLGuiCanvas *gc, int w, int h) {
 			int padding = 20;
@@ -166,6 +167,10 @@ void ExampleXGL::BuildGUI() {
 	bool enableAntTweakBar = true;
 	if (enableAntTweakBar) {
 		g->AddChildShape("shaders/tex", [&]() { return new XGLAntTweakBar(this); });
+	}
+
+	if (gm->FindObject("HorizontalSlider0") != nullptr) {
+		xprintf("Found the slider!\n");
 	}
 
 	return;
