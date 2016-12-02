@@ -45,6 +45,7 @@ public:
 
 	XGLObjectChildren Children() { return *uchildren; }
 	void DumpChildren();
+	XGLObjectPtr FindObject(std::string n);
 
 	std::unique_ptr<XGLObjectChildren> uchildren;
 	std::string name;

@@ -9,6 +9,7 @@ XGLObject::XGLObject(std::string n) : parent(NULL) {
 }
 
 XGLObject::~XGLObject() {
+	xprintf("destructor for %s\n", name.c_str());
 }
 
 void XGLObject::SetName(std::string n) {
@@ -27,7 +28,25 @@ void XGLObject::DumpChildren()
 	int i = 0;
 
 	for (ci = uchildren->begin(); ci != uchildren->end(); ci++, i++) {
-		XGLObject *xo = *ci;
+		XGLObjectPtr xo = *ci;
 		xprintf("Child: %d, name: %s\n", i, xo->name.c_str());
+		xo->DumpChildren();
 	}
+}
+
+XGLObjectPtr XGLObject::FindObject(std::string name) {
+	static XGLObjectPtr found = nullptr;
+	XGLObjectChildren::iterator ci;
+	int i = 0;
+
+	for (ci = uchildren->begin(); ci != uchildren->end(); ci++, i++) {
+		XGLObjectPtr xo = *ci;
+		if (xo->name == name) {
+			found = xo;
+			break;
+		}
+		xo->FindObject(name);
+	}
+
+	return found;
 }
