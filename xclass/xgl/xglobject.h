@@ -29,6 +29,12 @@
 #include <vector>
 #include "xutils.h"
 
+class XGLObject;
+
+typedef XGLObject* XGLObjectPtr;
+//typedef std::shared_ptr<XGLObject> XGLObjectChild;
+typedef std::vector<XGLObjectPtr> XGLObjectChildren;
+
 class XGLObject {
 public:
 	XGLObject(std::string n = "XGLObject");
@@ -37,12 +43,11 @@ public:
 	void SetName(std::string n);
 	void AddChild(XGLObject *o);
 
-	std::vector<XGLObject *> Children() { return *uchildren; }
+	XGLObjectChildren Children() { return *uchildren; }
 	void DumpChildren();
 
-	std::unique_ptr<std::vector<XGLObject *>> uchildren;
+	std::unique_ptr<XGLObjectChildren> uchildren;
 	std::string name;
-	XGLObject *parent;
+	XGLObjectPtr parent;
 };
 
-typedef std::vector<XGLObject *> XGLObjectChildren;
