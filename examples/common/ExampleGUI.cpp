@@ -78,14 +78,15 @@ void ExampleXGL::BuildGUI() {
 	// in Z stack order and traps mouse events so that they don't leak into the 
 	// 3D world mouse event handling while the GUI layer is being presented.
 	// This shape specifies a ReshapeCallback to allow it to always exactly cover the window
-	gm->AddChildShape("shaders/ortho", [&]() { g = new XGLGuiCanvas(this, 1, 1, false); return g; });
+	gm->AddChildShape("shaders/ortho", [&]() { g = new XGLGuiCanvas(this, 1, 1, false); SetName("GuiBackground");  return g; });
 	g->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.05 };
 	g->SetMouseFunc([&](XGLShape *s, float x, float y, int flags){
+		xprintf("Inside background mouse handler(%0.0f, %0.0f)\n", x, y);
 		if (flags & 1)
 			mouseCaptured = (XGLGuiCanvas *)s;
 		else
 			mouseCaptured = NULL;
-		return true;
+		return false;
 	});
 	gm->AddReshapeCallback(g, [](XGLGuiCanvas *gc, int w, int h) {
 		gc->width = w;
@@ -93,10 +94,28 @@ void ExampleXGL::BuildGUI() {
 		gc->Reshape(0, 0, w, h);
 	});
 
-	// All subsequent XGLGuiCanvas items should be children of the background canvas
-
 	bool exampleTextWindow = true;
 	if (exampleTextWindow) {
+		XGLGuiCanvas *g2;
+		gm->AddChildShape("shaders/ortho-tex", [&]() { g2 = new XGLGuiCanvas(this, 380, 120); return g2; });
+		g2->model = glm::translate(glm::mat4(), glm::vec3(720, 40, 0));
+		g2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.8 };
+		g2->SetMouseFunc([&](XGLShape *s, float x, float y, int flags){
+			xprintf("In %s(%0.0f,%0.0f)\n", s->name.c_str(), x, y);
+			if (flags & 1)
+				mouseCaptured = (XGLGuiCanvas *)s;
+			else
+				mouseCaptured = NULL;
+			return true;
+		});
+		g2->SetPenPosition(10, 24);
+		g2->RenderText("This is at the same GUI stack hierarchy level\nas the background canvas.", 18);
+	}
+
+	// All subsequent XGLGuiCanvas items should be children of the background canvas
+
+	bool exampleTextWindow2 = true;
+	if (exampleTextWindow2) {
 		XGLGuiCanvas *g2;
 		g->AddChildShape("shaders/ortho-tex", [&]() { g2 = new XGLGuiCanvas(this, 380, 120); return g2; });
 		g2->model = glm::translate(glm::mat4(), glm::vec3(800, 20, 0));
@@ -164,13 +183,9 @@ void ExampleXGL::BuildGUI() {
 	// purposes.  Not sure if I'm going to keep this, but it seemed like a good idea
 	// when I integrated it.  Unfortunately, it doesn't look professional enough
 	// for end-product use, IMHO, and is lacking features that I want.
-	bool enableAntTweakBar = true;
+	bool enableAntTweakBar = false;
 	if (enableAntTweakBar) {
 		g->AddChildShape("shaders/tex", [&]() { return new XGLAntTweakBar(this); });
-	}
-
-	if (gm->FindObject("HorizontalSlider0") != nullptr) {
-		xprintf("Found the slider!\n");
 	}
 
 	return;
