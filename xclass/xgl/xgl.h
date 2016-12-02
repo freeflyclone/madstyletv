@@ -129,8 +129,7 @@ public:
 	void RenderGui(bool enable) { renderGui = enable; }
 	bool GuiIsActive() { return renderGui; }
 	XGLGuiCanvas *GetGuiRoot() { return guiRoot; }
-	bool GuiResolve(XGLShape *, int, int, int);
-	bool GuiResolve(XGLShape *, float, float, int);
+	bool GuiResolveMouseEvent(XGLShape *, int, int, int);
 
 	XConfig config;
 

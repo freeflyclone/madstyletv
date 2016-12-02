@@ -300,9 +300,9 @@ void XGL::IterateShapesMap(){
     }
 }
 
-bool XGL::GuiResolve(XGLShape *shape, int x, int y, int flags) {
-	std::vector<XGLObject *>guiChildren = shape->Children();
-	std::vector<XGLObject *>::iterator it;
+bool XGL::GuiResolveMouseEvent(XGLShape *shape, int x, int y, int flags) {
+	XGLObjectChildren guiChildren = shape->Children();
+	XGLObjectChildren::reverse_iterator rit;
 	bool handledByChild = false;
 	glm::vec4 ul, lr, mc;
 
@@ -315,8 +315,12 @@ bool XGL::GuiResolve(XGLShape *shape, int x, int y, int flags) {
 		}
 	}
 	else {
-		for (it = guiChildren.begin(); it != guiChildren.end(); it++) {
-			XGLShape *shape = (XGLShape *)*it;
+		// in case siblings are stacked on top of each other, going backwards
+		// will return the top-most, as desired.  Otherwise it doesn't matter
+		// what order we iterate in, ie: going backward does what's desired
+		// with no negative consequences.
+		for (rit = guiChildren.rbegin(); rit != guiChildren.rend(); rit++) {
+			XGLShape *shape = (XGLShape *)*rit;
 
 			if (dynamic_cast<XGLGuiCanvas *>(shape)) {
 				XGLGuiCanvas *gc = (XGLGuiCanvas *)shape;
@@ -329,12 +333,13 @@ bool XGL::GuiResolve(XGLShape *shape, int x, int y, int flags) {
 
 					// recurse into child stack (if there is one)
 					if (gc->Children().size() > 0)
-						handledByChild = GuiResolve(gc, (int)(mc.x), (int)(mc.y), flags);
+						handledByChild = GuiResolveMouseEvent(gc, (int)(mc.x), (int)(mc.y), flags);
 
 					if (!handledByChild) {
 						gc->SetHasMouse(true);
 						handledByChild = gc->MouseEvent(mc.x, mc.y, flags);
-						break;
+						if (handledByChild)
+							break;
 					}
 				}
 				else {
@@ -344,62 +349,6 @@ bool XGL::GuiResolve(XGLShape *shape, int x, int y, int flags) {
 		}
 	}
 
-	return handledByChild;
-}
-
-bool XGL::GuiResolve(XGLShape *shape, float x, float y, int flags) {
-	std::vector<XGLObject *>gc = shape->Children();
-	std::vector<XGLObject *>::iterator it;
-	std::vector<XGLObject *>children;
-	glm::vec4 ll, ur;
-	int i;
-	bool handledByChild = false;
-
-	if (mouseCaptured != NULL) {
-		if (dynamic_cast<XGLGuiCanvas *>(mouseCaptured)) {
-			XGLGuiCanvas *captured = (XGLGuiCanvas *)mouseCaptured;
-			// convert to window-relative coordinates
-			glm::vec4 mc = glm::inverse(captured->model) * glm::vec4(x, y, 1, 1);
-			handledByChild = captured->MouseEvent(mc.x, mc.y, flags);
-		}
-	}
-	else {
-		// By convention, all top level windows are derived from XGLGuiCanvas.
-		for (i = 1, it = gc.begin(); it != gc.end(); i++, it++) {
-			XGLShape *w = (XGLShape *)*it;
-
-			// translate window corners to unit screen space
-			ll = w->model * glm::vec4(-1, -1, 1, 1);
-			ur = w->model * glm::vec4(1, 1, 1, 1);
-
-			// see if mouse is inside it.
-			if (x >= ll.x && y >= ll.y && x <= ur.x && y <= ur.y) {
-				// convert to window-relative coordinates
-				glm::vec4 mc = glm::inverse(w->model) * glm::vec4(x, y, 1, 1);
-
-				// recurse into child stack (if there is one)
-				if (w->Children().size() > 0)
-					handledByChild = GuiResolve(w, mc.x, mc.y, flags);
-
-				if (!handledByChild) {
-					// don't try to call XGLGuiCanvas methods on non-XGLGuiCanvas (or derived) shapes
-					if (dynamic_cast<XGLGuiCanvas *>(w)) {
-						XGLGuiCanvas *gc = (XGLGuiCanvas*)w;
-						gc->SetHasMouse(true);
-						handledByChild = gc->MouseEvent(mc.x, mc.y, flags);
-						break;
-					}
-				}
-			}
-			else {
-				// same as above
-				if (dynamic_cast<XGLGuiCanvas *>(w)) {
-					XGLGuiCanvas *gc = (XGLGuiCanvas*)w;
-					gc->SetHasMouse(false);
-				}
-			}
-		}
-	}
 	return handledByChild;
 }
 
