@@ -98,9 +98,9 @@ void ExampleXGL::BuildGUI() {
 	bool exampleTextWindow = true;
 	if (exampleTextWindow) {
 		XGLGuiCanvas *g2;
-		g->AddChildShape("shaders/ortho-tex", [&]() { g2 = new XGLGuiCanvas(this, 360, 640); return g2; });
+		g->AddChildShape("shaders/ortho-tex", [&]() { g2 = new XGLGuiCanvas(this, 380, 120); return g2; });
 		g2->model = glm::translate(glm::mat4(), glm::vec3(800, 20, 0));
-		g2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
+		g2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.8 };
 		g2->SetMouseFunc([&](XGLShape *s, float x, float y, int flags){
 			xprintf("In %s(%0.0f,%0.0f)\n", s->name.c_str(), x, y);
 			if (flags & 1)
@@ -113,7 +113,7 @@ void ExampleXGL::BuildGUI() {
 			gc->model = glm::translate(glm::mat4(), glm::vec3(w - gc->width - 20, 20, 1.0));
 		});
 		g2->SetPenPosition(10, 24);
-		g2->RenderText("This is a test.\nIt should be possible to\nauto-wrap text, to avoid\nvisual artifacts for long lines.\n", 18);
+		g2->RenderText("This is a test.\nIt is not currently possible to\nauto-wrap text, to avoid\nvisual artifacts for long lines, particularly this one.\nSo clipping is used instead.", 18);
 	}
 
 	bool exampleHorizontalSlider = true;
