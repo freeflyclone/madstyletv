@@ -7,7 +7,16 @@ XGLShape::XGLShape() {
 }
 
 XGLShape::~XGLShape(){
-    //xprintf("XGLShape::~XGLShape()\n");
+    //xprintf("XGLShape::~XGLShape(%s) %s children\n", name.c_str(), Children().size()?"has":"does not have");
+	if (Children().size()) {
+		XGLObjectChildren children = Children();
+		XGLObjectChildren::iterator ci;
+		for (ci = children.begin(); ci < children.end(); ci++) {
+			XGLShape *child = (XGLShape *)*ci;
+			delete child;
+		}
+		children.clear();
+	}
 }
 
 void XGLShape::SetTheFunk(XGLShape::AnimaFunk fn){
@@ -107,6 +116,7 @@ void XYPlaneGrid::Draw(){
 
 
 XGLTriangle::XGLTriangle() {
+	SetName("XGLTriangle");
 	v.push_back({ { -1, 0, 0 }, {}, {}, { 1, 0, 0, 1 } });
 	v.push_back({ { 1, 0, 0 }, {}, {}, { 0, 1, 0, 1 } });
 	v.push_back({ { 0, 0, 1.412 }, {}, {}, { 0, 0, 1, 1 } });
@@ -760,7 +770,10 @@ XGLGuiCanvas::XGLGuiCanvas(XGL *xgl, int w, int h, bool addTexture) :
 	}
 }
 
-XGLGuiCanvas::~XGLGuiCanvas() {}
+XGLGuiCanvas::~XGLGuiCanvas() {
+	if (buffer != NULL)
+		delete buffer;
+}
 
 void XGLGuiCanvas::AddChildShape(std::string shaderName, XGLNewShapeLambda fn){
 	AddChild(pxgl->CreateShape(&(pxgl->guiShapes), shaderName, fn));
@@ -803,8 +816,9 @@ void XGLGuiCanvas::Fill(GLubyte val)  {
 }
 
 XGLAntTweakBar::XGLAntTweakBar(XGL *xgl) : pxgl(xgl), flags(0) {
+	SetName("XGLAntTweakBar");
 	TwInit(TW_OPENGL_CORE, NULL);
-	TwBar *bar = TwNewBar("MadStyle");
+	bar = TwNewBar("MadStyle");
 
 	TwDefine("MadStyle color='63 63 63' label='MadStyle TV AntTweakBar Integration Testing' size='400 300'");
 
@@ -812,7 +826,9 @@ XGLAntTweakBar::XGLAntTweakBar(XGL *xgl) : pxgl(xgl), flags(0) {
 	pxgl->AddMouseFunc(std::bind(&XGLAntTweakBar::MouseMotion, this, _1, _2, _3));
 }
 
-XGLAntTweakBar::~XGLAntTweakBar() { 
+XGLAntTweakBar::~XGLAntTweakBar() {
+	TwRemoveAllVars(bar);
+	TwDeleteBar(bar);
 	TwTerminate(); 
 }
 

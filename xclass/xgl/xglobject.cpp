@@ -9,7 +9,6 @@ XGLObject::XGLObject(std::string n) : parent(NULL) {
 }
 
 XGLObject::~XGLObject() {
-	xprintf("destroying: %s\n", name.c_str());
 }
 
 void XGLObject::SetName(std::string n) {

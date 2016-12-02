@@ -31,8 +31,9 @@ void CheckGlStatus(const char *file, int line) {
 	}
 }
 
-XGL::XGL() : XGLObject("XGL"), clock(0.0f), pb(NULL), fb(NULL), renderGui(false), guiRoot(NULL), mouseCaptured(NULL) {
-    xprintf("OpenGL version: %s\n", glGetString(GL_VERSION));
+XGL::XGL() : clock(0.0f), pb(NULL), fb(NULL), renderGui(false), guiRoot(NULL), mouseCaptured(NULL) {
+	SetName("XGL");
+	xprintf("OpenGL version: %s\n", glGetString(GL_VERSION));
 	glGetError();
 
 	//QueryContext();
