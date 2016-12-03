@@ -19,7 +19,18 @@ void ExampleXGL::BuildScene() {
 	XGLObjectPtr op;
 
 	if ((op = GetGuiRoot()->FindObject("HorizontalSlider0")) != nullptr) {
-		if (dynamic_cast<XGLGuiCanvas *>((XGLShape *)op))
-			xprintf("Found the slider in %s, and its an XGLGuiCanvas!\n", GetGuiRoot()->name.c_str());
+		if (dynamic_cast<XGLGuiCanvas *>((XGLShape *)op)) {
+			XGLGuiCanvas *gc = (XGLGuiCanvas *)op;
+			gc->AddMouseEventListener([gc](float x, float y, int flags) {
+				XGLGuiCanvas *thumb = (XGLGuiCanvas *)gc->Children()[0];
+				float xScaled = thumb->model[3][0] / (gc->width - thumb->width) * 100.0f;
+				static float previousXscaled = 0.0;
+
+				if (xScaled != previousXscaled) {
+					xprintf("%s, %0.4f\n", gc->name.c_str(), xScaled);
+					previousXscaled = xScaled;
+				}
+			});
+		}
 	}
 }

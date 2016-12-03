@@ -91,6 +91,7 @@ void ExampleXGL::BuildGUI() {
 		gm->AddChildShape("shaders/ortho-tex", [&]() { g2 = new XGLGuiCanvas(this, 380, 120); return g2; });
 		g2->model = glm::translate(glm::mat4(), glm::vec3(720, 40, 0));
 		g2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.8 };
+		/*
 		g2->SetMouseFunc([&](XGLShape *s, float x, float y, int flags){
 			xprintf("In %s(%0.0f,%0.0f)\n", s->name.c_str(), x, y);
 			if (flags & 1)
@@ -99,6 +100,7 @@ void ExampleXGL::BuildGUI() {
 				mouseCaptured = NULL;
 			return true;
 		});
+		*/
 		g2->SetPenPosition(10, 24);
 		g2->RenderText("This is at the same GUI stack hierarchy level\nas the background canvas, and therefore\n should be \"under\" what gets created later.", 18);
 	}
@@ -109,6 +111,7 @@ void ExampleXGL::BuildGUI() {
 		gm->AddChildShape("shaders/ortho-tex", [&]() { g2 = new XGLGuiCanvas(this, 380, 120); return g2; });
 		g2->model = glm::translate(glm::mat4(), glm::vec3(800, 20, 0));
 		g2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.8 };
+		/*
 		g2->SetMouseFunc([&](XGLShape *s, float x, float y, int flags){
 			xprintf("In %s(%0.0f,%0.0f)\n", s->name.c_str(), x, y);
 			if (flags & 1)
@@ -117,6 +120,7 @@ void ExampleXGL::BuildGUI() {
 				mouseCaptured = NULL;
 			return true;
 		});
+		*/
 		gm->AddReshapeCallback(g2, [](XGLGuiCanvas *gc, int w, int h) {
 			gc->model = glm::translate(glm::mat4(), glm::vec3(w - gc->width - 20, 20, 1.0));
 		});
@@ -141,29 +145,26 @@ void ExampleXGL::BuildGUI() {
 			gc->model = glm::translate(glm::mat4(), glm::vec3(padding, h - gc->height - padding, 0.0));
 			gc->Reshape(0, 0, gc->width, gc->height);
 		});
-		g2->SetMouseFunc([&](XGLShape *s, float x, float y, int flags){
-			XGLGuiCanvas *gc = (XGLGuiCanvas *)s;
+		g2->SetMouseFunc([this, g2](float x, float y, int flags){
 			if (flags & 1) {
-				XGLGuiCanvas *slider = (XGLGuiCanvas *)(s->Children()[0]);
+				XGLGuiCanvas *slider = (XGLGuiCanvas *)(g2->Children()[0]);
 				// constrain mouse X coordinate to dimensions of track
-				float xLimited = (x<0)?0:(x>(gc->width-slider->width))?(gc->width-slider->width):x;
-				// scale the value to a percentage
-				float xScaled = xLimited / (gc->width - slider->width) * 100.0f;
-				// only report when the value has actually changed
-				static float previousXscaled = 0.0;
+				float xLimited = (x<0)?0:(x>(g2->width-slider->width))?(g2->width-slider->width):x;
+				static float previousXlimited = 0.0;
 
-				if (xScaled != previousXscaled) {
+				if (xLimited != previousXlimited) {
 					slider->model = glm::translate(glm::mat4(), glm::vec3(xLimited, 0.0, 0.0));
-					xprintf("Slider: %0.3f\n", xScaled);
-					previousXscaled = xScaled;
+					previousXlimited = xLimited;
 				}
-				mouseCaptured = (XGLGuiCanvas *)s;
+				mouseCaptured = g2;
+				g2->SetHasMouse(true);
 			}
-			else
+			else {
 				mouseCaptured = NULL;
+				g2->SetHasMouse(false);
+			}
 			return true;
 		});
-
 		g2->AddChildShape("shaders/ortho", [&]() { g3 = new XGLGuiCanvas(this, 16, 16); return g3; });
 		g3->attributes.diffuseColor = { 1.0, 1.0, 0.0, 0.5 };
 	}
