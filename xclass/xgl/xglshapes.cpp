@@ -784,10 +784,20 @@ void XGLGuiCanvas::SetMouseFunc(XGLGuiCanvas::MouseFunc fn){
 }
 
 bool XGLGuiCanvas::MouseEvent(float x, float y, int flags) {
-	if (mouseFunc)
-		return mouseFunc(this, x, y, flags);
+	bool retVal = false;
 
-	return false;
+	if (mouseFunc) {
+		retVal = mouseFunc(x, y, flags);
+
+		if (mouseEventListeners.size() > 0 && HasMouse() )
+			for (MouseEventListeners::iterator it = mouseEventListeners.begin(); it < mouseEventListeners.end(); it++)
+				(*it)(x, y, flags);
+	}
+	return retVal;
+}
+
+void XGLGuiCanvas::AddMouseEventListener(XGLGuiCanvas::MouseEventListener fn) {
+	mouseEventListeners.push_back(fn);
 }
 
 void XGLGuiCanvas::RenderText(std::string text, int pixelSize) {

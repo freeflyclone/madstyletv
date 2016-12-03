@@ -150,7 +150,9 @@ public:
 
 class XGLGuiCanvas : public XGLTexQuad {
 public:
-	typedef std::function<bool(XGLShape *, float x, float y, int f)> MouseFunc;
+	typedef std::function<bool(float x, float y, int f)> MouseFunc;
+	typedef std::function<void(float x, float y, int f)> MouseEventListener;
+	typedef std::vector<MouseEventListener> MouseEventListeners;
 
 	// uses default XGLTexQuad() constructor
 	XGLGuiCanvas(XGL *xgl);
@@ -169,6 +171,8 @@ public:
 
 	void SetMouseFunc(XGLGuiCanvas::MouseFunc);
 	bool MouseEvent(float x, float y, int flags);
+
+	void AddMouseEventListener(XGLGuiCanvas::MouseEventListener);
 
 	void RenderText(std::wstring t, int pixelSize=64);
 	void RenderText(std::string t, int pixelSize = 64);
@@ -190,6 +194,7 @@ private:
 	int penX, penY;
 
 	XGL *pxgl;
+	MouseEventListeners mouseEventListeners;
 };
 
 class XGLAntTweakBar : public XGLShape {
