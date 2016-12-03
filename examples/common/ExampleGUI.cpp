@@ -27,9 +27,8 @@
 */
 class GuiManager : public XGLGuiCanvas {
 public:
-	typedef std::function<void(XGLGuiCanvas *, int, int)> ReshapeCallback;
-	typedef std::pair<XGLGuiCanvas *, ReshapeCallback> ReshapePair;
-	typedef std::vector<ReshapePair> ReshapeCallbackList;
+	typedef std::function<void(int, int)> ReshapeCallback;
+	typedef std::vector<ReshapeCallback> ReshapeCallbackList;
 
 	GuiManager(XGL *xgl, bool addTexture = false) : XGLGuiCanvas(xgl), pxgl(xgl), padding(20) {
 		SetName("GuiManager");
@@ -50,19 +49,18 @@ public:
 		xgl->projector.AddReshapeCallback(std::bind(&GuiManager::Reshape, this, _1, _2));
 	}
 
-	void AddReshapeCallback(XGLGuiCanvas *s, ReshapeCallback fn) {
-		reshapeCallbacks.push_back(ReshapePair(s, fn));
+	void AddReshapeCallback(ReshapeCallback fn) {
+		reshapeCallbacks.push_back(fn);
 	}
 
 	void Reshape(int w, int h) {
-		for (rc = reshapeCallbacks.begin(); rc < reshapeCallbacks.end(); rc++)
-			(rc->second)(rc->first, w, h);
+		for (ReshapeCallbackList::iterator rc = reshapeCallbacks.begin(); rc < reshapeCallbacks.end(); rc++)
+			(*rc)(w, h);
 	}
 
 	XGL *pxgl;
 	int padding;
 	ReshapeCallbackList reshapeCallbacks;
-	ReshapeCallbackList::iterator rc;
 };
 
 void ExampleXGL::BuildGUI() {
@@ -79,10 +77,10 @@ void ExampleXGL::BuildGUI() {
 	// This shape specifies a ReshapeCallback to allow it to always exactly cover the window
 	gm->AddChildShape("shaders/ortho", [&]() { g = new XGLGuiCanvas(this, 1, 1, false); SetName("GuiBackground");  return g; });
 	g->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.05 };
-	gm->AddReshapeCallback(g, [](XGLGuiCanvas *gc, int w, int h) {
-		gc->width = w;
-		gc->height = h;
-		gc->Reshape(0, 0, w, h);
+	gm->AddReshapeCallback([g](int w, int h) {
+		g->width = w;
+		g->height = h;
+		g->Reshape(0, 0, w, h);
 	});
 
 	bool exampleTextWindow = true;
@@ -101,8 +99,8 @@ void ExampleXGL::BuildGUI() {
 		gm->AddChildShape("shaders/ortho-tex", [&]() { g2 = new XGLGuiCanvas(this, 380, 120); return g2; });
 		g2->model = glm::translate(glm::mat4(), glm::vec3(800, 20, 0));
 		g2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.8 };
-		gm->AddReshapeCallback(g2, [](XGLGuiCanvas *gc, int w, int h) {
-			gc->model = glm::translate(glm::mat4(), glm::vec3(w - gc->width - 20, 20, 1.0));
+		gm->AddReshapeCallback([g2](int w, int h) {
+			g2->model = glm::translate(glm::mat4(), glm::vec3(w - g2->width - 20, 20, 1.0));
 		});
 		g2->SetPenPosition(10, 24);
 		g2->RenderText("This box is pinned to the upper right corner.\n\nIt is not currently possible to\nauto-wrap text, so clipping is used instead.", 18);
@@ -119,11 +117,11 @@ void ExampleXGL::BuildGUI() {
 		gm->AddChildShape("shaders/ortho", [&]() { g2 = new XGLGuiCanvas(this, 1, 16); return g2; });
 		g2->SetName("HorizontalSlider");
 		g2->attributes.diffuseColor = { 1.0, 0.2, 0.2, 0.1 };
-		gm->AddReshapeCallback(g2, [](XGLGuiCanvas *gc, int w, int h) {
+		gm->AddReshapeCallback([g2](int w, int h) {
 			int padding = 20;
-			gc->width = w - 2 * padding;
-			gc->model = glm::translate(glm::mat4(), glm::vec3(padding, h - gc->height - padding, 0.0));
-			gc->Reshape(0, 0, gc->width, gc->height);
+			g2->width = w - 2 * padding;
+			g2->model = glm::translate(glm::mat4(), glm::vec3(padding, h - g2->height - padding, 0.0));
+			g2->Reshape(0, 0, g2->width, g2->height);
 		});
 		g2->SetMouseFunc([this, g2](float x, float y, int flags){
 			if (flags & 1) {
