@@ -89,20 +89,10 @@ void ExampleXGL::BuildGUI() {
 	if (exampleTextWindow) {
 		XGLGuiCanvas *g2;
 		gm->AddChildShape("shaders/ortho-tex", [&]() { g2 = new XGLGuiCanvas(this, 380, 120); return g2; });
-		g2->model = glm::translate(glm::mat4(), glm::vec3(720, 40, 0));
-		g2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.8 };
-		/*
-		g2->SetMouseFunc([&](XGLShape *s, float x, float y, int flags){
-			xprintf("In %s(%0.0f,%0.0f)\n", s->name.c_str(), x, y);
-			if (flags & 1)
-				mouseCaptured = (XGLGuiCanvas *)s;
-			else
-				mouseCaptured = NULL;
-			return true;
-		});
-		*/
+		g2->model = glm::translate(glm::mat4(), glm::vec3(20, 20, 0));
+		g2->attributes.diffuseColor = { 1.0, 1.0, 0.0, 0.8 };
 		g2->SetPenPosition(10, 24);
-		g2->RenderText("This is at the same GUI stack hierarchy level\nas the background canvas, and therefore\n should be \"under\" what gets created later.", 18);
+		g2->RenderText("This box is pinned to the upper left corner\n\nThis is at the same GUI stack hierarchy level\nas the background canvas, and therefore\n should be \"under\" what gets created later.", 18);
 	}
 
 	bool exampleTextWindow2 = true;
@@ -111,21 +101,11 @@ void ExampleXGL::BuildGUI() {
 		gm->AddChildShape("shaders/ortho-tex", [&]() { g2 = new XGLGuiCanvas(this, 380, 120); return g2; });
 		g2->model = glm::translate(glm::mat4(), glm::vec3(800, 20, 0));
 		g2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.8 };
-		/*
-		g2->SetMouseFunc([&](XGLShape *s, float x, float y, int flags){
-			xprintf("In %s(%0.0f,%0.0f)\n", s->name.c_str(), x, y);
-			if (flags & 1)
-				mouseCaptured = (XGLGuiCanvas *)s;
-			else
-				mouseCaptured = NULL;
-			return true;
-		});
-		*/
 		gm->AddReshapeCallback(g2, [](XGLGuiCanvas *gc, int w, int h) {
 			gc->model = glm::translate(glm::mat4(), glm::vec3(w - gc->width - 20, 20, 1.0));
 		});
 		g2->SetPenPosition(10, 24);
-		g2->RenderText("This is a test.\nIt is not currently possible to\nauto-wrap text, to avoid\nvisual artifacts for long lines, particularly this one.\nSo clipping is used instead.", 18);
+		g2->RenderText("This box is pinned to the upper right corner.\n\nIt is not currently possible to\nauto-wrap text, so clipping is used instead.", 18);
 	}
 
 	bool exampleHorizontalSlider = true;
