@@ -29,11 +29,6 @@ public:
 
 	void Reshape(int w, int h);
 
-	void MouseFunc(int x, int y, int flags);
-	void KeyFunc(int key, int flags);
-
-	void CameraTracker(XGLCamera *c);
-
 	// application-specific input events -> actions mappings
 	MouseTracker mt;
 	KeyboardTracker kt;
