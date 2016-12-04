@@ -1,74 +1,14 @@
 #include "ExampleXGL.h"
 
-/*
-** GuiManager class
-**
-**	Adds a ReshapeCallback layer to XGLGuiCanvas items, and serves as the GuiRoot() shape.
-**	The primary function of GuiManager is to manage the layout of child XGLGuiCanvas
-**	items by allowing XGLGuiCanvas items that care about window sizing events to
-**	get notification via callback functions.  It is envisioned that this will apply
-**	mostly XGLGuiCanvas items that are intended to hug the right and/or bottom edges
-**  of the main window.
-**
-**	Additionally, an XInput::XInputKeyFunc is added to allow dynamic toggling of
-**  the GUI layer.  The GUI layer is maintained by XGL as a separate list of
-**	XGLShape items.  This allows leveraging the existing hierarchy mechanism
-**	already established for XGLShapes.
-**
-**  The window resizing functionality is provided by XGLProjector, since it needs
-**	to know the window dimensions for the glViewport() call and was the first
-**  class to handle OS-specific window sizing events.  GuiManager specializes
-**	that mechanism to provide context for XGLGuiCanvas items that care about window
-**	size events, as not all XGLGuiCanvas items need to care.
-**
-**  The implementation allows for XGLGuiCanvas items to specify lambda functions
-**  as needed for the ReshapeCallback functions, which allows a fine granularity
-**	in functional specificity without excessive sub-classing.
-*/
-class GuiManager : public XGLGuiCanvas {
-public:
-	typedef std::function<void(int, int)> ReshapeCallback;
-	typedef std::vector<ReshapeCallback> ReshapeCallbackList;
-
-	GuiManager(XGL *xgl, bool addTexture = false) : XGLGuiCanvas(xgl), pxgl(xgl), padding(20) {
-		SetName("GuiManager");
-
-		XInput::XInputKeyFunc PresentGuiCanvas = [this](int key, int flags) {
-			const bool isDown = (flags & 0x8000) == 0;
-			const bool isRepeat = (flags & 0x4000) != 0;
-
-			if (isDown && pxgl->GuiIsActive())
-				pxgl->RenderGui(false);
-			else if (isDown)
-				pxgl->RenderGui(true);
-		};
-
-		pxgl->AddKeyFunc('`', PresentGuiCanvas);
-		pxgl->AddKeyFunc('~', PresentGuiCanvas);
-
-		xgl->projector.AddReshapeCallback([this](int w, int h) {
-			for (ReshapeCallbackList::iterator rc = reshapeCallbacks.begin(); rc < reshapeCallbacks.end(); rc++)
-				(*rc)(w, h);
-		});
-	}
-
-	void AddReshapeCallback(ReshapeCallback fn) {
-		reshapeCallbacks.push_back(fn);
-	}
-
-	XGL *pxgl;
-	int padding;
-	ReshapeCallbackList reshapeCallbacks;
-};
 
 void ExampleXGL::BuildGUI() {
-	GuiManager *gm;
+	XGLGuiManager *gm;
 	XGLGuiCanvas *g;
 
 	// Instantiate a GuiManager shape, which serves as GuiRoot() shape.
 	// XGL::GuiResolve() requires a "place holder" as the root shape to
 	// allow for recursively passing mouse events to the XGLGuiCanvas hierarchy.
-	AddGuiShape("shaders/ortho", [&]() { gm = new GuiManager(this); return gm; });
+	AddGuiShape("shaders/ortho", [&]() { gm = new XGLGuiManager(this); return gm; });
 
 	// The first XGLGuiCanvas in the stack, henceforth the "background canvas", 
 	// is the "bottom-most" in Z stack order.
@@ -88,7 +28,7 @@ void ExampleXGL::BuildGUI() {
 		g2->model = glm::translate(glm::mat4(), glm::vec3(20, 20, 0));
 		g2->attributes.diffuseColor = { 1.0, 1.0, 0.0, 0.8 };
 		g2->SetPenPosition(10, 24);
-		g2->RenderText("This box is pinned to the upper left corner\n\nThis is at the same GUI stack hierarchy level\nas the background canvas, and therefore\n should be \"under\" what gets created later.", 18);
+		g2->RenderText("This box is pinned to the upper left corner\n\nThis is at the same GUI stack hierarchy level\nas the background canvas, and therefore\n should be \"under\" what gets created later.", 16);
 	}
 
 	bool exampleTextWindow2 = true;
@@ -101,7 +41,7 @@ void ExampleXGL::BuildGUI() {
 			g2->model = glm::translate(glm::mat4(), glm::vec3(w - g2->width - 20, 20, 1.0));
 		});
 		g2->SetPenPosition(10, 24);
-		g2->RenderText("This box is pinned to the upper right corner.\n\nIt is not currently possible to\nauto-wrap text, so clipping is used instead.", 18);
+		g2->RenderText("This box is pinned to the upper right corner.\n\nIt is not currently possible to\nauto-wrap text, so clipping is used instead.", 16);
 	}
 
 	bool exampleHorizontalSlider = true;
@@ -149,7 +89,7 @@ void ExampleXGL::BuildGUI() {
 	// purposes.  Not sure if I'm going to keep this, but it seemed like a good idea
 	// when I integrated it.  Unfortunately, it doesn't look professional enough
 	// for end-product use, IMHO, and is lacking features that I want.
-	bool enableAntTweakBar = true;
+	bool enableAntTweakBar = false;
 	if (enableAntTweakBar) {
 		gm->AddChildShape("shaders/tex", [&]() { return new XGLAntTweakBar(this); });
 	}

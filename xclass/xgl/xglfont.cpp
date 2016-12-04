@@ -229,7 +229,7 @@ void XGLFont::RenderText(std::wstring text, unsigned char *buffer, int width, in
 				break;
 		}
 		else if (!waitForNewline) {
-			FT_Load_Glyph(font.face, font.charMap[text[i]], FT_LOAD_RENDER);
+			FT_Load_Glyph(font.face, font.charMap[text[i]], FT_LOAD_RENDER | FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT);
 			dest = buffer + (*penY - g->bitmap_top) * width + *penX + g->bitmap_left;
 
 			// don't overflow the buffer horizontally
