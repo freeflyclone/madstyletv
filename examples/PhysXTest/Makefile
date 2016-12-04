@@ -55,15 +55,11 @@ LDFLAGS +=\
 
 LIBS=-lxclass -lglfw3 -lAntTweakBar -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXinerama -lXcursor -lpthread -lexpat -lfreetype -lopencv_core -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d -lavformat -lavcodec -lavutil
 
-OPENCV_LIBS=-lopencv_flann -lopencv_gpu -lopencv_highgui -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_objdetect -lopencv_ocl -lopencv_photo -lopencv_stitching -lopencv_superres -lopencv_ts -lopencv_video -lopencv_videostab
-
-OPENAL_LIBS=-lopenal
-
 PHYSX_LIBS=-lPhysX3Extensions -lPhysX3Common_x64 -lPhysX3_x64 -lPhysX3Cooking_x64 -lPhysX3CharacterKinematic_x64 -lPhysX3Vehicle -lPhysXProfileSDK -lPhysXVisualDebuggerSDK -lPxTask
 
 all: ${PROGRAM}
 
-${PROGRAM}: ${COMMONOBJS} ${LIB} PhysXTestBuildScene.o physx-xgl.o physx-main.cpp
+${PROGRAM}: ${LIB} ${COMMONOBJS} PhysXTestBuildScene.o physx-xgl.o physx-main.o
 	${CXX} ${CXXFLAGS} $? ${LDFLAGS} ${LIBS} ${PHYSX_LIBS} -o $@
 
 clean:
