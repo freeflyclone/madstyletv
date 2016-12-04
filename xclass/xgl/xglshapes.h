@@ -197,6 +197,28 @@ private:
 	MouseEventListeners mouseEventListeners;
 };
 
+/*
+** XGLGuiManager class
+**
+**	Adds a ReshapeCallback layer to XGLGuiCanvas items, and serves as the XGL::GuiRoot() shape.
+**	to allow interested XGLGuiCanvas items interested in window sizing events to
+**	get notification via callback functions.  It is envisioned that this will apply
+**	mostly XGLGuiCanvas items that are intended to hug the right and/or bottom edges
+**  of the main window.
+*/
+class XGLGuiManager : public XGLGuiCanvas {
+public:
+	typedef std::function<void(int, int)> ReshapeCallback;
+	typedef std::vector<ReshapeCallback> ReshapeCallbackList;
+
+	XGLGuiManager(XGL *xgl, bool addTexture = false);
+	void AddReshapeCallback(ReshapeCallback fn);
+	
+	XGL *pxgl;
+	int padding;
+	ReshapeCallbackList reshapeCallbacks;
+};
+
 class XGLAntTweakBar : public XGLShape {
 public:
 	XGLAntTweakBar(XGL *xgl);

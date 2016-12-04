@@ -825,6 +825,32 @@ void XGLGuiCanvas::Fill(GLubyte val)  {
 	GL_CHECK("glGetTexImage() didn't work");
 }
 
+XGLGuiManager::XGLGuiManager(XGL *xgl, bool addTexture) : XGLGuiCanvas(xgl), pxgl(xgl), padding(20) {
+	SetName("XGLGuiManager");
+
+	XInput::XInputKeyFunc PresentGuiCanvas = [this](int key, int flags) {
+		const bool isDown = (flags & 0x8000) == 0;
+		const bool isRepeat = (flags & 0x4000) != 0;
+
+		if (isDown && pxgl->GuiIsActive())
+			pxgl->RenderGui(false);
+		else if (isDown)
+			pxgl->RenderGui(true);
+	};
+
+	pxgl->AddKeyFunc('`', PresentGuiCanvas);
+	pxgl->AddKeyFunc('~', PresentGuiCanvas);
+
+	xgl->projector.AddReshapeCallback([this](int w, int h) {
+		for (ReshapeCallbackList::iterator rc = reshapeCallbacks.begin(); rc < reshapeCallbacks.end(); rc++)
+			(*rc)(w, h);
+	});
+}
+
+void XGLGuiManager::AddReshapeCallback(ReshapeCallback fn) {
+	reshapeCallbacks.push_back(fn);
+}
+
 XGLAntTweakBar::XGLAntTweakBar(XGL *xgl) : pxgl(xgl), flags(0) {
 	SetName("XGLAntTweakBar");
 	TwInit(TW_OPENGL_CORE, NULL);
