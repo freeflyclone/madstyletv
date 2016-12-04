@@ -33,7 +33,7 @@ public:
 	GuiManager(XGL *xgl, bool addTexture = false) : XGLGuiCanvas(xgl), pxgl(xgl), padding(20) {
 		SetName("GuiManager");
 
-		XInput::XInputKeyFunc PresentGuiCanvas = [&](int key, int flags) {
+		XInput::XInputKeyFunc PresentGuiCanvas = [this](int key, int flags) {
 			const bool isDown = (flags & 0x8000) == 0;
 			const bool isRepeat = (flags & 0x4000) != 0;
 
@@ -46,16 +46,14 @@ public:
 		pxgl->AddKeyFunc('`', PresentGuiCanvas);
 		pxgl->AddKeyFunc('~', PresentGuiCanvas);
 
-		xgl->projector.AddReshapeCallback(std::bind(&GuiManager::Reshape, this, _1, _2));
+		xgl->projector.AddReshapeCallback([this](int w, int h) {
+			for (ReshapeCallbackList::iterator rc = reshapeCallbacks.begin(); rc < reshapeCallbacks.end(); rc++)
+				(*rc)(w, h);
+		});
 	}
 
 	void AddReshapeCallback(ReshapeCallback fn) {
 		reshapeCallbacks.push_back(fn);
-	}
-
-	void Reshape(int w, int h) {
-		for (ReshapeCallbackList::iterator rc = reshapeCallbacks.begin(); rc < reshapeCallbacks.end(); rc++)
-			(*rc)(w, h);
 	}
 
 	XGL *pxgl;

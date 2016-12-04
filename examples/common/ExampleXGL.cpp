@@ -14,14 +14,85 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	glm::vec3 cameraUp = { 0, 0, 1 };
 	camera.Set(cameraPosition, cameraDirection,	cameraUp);
 
-	// set a camera animation function, in this case a member function of this XGL-derived class
-	camera.SetTheFunk(std::bind(&ExampleXGL::CameraTracker, this, _1));
+	// set a camera animation function
+	camera.SetTheFunk([this](XGLCamera *c){
+		glm::float32 speed = 0.6f;
+
+		if (kt.f)
+			c->pos += glm::normalize(c->front) * speed;
+		if (kt.b)
+			c->pos -= glm::normalize(c->front) * speed;
+		if (kt.r)
+			c->pos += glm::normalize(glm::cross(c->front, c->up)) * speed;
+		if (kt.l)
+			c->pos -= glm::normalize(glm::cross(c->front, c->up)) * speed;
+
+		if (mt.IsTrackingLeftButton() && !mt.IsTrackingRightButton()) {
+			glm::float32 yaw = 0.0f;
+			glm::float32 pitch = 0.0f;
+
+			if (mt.dx || mt.dy) {
+				// get mouse tracker x,y into camera orientation
+				yaw = ((glm::float32) - mt.dx) * 0.001f;
+				pitch = ((glm::float32)mt.dy) * 0.001f;
+
+				// process yaw first
+				glm::mat4 cameraYaw = glm::rotate(glm::mat4(), yaw, camera.up);
+				glm::vec4 front = cameraYaw * glm::vec4(camera.front, 1.0f);
+				camera.front = glm::vec3(front.x, front.y, front.z);
+
+				// pitch involves rotating around the "right" vector, which doesn't exist, so make one from front & up
+				glm::mat4 cameraPitch = glm::rotate(glm::mat4(), pitch, glm::cross(camera.up, camera.front));
+				front = cameraPitch * glm::vec4(camera.front, 1.0f);
+
+				// avoid  gimbal lock: absolute dot product (magnitude of parallelness) of front vs up
+				glm::float32 pitchVerticality = glm::abs(glm::dot(glm::vec3(front.x, front.y, front.z), camera.up));
+
+				// enforce limit (emperically derived value)
+				if (pitchVerticality < 0.99f) {
+					camera.front = glm::vec3(front.x, front.y, front.z);
+				}
+
+				// clear mouse tracker delta position
+				mt.Done();
+			}
+		}
+	});
 
 	// add mouse event handling (XInput class) function mapping
-	AddMouseFunc(std::bind(&ExampleXGL::MouseFunc, this, _1, _2, _3));
+	AddMouseFunc([this](int x, int y, int flags){
+		if (GuiIsActive())
+			GuiResolveMouseEvent(GetGuiRoot(), x, y, flags);
+		else
+			mt.Event(x, y, flags);
+	});
 
 	// add key event handling (XInput class) function mapping
-	AddKeyFunc(std::make_pair('A','Z'), std::bind(&ExampleXGL::KeyFunc, this, _1, _2));
+	AddKeyFunc(std::make_pair('A', 'Z'), [this](int key, int flags) {
+		const bool isDown = (flags & 0x8000) == 0;
+		const bool isRepeat = (flags & 0x4000) != 0;
+
+		if (isDown) {
+			switch (key) {
+			case 'W': kt.f = true; break;
+			case 'S': kt.b = true; break;
+			case 'A': kt.l = true; break;
+			case 'D': kt.r = true; break;
+			case '+': kt.wu = true; break;
+			case '-': kt.wd = true; break;
+			}
+		}
+		else {
+			switch (key) {
+			case 'W': kt.f = false; break;
+			case 'S': kt.b = false; break;
+			case 'A': kt.l = false; break;
+			case 'D': kt.r = false; break;
+			case '+': kt.wu = false; break;
+			case '-': kt.wd = false; break;
+			}
+		}
+	});
 
 	// add a default "ground" plane grid.
 	AddShape("shaders/000-simple", [&](){ shape = new XYPlaneGrid(); return shape; });
@@ -29,83 +100,6 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	// Features of the framework are incrementally introduced by enhancing this function
 	// on a per example basis.
 	BuildScene();
-}
-
-void ExampleXGL::CameraTracker(XGLCamera *c){
-	glm::float32 speed = 0.6f;
-
-	if (kt.f)
-		c->pos += glm::normalize(c->front) * speed;
-	if (kt.b)
-		c->pos -= glm::normalize(c->front) * speed;
-	if (kt.r)
-		c->pos += glm::normalize(glm::cross(c->front, c->up)) * speed;
-	if (kt.l)
-		c->pos -= glm::normalize(glm::cross(c->front, c->up)) * speed;
-
-	if (mt.IsTrackingLeftButton() && !mt.IsTrackingRightButton()) {
-		glm::float32 yaw = 0.0f;
-		glm::float32 pitch = 0.0f;
-
-		if (mt.dx || mt.dy) {
-			// get mouse tracker x,y into camera orientation
-			yaw = ((glm::float32) - mt.dx) * 0.001f;
-			pitch = ((glm::float32)mt.dy) * 0.001f;
-
-			// process yaw first
-			glm::mat4 cameraYaw = glm::rotate(glm::mat4(), yaw, camera.up);
-			glm::vec4 front = cameraYaw * glm::vec4(camera.front, 1.0f);
-			camera.front = glm::vec3(front.x, front.y, front.z);
-
-			// pitch involves rotating around the "right" vector, which doesn't exist, so make one from front & up
-			glm::mat4 cameraPitch = glm::rotate(glm::mat4(), pitch, glm::cross(camera.up, camera.front));
-			front = cameraPitch * glm::vec4(camera.front, 1.0f);
-
-			// avoid  gimbal lock: absolute dot product (magnitude of parallelness) of front vs up
-			glm::float32 pitchVerticality = glm::abs(glm::dot(glm::vec3(front.x, front.y, front.z), camera.up));
-
-			// enforce limit (emperically derived value)
-			if (pitchVerticality < 0.99f) {
-				camera.front = glm::vec3(front.x, front.y, front.z);
-			}
-
-			// clear mouse tracker delta position
-			mt.Done();
-		}
-	}
-}
-
-void ExampleXGL::MouseFunc(int x, int y, int flags){
-	if (GuiIsActive())
-		GuiResolveMouseEvent(GetGuiRoot(), x, y, flags);
-	else
-		mt.Event(x, y, flags);
-}
-
-void ExampleXGL::KeyFunc(int key, int flags){
-	const bool isDown = (flags & 0x8000) == 0;
-	const bool isRepeat = (flags & 0x4000) != 0;
-
-	if (isDown) {
-		switch (key) {
-		case 'W': kt.f = true; break;
-		case 'S': kt.b = true; break;
-		case 'A': kt.l = true; break;
-		case 'D': kt.r = true; break;
-		case '+': kt.wu = true; break;
-		case '-': kt.wd = true; break;
-		}
-	}
-	else {
-		switch (key) {
-		case 'W': kt.f = false; break;
-		case 'S': kt.b = false; break;
-		case 'A': kt.l = false; break;
-		case 'D': kt.r = false; break;
-		case '+': kt.wu = false; break;
-		case '-': kt.wd = false; break;
-		}
-	}
 }
 
 void ExampleXGL::Reshape(int w, int h) {
