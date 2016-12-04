@@ -78,7 +78,29 @@ public:
 	// add the rendering to the FBO to the chain, which is the whole reason
 	// for this derived class.
 	void Render(float clock) {
-		frameBufferObject->Render(std::bind(&ImageProcessing::FBORender, this));
+		frameBufferObject->Render([this](){
+			glDisable(GL_DEPTH_TEST);
+			glViewport(0, 0, width, height);
+
+			XGLBuffer::Bind();
+
+			// These ensure that the FBO pass has access to all the GL_COLORATTACHMENT buffers
+			// that have been setup in the FBO;  (Might be sticky in the FBO and not 
+			// need setting per render pass)
+			glBindFragDataLocation(shader->programId, 0, "color0");
+			glBindFragDataLocation(shader->programId, 1, "color1");
+			glBindFragDataLocation(shader->programId, 2, "color2");
+			glBindFragDataLocation(shader->programId, 3, "color3");
+
+			glUniform1i(glGetUniformLocation(shader->programId, "mode"), 1);
+			glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
+			glUniform1i(glGetUniformLocation(shader->programId, "mode"), 0);
+			glViewport(0, 0, *windowWidth, *windowHeight);
+			glEnable(GL_DEPTH_TEST);
+			GL_CHECK("there was a problem in the FBO rendering");
+
+			XGLBuffer::Unbind();
+		});
 
 		// These ensure that the textures rendered in the FBO pass are available 
 		// in the main rendering pass.  Is probably sticky in the program object, (shader)
@@ -95,30 +117,6 @@ public:
 		}
 	}
 	
-	void FBORender() {
-		glDisable(GL_DEPTH_TEST);
-		glViewport(0, 0, width, height);
-
-		XGLBuffer::Bind();
-
-		// These ensure that the FBO pass has access to all the GL_COLORATTACHMENT buffers
-		// that have been setup in the FBO;  (Might be sticky in the FBO and not 
-		// need setting per render pass)
-		glBindFragDataLocation(shader->programId, 0, "color0");
-		glBindFragDataLocation(shader->programId, 1, "color1");
-		glBindFragDataLocation(shader->programId, 2, "color2");
-		glBindFragDataLocation(shader->programId, 3, "color3");
-
-		glUniform1i(glGetUniformLocation(shader->programId, "mode"), 1);
-		glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
-		glUniform1i(glGetUniformLocation(shader->programId, "mode"), 0);
-		glViewport(0, 0, *windowWidth, *windowHeight);
-		glEnable(GL_DEPTH_TEST);
-		GL_CHECK("there was a problem in the FBO rendering");
-
-		XGLBuffer::Unbind();
-	}
-
 	void MakeSubQuad(GLuint texId, glm::mat4 model) {
 		XGLTexQuad *quad = new XGLTexQuad();
 		quad = new XGLTexQuad();
