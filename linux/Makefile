@@ -99,22 +99,22 @@ PHYSX_LIBS=-lPhysX3Extensions -lPhysX3Common_x64 -lPhysX3_x64 -lPhysX3Cooking_x6
 all: Example02 OpenCVTest OpenCVWebcam OpenALTest PhysXTest
 
 PhysXTest: ${LIB} ${EXAMPLESDIR}/common/ExampleGUI.o ${EXAMPLESDIR}/common/ExampleXGL.o physx-main.o ${EXAMPLESDIR}/PhysXTest/PhysXTestBuildScene.o ${EXAMPLESDIR}/PhysXTest/physx-xgl.o
-	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} ${PHYSX_LIBS} -o $@
+	${CXX} ${CXXFLAGS} $? ${LDFLAGS} ${LIBS} ${PHYSX_LIBS} -o $@
 
 OpenCVWebcam: ${COMMONOBJS} ${LIB} ${EXAMPLESDIR}/OpenCVWebcam/OpenCVWebcamBuildScene.o
-	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} ${OPENCV_LIBS} -o $@
+	${CXX} ${CXXFLAGS} $? ${LDFLAGS} ${LIBS} ${OPENCV_LIBS} -o $@
 
 OpenCVTest: ${COMMONOBJS} ${LIB} ${EXAMPLESDIR}/OpenCVTest/OpenCVTestBuildScene.o
-	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} ${OPENCV_LIBS} -o $@
+	${CXX} ${CXXFLAGS} $? ${LDFLAGS} ${LIBS} ${OPENCV_LIBS} -o $@
 
 OpenALTest: ${COMMONOBJS} ${LIB} ${EXAMPLESDIR}/OpenALTest/OpenALTestBuildScene.o
-	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} ${OPENCV_LIBS} ${OPENAL_LIBS} -o $@
+	${CXX} ${CXXFLAGS} $? ${LDFLAGS} ${LIBS} ${OPENCV_LIBS} ${OPENAL_LIBS} -o $@
 
 Example02: ${COMMONOBJS} ${LIB} ${EXAMPLESDIR}/Example02/Example02.o
-	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} -o $@
+	${CXX} ${CXXFLAGS} $? ${LDFLAGS} ${LIBS} -o $@
 
 XAVTest: ${COMMONOBJS} ${LIB} ${EXAMPLESDIR}/XAVTest/XAVTestBuildScene.o
-	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} ${OPENAL_LIBS} -o $@
+	${CXX} ${CXXFLAGS} $? ${LDFLAGS} ${LIBS} ${OPENAL_LIBS} -o $@
 
 ${LIB}: ${OBJS}
 	${AR} rcs ${LIB} $? 
