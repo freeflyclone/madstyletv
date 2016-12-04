@@ -332,3 +332,4 @@ Makefile
 xclass/Makefile
 examples/Example02/Makefile
 examples/Makefile
+examples/PhysXTest/Makefile
