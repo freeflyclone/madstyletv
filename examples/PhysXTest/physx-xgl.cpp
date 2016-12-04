@@ -60,24 +60,21 @@ void PhysXXGL::initPhysics(bool interactive)
 
 	//if(false)
 	for (int i = -20; i < 20; i += 5) {
-		//createChain(PxTransform(PxVec3(float(i), 0.0f, 20.0f)), 10, PxBoxGeometry(1, 1, 1), 2.0f, std::bind(&MstvPhysx::createLimitedSpherical, this, _1, _2, _3, _4));
-		createChain(physx::PxTransform(physx::PxVec3(float(i), 0.0f, 20.0f)), 10, physx::PxSphereGeometry(1), 1.0f, std::bind(&PhysXXGL::createLimitedSpherical, this, _1, _2, _3, _4));
+		createChain(physx::PxTransform(physx::PxVec3(float(i), 0.0f, 20.0f)), 10, physx::PxSphereGeometry(1), 1.0f, 
+			[this](physx::PxRigidActor* a0, const physx::PxTransform& t0, physx::PxRigidActor* a1, const physx::PxTransform& t1){
+			physx::PxSpring spring = { 4.0, 4.0 };
+			physx::PxSphericalJoint* j = PxSphericalJointCreate(*mPhysics, a0, t0, a1, t1);
+			//j->setLimitCone(PxJointLimitCone(PxPi / 2, PxPi / 2, 0.05f));
+			j->setLimitCone(physx::PxJointLimitCone(physx::PxPi / 2, physx::PxPi / 2, spring));
+			j->setSphericalJointFlag(physx::PxSphericalJointFlag::eLIMIT_ENABLED, true);
+			j->setProjectionLinearTolerance(0.1f);
+			j->setConstraintFlag(physx::PxConstraintFlag::ePROJECTION, true);
+			return j;
+		});
 	}
 }
 
-physx::PxJoint* PhysXXGL::createLimitedSpherical(physx::PxRigidActor* a0, const physx::PxTransform& t0, physx::PxRigidActor* a1, const physx::PxTransform& t1)
-{
-	physx::PxSpring spring = { 4.0, 4.0 };
-	physx::PxSphericalJoint* j = PxSphericalJointCreate(*mPhysics, a0, t0, a1, t1);
-	//j->setLimitCone(PxJointLimitCone(PxPi / 2, PxPi / 2, 0.05f));
-	j->setLimitCone(physx::PxJointLimitCone(physx::PxPi / 2, physx::PxPi / 2, spring));
-	j->setSphericalJointFlag(physx::PxSphericalJointFlag::eLIMIT_ENABLED, true);
-	j->setProjectionLinearTolerance(0.1f);
-	j->setConstraintFlag(physx::PxConstraintFlag::ePROJECTION, true);
-	return j;
-}
-
-void  PhysXXGL::createChain(const physx::PxTransform& t, physx::PxU32 length, const physx::PxGeometry& g, physx::PxReal separation, MstvPhysxCreateJointFunk createJoint)
+void  PhysXXGL::createChain(const physx::PxTransform& t, physx::PxU32 length, const physx::PxGeometry& g, physx::PxReal separation, PhysxCreateJointFn createJoint)
 {
 	physx::PxVec3 offset(0, separation / 2, 0);
 	physx::PxTransform localTm(offset);

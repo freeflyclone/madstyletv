@@ -36,8 +36,8 @@
 
 #define MAX_NUM_ACTOR_SHAPES 128
 
-// define a bindable function pointer for various Physx Joint types creation
-typedef std::function<physx::PxJoint *(physx::PxRigidActor *, const physx::PxTransform&, physx::PxRigidActor*, const physx::PxTransform&)> MstvPhysxCreateJointFunk;
+// define a function pointer for various Physx Joint types creation
+typedef std::function<physx::PxJoint *(physx::PxRigidActor *, const physx::PxTransform&, physx::PxRigidActor*, const physx::PxTransform&)> PhysxCreateJointFn;
 
 class PhysXXGL : public ExampleXGL, public physx::PxUserControllerHitReport {
 public:
@@ -63,13 +63,8 @@ public:
 
 	void createStack(const physx::PxTransform& t, physx::PxU32 size, physx::PxReal halfExtent);
 
-	// define functions for creating various types of Physx Joints
-	physx::PxJoint* createLimitedSpherical(physx::PxRigidActor*, const physx::PxTransform&, physx::PxRigidActor*, const physx::PxTransform&);
-	physx::PxJoint* createBreakableFixed(physx::PxRigidActor*, const physx::PxTransform&, physx::PxRigidActor*, const physx::PxTransform&);
-	physx::PxJoint* createDampedD6(physx::PxRigidActor*, const physx::PxTransform&, physx::PxRigidActor*, const physx::PxTransform&);
-
 	// create a chain of Physx Joints of various styles.  This could probably be expanded
-	void createChain(const physx::PxTransform&, physx::PxU32, const physx::PxGeometry&, physx::PxReal, MstvPhysxCreateJointFunk);
+	void createChain(const physx::PxTransform&, physx::PxU32, const physx::PxGeometry&, physx::PxReal, PhysxCreateJointFn);
 
 	void initPhysics(bool interactive);
 	void stepPhysics(bool interactive);
