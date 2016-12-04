@@ -832,8 +832,19 @@ XGLAntTweakBar::XGLAntTweakBar(XGL *xgl) : pxgl(xgl), flags(0) {
 
 	TwDefine("MadStyle color='63 63 63' label='MadStyle TV AntTweakBar Integration Testing' size='400 300'");
 
-	pxgl->projector.AddReshapeCallback(std::bind(&XGLAntTweakBar::Reshape, this, _1, _2));
-	pxgl->AddMouseFunc(std::bind(&XGLAntTweakBar::MouseMotion, this, _1, _2, _3));
+	pxgl->projector.AddReshapeCallback([this](int w, int h) { TwWindowSize(w, h); });
+	pxgl->AddMouseFunc([this](int x, int y, int f){
+		int button = (f ^ flags);
+		int action = (f & 0xF) ? 1 : 0;
+
+		if (button) {
+			button--;
+			TwEventMouseButtonGLFW(button, action);
+		}
+
+		TwEventMousePosGLFW(x, y);
+		flags = f;
+	});
 }
 
 XGLAntTweakBar::~XGLAntTweakBar() {
@@ -845,21 +856,3 @@ XGLAntTweakBar::~XGLAntTweakBar() {
 void XGLAntTweakBar::Draw() {
 	TwDraw(); 
 }
-
-void XGLAntTweakBar::Reshape(int w, int h) {
-	TwWindowSize(w, h); 
-}
-
-void XGLAntTweakBar::MouseMotion(int x, int y, int f) {
-	int button = (f ^ flags);
-	int action = (f & 0xF) ? 1 : 0;
-
-	if (button) {
-		button--;
-		TwEventMouseButtonGLFW(button, action);
-	}
-
-	TwEventMousePosGLFW(x, y);
-	flags = f;
-}
-

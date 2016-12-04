@@ -203,8 +203,6 @@ public:
 	~XGLAntTweakBar();
 
 	void Draw();
-	void Reshape(int w, int h);
-	void MouseMotion(int x, int y, int f);
 
 	XGL *pxgl;
 	int flags;
