@@ -1,16 +1,13 @@
 #include "xinput.h"
 
 void XInput::KeyEvent(int key, int flags){
-	XInputKeyMap::iterator perKey;
-	XInputKeyRangeMap::iterator perKeyRange;
+	for (auto perKey : keyMap)
+		if (key == perKey.first)
+				perKey.second(key, flags);
 
-	for (perKey = keyMap.begin(); perKey != keyMap.end(); perKey++)
-		if (key == perKey->first)
-			perKey->second(key, flags);
-
-	for (perKeyRange = keyRangeMap.begin(); perKeyRange != keyRangeMap.end(); perKeyRange++)
-		if ((key >= perKeyRange->first.first) && (key <= perKeyRange->first.second))
-			perKeyRange->second(key, flags);
+	for (auto perKeyRange : keyRangeMap)
+		if ((key >= perKeyRange.first.first) && (key <= perKeyRange.first.second))
+			perKeyRange.second(key, flags);
 }
 
 void XInput::AddKeyFunc(int key, XInputKeyFunc f) {
@@ -22,9 +19,8 @@ void XInput::AddKeyFunc(XInputKeyRange r, XInputKeyFunc f){
 }
 
 void XInput::MouseEvent(int x, int y, int flags){
-	XInputMouseFuncs::iterator perFunc;
-	for (perFunc = mouseFuncs.begin(); perFunc != mouseFuncs.end(); perFunc++)
-		(*perFunc)(x, y, flags);
+	for (auto perFunc : mouseFuncs)
+		perFunc(x, y, flags);
 }
 
 void XInput::AddMouseFunc(XInputMouseFunc f) {

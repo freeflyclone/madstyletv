@@ -112,9 +112,8 @@ public:
 		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit3"), 3);
 
 		XGLShape::Render(0.0);
-		for (imgQuadsIterator = imgQuads.begin(); imgQuadsIterator != imgQuads.end(); imgQuadsIterator++) {
-			(*imgQuadsIterator)->Render(0.0);
-		}
+		for (auto imgQuad : imgQuads)
+			imgQuad->Render(0.0);
 	}
 	
 	void MakeSubQuad(GLuint texId, glm::mat4 model) {
@@ -131,7 +130,6 @@ public:
 	int width, height;
 	XGLFramebuffer *frameBufferObject;
 	XGLShapeList imgQuads;
-	XGLShapeList::iterator imgQuadsIterator;
 	XGLShader *imgShader;
 	int *windowWidth, *windowHeight;
 };
