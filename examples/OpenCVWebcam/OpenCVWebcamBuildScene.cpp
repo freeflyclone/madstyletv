@@ -179,13 +179,12 @@ public:
 	GLubyte videoFrame[4][1920 * 1080 * 4];
 };
 
-CameraThread *pct;
-
 void ExampleXGL::BuildScene() {
 	ImageProcessing *shape;
 	const int camWidth = 1920;
 	const int camHeight = 1080;
 	const int camChannels = 3;
+	CameraThread *pct = new CameraThread("CameraThread", camWidth, camHeight, camChannels);
 
 	AddShape("shaders/imageproc", [&](){ shape = new ImageProcessing(camWidth, camHeight, camChannels); return shape; });
 	shape->windowWidth = &width;
@@ -197,9 +196,8 @@ void ExampleXGL::BuildScene() {
 	shape->model = translate * rotate * scale;
 
 	// animation function to grab a web cam frame from the web cam capture thread and upload it to texture memory
-	XGLShape::AnimaFunk getCameraFrame = [&](XGLShape *s, float clock) {
+	shape->SetTheFunk([pct](XGLShape *s, float clock) {
 		ImageProcessing *ipShape = (ImageProcessing *)s;
-
 		if (pct != NULL && pct->IsRunning() && (pct->frameNumber>3) ) {
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, ipShape->texIds[0]);
@@ -211,10 +209,8 @@ void ExampleXGL::BuildScene() {
 			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pct->width, pct->height, GL_BGR, GL_UNSIGNED_BYTE, pct->videoFrame[(pct->frameNumber-2)&3]);
 			GL_CHECK("glGetTexImage() didn't work");
 		}
-	};
-	shape->SetTheFunk(getCameraFrame);
+	});
 
-	pct = new CameraThread("CameraThread", camWidth, camHeight, camChannels);
 	pct->Start();
 
 	AddChild(pct);
