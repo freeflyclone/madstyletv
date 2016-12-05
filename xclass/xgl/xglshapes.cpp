@@ -19,13 +19,13 @@ XGLShape::~XGLShape(){
 	}
 }
 
-void XGLShape::SetTheFunk(XGLShape::AnimaFunk fn){
-    funk = fn;
+void XGLShape::SetAnimationFunction(XGLShape::AnimationFn fn){
+    animationFunction = fn;
 }
 
 void XGLShape::Animate(float clock){
-    if (funk)
-        funk(this, clock);
+	if (animationFunction)
+		animationFunction(this, clock);
 }
 
 void XGLShape::Transform(glm::mat4 tm){
