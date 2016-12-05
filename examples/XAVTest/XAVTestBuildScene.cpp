@@ -196,7 +196,7 @@ void ExampleXGL::BuildScene() {
 
 	AddShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
 	shape->attributes.diffuseColor = { 0.025, 0.025, 0.025, 1 };
-	shape->SetTheFunk([&](XGLShape *s, float clock) {
+	shape->SetAnimationFunction([&](XGLShape *s, float clock) {
 		float translateFunction = sin(clock / 60.0f);
 		glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(translateFunction*4.0f, 0.0f, 0.0f));
 		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 40.0f, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -213,7 +213,7 @@ void ExampleXGL::BuildScene() {
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	shape->model = translate * rotate * scale;
 
-	XGLShape::AnimaFunk transform = [&](XGLShape *s, float clock) {
+	XGLShape::AnimationFn transform = [&](XGLShape *s, float clock) {
 		if (pavp != NULL && pavp->IsRunning() && (ib.width != 0)) {
 
 			glProgramUniform1i(s->shader->programId, glGetUniformLocation(s->shader->programId, "texUnit0"), 0);
@@ -236,7 +236,7 @@ void ExampleXGL::BuildScene() {
 			GL_CHECK("glGetTexImage() didn't work");
 		}
 	};
-	shape->SetTheFunk(transform);
+	shape->SetAnimationFunction(transform);
 
 	// Initialize the Camera matrix
 	glm::vec3 cameraPosition(5, -20, 20);

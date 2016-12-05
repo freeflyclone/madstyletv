@@ -16,7 +16,7 @@
 
 class XGLShape : public XGLObject , public XGLBuffer, public XGLMaterial {
 public:
-    typedef std::function<void(XGLShape *, float)> AnimaFunk;
+    typedef std::function<void(XGLShape *, float)> AnimationFn;
 
     XGLShape();
     virtual ~XGLShape();
@@ -24,7 +24,7 @@ public:
 	virtual void Draw() {};
 
     void Animate(float clock);
-    void SetTheFunk(AnimaFunk);
+	void SetAnimationFunction(AnimationFn);
 
     void Transform(glm::mat4 tm);
 	void SetColor(XGLColor c);
@@ -35,9 +35,9 @@ public:
     XGLVertexList v;
     XGLIndexList idx;
 
-    AnimaFunk funk;
-	AnimaFunk preRenderFunction;
-	AnimaFunk postRenderFunction;
+	AnimationFn animationFunction;
+	AnimationFn preRenderFunction;
+	AnimationFn postRenderFunction;
 
 	glm::mat4 model;
 };
