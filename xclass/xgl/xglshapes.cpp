@@ -850,35 +850,3 @@ XGLGuiManager::XGLGuiManager(XGL *xgl, bool addTexture) : XGLGuiCanvas(xgl), pxg
 void XGLGuiManager::AddReshapeCallback(ReshapeCallback fn) {
 	reshapeCallbacks.push_back(fn);
 }
-
-XGLAntTweakBar::XGLAntTweakBar(XGL *xgl) : pxgl(xgl), flags(0) {
-	SetName("XGLAntTweakBar");
-	TwInit(TW_OPENGL_CORE, NULL);
-	bar = TwNewBar("MadStyle");
-
-	TwDefine("MadStyle color='63 63 63' label='MadStyle TV AntTweakBar Integration Testing' size='400 300'");
-
-	pxgl->projector.AddReshapeCallback([this](int w, int h) { TwWindowSize(w, h); });
-	pxgl->AddMouseFunc([this](int x, int y, int f){
-		int button = (f ^ flags);
-		int action = (f & 0xF) ? 1 : 0;
-
-		if (button) {
-			button--;
-			TwEventMouseButtonGLFW(button, action);
-		}
-
-		TwEventMousePosGLFW(x, y);
-		flags = f;
-	});
-}
-
-XGLAntTweakBar::~XGLAntTweakBar() {
-	TwRemoveAllVars(bar);
-	TwDeleteBar(bar);
-	TwTerminate(); 
-}
-
-void XGLAntTweakBar::Draw() {
-	TwDraw(); 
-}

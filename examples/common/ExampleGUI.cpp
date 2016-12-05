@@ -85,14 +85,5 @@ void ExampleXGL::BuildGUI() {
 		g3->attributes.diffuseColor = { 1.0, 1.0, 0.0, 0.5 };
 	}
 
-	// The final window in the GUI stack is a wrapper for AntTweakBar, for development
-	// purposes.  Not sure if I'm going to keep this, but it seemed like a good idea
-	// when I integrated it.  Unfortunately, it doesn't look professional enough
-	// for end-product use, IMHO, and is lacking features that I want.
-	bool enableAntTweakBar = false;
-	if (enableAntTweakBar) {
-		gm->AddChildShape("shaders/tex", [&]() { return new XGLAntTweakBar(this); });
-	}
-
 	return;
 }
