@@ -24,17 +24,17 @@ void ExampleXGL::BuildGUI() {
 	bool exampleTextWindow = true;
 	if (exampleTextWindow) {
 		XGLGuiCanvas *g2;
-		gm->AddChildShape("shaders/ortho-tex", [&]() { g2 = new XGLGuiCanvas(this, 380, 120); return g2; });
+		gm->AddChildShape("shaders/ortho-tex", [&]() { g2 = new XGLGuiCanvas(this, 304, 24); return g2; });
 		g2->model = glm::translate(glm::mat4(), glm::vec3(20, 20, 0));
 		g2->attributes.diffuseColor = { 1.0, 1.0, 0.0, 0.8 };
-		g2->SetPenPosition(10, 24);
-		g2->RenderText("This box is pinned to the upper left corner\n\nThis is at the same GUI stack hierarchy level\nas the background canvas, and therefore\n should be \"under\" what gets created later.", 16);
+		g2->SetPenPosition(4, 17);
+		g2->RenderText("This box is pinned to the upper left corner", 16);
 	}
 
 	bool exampleTextWindow2 = true;
 	if (exampleTextWindow2) {
 		XGLGuiCanvas *g2;
-		gm->AddChildShape("shaders/ortho-tex", [&]() { g2 = new XGLGuiCanvas(this, 380, 120); return g2; });
+		gm->AddChildShape("shaders/ortho-tex", [&]() { g2 = new XGLGuiCanvas(this, 324, 84); return g2; });
 		g2->model = glm::translate(glm::mat4(), glm::vec3(800, 20, 0));
 		g2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.8 };
 		gm->AddReshapeCallback([g2](int w, int h) {
