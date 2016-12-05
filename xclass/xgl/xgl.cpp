@@ -149,28 +149,16 @@ void XGL::RenderScene(XGLShapesMap *shapes) {
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(shaderMatrix), (GLvoid *)&shaderMatrix, GL_DYNAMIC_DRAW);
 	GL_CHECK("glBufferData() failed");
 
-
-    // iterate through all of the shaders...
-	XGLShapesMap::iterator perShader;
-    // ... then iterate through all shapes associated with the current shader 
-    XGLShapeList::iterator eachShape;
-    // pointer to an XGLShape from the perShape iterator
-    XGLShape *shape;
-
-	for (perShader = shapes->begin(); perShader != shapes->end(); perShader++) {
-		XGLShapeList *shapeList = perShader->second;
-		std::string name = perShader->first;
-		XGLShader *shader = shaderMap[name];
+	for (auto perShader : *shapes) {
+		XGLShader *shader = shaderMap[perShader.first];
 		
 		shader->Use();
 
 		glUniform3fv(glGetUniformLocation(shader->programId, "cameraPosition"), 1, (GLfloat*)glm::value_ptr(camera.pos));
 		GL_CHECK("glUniform3fv() failed");
 
-		for (eachShape = shapeList->begin(); eachShape != shapeList->end(); eachShape++) {
-			shape = *eachShape;
+		for (auto shape : *(perShader.second))
 			shape->Render(clock);
-		}
 
         shader->UnUse();
     }
@@ -205,23 +193,14 @@ void XGL::Display(){
 }
 
 void XGL::PreRender() {
-	// iterate through all of the shaders...
-	XGLShapesMap::iterator perShader;
-	XGLShapeList::iterator eachShape;
-	XGLShape *shape;
-
-	for (perShader = shapes.begin(); perShader != shapes.end(); perShader++) {
-		XGLShapeList *shapeList = perShader->second;
-		std::string name = perShader->first;
-		XGLShader *shader = shaderMap[name];
-
+	for (auto perShader : shapes) {
+		XGLShader *shader = shaderMap[perShader.first];
+		
 		shader->Use();
 
-		for (eachShape = shapeList->begin(); eachShape != shapeList->end(); eachShape++) {
-			shape = *eachShape;
+		for (auto shape : *(perShader.second))
 			if (shape->preRenderFunction)
 				shape->preRenderFunction(shape, clock);
-		}
 
 		shader->UnUse();
 	}
@@ -279,24 +258,12 @@ void XGL::AddGuiShape(std::string shName, XGLNewShapeLambda fn){
 }
 
 void XGL::IterateShapesMap(){
-    // iterate through all of the shapes, according to which shader they use
-    XGLShapesMap::iterator perShader = shapes.begin();
-
-    // iterate through all shapes associated with a particular shader 
-    XGLShapeList::iterator perShape;
-
-    // pointer to an XGLShader from the shaderMap
-    XGLShader *shader;
-
-    for (perShader = shapes.begin(); perShader != shapes.end(); perShader++) {
-        std::string name = perShader->first;
-        shader = shaderMap[name];
+	for (auto perShader : shapes) {
+        XGLShader *shader = shaderMap[perShader.first];
 		xprintf("XGL::IterateShapesMap(): '%s', shader->shader: %d\n", name.c_str(), shader->programId);
 
-        for (perShape = perShader->second->begin(); perShape != perShader->second->end(); perShape++) {
-            XGLShape *shape = *perShape;
+		for (auto shape : *(perShader.second))
 			xprintf("   shape->b: vao:%d, vbo:%d, program:%d\n", shape->vao, shape->vbo, shape->shader->programId);
-        }
     }
 }
 

@@ -13,16 +13,14 @@ void XAV::AddSrc(const std::shared_ptr<XAVSrc> src) {
 }
 
 void XAV::Run() {
-	std::vector<std::shared_ptr<XAVSrc> >::iterator i;
-
-	for(i=mSrcs.begin(); i!= mSrcs.end(); i++) 
-		i->get()->Start();
+	for (auto i : mSrcs)
+		i.get()->Start();
 		
-	for (i = mSrcs.begin(); i != mSrcs.end(); i++)
-		i->get()->Stop();
+	for (auto i : mSrcs)
+		i.get()->Stop();
 
-	for (i = mSrcs.begin(); i != mSrcs.end(); i++)
-		i->get()->WaitForJoin();
+	for (auto i : mSrcs)
+		i.get()->WaitForJoin();
 
 	Stop();
 }

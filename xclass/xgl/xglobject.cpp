@@ -23,28 +23,26 @@ void XGLObject::AddChild(XGLObject *c) {
 
 void XGLObject::DumpChildren()
 {
-	XGLObjectChildren::iterator ci;
+	static int level = 0;
 	int i = 0;
 
-	for (ci = uchildren->begin(); ci != uchildren->end(); ci++, i++) {
-		XGLObjectPtr xo = *ci;
-		xprintf("Child: %d, name: %s\n", i, xo->name.c_str());
-		xo->DumpChildren();
+	for (auto child : Children()) {
+		xprintf("Level: %d, Child: %d: '%s'\n", level, i++, child->name.c_str());
+		level++;
+		child->DumpChildren();
+		level--;
 	}
 }
 
 XGLObjectPtr XGLObject::FindObject(std::string name) {
 	static XGLObjectPtr found = nullptr;
-	XGLObjectChildren::iterator ci;
-	int i = 0;
 
-	for (ci = uchildren->begin(); ci != uchildren->end(); ci++, i++) {
-		XGLObjectPtr xo = *ci;
-		if (xo->name == name) {
-			found = xo;
+	for (auto child : Children()) {
+		if (child->name == name) {
+			found = child;
 			break;
 		}
-		xo->FindObject(name);
+		child->FindObject(name);
 	}
 
 	return found;

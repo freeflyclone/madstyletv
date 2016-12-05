@@ -54,13 +54,9 @@ void XGLShape::Render(float clock) {
 	if (v.size()>0)
 		Unbind();
 
-	XGLObjectChildren children = Children();
-	if (children.size()) {
-		XGLObjectChildren::iterator ci;
-		for (ci = children.begin(); ci != children.end(); ci++) {
-			XGLShape* childShape = (XGLShape *)*ci;
-			childShape->Render(model * childShape->model, clock);
-		}
+	for (auto child : Children()) {
+		XGLShape *childShape = (XGLShape *)child;
+		childShape->Render(model * childShape->model, clock);
 	}
 }
 
@@ -78,13 +74,9 @@ void XGLShape::Render(glm::mat4 modelChain, float clock) {
 	if (v.size()>0)
 		Unbind();
 
-	XGLObjectChildren children = Children();
-	if (children.size()) {
-		XGLObjectChildren::iterator ci;
-		for (ci = children.begin(); ci != children.end(); ci++) {
-			XGLShape* childShape = (XGLShape *)*ci;
-			childShape->Render(modelChain * childShape->model, clock);
-		}
+	for (auto child : Children()) {
+		XGLShape *childShape = (XGLShape *)child;
+		childShape->Render(modelChain * childShape->model, clock);
 	}
 }
 
@@ -789,9 +781,8 @@ bool XGLGuiCanvas::MouseEvent(float x, float y, int flags) {
 	if (mouseFunc) {
 		retVal = mouseFunc(x, y, flags);
 
-		if (mouseEventListeners.size() > 0 && HasMouse() )
-			for (MouseEventListeners::iterator it = mouseEventListeners.begin(); it < mouseEventListeners.end(); it++)
-				(*it)(x, y, flags);
+		for (auto fn : mouseEventListeners)
+			fn(x, y, flags);
 	}
 	return retVal;
 }
@@ -842,8 +833,8 @@ XGLGuiManager::XGLGuiManager(XGL *xgl, bool addTexture) : XGLGuiCanvas(xgl), pxg
 	pxgl->AddKeyFunc('~', PresentGuiCanvas);
 
 	xgl->projector.AddReshapeCallback([this](int w, int h) {
-		for (ReshapeCallbackList::iterator rc = reshapeCallbacks.begin(); rc < reshapeCallbacks.end(); rc++)
-			(*rc)(w, h);
+		for ( auto rc : reshapeCallbacks )
+			rc(w, h);
 	});
 }
 

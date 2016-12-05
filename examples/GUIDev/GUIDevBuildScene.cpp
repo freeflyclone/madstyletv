@@ -33,4 +33,5 @@ void ExampleXGL::BuildScene() {
 			});
 		}
 	}
+	GetGuiRoot()->DumpChildren();
 }

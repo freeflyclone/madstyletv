@@ -174,15 +174,6 @@ XGLFont::XGLFont() : atlasWidth(0), atlasHeight(0), atlasPageCount(0), bitmapPag
 			if (it == charMap.end())
 				break;
 		}
-		// at this point there should be a 1:1 between charMap and glyphMap.
-		XGLFont::CharMap::iterator cit = charMap.begin();
-		XGLFont::GlyphMap::iterator git = glyphMap.begin();	
-		for (; git != glyphMap.end(); cit++, git++){
-			XGLGlyph xg = git->second;
-			FT_UInt index = cit->second;
-			if (xg.index != index)
-				xprintf("MisMatch: %d vs %d\n", index, xg.index);
-		}		
 	}
 }
 

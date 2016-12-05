@@ -62,12 +62,13 @@ void XAL::AddBuffers(int count) {
 }
 
 void XAL::QueueBuffers(int numSamplesToQueue, int numBuffsToQueue) {
-	XALShortBuffer::iterator it;
-	int i;
+	int i = 0;
 
-	for (i=0, it = shortBuffers.begin(); (it != shortBuffers.end()) && (i<numBuffsToQueue); it++,i++) {
-		alBufferData(alBufferIds[i], format, it->data(), numSamplesToQueue * sizeof(AudioSampleShort), sampleRate);
+	for (auto it : shortBuffers) {
+		alBufferData(alBufferIds[i++], format, it.data(), numSamplesToQueue * sizeof(AudioSampleShort), sampleRate);
 		AL_CHECK("alBufferData() failed");
+		if (i == numBuffsToQueue)
+			break;
 	}
 }
 
@@ -147,9 +148,9 @@ void XAL::Restart() {
 
 void XAL::TestTone(int count) {
 	XALShortBuffer::iterator it;
-	int i;
+	int i=count;
 
-	for (i=0, it = shortBuffers.begin(); (it != shortBuffers.end()) && (i<count); it++,i++) {
+	for (it = shortBuffers.begin(); (it != shortBuffers.end()); it++) {
 		AudioSampleShort *s = it->data();
 
 		for (int j = 0; j < AUDIO_SAMPLES; j++) {
@@ -157,6 +158,9 @@ void XAL::TestTone(int count) {
 			s[j].left = (short)(sin(value) * 32767.0);
 			s[j].right = (short)(sin(value) * 32767.0);
 		}
+		i--;
+		if (i == 0)
+			break;
 	}
 }
 

@@ -12,14 +12,8 @@ void XGLProjector::Reshape() {
 	glViewport(0, 0, width, height);
 	GL_CHECK("glViewport() failed");
 
-	if (callbacks.size() > 0) {
-		ReshapeCallbackList::iterator cbi;
-
-		for (cbi = callbacks.begin(); cbi < callbacks.end(); cbi++) {
-			ReshapeFunc fn = *cbi;
-			fn(width, height);
-		}
-	}
+	for (auto fn : callbacks)
+		fn(width, height);
 }
 
 void XGLProjector::AddReshapeCallback(ReshapeFunc fn) {
