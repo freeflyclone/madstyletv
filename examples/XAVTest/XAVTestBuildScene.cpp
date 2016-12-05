@@ -196,12 +196,11 @@ void ExampleXGL::BuildScene() {
 
 	AddShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
 	shape->attributes.diffuseColor = { 0.025, 0.025, 0.025, 1 };
-	shape->SetAnimationFunction([&](XGLShape *s, float clock) {
+	shape->SetAnimationFunction([shape](float clock) {
 		float translateFunction = sin(clock / 60.0f);
 		glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(translateFunction*4.0f, 0.0f, 0.0f));
 		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 40.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-
-		s->model = translate * rotate;
+		shape->model = translate * rotate;
 	});
 
 	AddShape("shaders/yuv", [&](){ shape = new XGLTexQuad(VIDEO_WIDTH,VIDEO_HEIGHT,1); return shape; });
@@ -213,25 +212,24 @@ void ExampleXGL::BuildScene() {
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	shape->model = translate * rotate * scale;
 
-	shape->SetAnimationFunction([&](XGLShape *s, float clock) {
+	shape->SetAnimationFunction([shape](float clock) {
 		if (pavp != NULL && pavp->IsRunning() && (ib.width != 0)) {
-
-			glProgramUniform1i(s->shader->programId, glGetUniformLocation(s->shader->programId, "texUnit0"), 0);
-			glProgramUniform1i(s->shader->programId, glGetUniformLocation(s->shader->programId, "texUnit1"), 1);
-			glProgramUniform1i(s->shader->programId, glGetUniformLocation(s->shader->programId, "texUnit2"), 2);
+			glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit0"), 0);
+			glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit1"), 1);
+			glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit2"), 2);
 
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, s->texIds[0]);
+			glBindTexture(GL_TEXTURE_2D, shape->texIds[0]);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.width, ib.height, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)ib.y);
 			GL_CHECK("glGetTexImage() didn't work");
 
 			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, s->texIds[1]);
+			glBindTexture(GL_TEXTURE_2D, shape->texIds[1]);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.chromaWidth, ib.chromaHeight, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)ib.u);
 			GL_CHECK("glGetTexImage() didn't work");
 
 			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, s->texIds[2]);
+			glBindTexture(GL_TEXTURE_2D, shape->texIds[2]);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.chromaWidth, ib.chromaHeight, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)ib.v);
 			GL_CHECK("glGetTexImage() didn't work");
 		}

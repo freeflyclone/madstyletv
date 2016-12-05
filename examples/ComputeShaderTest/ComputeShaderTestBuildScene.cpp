@@ -39,7 +39,7 @@ void ExampleXGL::BuildScene() {
 
 	shape->AddTexture(texHandle);
 
-	shape->preRenderFunction = [&](XGLShape *s, float clock) {
+	shape->preRenderFunction = [shape](float clock) {
 		glUseProgram(computeShader->programId);
 		glUniform1f(glGetUniformLocation(computeShader->programId, "roll"), (float)clock*0.05f);
 		glDispatchCompute(512 / 16, 512 / 16, 1); // 512^2 threads in blocks of 16^2
