@@ -40,8 +40,7 @@ void ExampleXGL::BuildScene() {
 	XGLShader *computeShader = new XGLShader("shaders/compute-shader");
 	computeShader->CompileCompute(pathToAssets + "/shaders/compute-shader");
 
-	// and cause it to be "dispatched" in the preRender phase for this
-	// XGLTexQuad instance
+	// and cause it to be "dispatched" in the preRender phase
 	shape->preRenderFunction = [computeShader](float clock) {
 		glUseProgram(computeShader->programId);
 		glUniform1f(glGetUniformLocation(computeShader->programId, "roll"), (float)clock*0.05f);
