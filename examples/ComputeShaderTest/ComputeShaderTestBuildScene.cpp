@@ -7,8 +7,6 @@
 **************************************************************/
 #include "ExampleXGL.h"
 
-XGLShader *computeShader;
-
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 	glm::mat4 translate, scale, rotate;
@@ -20,7 +18,7 @@ void ExampleXGL::BuildScene() {
 	shape->model = translate*rotate*scale;
 	shape->attributes.diffuseColor = { 1, 1, 1, 1.0 };
 
-	computeShader = new XGLShader("shaders/compute-shader");
+	XGLShader *computeShader = new XGLShader("shaders/compute-shader");
 	computeShader->CompileCompute(pathToAssets + "/shaders/compute-shader");
 
 	GLuint texHandle;
@@ -39,7 +37,7 @@ void ExampleXGL::BuildScene() {
 
 	shape->AddTexture(texHandle);
 
-	shape->preRenderFunction = [shape](float clock) {
+	shape->preRenderFunction = [computeShader](float clock) {
 		glUseProgram(computeShader->programId);
 		glUniform1f(glGetUniformLocation(computeShader->programId, "roll"), (float)clock*0.05f);
 		glDispatchCompute(512 / 16, 512 / 16, 1); // 512^2 threads in blocks of 16^2
