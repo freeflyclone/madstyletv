@@ -30,12 +30,12 @@ void ExampleXGL::BuildScene() {
 	// to highlight use of the callback function for animation of a shape.  Note that this function
 	// runs once per frame BEFORE the shape's geomentry is rendered.  A lot can
 	// be done here. Hint: scripting, physics(?)
-	shape->SetAnimationFunction([&](XGLShape *s, float clock) {
+	shape->SetAnimationFunction([shape](float clock) {
 		float sinFunc = sin(clock / 40.0f) * 10.0f;
 		float cosFunc = cos(clock / 40.0f) * 10.0f;
 		glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(9.6f, 5.4f, 1.0f));
 		glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(cosFunc, sinFunc, 5.4f));
 		glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		s->model = translate * rotate * scale;
+		shape->model = translate * rotate * scale;
 	});
 }

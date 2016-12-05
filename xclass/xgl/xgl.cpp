@@ -200,7 +200,7 @@ void XGL::PreRender() {
 
 		for (auto shape : *(perShader.second))
 			if (shape->preRenderFunction)
-				shape->preRenderFunction(shape, clock);
+				shape->preRenderFunction(clock);
 
 		shader->UnUse();
 	}

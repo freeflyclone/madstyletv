@@ -14,15 +14,15 @@ void ExampleXGL::BuildScene() {
 	glm::mat4 rotate, translate;
 	AddShape("shaders/specular", [&](){ shape = new XGLTorus(5.0f, 1.0f, 64, 32); return shape; });
 	shape->attributes.diffuseColor = { 0.005, 0.005, 0.005, 1 };
-	shape->SetAnimationFunction([&](XGLShape *s, float clock) {
+	shape->SetAnimationFunction([shape](float clock) {
 		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 60.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-		s->model = rotate;
+		shape->model = rotate;
 	});
 	CreateShape("shaders/specular", [&](){ child3 = new XGLTransformer(); return child3; });
-	child3->SetAnimationFunction([&](XGLShape *s, float clock) {
+	child3->SetAnimationFunction([child3](float clock) {
 		float translateFunction = sin(clock / 180.0f);
 		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 45.0f, glm::vec3(0.0f, 0.0f, 1.0f));
-		s->model = rotate;
+		child3->model = rotate;
 	});
 	shape->AddChild(child3);
 
@@ -33,10 +33,10 @@ void ExampleXGL::BuildScene() {
 	child4->model = translate * rotate;
 
 	CreateShape("shaders/000-simple", [&](){ child1 = new XGLTransformer(); return child1; });
-	child1->SetAnimationFunction([&](XGLShape *s, float clock) {
+	child1->SetAnimationFunction([child1](float clock) {
 		float translateFunction = sin(clock / 180.0f);
 		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 30.0f, glm::vec3(0.0f, 0.0f, 1.0f));
-		s->model = rotate;
+		child1->model = rotate;
 	});
 
 	CreateShape("shaders/specular", [&](){ child2 = new XGLTorus(0.75f, 0.25f, 64, 32); return child2; });

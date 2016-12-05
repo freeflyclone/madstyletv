@@ -196,8 +196,8 @@ void ExampleXGL::BuildScene() {
 	shape->model = translate * rotate * scale;
 
 	// animation function to grab a web cam frame from the web cam capture thread and upload it to texture memory
-	shape->SetAnimationFunction([pct](XGLShape *s, float clock) {
-		ImageProcessing *ipShape = (ImageProcessing *)s;
+	shape->SetAnimationFunction([pct,shape](float clock) {
+		ImageProcessing *ipShape = (ImageProcessing *)shape;
 		if (pct != NULL && pct->IsRunning() && (pct->frameNumber>3) ) {
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, ipShape->texIds[0]);

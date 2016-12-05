@@ -51,7 +51,7 @@ void PhysXXGL::initPhysics(bool interactive)
 	std::string shaderName = "shaders/specular";
 	AddShape(shaderName, [&]() { renderer = new PhysxRenderer(this); return renderer; });
 	renderer->Init(GetShader(shaderName));
-	renderer->SetAnimationFunction([&](XGLShape *s, float clock) {
+	renderer->SetAnimationFunction([this](float clock) {
 		if (clock > renderer->prevClock) {
 			stepPhysics(true);
 			renderer->prevClock = clock;

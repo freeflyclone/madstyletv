@@ -12,11 +12,10 @@
 #include "xglbuffer.h"
 #include "xglshader.h"
 #include "xglmaterial.h"
-//#include "AntTweakBar.h"
 
 class XGLShape : public XGLObject , public XGLBuffer, public XGLMaterial {
 public:
-    typedef std::function<void(XGLShape *, float)> AnimationFn;
+    typedef std::function<void(float)> AnimationFn;
 
     XGLShape();
     virtual ~XGLShape();

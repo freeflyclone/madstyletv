@@ -25,7 +25,7 @@ void XGLShape::SetAnimationFunction(XGLShape::AnimationFn fn){
 
 void XGLShape::Animate(float clock){
 	if (animationFunction)
-		animationFunction(this, clock);
+		animationFunction(clock);
 }
 
 void XGLShape::Transform(glm::mat4 tm){
