@@ -12,7 +12,7 @@
 #include "xglbuffer.h"
 #include "xglshader.h"
 #include "xglmaterial.h"
-#include "AntTweakBar.h"
+//#include "AntTweakBar.h"
 
 class XGLShape : public XGLObject , public XGLBuffer, public XGLMaterial {
 public:
@@ -218,18 +218,5 @@ public:
 	int padding;
 	ReshapeCallbackList reshapeCallbacks;
 };
-
-class XGLAntTweakBar : public XGLShape {
-public:
-	XGLAntTweakBar(XGL *xgl);
-	~XGLAntTweakBar();
-
-	void Draw();
-
-	XGL *pxgl;
-	int flags;
-	TwBar *bar;
-};
-
 
 #endif // XGLSHAPES_H
