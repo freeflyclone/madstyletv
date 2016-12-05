@@ -19,7 +19,6 @@ CXXFLAGS +=-std=c++14\
 	-I${XGLDIR}/glm/gtc \
 	-I${THIRDPARTYDIR}/soil/src \
 	-I${THIRDPARTYDIR}/freetype/include/freetype2 \
-	-I${THIRDPARTYDIR}/anttweakbar/include \
 	-I${XCLASSDIR} \
 	-I${EXAMPLESDIR}/common \
 	-I${EXAMPLESDIR}/PhysXTest \
@@ -48,12 +47,11 @@ COMMONOBJS = $(patsubst %.cpp,%.o,${COMMON})
 LDFLAGS +=\
 	-L${XCLASSDIR} \
 	-L${THIRDPARTYDIR}/glfw/lib \
-	-L${THIRDPARTYDIR}/anttweakbar/lib \
 	-L${PHYSXDIR}/Lib/linux64 \
 	-L${PHYSXDIR}/Bin/linux64 \
 	-L/usr/lib/x86_64-linux-gnu
 
-LIBS=-lxclass -lglfw3 -lAntTweakBar -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXinerama -lXcursor -lpthread -lexpat -lfreetype -lopencv_core -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d -lavformat -lavcodec -lavutil
+LIBS=-lxclass -lglfw3 -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXinerama -lXcursor -lpthread -lexpat -lfreetype -lopencv_core -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d -lavformat -lavcodec -lavutil
 
 OPENCV_LIBS=-lopencv_flann -lopencv_gpu -lopencv_highgui -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_objdetect -lopencv_ocl -lopencv_photo -lopencv_stitching -lopencv_superres -lopencv_ts -lopencv_video -lopencv_videostab
 

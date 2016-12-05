@@ -31,7 +31,6 @@ examples/XAVTest/XAVTestBuildScene.cpp
 linux/physx-main.cpp
 osx/common/AppDelegate.h
 osx/common/OpenGLView.h
-xclass/3rdParty/anttweakbar/include/AntTweakBar.h
 xclass/3rdParty/bzip2/include/bzlib.h
 xclass/3rdParty/bzip2/include/bzlib_private.h
 xclass/3rdParty/expat/include/expat.h
