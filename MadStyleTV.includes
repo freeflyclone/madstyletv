@@ -5,7 +5,6 @@ examples/PhysXTest
 examples/SDFTest
 osx/common
 xclass
-xclass/3rdParty/anttweakbar/include
 xclass/3rdParty/bzip2/include
 xclass/3rdParty/expat/include
 xclass/3rdParty/freetype/include/freetype2
