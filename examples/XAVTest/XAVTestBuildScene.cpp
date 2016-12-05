@@ -213,7 +213,7 @@ void ExampleXGL::BuildScene() {
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	shape->model = translate * rotate * scale;
 
-	XGLShape::AnimationFn transform = [&](XGLShape *s, float clock) {
+	shape->SetAnimationFunction([&](XGLShape *s, float clock) {
 		if (pavp != NULL && pavp->IsRunning() && (ib.width != 0)) {
 
 			glProgramUniform1i(s->shader->programId, glGetUniformLocation(s->shader->programId, "texUnit0"), 0);
@@ -235,8 +235,7 @@ void ExampleXGL::BuildScene() {
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.chromaWidth, ib.chromaHeight, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)ib.v);
 			GL_CHECK("glGetTexImage() didn't work");
 		}
-	};
-	shape->SetAnimationFunction(transform);
+	});
 
 	// Initialize the Camera matrix
 	glm::vec3 cameraPosition(5, -20, 20);
