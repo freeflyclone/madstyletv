@@ -21,13 +21,13 @@
     <ClCompile Include="..\common\ExampleXGL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\common\ExampleGUI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ComputeShaderTestBuildScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\common\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ComputeShaderGUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
