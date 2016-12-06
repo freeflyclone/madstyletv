@@ -19,6 +19,13 @@ namespace {
 		g4->Reshape(0, 0, 16, 16);
 		g4->model = glm::translate(glm::mat4(), glm::vec3(0.0, height - 16, 0.0));
 
+		gc->AddChildShape("shaders/ortho-tex", [xgl, &g4, height]() { g4 = new XGLGuiCanvas(xgl, 60, 20); return g4; });
+		g4->SetName("Label");
+		g4->attributes.diffuseColor = { 1.0, 1.0, 1.0, 1.0 };
+		g4->model = glm::translate(glm::mat4(), glm::vec3(-22.0, height + 20.0, 0.0));
+		g4->SetPenPosition(4, 13);
+		g4->RenderText("Roll Rate", 12);
+
 		gc->SetMouseFunc([xgl, gc](float x, float y, int flags){
 			if (flags & 1) {
 				XGLGuiCanvas *slider = (XGLGuiCanvas *)(gc->Children()[1]);
@@ -47,6 +54,7 @@ namespace {
 		XGLGuiCanvas *g;
 
 		gm->AddChildShape("shaders/ortho", [&]() { g = new XGLGuiCanvas(xgl, 300, 500); return g; });
+		g->SetName("SliderWindow");
 		g->model = glm::translate(glm::mat4(), glm::vec3(60, 60, 0));
 		g->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.1 };
 
