@@ -19,6 +19,7 @@ class XGLFramebuffer : public XGLObject {
 public:
 	static const int renderWidth = 3840;
 	static const int renderHeight = 2160;
+	static const int multiSamples = 8;
 
 	XGLFramebuffer(int w, int h, bool withColor = true, bool withDepth = true, GLuint texId = 0);
 	virtual ~XGLFramebuffer();
