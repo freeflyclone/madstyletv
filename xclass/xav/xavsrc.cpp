@@ -1,6 +1,6 @@
 #include "xavsrc.h"
 
-XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES), pStream(NULL), streamIdx(0), streamTime(0.0) {
+XAVStream::XAVStream(AVCodecContext *ctx) : freeBuffs(numFrames), pStream(NULL), streamIdx(0), streamTime(0.0) {
 	pCodecCtx = ctx;
 
 	pCodec=avcodec_find_decoder(pCodecCtx->codec_id);
@@ -20,7 +20,7 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES), pStream(N
 		xprintf("              height: %d\n", pCodecCtx->height);
 		numBytes = av_image_get_buffer_size(pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height,8);
 
-		AllocateBufferPool(XAV_NUM_FRAMES, numBytes, 3);
+		AllocateBufferPool(numFrames, numBytes, 3);
 		width = pCodecCtx->width;
 		height = pCodecCtx->height;
 
@@ -64,10 +64,10 @@ XAVStream::XAVStream(AVCodecContext *ctx) :	freeBuffs(XAV_NUM_FRAMES), pStream(N
 
 void XAVStream::AllocateBufferPool(int number, int size, int channels) {
 	// TODO: make this number dynamic
-	if (number != XAV_NUM_FRAMES)
-		throwXAVException("number != XAV_NUM_FRAMES");
+	if (number != numFrames)
+		throwXAVException("number != bumFrames");
 
-	if ((channels<1) || (channels>XAV_MAX_CHANNELS))
+	if ((channels<1) || (channels>maxChannels))
 		throwXAVException("channels count is out of bounds: "+std::to_string(channels));
 
 	for (int i = 0; i < number; i++) {
@@ -92,7 +92,7 @@ bool XAVStream::Decode(AVPacket *packet)
 		avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, packet);
 		if( frameFinished ) {
 			freeBuffs.wait_for(200);
-			int frameIdx = (nFramesDecoded - 1) & (XAV_NUM_FRAMES - 1);
+			int frameIdx = (nFramesDecoded - 1) & (numFrames - 1);
 
 			XAVBuffer xb = frames[frameIdx];
 
@@ -148,12 +148,12 @@ bool XAVStream::Decode(AVPacket *packet)
 		int length = avcodec_decode_audio4(pCodecCtx, pFrame, &frameFinished, packet);
 		if (frameFinished){
 			if (nFramesDecoded == 0)
-				AllocateBufferPool(XAV_NUM_FRAMES, pFrame->nb_samples * formatSize, channels);
+				AllocateBufferPool(numFrames, pFrame->nb_samples * formatSize, channels);
 
 			freeBuffs.wait_for(200);
 
 			// replace all of this mumbo with an XFifo
-			int frameIdx = (nFramesDecoded - 1) & (XAV_NUM_FRAMES - 1);
+			int frameIdx = (nFramesDecoded - 1) & (numFrames - 1);
 			XAVBuffer xb = frames[frameIdx];
 
 			xb.nChannels = channels;
@@ -170,13 +170,13 @@ bool XAVStream::Decode(AVPacket *packet)
 	return true;
 }
 
-XAVBuffer XAVStream::GetBuffer() {
+XAVStream::XAVBuffer XAVStream::GetBuffer() {
 	if (!usedBuffs.wait_for(1000)) {
 		xprintf("XAVStream::GetBuffer() timed out\n");
 		return XAVBuffer{ { NULL, NULL, NULL }, 0, 0 };
 	}
 
-	int frameIdx = nFramesRead & (XAV_NUM_FRAMES - 1);
+	int frameIdx = nFramesRead & (numFrames - 1);
 	XAVBuffer xb = frames[frameIdx];
 	freeBuffs.notify();
 	nFramesRead++;

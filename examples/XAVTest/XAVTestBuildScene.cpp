@@ -46,7 +46,7 @@ public:
 			int size;
 
 			while (IsRunning()) {
-				XAVBuffer image = stream->GetBuffer();
+				XAVStream::XAVBuffer image = stream->GetBuffer();
 				if (image.buffers[0] == NULL) {
 					Stop();
 					break;
@@ -98,9 +98,9 @@ public:
 class AudioStreamThread : public XThread {
 public:
 	AudioStreamThread(std::shared_ptr<XAVStream> s) : 
-		XThread("AudioStreamThread"), stream(s), xal(NULL, s->sampleRate, AL_FORMAT_STEREO16, XAV_NUM_FRAMES) 
+		XThread("AudioStreamThread"), stream(s), xal(NULL, s->sampleRate, XAL::defaultFormat, XAVStream::numFrames)
 	{
-		xal.AddBuffers(XAV_NUM_FRAMES);
+		xal.AddBuffers(XAVStream::numFrames);
 		xal.QueueBuffers();
 		xal.Play();
 	}
@@ -109,7 +109,7 @@ public:
 		while (IsRunning()) {
 			xal.WaitForProcessedBuffer();
 
-			XAVBuffer audio = stream->GetBuffer();
+			XAVStream::XAVBuffer audio = stream->GetBuffer();
 
 			if (audio.buffers[0] == NULL) {
 				xal.Stop();
