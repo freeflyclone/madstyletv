@@ -112,7 +112,7 @@ void XGLFramebuffer::Render(XGLFBORender renderFunc){
 
 #define SAMPLES 8
 
-XGLSharedFBO::XGLSharedFBO(XGL *context) : XSharedMem(DEFAULT_FILE_NAME), pXGL(context), msFbo(NULL), ssFbo(NULL), encoder(NULL), encWidth(0), encHeight(0) {
+XGLSharedFBO::XGLSharedFBO(XGL *context) : XSharedMem(shmemDefaultFile), pXGL(context), msFbo(NULL), ssFbo(NULL), encoder(NULL), encWidth(0), encHeight(0) {
 	// blit only FBO, no depth needed, adding multisampled color attachment
 	msFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, false, false);
 

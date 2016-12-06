@@ -5,27 +5,22 @@
 
 #ifdef WIN32
 #include <Windows.h>
-#define DEFAULT_FILE_NAME "C:\\vcam_buffer.dat"
+	const std::string shmemDefaultFile("C:\\vcam_buffer.dat");
 #else
-#define DEFAULT_FILE_NAME "vcam_buffer.dat"
+const std::string shmemDefaultFile("vcam_buffer.dat");
 #endif
-
-// (virtual memory quantum) at the front for IPC usage
-#define PAGE_SIZE 4096
-
-// TBD: this is cheesy. Room for one 1080p video frame plus a "page"
-#define FILEMAPPING_SIZE (PAGE_SIZE+(1920*1080*4))
-
-typedef struct {
-	unsigned int width;
-	unsigned int height;
-	unsigned int bytesPerPixel;
-	unsigned char reserved[4084];
-} MAPPED_HEADER;
-
 
 class XSharedMem {
 public:
+	static const int pageSize = 4096;
+	static const int fileMappingSize = pageSize + 1920 * 1080 * 4;
+	typedef struct {
+		unsigned int width;
+		unsigned int height;
+		unsigned int bytesPerPixel;
+		unsigned char reserved[pageSize - 3*sizeof(unsigned int)];
+	} MAPPED_HEADER;
+
 	XSharedMem(std::string n);
 	
 	unsigned char *mappedHeader;
