@@ -59,5 +59,23 @@
     <None Include="..\..\shaders\gui-tex.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\shaders\ortho.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\ortho.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\ortho-tex.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\ortho-tex.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\ortho-rgb.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\ortho-rgb.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

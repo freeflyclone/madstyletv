@@ -186,6 +186,12 @@
     <None Include="..\..\shaders\gui-tex.vert" />
     <None Include="..\..\shaders\gui.frag" />
     <None Include="..\..\shaders\gui.vert" />
+    <None Include="..\..\shaders\ortho-rgb.frag" />
+    <None Include="..\..\shaders\ortho-rgb.vert" />
+    <None Include="..\..\shaders\ortho-tex.frag" />
+    <None Include="..\..\shaders\ortho-tex.vert" />
+    <None Include="..\..\shaders\ortho.frag" />
+    <None Include="..\..\shaders\ortho.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

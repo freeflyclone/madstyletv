@@ -53,15 +53,15 @@ void ExampleXGL::BuildScene() {
 
 	gm->AddChildShape("shaders/ortho", [&]() { g2 = new XGLGuiCanvas(this, 304, 500); return g2; });
 	g2->model = glm::translate(glm::mat4(), glm::vec3(200, 104, 0));
-	g2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.5 };
+	g2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.1 };
 
 	g2->AddChildShape("shaders/ortho", [this,&g3]() { g3 = new XGLGuiCanvas(this, 16, 400); return g3; });
 	g3->SetName("VerticalSlider");
-	g3->attributes.diffuseColor = { 1.0, 0.2, 0.2, 0.8 };
+	g3->attributes.diffuseColor = { 1, 1, 1, 0.1 };
 	g3->model = glm::translate(glm::mat4(), glm::vec3(20.0, 40.0, 0.0));
 	g3->SetMouseFunc([this, g3](float x, float y, int flags){
 		if (flags & 1) {
-			XGLGuiCanvas *slider = (XGLGuiCanvas *)(g3->Children()[0]);
+			XGLGuiCanvas *slider = (XGLGuiCanvas *)(g3->Children()[1]);
 			// constrain mouse Y coordinate to dimensions of track
 			float yLimited = (y<0) ? 0 : (y>(g3->height - slider->height)) ? (g3->height - slider->height) : y;
 			static float previousYlimited = 0.0;
@@ -79,17 +79,23 @@ void ExampleXGL::BuildScene() {
 		}
 		return true;
 	});
-	g3->AddChildShape("shaders/ortho", [this, &g4]() { g4 = new XGLGuiCanvas(this, 16, 16); return g4; });
-	g4->attributes.diffuseColor = { 0.0, 1.0, 0.0, 0.8 };
+	g3->AddChildShape("shaders/ortho", [this, &g4]() { g4 = new XGLGuiCanvas(this, 1, 392, false); return g4; });
+	g4->attributes.diffuseColor = { 1.0, 1.0, 1.0, 1.0 };
+	g4->model = glm::translate(glm::mat4(), glm::vec3(8.0, 4.0, 0.0));
+
+	g3->AddChildShape("shaders/ortho-rgb", [this, &g4]() { g4 = new XGLGuiCanvas(this, 16, 16, false); return g4; });
+	g4->AddTexture(pathToAssets + "/assets/button.png");
+	g4->attributes.diffuseColor = { 1.0, 0.0, 1.0, 0.8 };
+	g4->Reshape(0, 0, 16, 16);
 	g4->model = glm::translate(glm::mat4(), glm::vec3(0.0, 384.0, 0.0));
 
 	g2->AddChildShape("shaders/ortho", [this, &g3]() { g3 = new XGLGuiCanvas(this, 200, 16); return g3; });
 	g3->SetName("HorizontalSlider");
-	g3->attributes.diffuseColor = { 1.0, 0.2, 0.2, 0.8 };
+	g3->attributes.diffuseColor = { 1, 1, 1, 0.06 };
 	g3->model = glm::translate(glm::mat4(), glm::vec3(20.0, 460.0, 0.0));
 	g3->SetMouseFunc([this, g3](float x, float y, int flags){
 		if (flags & 1) {
-			XGLGuiCanvas *slider = (XGLGuiCanvas *)(g3->Children()[0]);
+			XGLGuiCanvas *slider = (XGLGuiCanvas *)(g3->Children()[1]);
 			// constrain mouse X coordinate to dimensions of track
 			float xLimited = (x<0) ? 0 : (x>(g3->width - slider->width)) ? (g3->width - slider->width) : x;
 			static float previousXlimited = 0.0;
@@ -107,6 +113,12 @@ void ExampleXGL::BuildScene() {
 		}
 		return true;
 	});
-	g3->AddChildShape("shaders/ortho", [this, &g4]() { g4 = new XGLGuiCanvas(this, 16, 16); return g4; });
-	g4->attributes.diffuseColor = { 0.0, 1.0, 0.0, 0.8 };
+	g3->AddChildShape("shaders/ortho", [this, &g4]() { g4 = new XGLGuiCanvas(this, 192, 1, false); return g4; });
+	g4->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.7 };
+	g4->model = glm::translate(glm::mat4(), glm::vec3(4.0, 8.0, 0.0));
+
+	g3->AddChildShape("shaders/ortho-rgb", [this, &g4]() { g4 = new XGLGuiCanvas(this, 16, 16, false); return g4; });
+	g4->AddTexture(pathToAssets + "/assets/button.png");
+	g4->attributes.diffuseColor = { 1.0, 0.0, 1.0, 1.0 };
+	g4->Reshape(0,0,16,16);
 }
