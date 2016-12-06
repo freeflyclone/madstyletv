@@ -7,6 +7,10 @@
 **************************************************************/
 #include "ExampleXGL.h"
 
+namespace {
+	float roll = 0.1;
+};
+
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 	glm::mat4 translate, scale, rotate;
@@ -43,10 +47,26 @@ void ExampleXGL::BuildScene() {
 	// and cause it to be "dispatched" in the preRender phase
 	shape->preRenderFunction = [computeShader](float clock) {
 		glUseProgram(computeShader->programId);
-		glUniform1f(glGetUniformLocation(computeShader->programId, "roll"), (float)clock*0.05f);
+		glUniform1f(glGetUniformLocation(computeShader->programId, "roll"), (float)clock*roll);
 		glDispatchCompute(512 / 16, 512 / 16, 1); // 512^2 threads in blocks of 16^2
 		GL_CHECK("Dispatch compute shader");
 	};
 
 	// here is where the GUI gets hooked up to actual code.
+	XGLGuiCanvas *sliders = (XGLGuiCanvas *)(GetGuiManager()->FindObject("SliderWindow0"));
+	if (sliders != nullptr) {
+		XGLGuiCanvas *vs0 = (XGLGuiCanvas *)sliders->FindObject("VerticalSlider0");
+		if (vs0 != nullptr) {
+			vs0->AddMouseEventListener([vs0, computeShader](float x, float y, int flags) {
+				XGLGuiCanvas *thumb = (XGLGuiCanvas *)vs0->Children()[1];
+				float yScaled = ((vs0->height - thumb->height) - (thumb->model[3][1])) / (vs0->height - thumb->height);
+				static float previousYscaled = 0.0;
+
+				if (yScaled != previousYscaled && vs0->HasMouse()) {
+					roll = yScaled;
+					previousYscaled = yScaled;
+				}
+			});
+		}
+	}
 }
