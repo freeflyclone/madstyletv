@@ -31,7 +31,7 @@ void CheckGlStatus(const char *file, int line) {
 	}
 }
 
-XGL::XGL() : clock(0.0f), pb(NULL), fb(NULL), renderGui(false), guiRoot(NULL), mouseCaptured(NULL) {
+XGL::XGL() : clock(0.0f), pb(NULL), fb(NULL), renderGui(false), guiManager(NULL), mouseCaptured(NULL) {
 	SetName("XGL");
 	xprintf("OpenGL version: %s\n", glGetString(GL_VERSION));
 	glGetError();
@@ -251,10 +251,10 @@ void XGL::AddGuiShape(std::string shName, XGLNewShapeLambda fn){
 
 	AddChild(pShape);
 
-	if (guiRoot == NULL)
-		guiRoot = (XGLGuiCanvas *)pShape;
+	if (guiManager == NULL)
+		guiManager = (XGLGuiManager *)pShape;
 	else
-		guiRoot->AddChild(pShape);
+		guiManager->AddChild(pShape);
 }
 
 void XGL::IterateShapesMap(){

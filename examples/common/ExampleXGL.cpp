@@ -62,7 +62,7 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	// add mouse event handling (XInput class) function mapping
 	AddMouseFunc([this](int x, int y, int flags){
 		if (GuiIsActive())
-			GuiResolveMouseEvent(GetGuiRoot(), x, y, flags);
+			GuiResolveMouseEvent(GetGuiManager(), x, y, flags);
 		else
 			mt.Event(x, y, flags);
 	});

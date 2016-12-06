@@ -128,7 +128,7 @@ public:
 
 	void RenderGui(bool enable) { renderGui = enable; }
 	bool GuiIsActive() { return renderGui; }
-	XGLGuiCanvas *GetGuiRoot() { return guiRoot; }
+	XGLGuiManager *GetGuiManager() { return guiManager; }
 	bool GuiResolveMouseEvent(XGLShape *, int, int, int);
 
 	XConfig config;
@@ -160,7 +160,7 @@ private:
     XGLShader *currentShader;
 	GLuint matrixUbo, lightUbo;
 	bool renderGui;
-	XGLGuiCanvas *guiRoot;
+	XGLGuiManager *guiManager;
 };
 
 #endif // XGL_H
