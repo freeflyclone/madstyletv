@@ -114,25 +114,25 @@ void XGLFramebuffer::Render(XGLFBORender renderFunc){
 
 XGLSharedFBO::XGLSharedFBO(XGL *context) : XSharedMem(shmemDefaultFile), pXGL(context), msFbo(NULL), ssFbo(NULL), encoder(NULL), encWidth(0), encHeight(0) {
 	// blit only FBO, no depth needed, adding multisampled color attachment
-	msFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, false, false);
+	msFbo = new XGLFramebuffer(XGLFramebuffer::renderWidth, XGLFramebuffer::renderHeight, false, false);
 
 	// create a multi-sampled color buffer for "msFbo"
 	glGenTextures(1, &texture);
 	GL_CHECK("glGenTextures() failed");
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, texture);
 	GL_CHECK("glBindTexture() failed");
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, SAMPLES, GL_RGB, RENDER_WIDTH, RENDER_HEIGHT, GL_TRUE);
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, SAMPLES, GL_RGB, XGLFramebuffer::renderWidth, XGLFramebuffer::renderHeight, GL_TRUE);
 	GL_CHECK("glTexImage2D() failed");
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 	GL_CHECK("glBindTexture(0) failed");
 
 	msFbo->AddColorAttachment(texture, GL_TEXTURE_2D_MULTISAMPLE);
 
-	ssFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
-	scaleSharedFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
-	scaleEncoderFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
-	sharedFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
-	encoderFbo = new XGLFramebuffer(RENDER_WIDTH, RENDER_HEIGHT, true, false);
+	ssFbo = new XGLFramebuffer(XGLFramebuffer::renderWidth, XGLFramebuffer::renderHeight, true, false);
+	scaleSharedFbo = new XGLFramebuffer(XGLFramebuffer::renderWidth, XGLFramebuffer::renderHeight, true, false);
+	scaleEncoderFbo = new XGLFramebuffer(XGLFramebuffer::renderWidth, XGLFramebuffer::renderHeight, true, false);
+	sharedFbo = new XGLFramebuffer(XGLFramebuffer::renderWidth, XGLFramebuffer::renderHeight, true, false);
+	encoderFbo = new XGLFramebuffer(XGLFramebuffer::renderWidth, XGLFramebuffer::renderHeight, true, false);
 
 	// add additional color atachments for RGB -> YUV planar for XAVEncoder
 	encoderFbo->AddColorAttachment(0, GL_TEXTURE_2D, GL_RED, GL_R8);
@@ -159,7 +159,7 @@ void XGLSharedFBO::MakeFlipQuad() {
 void XGLSharedFBO::RenderFlipQuadToShared() {
 	// render it to the "sharedFbo" for the DirectShow Vcam source filter
 	glBindFramebuffer(GL_FRAMEBUFFER, sharedFbo->fbo);
-	glViewport(0, 0, RENDER_WIDTH, RENDER_HEIGHT);
+	glViewport(0, 0, XGLFramebuffer::renderWidth, XGLFramebuffer::renderHeight);
 
 	flipQuad->model = glm::mat4(1);
 	flipQuad->Render(0.0);
@@ -168,12 +168,12 @@ void XGLSharedFBO::RenderFlipQuadToShared() {
 void XGLSharedFBO::RenderFlipQuadToEncoder() {
 	// render it again to the "encoderFbo" for RGB -> YUV conversion
 	glBindFramebuffer(GL_FRAMEBUFFER, encoderFbo->fbo);
-	glViewport(0, 0, RENDER_WIDTH, RENDER_HEIGHT);
+	glViewport(0, 0, XGLFramebuffer::renderWidth, XGLFramebuffer::renderHeight);
 
 	// calculate how far to vertically offset the flipQuad so it's rendered correctly
 	// in the encoder buffer(s). This amounts to a 2D translation in screen space
-	int heightDiff = RENDER_HEIGHT - encHeight;
-	float yOffset = (2 * ((float)heightDiff / (float)RENDER_HEIGHT));
+	int heightDiff = XGLFramebuffer::renderHeight - encHeight;
+	float yOffset = (2 * ((float)heightDiff / (float)XGLFramebuffer::renderHeight));
 
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(1, -1, 1));
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, yOffset, 0));
