@@ -29,24 +29,20 @@ extern "C" {
 #include "xthread.h"
 #include "xavexcept.h"
 
-// this must be a power of 2, and preferrably rather small.
-// 4 results in choppiness of video when a timer is used with streams
-// that have audio.  8 results in buttery smooth 60 fps on GoPro footage.
-#define XAV_NUM_FRAMES 4
-// this is the max number of "data" channels in an AVFrame (video or audio)
-#define XAV_MAX_CHANNELS 8
-
-typedef struct {
-	unsigned char *buffers[XAV_MAX_CHANNELS];
-	int nChannels;
-	int size;
-	int count;
-} XAVBuffer;
-
 // Multimedia sources possibly have more than one "stream" (audio/video for ex.)
 class XAVStream
 {
 public:
+	static const int numFrames = 4;
+	static const int maxChannels = 8;
+
+	typedef struct {
+		unsigned char *buffers[maxChannels];
+		int nChannels;
+		int size;
+		int count;
+	} XAVBuffer;
+
 	XAVStream(AVCodecContext *context);
 	bool Decode(AVPacket *packet);
 	void AllocateBufferPool(int number, int size, int channels);
@@ -83,7 +79,7 @@ public:
 	AVStream *pStream;
 
 	// buffer pool for decoded frames.
-	XAVBuffer frames[XAV_NUM_FRAMES];
+	XAVBuffer frames[numFrames];
 
 	//unsigned char *buffer;
 	int numBytes;
