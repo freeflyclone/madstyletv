@@ -24,7 +24,7 @@ public:
 
 class XGLSharedPBO : public XGLPixelbuffer, public XSharedMem {
 public:
-	XGLSharedPBO() : XSharedMem(DEFAULT_FILE_NAME) {};
+	XGLSharedPBO() : XSharedMem(shmemDefaultFile) {};
 
 	virtual void Render();
 };
