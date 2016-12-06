@@ -110,8 +110,6 @@ void XGLFramebuffer::Render(XGLFBORender renderFunc){
 	GL_CHECK("glBidFramebuffer(0) failed");
 }
 
-#define SAMPLES 8
-
 XGLSharedFBO::XGLSharedFBO(XGL *context) : XSharedMem(shmemDefaultFile), pXGL(context), msFbo(NULL), ssFbo(NULL), encoder(NULL), encWidth(0), encHeight(0) {
 	// blit only FBO, no depth needed, adding multisampled color attachment
 	msFbo = new XGLFramebuffer(XGLFramebuffer::renderWidth, XGLFramebuffer::renderHeight, false, false);
@@ -121,7 +119,7 @@ XGLSharedFBO::XGLSharedFBO(XGL *context) : XSharedMem(shmemDefaultFile), pXGL(co
 	GL_CHECK("glGenTextures() failed");
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, texture);
 	GL_CHECK("glBindTexture() failed");
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, SAMPLES, GL_RGB, XGLFramebuffer::renderWidth, XGLFramebuffer::renderHeight, GL_TRUE);
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, XGLFramebuffer::multiSamples, GL_RGB, XGLFramebuffer::renderWidth, XGLFramebuffer::renderHeight, GL_TRUE);
 	GL_CHECK("glTexImage2D() failed");
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 	GL_CHECK("glBindTexture(0) failed");
