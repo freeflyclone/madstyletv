@@ -47,4 +47,39 @@ void ExampleXGL::BuildScene() {
 		glDispatchCompute(512 / 16, 512 / 16, 1); // 512^2 threads in blocks of 16^2
 		GL_CHECK("Dispatch compute shader");
 	};
+
+	XGLGuiManager *gm = GetGuiManager();
+	XGLGuiCanvas *g2,*g3,*g4;
+
+	gm->AddChildShape("shaders/ortho", [&]() { g2 = new XGLGuiCanvas(this, 304, 500); return g2; });
+	g2->model = glm::translate(glm::mat4(), glm::vec3(20, 44, 0));
+	g2->attributes.diffuseColor = { 1.0, 1.0, 0.0, 0.5 };
+
+	g2->AddChildShape("shaders/ortho", [this,&g3]() { g3 = new XGLGuiCanvas(this, 16, 400); return g3; });
+	g3->SetName("VerticalSlider");
+	g3->attributes.diffuseColor = { 1.0, 0.2, 0.2, 0.6 };
+	g3->model = glm::translate(glm::mat4(), glm::vec3(20.0, 40.0, 0.0));
+	g3->SetMouseFunc([this, g3](float x, float y, int flags){
+		if (flags & 1) {
+			XGLGuiCanvas *slider = (XGLGuiCanvas *)(g3->Children()[0]);
+			// constrain mouse Y coordinate to dimensions of track
+			float yLimited = (y<0) ? 0 : (y>(g3->height - slider->height)) ? (g3->height - slider->height) : y;
+			static float previousYlimited = 0.0;
+
+			if (yLimited != previousYlimited) {
+				slider->model = glm::translate(glm::mat4(), glm::vec3(0.0, yLimited, 0.0));
+				previousYlimited = yLimited;
+			}
+			mouseCaptured = g3;
+			g3->SetHasMouse(true);
+		}
+		else {
+			mouseCaptured = NULL;
+			g3->SetHasMouse(false);
+		}
+		return true;
+	});
+	g3->AddChildShape("shaders/ortho", [this, &g4]() { g4 = new XGLGuiCanvas(this, 16, 16); return g4; });
+	g4->attributes.diffuseColor = { 0.0, 1.0, 0.0, 0.5 };
+	g4->model = glm::translate(glm::mat4(), glm::vec3(0.0, 384.0, 0.0));
 }

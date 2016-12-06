@@ -18,7 +18,7 @@ void ExampleXGL::BuildScene() {
 
 	XGLObjectPtr op;
 
-	if ((op = GetGuiRoot()->FindObject("HorizontalSlider0")) != nullptr) {
+	if ((op = GetGuiManager()->FindObject("HorizontalSlider0")) != nullptr) {
 		if (dynamic_cast<XGLGuiCanvas *>((XGLShape *)op)) {
 			XGLGuiCanvas *gc = (XGLGuiCanvas *)op;
 			gc->AddMouseEventListener([gc](float x, float y, int flags) {
@@ -33,5 +33,5 @@ void ExampleXGL::BuildScene() {
 			});
 		}
 	}
-	GetGuiRoot()->DumpChildren();
+	GetGuiManager()->DumpChildren();
 }
