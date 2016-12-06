@@ -13,15 +13,13 @@
 #include "xshmem.h"
 #include "xavenc.h"
 
-// the dimensions of the FBO buffer images.  This is GPU video memory.
-// You've been advised. Tested to 3840 by 2160
-#define RENDER_WIDTH	3840
-#define RENDER_HEIGHT	2160
-
 typedef std::function<void()> XGLFBORender;
 
 class XGLFramebuffer : public XGLObject {
 public:
+	static const int renderWidth = 3840;
+	static const int renderHeight = 2160;
+
 	XGLFramebuffer(int w, int h, bool withColor = true, bool withDepth = true, GLuint texId = 0);
 	virtual ~XGLFramebuffer();
 
@@ -86,9 +84,9 @@ public:
 
 	// TODO: manage these better for systems with reduced memory available.
 	// (who has that these days and why are they trying to run this code?)
-	unsigned char yBuffer[RENDER_WIDTH*RENDER_HEIGHT];
-	unsigned char uBuffer[RENDER_WIDTH*RENDER_HEIGHT];
-	unsigned char vBuffer[RENDER_WIDTH*RENDER_HEIGHT];
+	unsigned char yBuffer[XGLFramebuffer::renderWidth * XGLFramebuffer::renderHeight];
+	unsigned char uBuffer[XGLFramebuffer::renderWidth * XGLFramebuffer::renderHeight];
+	unsigned char vBuffer[XGLFramebuffer::renderWidth * XGLFramebuffer::renderHeight];
 };
 
 #endif

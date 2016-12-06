@@ -14,7 +14,7 @@ typedef std::function<void()> XGLPBORender;
 
 class XGLPixelbuffer : public XGLObject {
 public:
-	XGLPixelbuffer(int w = RENDER_WIDTH, int h = RENDER_HEIGHT);
+	XGLPixelbuffer(int w = XGLFramebuffer::renderWidth, int h = XGLFramebuffer::renderHeight);
 	virtual ~XGLPixelbuffer();
 
 	virtual void Render(unsigned char *);
