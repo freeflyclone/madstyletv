@@ -260,7 +260,7 @@ void XGL::AddGuiShape(std::string shName, XGLNewShapeLambda fn){
 void XGL::IterateShapesMap(){
 	for (auto perShader : shapes) {
         XGLShader *shader = shaderMap[perShader.first];
-		xprintf("XGL::IterateShapesMap(): '%s', shader->shader: %d\n", name.c_str(), shader->programId);
+		xprintf("XGL::IterateShapesMap(): '%s', shader->shader: %d\n", Name().c_str(), shader->programId);
 
 		for (auto shape : *(perShader.second))
 			xprintf("   shape->b: vao:%d, vbo:%d, program:%d\n", shape->vao, shape->vbo, shape->shader->programId);
@@ -275,10 +275,19 @@ bool XGL::GuiResolveMouseEvent(XGLShape *shape, int x, int y, int flags) {
 
 	if (mouseCaptured != NULL) {
 		if (dynamic_cast<XGLGuiCanvas *>(mouseCaptured)) {
-			XGLGuiCanvas *gc = (XGLGuiCanvas *)mouseCaptured;
+			XGLGuiCanvas *gc;
+			glm::mat4 tmpModel = glm::mat4();
+
+			// accumulate all ancestoral transformations
+			for (gc = (XGLGuiCanvas *)mouseCaptured; gc->Parent() != nullptr; gc = (XGLGuiCanvas *)gc->Parent())
+				tmpModel *= gc->model;
+
+			// reset to captured XGLGuiCanvas
+			gc = (XGLGuiCanvas *)mouseCaptured;
+
 			// convert to window-relative coordinates
-			mc = glm::inverse(gc->model) * glm::vec4(x, y, 1, 1);
-			handledByChild = gc->MouseEvent(mc.x, mc.y, flags);
+			mc = glm::inverse(tmpModel) * glm::vec4(x, y, 1, 1);
+			handledByChild =  gc->MouseEvent(mc.x, mc.y, flags);
 		}
 	}
 	else {

@@ -52,12 +52,12 @@ void ExampleXGL::BuildScene() {
 	XGLGuiCanvas *g2,*g3,*g4;
 
 	gm->AddChildShape("shaders/ortho", [&]() { g2 = new XGLGuiCanvas(this, 304, 500); return g2; });
-	g2->model = glm::translate(glm::mat4(), glm::vec3(20, 44, 0));
-	g2->attributes.diffuseColor = { 1.0, 1.0, 0.0, 0.5 };
+	g2->model = glm::translate(glm::mat4(), glm::vec3(200, 104, 0));
+	g2->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.5 };
 
 	g2->AddChildShape("shaders/ortho", [this,&g3]() { g3 = new XGLGuiCanvas(this, 16, 400); return g3; });
 	g3->SetName("VerticalSlider");
-	g3->attributes.diffuseColor = { 1.0, 0.2, 0.2, 0.6 };
+	g3->attributes.diffuseColor = { 1.0, 0.2, 0.2, 0.8 };
 	g3->model = glm::translate(glm::mat4(), glm::vec3(20.0, 40.0, 0.0));
 	g3->SetMouseFunc([this, g3](float x, float y, int flags){
 		if (flags & 1) {
@@ -80,6 +80,33 @@ void ExampleXGL::BuildScene() {
 		return true;
 	});
 	g3->AddChildShape("shaders/ortho", [this, &g4]() { g4 = new XGLGuiCanvas(this, 16, 16); return g4; });
-	g4->attributes.diffuseColor = { 0.0, 1.0, 0.0, 0.5 };
+	g4->attributes.diffuseColor = { 0.0, 1.0, 0.0, 0.8 };
 	g4->model = glm::translate(glm::mat4(), glm::vec3(0.0, 384.0, 0.0));
+
+	g2->AddChildShape("shaders/ortho", [this, &g3]() { g3 = new XGLGuiCanvas(this, 200, 16); return g3; });
+	g3->SetName("HorizontalSlider");
+	g3->attributes.diffuseColor = { 1.0, 0.2, 0.2, 0.8 };
+	g3->model = glm::translate(glm::mat4(), glm::vec3(20.0, 460.0, 0.0));
+	g3->SetMouseFunc([this, g3](float x, float y, int flags){
+		if (flags & 1) {
+			XGLGuiCanvas *slider = (XGLGuiCanvas *)(g3->Children()[0]);
+			// constrain mouse X coordinate to dimensions of track
+			float xLimited = (x<0) ? 0 : (x>(g3->width - slider->width)) ? (g3->width - slider->width) : x;
+			static float previousXlimited = 0.0;
+
+			if (xLimited != previousXlimited) {
+				slider->model = glm::translate(glm::mat4(), glm::vec3(xLimited, 0.0, 0.0));
+				previousXlimited = xLimited;
+			}
+			mouseCaptured = g3;
+			g3->SetHasMouse(true);
+		}
+		else {
+			mouseCaptured = NULL;
+			g3->SetHasMouse(false);
+		}
+		return true;
+	});
+	g3->AddChildShape("shaders/ortho", [this, &g4]() { g4 = new XGLGuiCanvas(this, 16, 16); return g4; });
+	g4->attributes.diffuseColor = { 0.0, 1.0, 0.0, 0.8 };
 }
