@@ -12,7 +12,7 @@
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
-	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
+	std::string imgPath = pathToAssets + "/assets/redbutton.png";
 	AddShape("shaders/tex", [&shape,imgPath](){ shape = new XGLTexQuad(imgPath); return shape; });
 
 	// have the upright texture scaled up and made 16:9 aspect, and orbiting the origin
