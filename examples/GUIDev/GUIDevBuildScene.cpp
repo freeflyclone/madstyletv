@@ -27,7 +27,7 @@ void ExampleXGL::BuildScene() {
 				static float previousXscaled = 0.0;
 
 				if (xScaled != previousXscaled) {
-					xprintf("%s, %0.4f\n", gc->name.c_str(), xScaled);
+					xprintf("%s, %0.4f\n", gc->Name().c_str(), xScaled);
 					previousXscaled = xScaled;
 				}
 			});
