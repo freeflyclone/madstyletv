@@ -17,7 +17,7 @@ XAL *pXal;
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
-	pXal = new XAL(NULL,48000,AL_FORMAT_STEREO16, XAL_MAX_BUFFERS);
+	pXal = new XAL(NULL, XAL::defaultSamplerate, XAL::defaultFormat, XAL::maxBuffers);
 
 	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
 
@@ -37,9 +37,9 @@ void ExampleXGL::BuildScene() {
 	});
 	
 	// add all the buffers (they're 1024 samples)
-	pXal->AddBuffers(XAL_MAX_BUFFERS);
+	pXal->AddBuffers(XAL::maxBuffers);
 	// initialize them with a test tone
-	pXal->TestTone(XAL_MAX_BUFFERS);
+	pXal->TestTone(XAL::maxBuffers);
 	// queue the buffers
 	pXal->QueueBuffers();
 	// and start playing
