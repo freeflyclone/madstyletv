@@ -33,10 +33,6 @@
 void CheckAlError(const char *, int, std::string);
 #define AL_CHECK(what) CheckAlError(__FILE__,__LINE__,what)
 
-// these must both be powers of 2
-#define AUDIO_SAMPLES 1024
-#define XAL_MAX_BUFFERS	64
-
 typedef struct {
 	short left;
 	short right;
@@ -49,11 +45,11 @@ typedef std::vector<std::string> XALDeviceList;
 
 class XAL {
 public:
-	XAL(ALCchar *dn = (NULL), int sr = 48000, int fmt = AL_FORMAT_STEREO16, int nb=1);
+	XAL(ALCchar *dn = (NULL), int sr = defaultSamplerate, int fmt = defaultFormat, int nb=1);
 	virtual ~XAL();
 
 	void AddBuffers(int count);
-	void QueueBuffers(int spq = AUDIO_SAMPLES, int ntq = XAL_MAX_BUFFERS);
+	void QueueBuffers(int spq = audioSamples, int ntq = maxBuffers);
 	void Play();
 	void Pause();
 	void Stop();
@@ -67,13 +63,19 @@ public:
 
 	XALDeviceList EnumerateDevices();
 
+	// these must both be powers of 2
+	static const int audioSamples = 1024;
+	static const int maxBuffers = 64;
+
+	static const int defaultSamplerate = 48000;
+	static const int defaultFormat = AL_FORMAT_STEREO16;
 private:
 	XALDeviceList deviceList;
 
 	ALCchar *deviceName;
 	ALCdevice *audioDevice;
 	ALCcontext *audioContext;
-	ALuint alBufferIds[XAL_MAX_BUFFERS];
+	ALuint alBufferIds[maxBuffers];
 	ALuint alSourceId;
 	ALenum alError;
 	int sampleRate;

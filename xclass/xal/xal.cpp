@@ -58,7 +58,7 @@ void XAL::AddBuffers(int count) {
 		throw std::runtime_error("AddBuffers: 'count' != 'nBuffers'");
 
 	for (int i = 0; i < count; i++)
-		shortBuffers.push_back(AudioSampleShortBuffer(AUDIO_SAMPLES));
+		shortBuffers.push_back(AudioSampleShortBuffer(audioSamples));
 }
 
 void XAL::QueueBuffers(int numSamplesToQueue, int numBuffsToQueue) {
@@ -118,7 +118,7 @@ void XAL::Convert(float *left, float *right) {
 	AudioSampleShort *pass = shortBuffers[dqueuedIdx].data();
 
 	// convert to signed short
-	for (int i = 0; i < AUDIO_SAMPLES; i++) {
+	for (int i = 0; i < audioSamples; i++) {
 		pass->left = (short)(*pLeft * 31000.0f);
 		pass->right = (short)(*pRight * 31000.0f);
 		pass++;
@@ -130,7 +130,7 @@ void XAL::Convert(float *left, float *right) {
 void XAL::Buffer() {
 	ALuint idx = dqueuedIdx;
 
-	alBufferData(alBufferIds[dqueuedIdx], format, shortBuffers[idx].data(), AUDIO_SAMPLES * sizeof(AudioSampleShort), sampleRate);
+	alBufferData(alBufferIds[dqueuedIdx], format, shortBuffers[idx].data(), audioSamples * sizeof(AudioSampleShort), sampleRate);
 	AL_CHECK("alBufferData() failed");
 
 	alSourceQueueBuffers(alSourceId, 1, &alBufferIds[dqueuedIdx]);
@@ -153,7 +153,7 @@ void XAL::TestTone(int count) {
 	for (it = shortBuffers.begin(); (it != shortBuffers.end()); it++) {
 		AudioSampleShort *s = it->data();
 
-		for (int j = 0; j < AUDIO_SAMPLES; j++) {
+		for (int j = 0; j < audioSamples; j++) {
 			double value = 2.0 * (double)j / (double)128 * M_PI;
 			s[j].left = (short)(sin(value) * 32767.0);
 			s[j].right = (short)(sin(value) * 32767.0);
