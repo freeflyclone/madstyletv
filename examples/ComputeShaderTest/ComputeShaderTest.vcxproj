@@ -171,9 +171,9 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\common\ExampleGUI.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
+    <ClCompile Include="ComputeShaderGUI.cpp" />
     <ClCompile Include="ComputeShaderTestBuildScene.cpp" />
   </ItemGroup>
   <ItemGroup>
