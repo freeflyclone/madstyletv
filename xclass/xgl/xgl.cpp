@@ -149,15 +149,15 @@ void XGL::RenderScene(XGLShapesMap *shapes) {
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(shaderMatrix), (GLvoid *)&shaderMatrix, GL_DYNAMIC_DRAW);
 	GL_CHECK("glBufferData() failed");
 
-	for (auto perShader : *shapes) {
-		XGLShader *shader = shaderMap[perShader.first];
+	for (auto const perShader : *shapes) {
+		const XGLShader *shader = shaderMap[perShader.first];
 		
 		shader->Use();
 
 		glUniform3fv(glGetUniformLocation(shader->programId, "cameraPosition"), 1, (GLfloat*)glm::value_ptr(camera.pos));
 		GL_CHECK("glUniform3fv() failed");
 
-		for (auto shape : *(perShader.second))
+		for (auto const shape : *(perShader.second))
 			shape->Render(clock);
 
         shader->UnUse();

@@ -222,7 +222,7 @@ void XGLShader::InfoLog() {
 		xprintf("There's an info log, but it's too big!\n");
 }
 
-void XGLShader::Use() {
+void XGLShader::Use() const {
     GLint currentProgram;
     glGetIntegerv(GL_CURRENT_PROGRAM,&currentProgram);
     GL_CHECK("glGetIntegerv() failed");
@@ -232,7 +232,7 @@ void XGLShader::Use() {
     }
 }
 
-void XGLShader::UnUse() {
+void XGLShader::UnUse() const {
 	glUseProgram(0);
     GL_CHECK("glUseProgram(0) failed");
 }
@@ -241,7 +241,7 @@ void XGLShader::Reshape(int w, int h){
 	xprintf("XGLShader::Reshape(%d,%d) for '%s'\n", w, h, shaderName.c_str());
 }
 
-std::string XGLShader::Name() {
+std::string XGLShader::Name() const {
 	return shaderName;
 }
 

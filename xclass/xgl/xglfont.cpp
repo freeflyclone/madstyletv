@@ -224,7 +224,7 @@ void XGLFont::RenderText(std::wstring text, unsigned char *buffer, int width, in
 			dest = buffer + (*penY - g->bitmap_top) * width + *penX + g->bitmap_left;
 
 			// don't overflow the buffer horizontally
-			if (*penX + g->bitmap.width > width) {
+			if (*penX + g->bitmap.width > (unsigned int)width) {
 				waitForNewline = true;
 				continue;
 			}
