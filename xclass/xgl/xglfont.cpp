@@ -240,3 +240,22 @@ void XGLFont::RenderText(std::wstring text, unsigned char *buffer, int width, in
 		}
 	}
 }
+
+int XGLFont::MeasureStringWidth(std::wstring s) const {
+	FT_GlyphSlot g = font.face->glyph;
+	int numGlyphs = (int)s.size();
+	int pixelWidth = 0;
+
+	// Measure the string width (without generating a bitmap per glyph) ...
+	for (int i = 0; i < numGlyphs; i++){
+		FT_Load_Glyph(font.face, font.charMap[s[i]], FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT);
+		pixelWidth += (int)((float)g->advance.x / 64.0f + 0.5);
+	}
+	return pixelWidth;
+}
+
+int XGLFont::MeasureStringWidth(std::string s) const {
+	std::wstringstream ws;
+	ws << s.c_str();
+	return MeasureStringWidth(ws.str());
+}

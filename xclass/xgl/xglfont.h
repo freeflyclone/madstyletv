@@ -42,6 +42,9 @@ public:
 	void RenderText(std::string, unsigned char *, int, int, int *, int *);
 	void SetPixelSize(int);
 
+	int MeasureStringWidth(std::wstring) const;
+	int MeasureStringWidth(std::string) const;
+
 	typedef std::map<FT_ULong, FT_UInt> CharMap;
 	typedef std::map<FT_ULong, XGLGlyph> GlyphMap;
 
