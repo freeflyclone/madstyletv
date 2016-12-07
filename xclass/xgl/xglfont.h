@@ -44,6 +44,8 @@ public:
 
 	int MeasureStringWidth(std::wstring) const;
 	int MeasureStringWidth(std::string) const;
+	int MeasureFontHeight() const;
+	int MeasureBaselineHeight() const;
 
 	typedef std::map<FT_ULong, FT_UInt> CharMap;
 	typedef std::map<FT_ULong, XGLGlyph> GlyphMap;

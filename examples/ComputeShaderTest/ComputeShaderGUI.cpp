@@ -3,29 +3,36 @@
 namespace {
 	XGLGuiCanvas *CreateVerticalSlider(XGL *xgl, XGLGuiCanvas *container, std::string name, int x, int y, int height) {
 		XGLGuiCanvas *gc, *g4;
+		int trackWidth = 16;
+		font.SetPixelSize(12);
+		int fontHeight = font.MeasureFontHeight();
+		int baselineHeight = font.MeasureBaselineHeight();
+		int labelPadding = 8;
+		int labelWidth = font.MeasureStringWidth(name) + labelPadding;
+		int labelHeight = fontHeight + labelPadding;
 
-		container->AddChildShape("shaders/ortho", [xgl, &gc, x, y, height]() { gc = new XGLGuiCanvas(xgl, 16, height); return gc; });
+		container->AddChildShape("shaders/ortho", [xgl, &gc, x, y, height, trackWidth]() { gc = new XGLGuiCanvas(xgl, trackWidth, height); return gc; });
 		gc->SetName(name,false);
 		gc->attributes.diffuseColor = { 1, 1, 1, 0.1 };
 		gc->model = glm::translate(glm::mat4(), glm::vec3(x, y, 0.0));
 
-		gc->AddChildShape("shaders/ortho", [xgl, &g4, height]() { g4 = new XGLGuiCanvas(xgl, 1, height - 8, false); return g4; });
+		gc->AddChildShape("shaders/ortho", [xgl, &g4, height, trackWidth]() { g4 = new XGLGuiCanvas(xgl, 1, height - (trackWidth / 2), false); return g4; });
 		g4->attributes.diffuseColor = { 1.0, 1.0, 1.0, 1.0 };
-		g4->model = glm::translate(glm::mat4(), glm::vec3(8.0, 4.0, 0.0));
+		g4->model = glm::translate(glm::mat4(), glm::vec3(trackWidth/2, trackWidth/4, 0.0));
 
-		gc->AddChildShape("shaders/ortho-rgb", [xgl, &g4, height]() { g4 = new XGLGuiCanvas(xgl, 16, 16, false); return g4; });
+		gc->AddChildShape("shaders/ortho-rgb", [xgl, &g4, height, trackWidth]() { g4 = new XGLGuiCanvas(xgl, trackWidth, trackWidth, false); return g4; });
 		g4->AddTexture(pathToAssets + "/assets/button.png");
 		g4->attributes.diffuseColor = { 1.0, 0.0, 1.0, 0.8 };
 		g4->attributes.ambientColor = { 0, 0, 0, 0 };
-		g4->Reshape(0, 0, 16, 16);
-		g4->model = glm::translate(glm::mat4(), glm::vec3(0.0, height - 16, 0.0));
+		g4->Reshape(0, 0, trackWidth, trackWidth);
+		g4->model = glm::translate(glm::mat4(), glm::vec3(0.0, height - trackWidth, 0.0));
 
-		gc->AddChildShape("shaders/ortho-tex", [xgl, &g4, height]() { g4 = new XGLGuiCanvas(xgl, 60, 20); return g4; });
+		gc->AddChildShape("shaders/ortho-tex", [xgl, &g4, height, trackWidth, labelWidth, labelHeight]() { g4 = new XGLGuiCanvas(xgl, labelWidth, labelHeight); return g4; });
 		g4->SetName("Label",false);
 		g4->attributes.diffuseColor = white;
-		g4->attributes.ambientColor = {0,0,0,0.5};
-		g4->model = glm::translate(glm::mat4(), glm::vec3(-22.0, height + 20.0, 0.0));
-		g4->SetPenPosition(4, 13);
+		g4->attributes.ambientColor = {1,1,1,0.1};
+		g4->model = glm::translate(glm::mat4(), glm::vec3(-(labelWidth / 2) + (trackWidth / 2), height + labelHeight, 0.0));
+		g4->SetPenPosition(labelPadding/2, labelHeight - (baselineHeight + (labelPadding / 2)));
 		g4->RenderText(name.c_str(), 12);
 
 		gc->SetMouseFunc([xgl, gc](float x, float y, int flags){
