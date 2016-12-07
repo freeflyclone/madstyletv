@@ -8,7 +8,7 @@
 #include "ExampleXGL.h"
 
 namespace {
-	float roll = 0.1;
+	float roll = 0.1f;
 };
 
 void ExampleXGL::BuildScene() {
@@ -53,21 +53,34 @@ void ExampleXGL::BuildScene() {
 	};
 
 	// here is where the GUI gets hooked up to actual code.
-	XGLGuiCanvas *sliders = (XGLGuiCanvas *)(GetGuiManager()->FindObject("SliderWindow0"));
+	XGLGuiCanvas *sliders = (XGLGuiCanvas *)(GetGuiManager()->FindObject("SliderWindow"));
 	if (sliders != nullptr) {
-		XGLGuiCanvas *vs0 = (XGLGuiCanvas *)sliders->FindObject("Roll Rate");
-		if (vs0 != nullptr) {
-			vs0->AddMouseEventListener([vs0, computeShader](float x, float y, int flags) {
-				XGLGuiCanvas *thumb = (XGLGuiCanvas *)vs0->Children()[1];
-				float yScaled = ((vs0->height - thumb->height) - (thumb->model[3][1])) / (vs0->height - thumb->height);
+		XGLGuiCanvas *vs = (XGLGuiCanvas *)sliders->FindObject("Roll Rate");
+		if (vs != nullptr) {
+			vs->AddMouseEventListener([vs, computeShader](float x, float y, int flags) {
+				XGLGuiCanvas *thumb = (XGLGuiCanvas *)vs->Children()[1];
+				float yScaled = ((vs->height - thumb->height) - (thumb->model[3][1])) / (vs->height - thumb->height);
 				static float previousYscaled = 0.0;
 
-				if (yScaled != previousYscaled && vs0->HasMouse()) {
+				if (yScaled != previousYscaled && vs->HasMouse()) {
 					roll = yScaled;
 					previousYscaled = yScaled;
 				}
 			});
-
+		}
+		vs = (XGLGuiCanvas *)sliders->FindObject("WhosyWhat");
+		if (vs != nullptr) {
+			vs->AddMouseEventListener([vs](float x, float y, int flags) {
+				if (vs->HasMouse())
+					xprintf("Inside WhosyWhat MouseEventListener(%0.4f, %0.4f)\n", x, y);
+			});
+		}
+		vs = (XGLGuiCanvas *)sliders->FindObject("FooBar");
+		if (vs != nullptr) {
+			vs->AddMouseEventListener([vs](float x, float y, int flags) {
+				if (vs->HasMouse())
+					xprintf("Inside FooBar MouseEventListener(%0.4f, %0.4f)\n", x, y);
+			});
 		}
 	}
 }

@@ -56,7 +56,7 @@ namespace {
 		XGLGuiCanvas *g;
 
 		gm->AddChildShape("shaders/ortho", [&]() { g = new XGLGuiCanvas(xgl, 300, 500); return g; });
-		g->SetName("SliderWindow");
+		g->SetName("SliderWindow", false);
 		g->model = glm::translate(glm::mat4(), glm::vec3(60, 60, 0));
 		g->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.1 };
 
