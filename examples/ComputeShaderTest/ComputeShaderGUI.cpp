@@ -11,7 +11,7 @@ namespace {
 		int labelWidth = font.MeasureStringWidth(name) + labelPadding;
 		int labelHeight = fontHeight + labelPadding;
 
-		container->AddChildShape("shaders/ortho", [xgl, &gc, x, y, height, trackWidth]() { gc = new XGLGuiCanvas(xgl, trackWidth, height); return gc; });
+		container->AddChildShape("shaders/ortho", [xgl, &gc, x, y, height, trackWidth]() { gc = new XGLGuiCanvas(xgl, trackWidth, height, false); return gc; });
 		gc->SetName(name,false);
 		gc->attributes.diffuseColor = { 1, 1, 1, 0.1 };
 		gc->model = glm::translate(glm::mat4(), glm::vec3(x, y, 0.0));
@@ -21,7 +21,7 @@ namespace {
 		g4->model = glm::translate(glm::mat4(), glm::vec3(trackWidth/2, trackWidth/4, 0.0));
 
 		gc->AddChildShape("shaders/ortho-rgb", [xgl, &g4, height, trackWidth]() { g4 = new XGLGuiCanvas(xgl, trackWidth, trackWidth, false); return g4; });
-		g4->AddTexture(pathToAssets + "/assets/button.png");
+		g4->AddTexture(pathToAssets + "/assets/button-large.png");
 		g4->attributes.diffuseColor = { 1.0, 0.0, 1.0, 0.8 };
 		g4->attributes.ambientColor = { 0, 0, 0, 0 };
 		g4->Reshape(0, 0, trackWidth, trackWidth);
