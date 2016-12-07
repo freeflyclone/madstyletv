@@ -42,10 +42,10 @@ public:
 	bool CompileCompute(std::string name);
     void InfoLog();
     void Reshape(int w, int h);
-    void Use();
-    void UnUse();
+    void Use() const;
+    void UnUse() const;
 
-	std::string Name();
+	std::string Name() const ;
 	GLint Attrib(std::string name);
 	GLint Uniform(std::string name);
 	void SetUniform(std::string name, GLint v);
