@@ -259,3 +259,11 @@ int XGLFont::MeasureStringWidth(std::string s) const {
 	ws << s.c_str();
 	return MeasureStringWidth(ws.str());
 }
+
+int XGLFont::MeasureFontHeight() const {
+	return (int)round((face->bbox.yMax - face->bbox.yMin)*(double)pixelSize / face->units_per_EM);
+}
+
+int XGLFont::MeasureBaselineHeight() const {
+	return -(int)round((face->bbox.yMin)*(double)pixelSize / face->units_per_EM);
+}
