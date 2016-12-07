@@ -11,9 +11,14 @@ XGLObject::XGLObject(std::string n) : parent(NULL) {
 XGLObject::~XGLObject() {
 }
 
-void XGLObject::SetName(std::string n) {
-	int i = namesMap[n]++;
-	name = n + std::to_string(i);
+void XGLObject::SetName(std::string n, bool makeUnique) {
+	if (makeUnique) {
+		int i = namesMap[n]++;
+		name = n + std::to_string(i);
+	}
+	else {
+		name = n;
+	}
 }
 
 void XGLObject::AddChild(XGLObject *c) {

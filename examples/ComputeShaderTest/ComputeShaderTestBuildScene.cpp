@@ -55,7 +55,7 @@ void ExampleXGL::BuildScene() {
 	// here is where the GUI gets hooked up to actual code.
 	XGLGuiCanvas *sliders = (XGLGuiCanvas *)(GetGuiManager()->FindObject("SliderWindow0"));
 	if (sliders != nullptr) {
-		XGLGuiCanvas *vs0 = (XGLGuiCanvas *)sliders->FindObject("VerticalSlider0");
+		XGLGuiCanvas *vs0 = (XGLGuiCanvas *)sliders->FindObject("Roll Rate");
 		if (vs0 != nullptr) {
 			vs0->AddMouseEventListener([vs0, computeShader](float x, float y, int flags) {
 				XGLGuiCanvas *thumb = (XGLGuiCanvas *)vs0->Children()[1];
@@ -67,6 +67,7 @@ void ExampleXGL::BuildScene() {
 					previousYscaled = yScaled;
 				}
 			});
+
 		}
 	}
 }
