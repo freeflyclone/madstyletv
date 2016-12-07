@@ -40,7 +40,7 @@ public:
 	XGLObject(std::string n = "XGLObject");
 	~XGLObject();
 
-	void SetName(std::string n);
+	void SetName(std::string n, bool makeUnique = true);
 	void AddChild(XGLObject *o);
 
 	XGLObjectChildren Children() { return *uchildren; }
