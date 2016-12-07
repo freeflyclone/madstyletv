@@ -34,8 +34,8 @@ public:
 	void AddKeyFunc(XInputKeyRange, XInputKeyFunc);
 
 
-	void MouseEvent(int, int, int);
-	void KeyEvent(int, int);
+	void MouseEvent(int, int, int) const;
+	void KeyEvent(int, int) const;
 
 private:
 	XInputKeyMap keyMap;

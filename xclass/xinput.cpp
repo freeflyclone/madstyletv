@@ -1,6 +1,6 @@
 #include "xinput.h"
 
-void XInput::KeyEvent(int key, int flags){
+void XInput::KeyEvent(int key, int flags) const {
 	for (auto perKey : keyMap)
 		if (key == perKey.first)
 				perKey.second(key, flags);
@@ -18,8 +18,8 @@ void XInput::AddKeyFunc(XInputKeyRange r, XInputKeyFunc f){
 	keyRangeMap.emplace(r, f);
 }
 
-void XInput::MouseEvent(int x, int y, int flags){
-	for (auto perFunc : mouseFuncs)
+void XInput::MouseEvent(int x, int y, int flags) const{
+	for (const auto perFunc : mouseFuncs)
 		perFunc(x, y, flags);
 }
 
