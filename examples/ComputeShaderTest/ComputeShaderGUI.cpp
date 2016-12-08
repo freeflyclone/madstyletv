@@ -1,9 +1,35 @@
 #include "ExampleXGL.h"
 
 namespace {
-	XGLGuiCanvas *CreateHorizontalSlider(XGL *xgl, XGLGuiCanvas *container, std::string name, int x, int y, int width) {
-		XGLGuiCanvas *gc, *g4;
-		int trackHeight = 16;
+	XGLGuiCanvas *CreateSliderTrack(XGL *xgl, XGLGuiCanvas *container, std::string name, int x, int y, int w, int h) {
+		XGLGuiCanvas *gc;
+		container->AddChildShape("shaders/ortho", [xgl, &gc, x, y, w, h]() { gc = new XGLGuiCanvas(xgl, w, h, false); return gc; });
+		gc->SetName(name, false);
+		gc->attributes.diffuseColor = { 1, 1, 1, 0.1 };
+		gc->model = glm::translate(glm::mat4(), glm::vec3(x, y, 0.0));
+		return gc;
+	}
+
+	XGLGuiCanvas *CreateSliderGroove(XGL *xgl, XGLGuiCanvas *track, int x, int y, int w, int h) {
+		XGLGuiCanvas *gc;
+		track->AddChildShape("shaders/ortho", [xgl, &gc, x, y, w, h]() { gc = new XGLGuiCanvas(xgl, w, h, false); return gc; });
+		gc->attributes.diffuseColor = white;
+		gc->model = glm::translate(glm::mat4(), glm::vec3(x, y, 0.0));
+		return gc;
+	}
+
+	XGLGuiCanvas *CreateSliderThumb(XGL *xgl, XGLGuiCanvas *track, int x, int y, int w, int h){
+		XGLGuiCanvas *gc;
+		track->AddChildShape("shaders/ortho-rgb", [xgl, &gc, x, y, w, h]() { gc = new XGLGuiCanvas(xgl, w, h, false); return gc; });
+		gc->AddTexture(pathToAssets + "/assets/button-large.png");
+		gc->attributes.ambientColor = { 0, 0, 0, 0 };
+		gc->Reshape(0, 0, w, h);
+		gc->model = glm::translate(glm::mat4(), glm::vec3(x, y, 0.0));
+		return gc;
+	}
+
+	XGLGuiCanvas *CreateSliderLabel(XGL *xgl, XGLGuiCanvas *track, std::string name,  int x, int y) {
+		XGLGuiCanvas *gc;
 		font.SetPixelSize(12);
 		int fontHeight = font.MeasureFontHeight();
 		int baselineHeight = font.MeasureBaselineHeight();
@@ -11,27 +37,33 @@ namespace {
 		int labelWidth = font.MeasureStringWidth(name) + labelPadding;
 		int labelHeight = fontHeight + labelPadding;
 
-		container->AddChildShape("shaders/ortho", [xgl, &gc, x, y, width, trackHeight]() { gc = new XGLGuiCanvas(xgl, width, trackHeight, false); return gc; });
-		gc->SetName(name, false);
-		gc->attributes.diffuseColor = { 1, 1, 1, 0.1 };
-		gc->model = glm::translate(glm::mat4(), glm::vec3(x + labelWidth + labelPadding, y, 0.0));
+		track->AddChildShape("shaders/ortho-tex", [xgl, &gc, x, y, labelWidth, labelHeight]() { gc = new XGLGuiCanvas(xgl, labelWidth, labelHeight); return gc; });
+		gc->SetName("Label", false);
+		gc->attributes.diffuseColor = white;
+		gc->attributes.ambientColor = { 1, 1, 1, 0.1 };
+		gc->model = glm::translate(glm::mat4(), glm::vec3(x, y, 0.0));
+		gc->SetPenPosition(labelPadding / 2, labelHeight - (baselineHeight + (labelPadding / 2)));
+		gc->RenderText(name.c_str(), 12);
 
-		gc->AddChildShape("shaders/ortho", [xgl, &g4, width, trackHeight]() { g4 = new XGLGuiCanvas(xgl, width - (trackHeight / 2), 1, false); return g4; });
-		g4->attributes.diffuseColor = white;
-		g4->model = glm::translate(glm::mat4(), glm::vec3(trackHeight / 4, trackHeight / 2, 0.0));
+		return gc;
+	}
 
-		gc->AddChildShape("shaders/ortho-rgb", [xgl, &g4, trackHeight]() { g4 = new XGLGuiCanvas(xgl, trackHeight, trackHeight, false); return g4; });
-		g4->AddTexture(pathToAssets + "/assets/button-large.png");
-		g4->attributes.ambientColor = { 0, 0, 0, 0 };
-		g4->Reshape(0, 0, trackHeight, trackHeight);
+	XGLGuiCanvas *CreateHorizontalSlider(XGL *xgl, XGLGuiCanvas *container, std::string name, int x, int y, int width) {
+		XGLGuiCanvas *gc, *g4;
+		int trackHeight = 16;
+		font.SetPixelSize(12);
+		int fontHeight = font.MeasureFontHeight();
+		int labelPadding = 8;
+		int labelWidth = font.MeasureStringWidth(name) + labelPadding;
+		int labelHeight = fontHeight + labelPadding;
 
-		gc->AddChildShape("shaders/ortho-tex", [xgl, &g4, width, trackHeight, labelWidth, labelHeight]() { g4 = new XGLGuiCanvas(xgl, labelWidth, labelHeight); return g4; });
-		g4->SetName("Label", false);
-		g4->attributes.diffuseColor = white;
-		g4->attributes.ambientColor = { 1, 1, 1, 0.1 };
-		g4->model = glm::translate(glm::mat4(), glm::vec3(-(labelWidth+labelPadding), (trackHeight/2)-(labelHeight/2), 0.0));
-		g4->SetPenPosition(labelPadding / 2, labelHeight - (baselineHeight + (labelPadding / 2)));
-		g4->RenderText(name.c_str(), 12);
+		gc = CreateSliderTrack(xgl, container, name, x, y, width, 16);
+		g4 = CreateSliderGroove(xgl, gc, trackHeight / 4, trackHeight / 2, width - (trackHeight / 2), 1);
+		g4 = CreateSliderThumb(xgl, gc, 0, 0, trackHeight, trackHeight);
+		g4 = CreateSliderLabel(xgl, gc, name, -(labelWidth + labelPadding), (trackHeight / 2) - (labelHeight / 2));
+
+		// since the label is to the left of the slider, offset the whole thing by its measured width
+		gc->model *= glm::translate(glm::mat4(), glm::vec3(labelWidth + labelPadding, 0, 0));
 
 		gc->SetMouseFunc([xgl, gc](float x, float y, int flags){
 			if (flags & 1) {
@@ -72,28 +104,10 @@ namespace {
 		int labelWidth = font.MeasureStringWidth(name) + labelPadding;
 		int labelHeight = fontHeight + labelPadding;
 
-		container->AddChildShape("shaders/ortho", [xgl, &gc, x, y, height, trackWidth]() { gc = new XGLGuiCanvas(xgl, trackWidth, height, false); return gc; });
-		gc->SetName(name,false);
-		gc->attributes.diffuseColor = { 1, 1, 1, 0.1 };
-		gc->model = glm::translate(glm::mat4(), glm::vec3(x, y, 0.0));
-
-		gc->AddChildShape("shaders/ortho", [xgl, &g4, height, trackWidth]() { g4 = new XGLGuiCanvas(xgl, 1, height - (trackWidth / 2), false); return g4; });
-		g4->attributes.diffuseColor = white;
-		g4->model = glm::translate(glm::mat4(), glm::vec3(trackWidth/2, trackWidth/4, 0.0));
-
-		gc->AddChildShape("shaders/ortho-rgb", [xgl, &g4, height, trackWidth]() { g4 = new XGLGuiCanvas(xgl, trackWidth, trackWidth, false); return g4; });
-		g4->AddTexture(pathToAssets + "/assets/button-large.png");
-		g4->attributes.ambientColor = { 0, 0, 0, 0 };
-		g4->Reshape(0, 0, trackWidth, trackWidth);
-		g4->model = glm::translate(glm::mat4(), glm::vec3(0.0, height - trackWidth, 0.0));
-
-		gc->AddChildShape("shaders/ortho-tex", [xgl, &g4, height, trackWidth, labelWidth, labelHeight]() { g4 = new XGLGuiCanvas(xgl, labelWidth, labelHeight); return g4; });
-		g4->SetName("Label",false);
-		g4->attributes.diffuseColor = white;
-		g4->attributes.ambientColor = {1,1,1,0.1};
-		g4->model = glm::translate(glm::mat4(), glm::vec3(-(labelWidth / 2) + (trackWidth / 2), height + labelHeight, 0.0));
-		g4->SetPenPosition(labelPadding/2, labelHeight - (baselineHeight + (labelPadding / 2)));
-		g4->RenderText(name.c_str(), 12);
+		gc = CreateSliderTrack(xgl, container, name, x, y, 16, height);
+		g4 = CreateSliderGroove(xgl, gc, trackWidth / 2, trackWidth / 4, 1, height - (trackWidth / 2));
+		g4 = CreateSliderThumb(xgl, gc, 0, height - trackWidth, trackWidth, trackWidth);
+		g4 = CreateSliderLabel(xgl, gc, name, (trackWidth /2) + x - (labelWidth + labelPadding), height + (labelHeight / 2));
 
 		gc->SetMouseFunc([xgl, gc](float x, float y, int flags){
 			if (flags & 1) {
