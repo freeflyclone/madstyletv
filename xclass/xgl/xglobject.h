@@ -32,7 +32,6 @@
 class XGLObject;
 
 typedef XGLObject* XGLObjectPtr;
-//typedef std::shared_ptr<XGLObject> XGLObjectChild;
 typedef std::vector<XGLObjectPtr> XGLObjectChildren;
 
 class XGLObject {

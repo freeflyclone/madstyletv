@@ -2,6 +2,7 @@
 
 namespace {
 	std::map<std::string, int> namesMap;
+	XGLObjectPtr foundObject;
 }
 
 XGLObject::XGLObject(std::string n) : parent(NULL) {
@@ -40,15 +41,20 @@ void XGLObject::DumpChildren()
 }
 
 XGLObjectPtr XGLObject::FindObject(std::string name) {
-	static XGLObjectPtr found = nullptr;
-
+	static int level = 0;
+	
+	if (level == 0)
+		foundObject = nullptr;
+	
 	for (auto child : Children()) {
 		if (child->name == name) {
-			found = child;
+			foundObject = child;
 			break;
 		}
+		level++;
 		child->FindObject(name);
+		level--;
 	}
 
-	return found;
+	return foundObject;
 }
