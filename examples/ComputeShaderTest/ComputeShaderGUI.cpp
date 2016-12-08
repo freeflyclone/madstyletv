@@ -38,8 +38,10 @@ namespace {
 		gc->SetMouseFunc([xgl, gc](float x, float y, int flags){
 			if (flags & 1) {
 				XGLGuiCanvas *slider = (XGLGuiCanvas *)(gc->Children()[1]);
+				// adjust mouse Y coordinate to center it in the slider window
+				float offsetY = y - (slider->height / 2.0f);
 				// constrain mouse Y coordinate to dimensions of track
-				float yLimited = (y<0) ? 0 : (y>(gc->height - slider->height)) ? (gc->height - slider->height) : y;
+				float yLimited = (offsetY<0) ? 0 : (offsetY>(gc->height - slider->height)) ? (gc->height - slider->height) : offsetY;
 				static float previousYlimited = 0.0;
 
 				if (yLimited != previousYlimited) {
@@ -59,26 +61,23 @@ namespace {
 		return gc;
 	}
 
-	void CreateGuiWindows(XGL *xgl, XGLGuiManager *gm) {
+	void CreateGuiWindows(XGL *xgl) {
 		XGLGuiCanvas *g;
+		XGLGuiManager *gm;
 
-		gm->AddChildShape("shaders/ortho", [&]() { g = new XGLGuiCanvas(xgl, 300, 500); return g; });
+		xgl->AddGuiShape("shaders/ortho", [&gm, xgl]() { gm = new XGLGuiManager(xgl); return gm; });
+
+		gm->AddChildShape("shaders/ortho", [&]() { g = new XGLGuiCanvas(xgl, 88, 500); return g; });
 		g->SetName("SliderWindow", false);
 		g->model = glm::translate(glm::mat4(), glm::vec3(60, 60, 0));
 		g->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.1 };
 
 		CreateVerticalSlider(xgl, g, "Roll Rate", 36, 20, 400);
-		CreateVerticalSlider(xgl, g, "WhosyWhat", 144, 20, 400);
-		CreateVerticalSlider(xgl, g, "FooBar", 248, 20, 400);
 	}
 };
 
 void ExampleXGL::BuildGUI() {
-	XGLGuiManager *gm;
-
-	AddGuiShape("shaders/ortho", [&gm,this]() { gm = new XGLGuiManager(this); return gm; });
-
-	CreateGuiWindows(this, gm);
+	CreateGuiWindows(this);
 
 	return;
 }

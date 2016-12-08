@@ -68,6 +68,7 @@ void ExampleXGL::BuildScene() {
 				}
 			});
 		}
+		/*
 		vs = (XGLGuiCanvas *)sliders->FindObject("WhosyWhat");
 		if (vs != nullptr) {
 			vs->AddMouseEventListener([vs](float x, float y, int flags) {
@@ -82,5 +83,6 @@ void ExampleXGL::BuildScene() {
 					xprintf("Inside FooBar MouseEventListener(%0.4f, %0.4f)\n", x, y);
 			});
 		}
+		*/
 	}
 }
