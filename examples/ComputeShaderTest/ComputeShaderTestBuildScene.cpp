@@ -68,21 +68,5 @@ void ExampleXGL::BuildScene() {
 				}
 			});
 		}
-		/*
-		vs = (XGLGuiCanvas *)sliders->FindObject("WhosyWhat");
-		if (vs != nullptr) {
-			vs->AddMouseEventListener([vs](float x, float y, int flags) {
-				if (vs->HasMouse())
-					xprintf("Inside WhosyWhat MouseEventListener(%0.4f, %0.4f)\n", x, y);
-			});
-		}
-		vs = (XGLGuiCanvas *)sliders->FindObject("FooBar");
-		if (vs != nullptr) {
-			vs->AddMouseEventListener([vs](float x, float y, int flags) {
-				if (vs->HasMouse())
-					xprintf("Inside FooBar MouseEventListener(%0.4f, %0.4f)\n", x, y);
-			});
-		}
-		*/
 	}
 }
