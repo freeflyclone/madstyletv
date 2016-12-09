@@ -48,19 +48,19 @@ namespace {
 		return gc;
 	}
 
-	XGLGuiCanvas *CreateHorizontalSlider(XGL *xgl, XGLGuiCanvas *container, std::string name, int x, int y, int width) {
+	XGLGuiCanvas *CreateHorizontalSlider(XGL *xgl, XGLGuiCanvas *container, std::string name, int x, int y, int length) {
 		XGLGuiCanvas *gc, *g4;
-		int trackHeight = 16;
+		int trackWidth = 16;
 		font.SetPixelSize(12);
 		int fontHeight = font.MeasureFontHeight();
 		int labelPadding = 8;
 		int labelWidth = font.MeasureStringWidth(name) + labelPadding;
 		int labelHeight = fontHeight + labelPadding;
 
-		gc = CreateSliderTrack(xgl, container, name, x, y, width, 16);
-		g4 = CreateSliderGroove(xgl, gc, trackHeight / 4, trackHeight / 2, width - (trackHeight / 2), 1);
-		g4 = CreateSliderThumb(xgl, gc, 0, 0, trackHeight, trackHeight);
-		g4 = CreateSliderLabel(xgl, gc, name, -(labelWidth + labelPadding), (trackHeight / 2) - (labelHeight / 2));
+		gc = CreateSliderTrack(xgl, container, name, x, y, length, 16);
+		g4 = CreateSliderGroove(xgl, gc, trackWidth / 4, trackWidth / 2, length - (trackWidth / 2), 1);
+		g4 = CreateSliderThumb(xgl, gc, 0, 0, trackWidth, trackWidth);
+		g4 = CreateSliderLabel(xgl, gc, name, -(labelWidth + labelPadding), (trackWidth / 2) - (labelHeight / 2));
 
 		// since the label is to the left of the slider, offset the whole thing by its measured width
 		gc->model *= glm::translate(glm::mat4(), glm::vec3(labelWidth + labelPadding, 0, 0));
@@ -74,8 +74,6 @@ namespace {
 				// constrain mouse X coordinate to dimensions of track
 				float xLimited = (offsetX<0) ? 0 : (offsetX>(gc->width - slider->width)) ? (gc->width - slider->width) : offsetX;
 				static float previousXlimited = 0.0;
-
-				xprintf("HorizontalSlider: %0.0f\n", xLimited);
 
 				if (xLimited != previousXlimited) {
 					slider->model = glm::translate(glm::mat4(), glm::vec3(xLimited, 0.0, 0.0));
@@ -94,7 +92,7 @@ namespace {
 		return gc;
 	}
 
-	XGLGuiCanvas *CreateVerticalSlider(XGL *xgl, XGLGuiCanvas *container, std::string name, int x, int y, int height) {
+	XGLGuiCanvas *CreateVerticalSlider(XGL *xgl, XGLGuiCanvas *container, std::string name, int x, int y, int length) {
 		XGLGuiCanvas *gc, *g4;
 		int trackWidth = 16;
 		font.SetPixelSize(12);
@@ -104,10 +102,10 @@ namespace {
 		int labelWidth = font.MeasureStringWidth(name) + labelPadding;
 		int labelHeight = fontHeight + labelPadding;
 
-		gc = CreateSliderTrack(xgl, container, name, x, y, 16, height);
-		g4 = CreateSliderGroove(xgl, gc, trackWidth / 2, trackWidth / 4, 1, height - (trackWidth / 2));
-		g4 = CreateSliderThumb(xgl, gc, 0, height - trackWidth, trackWidth, trackWidth);
-		g4 = CreateSliderLabel(xgl, gc, name, (trackWidth /2) + x - (labelWidth + labelPadding), height + (labelHeight / 2));
+		gc = CreateSliderTrack(xgl, container, name, x, y, 16, length);
+		g4 = CreateSliderGroove(xgl, gc, trackWidth / 2, trackWidth / 4, 1, length - (trackWidth / 2));
+		g4 = CreateSliderThumb(xgl, gc, 0, length - trackWidth, trackWidth, trackWidth);
+		g4 = CreateSliderLabel(xgl, gc, name, (trackWidth / 2) + x - (labelWidth + labelPadding), length + (labelHeight / 2));
 
 		gc->SetMouseFunc([xgl, gc](float x, float y, int flags){
 			if (flags & 1) {
