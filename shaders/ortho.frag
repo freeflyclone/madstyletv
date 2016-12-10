@@ -19,5 +19,5 @@ uniform sampler2D texUnit3;
 
 void main(void)
 {
-	out_Color = diffuse;
+	out_Color = ambient;
 }

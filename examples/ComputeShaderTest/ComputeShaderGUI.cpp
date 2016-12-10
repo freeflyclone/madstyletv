@@ -1,163 +1,107 @@
 #include "ExampleXGL.h"
+#include <filesystem>
+
+class XGLGuiSlider : public XGLGuiCanvas {
+public:
+	enum Orientation {
+		vertical,
+		horizontal
+	};
+
+	XGLGuiSlider(XGL *xgl, std::string name, Orientation orientation, int x, int y, int w, int h) : XGLGuiCanvas(xgl, w, h) {
+		model = glm::translate(glm::mat4(), glm::vec3(x, y, 0.0));
+		attributes.ambientColor = { 1, 1, 1, 0.1 };
+
+		MeasureFontMetrics(name, 12);
+		AdjustForOrientation(orientation, x, y, w, h);
+
+		AddChildShape("shaders/ortho", [xgl, this, x, y, w, h]() { groove = new XGLGuiCanvas(xgl, grooveWidth, grooveHeight, false); return groove; });
+		groove->attributes.ambientColor = white;
+		groove->model = glm::translate(glm::mat4(), glm::vec3(grooveOffset, grooveOffset, 0.0));
+
+		AddChildShape("shaders/ortho-rgb", [xgl, this, x, y, w, h]() { thumb = new XGLGuiCanvas(xgl, w, h, false); return thumb; });
+		thumb->AddTexture(pathToAssets + "/assets/button-large.png");
+		thumb->attributes.ambientColor = { 0, 0, 0, 0 };
+		thumb->Reshape(0, 0, thumbSize, thumbSize);
+		thumb->model = glm::translate(glm::mat4(), glm::vec3(thumbX, thumbY, 0.0));
+
+		AddChildShape("shaders/ortho-tex", [xgl, this, x, y]() { label = new XGLGuiCanvas(xgl, labelWidth, labelHeight); return label; });
+		label->SetName("Label", false);
+		label->attributes.diffuseColor = white;
+		label->attributes.ambientColor = { 1, 1, 1, 0.1 };
+		label->SetPenPosition(labelPadding / 2, labelHeight - (baselineHeight + (labelPadding / 2)));
+		label->RenderText(name.c_str(), 12);
+		label->model = glm::translate(glm::mat4(), glm::vec3(labelX, labelY, 0.0));
+
+		model *= labelOffset;
+	}
+
+	void MeasureFontMetrics(std::string name, int pixelSize) {
+		font.SetPixelSize(pixelSize);
+		fontHeight = font.MeasureFontHeight();
+		baselineHeight = font.MeasureBaselineHeight();
+		labelPadding = 8;
+		labelWidth = font.MeasureStringWidth(name) + labelPadding;
+		labelHeight = fontHeight + labelPadding;
+	}
+
+	void AdjustForOrientation(Orientation orientation, int x, int y, int w, int h) {
+		if (orientation == vertical) {
+			grooveWidth = 1;
+			grooveHeight = h - w;
+			grooveOffset = w / 2;
+			thumbSize = w;
+			thumbX = 0;
+			thumbY = h - w;
+			labelX = -(labelWidth / 2) + (w / 2);
+			labelY = h + labelHeight;
+		}
+		else {
+			grooveWidth = w - h;
+			grooveHeight = 1;
+			grooveOffset = h / 2;
+			thumbSize = h;
+			thumbX = 0;
+			thumbY = 0;
+			labelX = -labelWidth - h;
+			labelY = -(labelHeight / 2) + (h/2);
+			labelOffset = glm::translate(glm::mat4(), glm::vec3(labelWidth + h, 0.0, 0.0));
+		}
+	}
+private:
+	XGLGuiCanvas *groove, *thumb, *label;
+	int fontHeight, baselineHeight, labelPadding, labelWidth, labelHeight;
+	int grooveWidth, grooveHeight,grooveOffset,thumbSize,thumbX,thumbY,labelX, labelY;
+	glm::mat4 labelOffset;
+};
 
 namespace {
-	XGLGuiCanvas *CreateSliderTrack(XGL *xgl, XGLGuiCanvas *container, std::string name, int x, int y, int w, int h) {
-		XGLGuiCanvas *gc;
-		container->AddChildShape("shaders/ortho", [xgl, &gc, x, y, w, h]() { gc = new XGLGuiCanvas(xgl, w, h, false); return gc; });
-		gc->SetName(name, false);
-		gc->attributes.diffuseColor = { 1, 1, 1, 0.1 };
-		gc->model = glm::translate(glm::mat4(), glm::vec3(x, y, 0.0));
-		return gc;
-	}
-
-	XGLGuiCanvas *CreateSliderGroove(XGL *xgl, XGLGuiCanvas *track, int x, int y, int w, int h) {
-		XGLGuiCanvas *gc;
-		track->AddChildShape("shaders/ortho", [xgl, &gc, x, y, w, h]() { gc = new XGLGuiCanvas(xgl, w, h, false); return gc; });
-		gc->attributes.diffuseColor = white;
-		gc->model = glm::translate(glm::mat4(), glm::vec3(x, y, 0.0));
-		return gc;
-	}
-
-	XGLGuiCanvas *CreateSliderThumb(XGL *xgl, XGLGuiCanvas *track, int x, int y, int w, int h){
-		XGLGuiCanvas *gc;
-		track->AddChildShape("shaders/ortho-rgb", [xgl, &gc, x, y, w, h]() { gc = new XGLGuiCanvas(xgl, w, h, false); return gc; });
-		gc->AddTexture(pathToAssets + "/assets/button-large.png");
-		gc->attributes.ambientColor = { 0, 0, 0, 0 };
-		gc->Reshape(0, 0, w, h);
-		gc->model = glm::translate(glm::mat4(), glm::vec3(x, y, 0.0));
-		return gc;
-	}
-
-	XGLGuiCanvas *CreateSliderLabel(XGL *xgl, XGLGuiCanvas *track, std::string name,  int x, int y) {
-		XGLGuiCanvas *gc;
-		font.SetPixelSize(12);
-		int fontHeight = font.MeasureFontHeight();
-		int baselineHeight = font.MeasureBaselineHeight();
-		int labelPadding = 8;
-		int labelWidth = font.MeasureStringWidth(name) + labelPadding;
-		int labelHeight = fontHeight + labelPadding;
-
-		track->AddChildShape("shaders/ortho-tex", [xgl, &gc, x, y, labelWidth, labelHeight]() { gc = new XGLGuiCanvas(xgl, labelWidth, labelHeight); return gc; });
-		gc->SetName("Label", false);
-		gc->attributes.diffuseColor = white;
-		gc->attributes.ambientColor = { 1, 1, 1, 0.1 };
-		gc->model = glm::translate(glm::mat4(), glm::vec3(x, y, 0.0));
-		gc->SetPenPosition(labelPadding / 2, labelHeight - (baselineHeight + (labelPadding / 2)));
-		gc->RenderText(name.c_str(), 12);
-
-		return gc;
-	}
-
-	XGLGuiCanvas *CreateHorizontalSlider(XGL *xgl, XGLGuiCanvas *container, std::string name, int x, int y, int length) {
-		XGLGuiCanvas *gc, *g4;
-		int trackWidth = 16;
-		font.SetPixelSize(12);
-		int fontHeight = font.MeasureFontHeight();
-		int labelPadding = 8;
-		int labelWidth = font.MeasureStringWidth(name) + labelPadding;
-		int labelHeight = fontHeight + labelPadding;
-
-		gc = CreateSliderTrack(xgl, container, name, x, y, length, 16);
-		g4 = CreateSliderGroove(xgl, gc, trackWidth / 4, trackWidth / 2, length - (trackWidth / 2), 1);
-		g4 = CreateSliderThumb(xgl, gc, 0, 0, trackWidth, trackWidth);
-		g4 = CreateSliderLabel(xgl, gc, name, -(labelWidth + labelPadding), (trackWidth / 2) - (labelHeight / 2));
-
-		// since the label is to the left of the slider, offset the whole thing by its measured width
-		gc->model *= glm::translate(glm::mat4(), glm::vec3(labelWidth + labelPadding, 0, 0));
-
-		gc->SetMouseFunc([xgl, gc](float x, float y, int flags){
-			if (flags & 1) {
-				XGLGuiCanvas *slider = (XGLGuiCanvas *)(gc->Children()[1]);
-
-				// adjust mouse Y coordinate to center it in the slider window
-				float offsetX = x - (slider->width / 2.0f);
-				// constrain mouse X coordinate to dimensions of track
-				float xLimited = (offsetX<0) ? 0 : (offsetX>(gc->width - slider->width)) ? (gc->width - slider->width) : offsetX;
-				static float previousXlimited = 0.0;
-
-				if (xLimited != previousXlimited) {
-					slider->model = glm::translate(glm::mat4(), glm::vec3(xLimited, 0.0, 0.0));
-					previousXlimited = xLimited;
-				}
-				xgl->mouseCaptured = gc;
-				gc->SetHasMouse(true);
-			}
-			else {
-				xgl->mouseCaptured = NULL;
-				gc->SetHasMouse(false);
-			}
-			return true;
-		});
-
-		return gc;
-	}
-
-	XGLGuiCanvas *CreateVerticalSlider(XGL *xgl, XGLGuiCanvas *container, std::string name, int x, int y, int length) {
-		XGLGuiCanvas *gc, *g4;
-		int trackWidth = 16;
-		font.SetPixelSize(12);
-		int fontHeight = font.MeasureFontHeight();
-		int baselineHeight = font.MeasureBaselineHeight();
-		int labelPadding = 8;
-		int labelWidth = font.MeasureStringWidth(name) + labelPadding;
-		int labelHeight = fontHeight + labelPadding;
-
-		gc = CreateSliderTrack(xgl, container, name, x, y, 16, length);
-		g4 = CreateSliderGroove(xgl, gc, trackWidth / 2, trackWidth / 4, 1, length - (trackWidth / 2));
-		g4 = CreateSliderThumb(xgl, gc, 0, length - trackWidth, trackWidth, trackWidth);
-		g4 = CreateSliderLabel(xgl, gc, name, (trackWidth / 2) + x - (labelWidth + labelPadding), length + (labelHeight / 2));
-
-		gc->SetMouseFunc([xgl, gc](float x, float y, int flags){
-			if (flags & 1) {
-				XGLGuiCanvas *slider = (XGLGuiCanvas *)(gc->Children()[1]);
-				// adjust mouse Y coordinate to center it in the slider window
-				float offsetY = y - (slider->height / 2.0f);
-				// constrain mouse Y coordinate to dimensions of track
-				float yLimited = (offsetY<0) ? 0 : (offsetY>(gc->height - slider->height)) ? (gc->height - slider->height) : offsetY;
-				static float previousYlimited = 0.0;
-
-				if (yLimited != previousYlimited) {
-					slider->model = glm::translate(glm::mat4(), glm::vec3(0.0, yLimited, 0.0));
-					previousYlimited = yLimited;
-				}
-				xgl->mouseCaptured = gc;
-				gc->SetHasMouse(true);
-			}
-			else {
-				xgl->mouseCaptured = NULL;
-				gc->SetHasMouse(false);
-			}
-			return true;
-		});
-
-		return gc;
-	}
-
-	void CreateGuiWindows(XGL *xgl) {
+		void CreateGuiWindows(XGL *xgl) {
 		XGLGuiCanvas *g;
 		XGLGuiManager *gm;
+		XGLGuiSlider *slider;
 
 		xgl->AddGuiShape("shaders/ortho", [&gm, xgl]() { gm = new XGLGuiManager(xgl); return gm; });
 
 		gm->AddChildShape("shaders/ortho", [&]() { g = new XGLGuiCanvas(xgl, 88, 500); return g; });
 		g->SetName("SliderWindow", false);
 		g->model = glm::translate(glm::mat4(), glm::vec3(20, 20, 0));
-		g->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.1 };
+		g->attributes.ambientColor = { 1.0, 1.0, 1.0, 0.1 };
 
-		CreateVerticalSlider(xgl, g, "Roll Rate", 36, 20, 400);
+		g->AddChildShape("shaders/ortho", [&]() { slider = new XGLGuiSlider(xgl, "Roll Rate", XGLGuiSlider::Orientation::vertical, 36, 20, 16, 400); return slider; });
 
 		gm->AddChildShape("shaders/ortho", [&]() { g = new XGLGuiCanvas(xgl, 360, 180); return g; });
 		g->SetName("HorizontalSlidersWindow", false);
 		g->model = glm::translate(glm::mat4(), glm::vec3(0, 60, 0));
-		g->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.1 };
+		g->attributes.ambientColor = { 1.0, 1.0, 1.0, 0.1 };
 		gm->AddReshapeCallback([g](int w, int h) {
 			g->model = glm::translate(glm::mat4(), glm::vec3(w - g->width - 20, 20, 1.0));
 		});
 
-		CreateHorizontalSlider(xgl, g, "Horizontal Slider 1", 20, 20, 200);
-		CreateHorizontalSlider(xgl, g, "Horizontal Slider 2", 20, 60, 200);
-		CreateHorizontalSlider(xgl, g, "Horizontal Slider 3", 20, 100, 200);
-		CreateHorizontalSlider(xgl, g, "Horizontal Slider 4", 20, 140, 200);
+		g->AddChildShape("shaders/ortho", [&]() { slider = new XGLGuiSlider(xgl, "Horizontal Slider 1", XGLGuiSlider::Orientation::horizontal, 20, 20, 200, 16); return slider; });
+		g->AddChildShape("shaders/ortho", [&]() { slider = new XGLGuiSlider(xgl, "Horizontal Slider 2", XGLGuiSlider::Orientation::horizontal, 20, 60, 200, 16); return slider; });
+		g->AddChildShape("shaders/ortho", [&]() { slider = new XGLGuiSlider(xgl, "Horizontal Slider 3", XGLGuiSlider::Orientation::horizontal, 20, 100, 200, 16); return slider; });
+		g->AddChildShape("shaders/ortho", [&]() { slider = new XGLGuiSlider(xgl, "Horizontal Slider 4", XGLGuiSlider::Orientation::horizontal, 20, 140, 200, 16); return slider; });
 	}
 };
 
