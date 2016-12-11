@@ -22,7 +22,7 @@ void ExampleXGL::BuildGUI() {
 	gm->AddChildShape("shaders/ortho-tex", [&]() { gw = new XGLGuiWindow(this, "TextWindow", 0, 0, 540, 80); return gw; });
 	gw->attributes.diffuseColor = cyan;
 	gw->SetPenPosition(10, 20);
-	gw->RenderText("This window is pinned to the lower right corner, via a reshape callback.\n\n", 16);
+	gw->RenderText("This window is pinned to the lower right corner, also via a callback.\n\n", 16);
 	gw->RenderText("It's possible to change font size on the fly.\n", 20);
 	gm->AddReshapeCallback([gw](int w, int h) {
 		gw->model = glm::translate(glm::mat4(), glm::vec3(w - gw->width - 20, h - gw->height - 20, 0.0));
