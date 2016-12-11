@@ -9,19 +9,27 @@
 // this needs to be file scope at least.  Local (to ::BuildScene) doesn't work
 XGLSphere *sphere;
 
+const float constSpeed1 = 60.0f;
+const float constSpeed2 = 45.0f;
+const float constSpeed3 = 30.0f;
+
+float speed1 = constSpeed1;
+float speed2 = constSpeed2;
+float speed3 = constSpeed3;
+
 void ExampleXGL::BuildScene() {
 	XGLShape *shape, *child1, *child2, *child3, *child4;
 	glm::mat4 rotate, translate;
 	AddShape("shaders/specular", [&](){ shape = new XGLTorus(5.0f, 1.0f, 64, 32); return shape; });
 	shape->attributes.diffuseColor = { 0.005, 0.005, 0.005, 1 };
 	shape->SetAnimationFunction([shape](float clock) {
-		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 60.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / speed1, glm::vec3(1.0f, 0.0f, 0.0f));
 		shape->model = rotate;
 	});
 	CreateShape("shaders/specular", [&](){ child3 = new XGLTransformer(); return child3; });
 	child3->SetAnimationFunction([child3](float clock) {
 		float translateFunction = sin(clock / 180.0f);
-		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 45.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / speed2, glm::vec3(0.0f, 0.0f, 1.0f));
 		child3->model = rotate;
 	});
 	shape->AddChild(child3);
@@ -35,7 +43,7 @@ void ExampleXGL::BuildScene() {
 	CreateShape("shaders/000-simple", [&](){ child1 = new XGLTransformer(); return child1; });
 	child1->SetAnimationFunction([child1](float clock) {
 		float translateFunction = sin(clock / 180.0f);
-		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 30.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / speed3, glm::vec3(0.0f, 0.0f, 1.0f));
 		child1->model = rotate;
 	});
 
@@ -99,4 +107,32 @@ void ExampleXGL::BuildScene() {
 		}
 	};
 	AddMouseFunc(worldCursorMouse);
+
+	// now hook up the GUI sliders to the rotating torus thingy to control it's speeds.
+	XGLGuiSlider *hs;
+
+	XGLGuiCanvas *sliders = (XGLGuiCanvas *)(GetGuiManager()->FindObject("HorizontalSliderWindow"));
+	if (sliders != nullptr) {
+		if( (hs = (XGLGuiSlider *)sliders->FindObject("Horizontal Slider 1")) != nullptr) {
+			hs->AddMouseEventListener([hs](float x, float y, int flags) {
+				if (hs->HasMouse()) {
+					speed1 = constSpeed1 / (6.0f*hs->Position() + 1.0f);
+				}
+			});
+		}
+		if ((hs = (XGLGuiSlider *)sliders->FindObject("Horizontal Slider 2")) != nullptr) {
+			hs->AddMouseEventListener([hs](float x, float y, int flags) {
+				if (hs->HasMouse()) {
+					speed2 = constSpeed2 / (6.0f*hs->Position() + 1.0f);
+				}
+			});
+		}
+		if ((hs = (XGLGuiSlider *)sliders->FindObject("Horizontal Slider 3")) != nullptr) {
+			hs->AddMouseEventListener([hs](float x, float y, int flags) {
+				if (hs->HasMouse()) {
+					speed3 = constSpeed3 / (6.0f*hs->Position() + 1.0f);
+				}
+			});
+		}
+	}
 }

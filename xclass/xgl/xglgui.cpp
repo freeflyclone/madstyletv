@@ -122,7 +122,7 @@ XGLGuiWindow::XGLGuiWindow(XGL *xgl, std::string name, int x, int y, int w, int 
 	attributes.ambientColor = { 1.0, 1.0, 1.0, 0.1 };
 }
 
-XGLGuiSlider::XGLGuiSlider(XGL *xgl, std::string name, Orientation o, int x, int y, int w, int h) : XGLGuiCanvas(xgl, w, h), orientation(o) {
+XGLGuiSlider::XGLGuiSlider(XGL *xgl, std::string name, Orientation o, int x, int y, int w, int h) : XGLGuiCanvas(xgl, w, h), orientation(o), position(0.0f) {
 	SetName(name, false);
 	model = glm::translate(glm::mat4(), glm::vec3(x, y, 0.0));
 	attributes.ambientColor = { 1, 1, 1, 0.1 };
@@ -171,6 +171,7 @@ XGLGuiSlider::XGLGuiSlider(XGL *xgl, std::string name, Orientation o, int x, int
 				else
 					thumb->model = glm::translate(glm::mat4(), glm::vec3(posLimited, 0.0, 0.0));
 				previousPos = posLimited;
+				position = posLimited / limit;
 			}
 
 			xgl->mouseCaptured = this;
