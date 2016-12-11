@@ -183,6 +183,9 @@
     <ClInclude Include="xtimer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xgl\xglgui.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xgl\xglbuffer.cpp">
@@ -277,6 +280,9 @@
     </ClCompile>
     <ClCompile Include="xutils.c">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xgl\xglgui.cpp">
+      <Filter>xgl\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
