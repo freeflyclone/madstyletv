@@ -112,6 +112,7 @@ public:
 	XGLGuiSlider(XGL *xgl, std::string name, Orientation o, int x, int y, int w, int h);
 	void MeasureFontMetrics(std::string name);
 	void AdjustForOrientation(Orientation orientation, int x, int y, int w, int h);
+	float Position() { return position; }
 
 private:
 	XGLGuiCanvas *groove, *thumb, *label;
@@ -120,5 +121,6 @@ private:
 	glm::mat4 labelOffset;
 	Orientation orientation;
 	static const int pixelSize = 12;
+	float position;
 };
 
