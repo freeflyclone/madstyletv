@@ -91,7 +91,7 @@ void XGLGuiCanvas::Fill(GLubyte val)  {
 }
 
 XGLGuiManager::XGLGuiManager(XGL *xgl, bool addTexture) : XGLGuiCanvas(xgl), pxgl(xgl), padding(20) {
-	SetName("XGLGuiManager");
+	SetName("XGLGuiManager",false);
 
 	XInput::XInputKeyFunc PresentGuiCanvas = [this](int key, int flags) {
 		const bool isDown = (flags & 0x8000) == 0;

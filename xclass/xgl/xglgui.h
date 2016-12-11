@@ -62,9 +62,11 @@ private:
 ** XGLGuiManager class
 **
 **	Adds a ReshapeCallback layer to XGLGuiCanvas items, and serves as the XGL::GuiRoot() shape.
-**	to allow XGLGuiCanvas items interested in window sizing events to get notification via 
+**	This allows XGLGuiCanvas items interested in window sizing events to get notification via 
 **  callback functions.  It is envisioned that this will apply mostly XGLGuiCanvas items 
 **  that are intended to hug the right and/or bottom edges of the main window.
+**
+**  The ReshapeCallback function receives the width and height of the main window.
 */
 class XGLGuiManager : public XGLGuiCanvas {
 public:
