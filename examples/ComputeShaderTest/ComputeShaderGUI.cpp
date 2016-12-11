@@ -19,6 +19,7 @@ public:
 	};
 
 	XGLGuiSlider(XGL *xgl, std::string name, Orientation o, int x, int y, int w, int h) : XGLGuiCanvas(xgl, w, h), orientation(o) {
+		SetName(name, false);
 		model = glm::translate(glm::mat4(), glm::vec3(x, y, 0.0));
 		attributes.ambientColor = { 1, 1, 1, 0.1 };
 
