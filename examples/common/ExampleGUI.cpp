@@ -14,7 +14,7 @@ void ExampleXGL::BuildGUI() {
 	// is the "bottom-most" in Z stack order.
 	// This shape specifies a ReshapeCallback to allow it to always exactly cover the window
 	gm->AddChildShape("shaders/ortho", [&]() { g = new XGLGuiCanvas(this, 1, 1, false); SetName("GuiBackground");  return g; });
-	g->attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.05 };
+	g->attributes.ambientColor = { 1.0, 1.0, 1.0, 0.05 };
 	gm->AddReshapeCallback([g](int w, int h) {
 		g->width = w;
 		g->height = h;
@@ -56,7 +56,7 @@ void ExampleXGL::BuildGUI() {
 		// the desired layout behavior.
 		gm->AddChildShape("shaders/ortho", [&]() { g2 = new XGLGuiCanvas(this, 1, 16); return g2; });
 		g2->SetName("HorizontalSlider");
-		g2->attributes.diffuseColor = { 1.0, 0.2, 0.2, 0.1 };
+		g2->attributes.ambientColor = { 1.0, 0.2, 0.2, 0.1 };
 		gm->AddReshapeCallback([g2](int w, int h) {
 			int padding = 20;
 			g2->width = w - 2 * padding;
@@ -84,7 +84,7 @@ void ExampleXGL::BuildGUI() {
 			return true;
 		});
 		g2->AddChildShape("shaders/ortho", [&]() { g3 = new XGLGuiCanvas(this, 16, 16); return g3; });
-		g3->attributes.diffuseColor = { 1.0, 1.0, 0.0, 0.5 };
+		g3->attributes.ambientColor = { 1.0, 1.0, 0.0, 0.5 };
 	}
 
 	return;
