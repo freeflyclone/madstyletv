@@ -161,7 +161,7 @@ XGLGuiSlider::XGLGuiSlider(XGL *xgl, std::string name, Orientation o, int x, int
 	SetMouseFunc([xgl, this](float x, float y, int flags){
 		if (flags & 1) {
 			float pos = orientation == vertical ? y : x;
-			float limit = orientation == (float)(vertical ? (height - thumb->height) : (width - thumb->width));
+			float limit = (float)((orientation == vertical) ? (height - thumb->height) : (width - thumb->width));
 			float posLimited = (pos<0) ? 0 : (pos>(limit)) ? (limit) : pos;
 			static float previousPos = 0.0;
 
@@ -172,6 +172,7 @@ XGLGuiSlider::XGLGuiSlider(XGL *xgl, std::string name, Orientation o, int x, int
 					thumb->model = glm::translate(glm::mat4(), glm::vec3(posLimited, 0.0, 0.0));
 				previousPos = posLimited;
 			}
+
 			xgl->mouseCaptured = this;
 			SetHasMouse(true);
 		}
