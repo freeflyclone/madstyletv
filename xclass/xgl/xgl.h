@@ -80,6 +80,7 @@
 #include "xglframebuffer.h"
 #include "xglpixelbuffer.h"
 #include "xglshapes.h"
+#include "xglgui.h"
 
 // want to reference XGLShader by it's name, so use std::map for that
 typedef std::map<std::string, GLint> XGLTextureMap;
