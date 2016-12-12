@@ -35,6 +35,7 @@ public:
 
 	void AddMouseEventListener(XGLGuiCanvas::MouseEventListener);
 
+	void MeasureFontMetrics(std::string name);
 	void RenderText(std::wstring t, int pixelSize = 64);
 	void RenderText(std::string t, int pixelSize = 64);
 	void SetPenPosition(int x, int y) { penX = x; penY = y; }
@@ -45,6 +46,9 @@ public:
 	XGLGuiCanvas::MouseFunc mouseFunc;
 	bool childEvent;
 	int width, height;
+	int labelPadding, labelWidth, labelHeight;
+	int fontHeight, baselineHeight;
+	static const int pixelSize = 12;
 
 private:
 	GLubyte *buffer;
@@ -110,17 +114,14 @@ public:
 	};
 
 	XGLGuiSlider(XGL *xgl, std::string name, Orientation o, int x, int y, int w, int h);
-	void MeasureFontMetrics(std::string name);
 	void AdjustForOrientation(Orientation orientation, int x, int y, int w, int h);
 	float Position() { return position; }
 
 private:
 	XGLGuiCanvas *groove, *thumb, *label;
-	int fontHeight, baselineHeight, labelPadding, labelWidth, labelHeight;
 	int grooveWidth, grooveHeight, grooveOffset, thumbSize, thumbX, thumbY, labelX, labelY;
 	glm::mat4 labelOffset;
 	Orientation orientation;
-	static const int pixelSize = 12;
 	float position;
 };
 

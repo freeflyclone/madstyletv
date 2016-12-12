@@ -65,6 +65,15 @@ void XGLGuiCanvas::AddMouseEventListener(XGLGuiCanvas::MouseEventListener fn) {
 	mouseEventListeners.push_back(fn);
 }
 
+void XGLGuiCanvas::MeasureFontMetrics(std::string name) {
+	font.SetPixelSize(pixelSize);
+	fontHeight = font.MeasureFontHeight();
+	baselineHeight = font.MeasureBaselineHeight();
+	labelPadding = pixelSize * 2 / 3;
+	labelWidth = font.MeasureStringWidth(name) + labelPadding;
+	labelHeight = fontHeight + labelPadding;
+}
+
 void XGLGuiCanvas::RenderText(std::string text, int pixelSize) {
 	std::wstringstream ws;
 	ws << text.c_str();
@@ -183,15 +192,6 @@ XGLGuiSlider::XGLGuiSlider(XGL *xgl, std::string name, Orientation o, int x, int
 		}
 		return true;
 	});
-}
-
-void XGLGuiSlider::MeasureFontMetrics(std::string name) {
-	font.SetPixelSize(pixelSize);
-	fontHeight = font.MeasureFontHeight();
-	baselineHeight = font.MeasureBaselineHeight();
-	labelPadding = pixelSize * 2 / 3;
-	labelWidth = font.MeasureStringWidth(name) + labelPadding;
-	labelHeight = fontHeight + labelPadding;
 }
 
 void XGLGuiSlider::AdjustForOrientation(Orientation orientation, int x, int y, int w, int h) {
