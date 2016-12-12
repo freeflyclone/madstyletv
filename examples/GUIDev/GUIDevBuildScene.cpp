@@ -13,25 +13,18 @@
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
+	XGLGuiSlider *hs;
 
 	AddShape("shaders/000-simple", [&](){ shape = new XGLTriangle(); return shape; });
 
-	XGLObjectPtr op;
-
-	if ((op = GetGuiManager()->FindObject("HorizontalSlider0")) != nullptr) {
-		if (dynamic_cast<XGLGuiCanvas *>((XGLShape *)op)) {
-			XGLGuiCanvas *gc = (XGLGuiCanvas *)op;
-			gc->AddMouseEventListener([gc](float x, float y, int flags) {
-				XGLGuiCanvas *thumb = (XGLGuiCanvas *)gc->Children()[0];
-				float xScaled = thumb->model[3][0] / (gc->width - thumb->width) * 100.0f;
-				static float previousXscaled = 0.0;
-
-				if (xScaled != previousXscaled) {
-					xprintf("%s, %0.4f\n", gc->Name().c_str(), xScaled);
-					previousXscaled = xScaled;
+	XGLGuiCanvas *sliders = (XGLGuiCanvas *)(GetGuiManager()->FindObject("HorizontalSliderWindow"));
+	if (sliders != nullptr) {
+		if ((hs = (XGLGuiSlider *)sliders->FindObject("Horizontal Slider 1")) != nullptr) {
+			hs->AddMouseEventListener([hs](float x, float y, int flags) {
+				if (hs->HasMouse()) {
+					xprintf("%0.4f\n", hs->Position());
 				}
 			});
 		}
 	}
-	GetGuiManager()->DumpChildren();
 }
