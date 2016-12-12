@@ -131,6 +131,27 @@ XGLGuiWindow::XGLGuiWindow(XGL *xgl, std::string name, int x, int y, int w, int 
 	attributes.ambientColor = { 1.0, 1.0, 1.0, 0.1 };
 }
 
+XGLGuiLabel::XGLGuiLabel(XGL *xgl, std::string name, int x, int y) : XGLGuiCanvas(xgl) {
+	SetName(name);
+	model = glm::translate(glm::mat4(), glm::vec3(x, y, 0.0));
+	attributes.ambientColor = { 1, 1, 1, 0.1 };
+
+	// twiddle the layout variables according to an arbitrarilly chosen font size
+	MeasureFontMetrics(name);
+
+	// the actual label is a child object, because we need to measure the size of the
+	// required text bounding box first, and setting the geometry shape inside the
+	// constructor of a shape is problematic. (The "shader" member is not yet set,
+	// therefore the "programId" isn't known yet, so OpenGL calls break)
+	// This is a workaround, I'm willing to incur the technical debt for now.
+	AddChildShape("shaders/ortho-tex", [xgl, this]() { label = new XGLGuiCanvas(xgl, labelWidth, labelHeight); return label; });
+	label->SetName("Label");
+	label->attributes.diffuseColor = white;
+	label->attributes.ambientColor = { 1, 1, 1, 0.1 };
+	label->SetPenPosition(labelPadding / 2, labelHeight - (baselineHeight + (labelPadding / 2)));
+	label->RenderText(name.c_str(), pixelSize);
+};
+
 XGLGuiSlider::XGLGuiSlider(XGL *xgl, std::string name, Orientation o, int x, int y, int w, int h) : XGLGuiCanvas(xgl, w, h), orientation(o), position(0.0f) {
 	SetName(name, false);
 	model = glm::translate(glm::mat4(), glm::vec3(x, y, 0.0));

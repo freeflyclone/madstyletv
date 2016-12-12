@@ -96,6 +96,13 @@ public:
 	XGLGuiWindow(XGL *xgl, std::string name, int x, int y, int w, int h);
 };
 
+class XGLGuiLabel : public XGLGuiCanvas {
+public:
+	XGLGuiLabel(XGL *xgl, std::string name, int x, int y);
+
+private:
+	XGLGuiCanvas *label;
+};
 /*
 ** XGLGuiSlider: define the essence of a GUI slider control, that can be either vertical or horizontal.
 **
