@@ -134,8 +134,8 @@ XGLGuiWindow::XGLGuiWindow(XGL *xgl, std::string name, int x, int y, int w, int 
 XGLGuiLabel::XGLGuiLabel(XGL *xgl, std::string name, int x, int y) : XGLGuiCanvas(xgl) {
 	SetName(name);
 	model = glm::translate(glm::mat4(), glm::vec3(x, y, 0.0));
-	attributes.ambientColor = transparent;
-	attributes.diffuseColor = transparent;
+	attributes.ambientColor = XGLColors::transparent;
+	attributes.diffuseColor = XGLColors::transparent;
 
 	// twiddle the layout variables according to an arbitrarilly chosen font size
 	MeasureFontMetrics(name);
@@ -147,7 +147,7 @@ XGLGuiLabel::XGLGuiLabel(XGL *xgl, std::string name, int x, int y) : XGLGuiCanva
 	// This is a workaround, I'm willing to incur the technical debt for now.
 	AddChildShape("shaders/ortho-tex", [xgl, this]() { label = new XGLGuiCanvas(xgl, labelWidth, labelHeight); return label; });
 	label->SetName("Label");
-	label->attributes.diffuseColor = white;
+	label->attributes.diffuseColor = XGLColors::white;
 	label->attributes.ambientColor = { 1, 1, 1, 0.1 };
 	label->SetPenPosition(labelPadding / 2, labelHeight - (baselineHeight + (labelPadding / 2)));
 	label->RenderText(name.c_str(), pixelSize);
@@ -164,13 +164,13 @@ XGLGuiSlider::XGLGuiSlider(XGL *xgl, std::string name, Orientation o, int x, int
 
 	// the "groove" is just a line down the middle
 	AddChildShape("shaders/ortho", [xgl, this, x, y, w, h]() { groove = new XGLGuiCanvas(xgl, grooveWidth, grooveHeight, false); return groove; });
-	groove->attributes.ambientColor = white;
+	groove->attributes.ambientColor = XGLColors::white;
 	groove->model = glm::translate(glm::mat4(), glm::vec3(grooveOffset, grooveOffset, 0.0));
 
 	// the "thumb" is the thingy that moves according to mouse position
 	AddChildShape("shaders/ortho-rgb", [xgl, this, x, y, w, h]() { thumb = new XGLGuiCanvas(xgl, w, h, false); return thumb; });
 	thumb->AddTexture(pathToAssets + "/assets/button-large.png");
-	thumb->attributes.ambientColor = transparent;
+	thumb->attributes.ambientColor = XGLColors::transparent;
 	thumb->Reshape(0, 0, thumbSize, thumbSize);
 	thumb->width = thumbSize;
 	thumb->height = thumbSize;

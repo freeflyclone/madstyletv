@@ -1,9 +1,9 @@
 #include "xgl.h"
 
 XGLMaterial::XGLMaterial() {
-	attributes.ambientColor = white;
-	attributes.diffuseColor = white;
-	attributes.specularColor = white;
+	attributes.ambientColor = XGLColors::white;
+	attributes.diffuseColor = XGLColors::white;
+	attributes.specularColor = XGLColors::white;
 	attributes.shininess = 120.0f;
 };
 

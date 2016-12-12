@@ -124,14 +124,14 @@ void XGLTriangle::Draw(){
 XGLCube::XGLCube() {
 	SetName("XGLCube");
 
-	v.push_back({ { -1.0, -1.0, -1.0 }, {}, { -1.0, -1.0, -1.0 }, white });
-	v.push_back({ { -1.0, 1.0, -1.0 }, {}, { -1.0, 1.0, -1.0 }, white });
-	v.push_back({ { 1.0, -1.0, -1.0 }, {}, { 1.0, -1.0, -1.0 }, white });
-	v.push_back({ { 1.0, 1.0, -1.0 }, {}, { 1.0, 1.0, -1.0 }, white });
-	v.push_back({ { -1.0, -1.0, 1.0 }, {}, { -1.0, -1.0, 1.0 }, white });
-	v.push_back({ { -1.0, 1.0, 1.0 }, {}, { -1.0, 1.0, 1.0 }, white });
-	v.push_back({ { 1.0, -1.0, 1.0 }, {}, { 1.0, -1.0, 1.0 }, white });
-	v.push_back({ { 1.0, 1.0, 1.0 }, {}, { 1.0, 1.0, 1.0 }, white });
+	v.push_back({ { -1.0, -1.0, -1.0 }, {}, { -1.0, -1.0, -1.0 }, XGLColors::white });
+	v.push_back({ { -1.0, 1.0, -1.0 }, {}, { -1.0, 1.0, -1.0 }, XGLColors::white });
+	v.push_back({ { 1.0, -1.0, -1.0 }, {}, { 1.0, -1.0, -1.0 }, XGLColors::white });
+	v.push_back({ { 1.0, 1.0, -1.0 }, {}, { 1.0, 1.0, -1.0 }, XGLColors::white });
+	v.push_back({ { -1.0, -1.0, 1.0 }, {}, { -1.0, -1.0, 1.0 }, XGLColors::white });
+	v.push_back({ { -1.0, 1.0, 1.0 }, {}, { -1.0, 1.0, 1.0 }, XGLColors::white });
+	v.push_back({ { 1.0, -1.0, 1.0 }, {}, { 1.0, -1.0, 1.0 }, XGLColors::white });
+	v.push_back({ { 1.0, 1.0, 1.0 }, {}, { 1.0, 1.0, 1.0 }, XGLColors::white });
 
 	idx.push_back(0);
 	idx.push_back(1);
@@ -172,7 +172,7 @@ XGLSphere::XGLSphere(float r, int n) : radius(r), nSegments(n - (n&1)), visualiz
 			float z = (sin(angle)*sin(angle2)) * radius;
 
 			vrtx.v = { x,y,z };
-			vrtx.c = white;
+			vrtx.c = XGLColors::white;
 			vrtx.n = { x / radius, y / radius, z / radius };
 
 			v.push_back(vrtx);
@@ -249,7 +249,7 @@ XGLCapsule::XGLCapsule(float r, float l, int n) : radius(r), length(l), nSegment
 			float z = (sin(angle)*sin(angle2)) * radius;
 
 			vrtx.v = { x,y,z };
-			vrtx.c = white;
+			vrtx.c = XGLColors::white;
 			vrtx.n = { x / radius, y / radius, z / radius };
 			v.push_back(vrtx);
 		}
@@ -264,7 +264,7 @@ XGLCapsule::XGLCapsule(float r, float l, int n) : radius(r), length(l), nSegment
 			float z = (sin(angle)*sin(angle2)) * radius;
 
 			vrtx.v = { x,y,z };
-			vrtx.c = white;
+			vrtx.c = XGLColors::white;
 			vrtx.n = { x / radius, y / radius, z / radius };
 			v.push_back(vrtx);
 		}
@@ -414,8 +414,8 @@ XGLTorus::XGLTorus(float rMaj, float rMin, int nMaj, int nMin) :
         xprintf("There are %d vertices\n", nv);
 
         for (int i = 0; i < nv; i++){
-            XGLVertexAttributes tv = { { v[i].v.x, v[i].v.y, v[i].v.z }, {}, {}, white };
-            XGLVertexAttributes tn = { { v[i].n.x, v[i].n.y, v[i].n.z }, {}, {}, white };
+			XGLVertexAttributes tv = { { v[i].v.x, v[i].v.y, v[i].v.z }, {}, {}, XGLColors::white };
+			XGLVertexAttributes tn = { { v[i].n.x, v[i].n.y, v[i].n.z }, {}, {}, XGLColors::white };
             XGLVertexAttributes tvn;
 
             tvn.v.x = tv.v.x + tn.v.x;
@@ -451,20 +451,20 @@ XGLIcoSphere::XGLIcoSphere() {
 	SetName("XGLIcoSphere");
 	float t = (float)sqrt(2.0) / 2.0f;
 
-	v.push_back({ { -t,  t, 0 },{},{}, red });
-	v.push_back({ { t,  t, 0 },{},{}, red });
-	v.push_back({ { -t, -t, 0 },{},{}, red });
-	v.push_back({ { t, -t, 0 },{},{}, red });
+	v.push_back({ { -t,  t, 0 },{},{}, XGLColors::red });
+	v.push_back({ { t, t, 0 }, {}, {}, XGLColors::red });
+	v.push_back({ { -t, -t, 0 }, {}, {}, XGLColors::red });
+	v.push_back({ { t, -t, 0 }, {}, {}, XGLColors::red });
 
-	v.push_back({ { 0, -t,  t },{},{}, green });
-	v.push_back({ { 0,  t,  t },{},{}, green });
-	v.push_back({ { 0, -t, -t },{},{}, green });
-	v.push_back({ { 0,  t, -t },{},{}, green });
+	v.push_back({ { 0, -t, t }, {}, {}, XGLColors::green });
+	v.push_back({ { 0, t, t }, {}, {}, XGLColors::green });
+	v.push_back({ { 0, -t, -t }, {}, {}, XGLColors::green });
+	v.push_back({ { 0, t, -t }, {}, {}, XGLColors::green });
 
-	v.push_back({ {  t, 0, -t },{},{}, blue });
-	v.push_back({ {  t, 0,  t },{},{}, blue });
-	v.push_back({ { -t, 0, -t },{},{}, blue });
-	v.push_back({ { -t, 0,  t },{},{}, blue });
+	v.push_back({ { t, 0, -t }, {}, {}, XGLColors::blue });
+	v.push_back({ { t, 0, t }, {}, {}, XGLColors::blue });
+	v.push_back({ { -t, 0, -t }, {}, {}, XGLColors::blue });
+	v.push_back({ { -t, 0, t }, {}, {}, XGLColors::blue });
 
 
 	idx.push_back(0);	idx.push_back(11);	idx.push_back(5);
@@ -517,7 +517,7 @@ XGLSphere2::XGLSphere2(float r, int n) : radius(r), nSegments(n), visualizeNorma
 			float z = (sin(angle)*sin(angle2)) * radius;
 
 			vrtx.v = { x,y,z };
-			vrtx.c = white;
+			vrtx.c = XGLColors::white;
 			vrtx.n = { x / radius, y / radius, z / radius };
 
 			v.push_back(vrtx);
