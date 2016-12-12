@@ -6,15 +6,15 @@ void ExampleXGL::BuildGUI() {
 
 	AddGuiShape("shaders/ortho", [&]() { gm = new XGLGuiManager(this); return gm; });
 
-	gm->AddChildShape("shaders/ortho-tex", [&]() { gw = new XGLGuiWindow(this, "TextWindow", 20, 20, 500, 60); return gw; });
+	gm->AddChildShape("shaders/ortho-tex", [&]() { gw = new XGLGuiWindow(this, "TextWindow", 20, 20, 440, 60); return gw; });
 	gw->attributes.diffuseColor = XGLColors::yellow;
 	gw->SetPenPosition(10, 20);
 	gw->RenderText("This window is pinned to the upper left corner. (the default)\nThis is a test, just to see if this works.\n", 16);
 
-	gm->AddChildShape("shaders/ortho-tex", [&]() { gw = new XGLGuiWindow(this, "TextWindow", 0, 0, 540, 80); return gw; });
+	gm->AddChildShape("shaders/ortho-tex", [&]() { gw = new XGLGuiWindow(this, "TextWindow", 0, 0, 400, 80); return gw; });
 	gw->attributes.diffuseColor = XGLColors::white;
 	gw->SetPenPosition(10, 20);
-	gw->RenderText("This window is pinned to the upper right corner, via a reshape callback.\n\nText does not automatically wrap, it just gets clipped.", 16);
+	gw->RenderText("This window is pinned to the upper right corner,\nvia a reshape callback.\n\nText does not automatically wrap, it just gets clipped.", 16);
 	gm->AddReshapeCallback([gw](int w, int h) {
 		gw->model = glm::translate(glm::mat4(), glm::vec3(w - gw->width - 20, 20, 0.0));
 	});
