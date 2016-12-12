@@ -125,7 +125,8 @@ public:
 	float Position() { return position; }
 
 private:
-	XGLGuiCanvas *groove, *thumb, *label;
+	XGLGuiCanvas *groove, *thumb;
+	XGLGuiLabel *label;
 	int grooveWidth, grooveHeight, grooveOffset, thumbSize, thumbX, thumbY, labelX, labelY;
 	glm::mat4 labelOffset;
 	Orientation orientation;
