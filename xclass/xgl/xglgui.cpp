@@ -134,7 +134,8 @@ XGLGuiWindow::XGLGuiWindow(XGL *xgl, std::string name, int x, int y, int w, int 
 XGLGuiLabel::XGLGuiLabel(XGL *xgl, std::string name, int x, int y) : XGLGuiCanvas(xgl) {
 	SetName(name);
 	model = glm::translate(glm::mat4(), glm::vec3(x, y, 0.0));
-	attributes.ambientColor = { 1, 1, 1, 0.1 };
+	attributes.ambientColor = transparent;
+	attributes.diffuseColor = transparent;
 
 	// twiddle the layout variables according to an arbitrarilly chosen font size
 	MeasureFontMetrics(name);
@@ -166,22 +167,16 @@ XGLGuiSlider::XGLGuiSlider(XGL *xgl, std::string name, Orientation o, int x, int
 	groove->attributes.ambientColor = white;
 	groove->model = glm::translate(glm::mat4(), glm::vec3(grooveOffset, grooveOffset, 0.0));
 
-	// the thumb is the thingy that moves according to mouse position
+	// the "thumb" is the thingy that moves according to mouse position
 	AddChildShape("shaders/ortho-rgb", [xgl, this, x, y, w, h]() { thumb = new XGLGuiCanvas(xgl, w, h, false); return thumb; });
 	thumb->AddTexture(pathToAssets + "/assets/button-large.png");
-	thumb->attributes.ambientColor = { 0, 0, 0, 0 };
+	thumb->attributes.ambientColor = transparent;
 	thumb->Reshape(0, 0, thumbSize, thumbSize);
 	thumb->width = thumbSize;
 	thumb->height = thumbSize;
 	thumb->model = glm::translate(glm::mat4(), glm::vec3(thumbX, thumbY, 0.0));
 
-	// the label is, well, the label.
-	AddChildShape("shaders/ortho-tex", [xgl, this, x, y]() { label = new XGLGuiCanvas(xgl, labelWidth, labelHeight); return label; });
-	label->SetName("Label", false);
-	label->attributes.diffuseColor = white;
-	label->attributes.ambientColor = { 1, 1, 1, 0.1 };
-	label->SetPenPosition(labelPadding / 2, labelHeight - (baselineHeight + (labelPadding / 2)));
-	label->RenderText(name.c_str(), pixelSize);
+	AddChildShape("shaders/ortho", [xgl, this, name, x, y]() { label = new XGLGuiLabel(xgl, name, x, y); return label; });
 	label->model = glm::translate(glm::mat4(), glm::vec3(labelX, labelY, 0.0));
 
 	// we move our base coordinates to the right by the width of the label if we're horizontal (left side label)
