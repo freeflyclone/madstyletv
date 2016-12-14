@@ -48,7 +48,7 @@ void ExampleXGL::BuildScene() {
 	});
 
 	CreateShape("shaders/specular", [&](){ child2 = new XGLTorus(0.75f, 0.25f, 64, 32); return child2; });
-	child2->attributes.diffuseColor = (yellow);
+    child2->attributes.diffuseColor = (XGLColors::yellow);
 	translate = glm::translate(glm::mat4(), glm::vec3(2.0, 0, 0));
 	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	child2->model = translate * rotate;
@@ -58,16 +58,16 @@ void ExampleXGL::BuildScene() {
 	child3->AddChild(child4);
 
 	AddShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
-	shape->attributes.diffuseColor = (blue);
+    shape->attributes.diffuseColor = (XGLColors::blue);
 	shape->model = glm::translate(glm::mat4(), glm::vec3(20, 0, 0));
 
 	AddShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
-	shape->attributes.diffuseColor = (red);
+    shape->attributes.diffuseColor = (XGLColors::red);
 	shape->model = glm::translate(glm::mat4(), glm::vec3(-20, 0, 0)) 
 				 * glm::scale(glm::mat4(), glm::vec3(2, 2, 2));
 
 	AddShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
-	shape->attributes.diffuseColor = (green);
+    shape->attributes.diffuseColor = (XGLColors::green);
 	shape->model = glm::translate(glm::mat4(), glm::vec3(30, 0, 0)) 
 				 * glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(0,1,0)) 
 				 * glm::scale(glm::mat4(), glm::vec3(2, 2, 2));

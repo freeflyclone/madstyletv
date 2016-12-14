@@ -35,8 +35,8 @@ XSharedMem::XSharedMem(std::string n) : fileBackingName(n) {
 }
 #else
 XSharedMem::XSharedMem(std::string n) : fileBackingName(n) {
-	mappedHeader = new unsigned char[FILEMAPPING_SIZE];
-	mappedBuffer = mappedHeader + PAGE_SIZE;
+	mappedHeader = new unsigned char[fileMappingSize];
+	mappedBuffer = mappedHeader + pageSize;
 	pHeader = (MAPPED_HEADER *)mappedHeader;
 }
 #endif

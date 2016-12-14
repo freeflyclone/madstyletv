@@ -49,6 +49,8 @@
 		5962D3851D6B80AB006BCD52 /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3841D6B80AB006BCD52 /* OpenGLView.mm */; };
 		5962D3891D6B81D8006BCD52 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3881D6B81D8006BCD52 /* main.m */; };
 		596DEB901DDE7EC2001D604C /* ExampleGUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 596DEB8F1DDE7EC2001D604C /* ExampleGUI.cpp */; };
+		596F77A41E01FD9C0079D370 /* xglgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 596F77A21E01FD9C0079D370 /* xglgui.cpp */; };
+		596F77A51E01FDFA0079D370 /* xglgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 596F77A21E01FD9C0079D370 /* xglgui.cpp */; };
 		5984BD951D6B88650047DF80 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5984BD941D6B88650047DF80 /* Assets.xcassets */; };
 		5993CC321D6B9031006105A9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5993CC301D6B9031006105A9 /* MainMenu.xib */; };
 		599A90EC1DB7DDB900EAD8C9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3881D6B81D8006BCD52 /* main.m */; };
@@ -527,6 +529,8 @@
 		5962D3841D6B80AB006BCD52 /* OpenGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = OpenGLView.mm; path = common/OpenGLView.mm; sourceTree = SOURCE_ROOT; };
 		5962D3881D6B81D8006BCD52 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = common/main.m; sourceTree = SOURCE_ROOT; };
 		596DEB8F1DDE7EC2001D604C /* ExampleGUI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExampleGUI.cpp; sourceTree = "<group>"; };
+		596F77A21E01FD9C0079D370 /* xglgui.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = xglgui.cpp; sourceTree = "<group>"; };
+		596F77A31E01FD9C0079D370 /* xglgui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xglgui.h; sourceTree = "<group>"; };
 		5984BD941D6B88650047DF80 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = common/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		598A6CEB1D6636CA005BC5D9 /* Example01.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example01.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5993CC311D6B9031006105A9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = common/Base.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
@@ -873,6 +877,8 @@
 		5919961D1D63F00D003F62FF /* xgl */ = {
 			isa = PBXGroup;
 			children = (
+				596F77A21E01FD9C0079D370 /* xglgui.cpp */,
+				596F77A31E01FD9C0079D370 /* xglgui.h */,
 				595642751DB6A166002A756F /* xglframebuffer.cpp */,
 				595642761DB6A166002A756F /* xglframebuffer.h */,
 				5919961E1D63F00D003F62FF /* glew.c */,
@@ -1649,6 +1655,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				596F77A51E01FDFA0079D370 /* xglgui.cpp in Sources */,
 				594FA8271DC6CD3E0071DE06 /* xavenc.cpp in Sources */,
 				5912EC771DB84092006837B9 /* xav.cpp in Sources */,
 				5912EC781DB84092006837B9 /* xavfile.cpp in Sources */,
@@ -1685,6 +1692,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				596F77A41E01FD9C0079D370 /* xglgui.cpp in Sources */,
 				5962D3891D6B81D8006BCD52 /* main.m in Sources */,
 				599FCC601D6654EB00C57873 /* ExampleXGL.cpp in Sources */,
 				596DEB901DDE7EC2001D604C /* ExampleGUI.cpp in Sources */,
