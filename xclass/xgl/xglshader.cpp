@@ -168,7 +168,9 @@ bool XGLShader::Compile(std::string name) {
 
 bool XGLShader::CompileCompute(std::string name) {
 	GLint status;
-
+#ifdef __APPLE__
+    throwXGLException("Compute Shaders not presently supported on Mac OS X");
+#else
 	xprintf("XGLShader::CompileCompute(%s)\n", name.c_str());
 
 	if (!mCShader.Compile(name, GL_COMPUTE_SHADER))
@@ -203,6 +205,7 @@ bool XGLShader::CompileCompute(std::string name) {
 	GL_CHECK("glUniform1i() failed");
 
 	return true;
+#endif
 }
 
 void XGLShader::InfoLog() {
