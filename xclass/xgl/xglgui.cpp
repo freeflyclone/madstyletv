@@ -4,7 +4,9 @@ XGLGuiCanvas::XGLGuiCanvas(XGL *xgl) :
 XGLTexQuad(),
 buffer(NULL),
 pxgl(xgl),
-childEvent(false)
+childEvent(false),
+hasMouse(false),
+hasFocus(false)
 {
 	SetName("XGLGuiCanvas");
 	attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.5 };
@@ -14,7 +16,9 @@ XGLGuiCanvas::XGLGuiCanvas(XGL *xgl, int w, int h, bool addTexture) :
 XGLTexQuad(w, h),
 buffer(NULL),
 pxgl(xgl),
-childEvent(false)
+childEvent(false),
+hasMouse(false),
+hasFocus(false)
 {
 	SetName("XGLGuiCanvas");
 	attributes.diffuseColor = { 1.0, 1.0, 1.0, 0.5 };
@@ -47,6 +51,34 @@ void XGLGuiCanvas::AddChildShape(std::string shaderName, XGLNewShapeLambda fn){
 
 void XGLGuiCanvas::SetMouseFunc(XGLGuiCanvas::MouseFunc fn){
 	mouseFunc = fn;
+}
+
+void XGLGuiCanvas::CaptureMouse() { 
+	hasMouse = true; 
+	pxgl->mouseCaptured = this; 
+}
+
+void XGLGuiCanvas::ReleaseMouse() {
+	hasMouse = false;
+	pxgl->mouseCaptured = nullptr;
+}
+
+void XGLGuiCanvas::CaptureKeyboard() {
+	hasFocus = true;
+	pxgl->keyboardFocused = this;
+}
+
+void XGLGuiCanvas::ReleaseKeyboard() {
+	hasFocus = false;
+	pxgl->keyboardFocused = nullptr;
+}
+
+XGLGuiCanvas *XGLGuiCanvas::Captured() {
+	return (XGLGuiCanvas *)pxgl->mouseCaptured;
+}
+
+XGLGuiCanvas *XGLGuiCanvas::Focused() {
+	return (XGLGuiCanvas *)pxgl->keyboardFocused;
 }
 
 bool XGLGuiCanvas::MouseEvent(float x, float y, int flags) {
@@ -198,13 +230,10 @@ XGLGuiSlider::XGLGuiSlider(XGL *xgl, std::string name, Orientation o, int x, int
 				previousPos = posLimited;
 				position = posLimited / limit;
 			}
-
-			xgl->mouseCaptured = this;
-			SetHasMouse(true);
+			CaptureMouse();
 		}
 		else {
-			xgl->mouseCaptured = NULL;
-			SetHasMouse(false);
+			ReleaseMouse();
 		}
 		return true;
 	});

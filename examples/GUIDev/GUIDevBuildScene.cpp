@@ -23,6 +23,35 @@ public:
 		label->model = glm::translate(glm::mat4(), glm::vec3(-(label->labelWidth + label->labelPadding), 0, 0.0));
 
 		model = glm::translate(glm::mat4(), glm::vec3(x + (label->labelWidth + label->labelPadding), y, 0));
+		SetMouseFunc([xgl, this](float x, float y, int flags){
+			static int oldFlags = 0;
+
+			if (flags & 1)
+				CaptureMouse();
+			else
+				ReleaseMouse();
+
+			// if a button has changed state...
+			if (flags ^ oldFlags) {
+				//... if the left button is presently down...
+				if (flags & 1) {
+					// ...if I don't have focus...
+					if (!HasFocus()) {
+						//...but someone else does, take it from them...
+						if (Focused()) {
+							xprintf("%s released keyboard\n", Focused()->Name().c_str());
+							Focused()->ReleaseKeyboard();
+						}
+						// ...and then claim it for myself
+						CaptureKeyboard();
+						xprintf("%s captured keyboard\n", Name().c_str());
+					}
+				}
+				oldFlags = flags;
+			}
+
+			return true;
+		});
 	}
 
 private:
