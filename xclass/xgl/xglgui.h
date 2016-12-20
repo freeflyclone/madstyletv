@@ -24,11 +24,28 @@ public:
 	void AddChildShape(std::string shaderName, XGLNewShapeLambda fn);
 
 	void SetXGL(XGL *xgl) { pxgl = xgl; }
+
 	void SetFocus(bool enable) { hasFocus = enable; }
 	bool HasFocus() { return hasFocus; }
+	void CaptureKeyboard();
+	void ReleaseKeyboard();
 
+	// return the GUI canvas where the keyboard is currently focused
+	XGLGuiCanvas *Focused();
+
+	// for mouse movement events we need to know which window
+	// the mouse is currently in
 	void SetHasMouse(bool enable) { hasMouse = enable; }
 	bool HasMouse() { return hasMouse; }
+
+	// for things like sliders, CaptureMouse() funnels movement
+	// events to a specific window even if the mouse moves outside
+	// the window as long as a mouse button is held
+	void CaptureMouse();
+	void ReleaseMouse();
+
+	// return the GUI canvas where the mouse is currently captured
+	XGLGuiCanvas *Captured();
 
 	void SetMouseFunc(XGLGuiCanvas::MouseFunc);
 	bool MouseEvent(float x, float y, int flags);
