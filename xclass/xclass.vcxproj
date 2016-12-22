@@ -226,6 +226,7 @@
     <ClInclude Include="xav\xavenc.h" />
     <ClInclude Include="xav\xavfile.h" />
     <ClInclude Include="xav\xavsrc.h" />
+    <ClInclude Include="xclasses.h" />
     <ClInclude Include="xconfig.h" />
     <ClInclude Include="xcircularbuffer.h" />
     <ClInclude Include="xfifo.h" />
@@ -253,6 +254,7 @@
     <ClInclude Include="xshmem.h" />
     <ClInclude Include="xthread.h" />
     <ClInclude Include="xtimer.h" />
+    <ClInclude Include="xuart.h" />
     <ClInclude Include="xutils.h" />
   </ItemGroup>
   <ItemGroup>
