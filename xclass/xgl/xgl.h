@@ -61,9 +61,7 @@
 #include "ft2build.h"
 #include FT_FREETYPE_H
 
-#include "xutils.h"
-#include "xthread.h"
-#include "xinput.h"
+#include "xclasses.h"
 #include "xglobject.h"
 #include "xconfig.h"
 #include "xglexcept.h"

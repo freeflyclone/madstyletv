@@ -10,6 +10,7 @@
 ** given application.
 **************************************************************/
 #include "ExampleXGL.h"
+#include "xuart.h"
 
 class XGLGuiTextEdit : public XGLGuiCanvas {
 public:
@@ -58,6 +59,8 @@ private:
 	XGLGuiLabel *label;
 };
 
+XUart *uart;
+
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 	XGLGuiManager *gm = GetGuiManager();
@@ -77,4 +80,11 @@ void ExampleXGL::BuildScene() {
 	gw->AddChildShape("shaders/ortho-tex", [&gte, this]() { gte = new XGLGuiTextEdit(this, "Text Edit 2", 20, 80, 200, 24); return gte; });
 	gw->AddChildShape("shaders/ortho-tex", [&gte, this]() { gte = new XGLGuiTextEdit(this, "Text Edit 3", 20, 120, 200, 24); return gte; });
 	gw->AddChildShape("shaders/ortho-tex", [&gte, this]() { gte = new XGLGuiTextEdit(this, "Text Edit 4", 20, 160, 200, 24); return gte; });
+
+	try {
+		uart = new XUart("\\\\.\\COM17");
+	}
+	catch (std::runtime_error e) {
+		xprintf("That didn't work: %s\n", e.what());
+	}
 }

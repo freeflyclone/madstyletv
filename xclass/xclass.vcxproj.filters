@@ -186,6 +186,12 @@
     <ClInclude Include="xgl\xglgui.h">
       <Filter>xgl\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xuart.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xclasses.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xgl\xglbuffer.cpp">
