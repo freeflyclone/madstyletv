@@ -45,9 +45,22 @@ XUart::~XUart() {
 
 int XUart::Read(unsigned char *b, int size) {
 	int nRead = 0;
-	if (ReadFile(hPort, b, size, (LPDWORD)(&nRead), NULL))
+	if (ReadFile(hPort, b, size, (LPDWORD)(&nRead), NULL)>0)
 		return nRead;
 	else {
+		unsigned int error = (unsigned int)GetLastError();
+		xprintf("ReadFile() failed with: %08X\n", error);
+		return 0;
+	}
+}
+
+int XUart::Write(unsigned char *b, int size) {
+	int nWrite;
+	if (WriteFile(hPort, b, size, (LPDWORD)(&nWrite), NULL)>0)
+		return nWrite;
+	else {
+		unsigned int error = (unsigned int)GetLastError();
+		xprintf("WriteFile() failed with: %08X\n", error);
 		return 0;
 	}
 }
