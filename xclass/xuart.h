@@ -12,6 +12,7 @@ public:
 
 	~XUart();
 	int Read(unsigned char *b, int size);
+	int Write(unsigned char *b, int size);
 
 private:
 	HANDLE hPort;
