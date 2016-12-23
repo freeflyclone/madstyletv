@@ -290,10 +290,14 @@
     <ClCompile Include="xgl\xglgui.cpp">
       <Filter>xgl\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="xuart.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="3rdParty\3rdPartyCopy.proj" />
     <None Include="xclass-copy.proj" />
     <None Include="xclass.props" />
+    <None Include="mavlink.props" />
   </ItemGroup>
 </Project>

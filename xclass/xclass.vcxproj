@@ -59,6 +59,7 @@
     <Import Project="xclass.props" />
     <Import Project="OpenAL.props" />
     <Import Project="AntTweakBar.props" />
+    <Import Project="mavlink.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -66,6 +67,7 @@
     <Import Project="xclass.props" />
     <Import Project="OpenAL.props" />
     <Import Project="AntTweakBar.props" />
+    <Import Project="mavlink.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -73,6 +75,7 @@
     <Import Project="xclass.props" />
     <Import Project="OpenAL.props" />
     <Import Project="AntTweakBar.props" />
+    <Import Project="mavlink.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -80,6 +83,7 @@
     <Import Project="xclass.props" />
     <Import Project="OpenAL.props" />
     <Import Project="AntTweakBar.props" />
+    <Import Project="mavlink.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -289,12 +293,14 @@
     <ClCompile Include="xgl\xglworldcursor.cpp" />
     <ClCompile Include="xinput.cpp" />
     <ClCompile Include="xshmem.cpp" />
+    <ClCompile Include="xuart.cpp" />
     <ClCompile Include="xutils.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="3rdParty\3rdPartyCopy.proj">
       <SubType>Designer</SubType>
     </None>
+    <None Include="mavlink.props" />
     <None Include="xclass-copy.proj">
       <SubType>Designer</SubType>
     </None>

@@ -11,6 +11,38 @@
 **************************************************************/
 #include "ExampleXGL.h"
 #include "xuart.h"
+#include "common/mavlink.h"
+
+struct mavlink_msg {
+	unsigned char startOfFrame;
+	unsigned char length;
+	unsigned char sequence;
+	unsigned char sysId;
+	unsigned char compId;
+	unsigned char messageId;
+};
+
+class XMavlink : public XUart, public XThread {
+public:
+	XMavlink(std::string portName) : XUart(portName), XThread(portName + "Thread") {
+		Start();
+	}
+	~XMavlink() {
+		Stop();
+	}
+
+	void Run() {
+		while (IsRunning()) {
+			if (Read(buffer, sizeof(buffer)) > 0) {
+				msg = (mavlink_msg *)buffer;
+				xprintf("%02X %02X %02X %02X %02X %02X\n", msg->startOfFrame, msg->length, msg->sequence, msg->sysId, msg->compId, msg->messageId);
+			}
+		}
+	}
+
+	unsigned char buffer[1024];
+	mavlink_msg *msg;
+};
 
 class XGLGuiTextEdit : public XGLGuiCanvas {
 public:
@@ -59,7 +91,7 @@ private:
 	XGLGuiLabel *label;
 };
 
-XUart *uart;
+XMavlink *xmavlink;
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
@@ -82,7 +114,7 @@ void ExampleXGL::BuildScene() {
 	gw->AddChildShape("shaders/ortho-tex", [&gte, this]() { gte = new XGLGuiTextEdit(this, "Text Edit 4", 20, 160, 200, 24); return gte; });
 
 	try {
-		uart = new XUart("\\\\.\\COM17");
+		xmavlink = new XMavlink("\\\\.\\COM17");
 	}
 	catch (std::runtime_error e) {
 		xprintf("That didn't work: %s\n", e.what());
