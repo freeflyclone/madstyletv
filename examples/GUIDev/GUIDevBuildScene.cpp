@@ -13,15 +13,6 @@
 #include "xuart.h"
 #include "common/mavlink.h"
 
-struct mavlink_msg {
-	unsigned char startOfFrame;
-	unsigned char length;
-	unsigned char sequence;
-	unsigned char sysId;
-	unsigned char compId;
-	unsigned char messageId;
-};
-
 class XMavlink : public XUart, public XThread {
 public:
 	XMavlink(std::string portName) : XUart(portName), XThread(portName + "Thread") {
@@ -31,17 +22,53 @@ public:
 		Stop();
 	}
 
+	void MavlinkMessageDump(mavlink_message_t msg) {
+		switch (msg.msgid) {
+			case MAVLINK_MSG_ID_HEARTBEAT:
+				xprintf("Heartbeat\n");
+				break;
+
+			case MAVLINK_MSG_ID_ATTITUDE:
+				xprintf("Attitude\n");
+				break;
+		}
+	}
+
+	void PackRequest() {
+		memset(&reqMsg, 0, sizeof(reqMsg));
+		memset(&request, 0, sizeof(request));
+		request.target_system = 2;
+		request.target_component = 0;
+		request.req_stream_id = 0;
+		request.req_message_rate = 2;
+		request.start_stop = 1;
+
+		uint16_t retVal = mavlink_msg_request_data_stream_encode(0xFF, 0xBE, &reqMsg, &request);
+		unsigned char *foo = (unsigned char *)&reqMsg;
+		xprintf("%02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\n", foo[2], foo[3], foo[4], foo[5], foo[6], foo[7], foo[8], foo[9], foo[10], foo[11], foo[12], foo[13], foo[14], foo[15]);
+	}
+
 	void Run() {
+		int nRead;
 		while (IsRunning()) {
-			if (Read(buffer, sizeof(buffer)) > 0) {
-				msg = (mavlink_msg *)buffer;
-				xprintf("%02X %02X %02X %02X %02X %02X\n", msg->startOfFrame, msg->length, msg->sequence, msg->sysId, msg->compId, msg->messageId);
+			nRead = 0;
+			if ( (nRead = Read(buffer, sizeof(buffer))) > 0) {
+				for (int i = 0; i < nRead; i++){
+					if ((parseState = mavlink_parse_char(MAVLINK_COMM_1, buffer[i], &msg, &stat)) == MAVLINK_FRAMING_OK)
+						MavlinkMessageDump(msg);
+					else if (parseState != MAVLINK_FRAMING_INCOMPLETE)
+						xprintf("parseState: %02X\n", parseState);
+				}
 			}
 		}
 	}
 
 	unsigned char buffer[1024];
-	mavlink_msg *msg;
+	mavlink_message_t reqMsg;
+	mavlink_message_t msg;
+	mavlink_status_t stat;
+	mavlink_request_data_stream_t request;
+	unsigned char parseState;
 };
 
 class XGLGuiTextEdit : public XGLGuiCanvas {
@@ -115,6 +142,7 @@ void ExampleXGL::BuildScene() {
 
 	try {
 		xmavlink = new XMavlink("\\\\.\\COM17");
+		xmavlink->PackRequest();
 	}
 	catch (std::runtime_error e) {
 		xprintf("That didn't work: %s\n", e.what());

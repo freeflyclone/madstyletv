@@ -18,7 +18,6 @@ private:
 	HANDLE hPort;
 	DCB portDCB;
 	COMMTIMEOUTS   commTimeouts;
-	unsigned char buffer[1024];
 };
 
 #endif
