@@ -11,7 +11,7 @@
 **************************************************************/
 #include "ExampleXGL.h"
 #include "xuart.h"
-#include "common/mavlink.h"
+#include "ardupilotmega/mavlink.h"
 
 class XMavlink : public XUart, public XThread {
 public:
