@@ -40,6 +40,19 @@ public:
 				xprintf("StatusText: %s\n", statusText.text);
 				retVal = true;
 				break;
+
+			case MAVLINK_MSG_ID_SYS_STATUS:
+				mavlink_msg_sys_status_decode(&msg, &sysStatus);
+				xprintf("Status: 0x%04X, 0x%04X, 0x%04X\n", sysStatus.onboard_control_sensors_present, sysStatus.onboard_control_sensors_enabled, sysStatus.onboard_control_sensors_health);
+				break;
+
+			case MAVLINK_MSG_ID_VFR_HUD:
+				xprintf("VFR HUD\n");
+				break;
+
+			default:
+				xprintf("msgid: %d\n", msg.msgid);
+				break;
 		}
 		return retVal;
 	}
@@ -56,6 +69,8 @@ public:
 	mavlink_message_t msg;
 	mavlink_status_t stat;
 	mavlink_attitude_t attitude;
+	mavlink_sys_status_t sysStatus;
+	mavlink_vfr_hud_t vfrHud;
 	mavlink_statustext_t statusText;
 
 	unsigned char parseState;
