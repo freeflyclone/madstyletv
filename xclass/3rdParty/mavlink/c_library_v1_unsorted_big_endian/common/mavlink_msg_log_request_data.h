@@ -5,11 +5,11 @@
 
 MAVPACKED(
 typedef struct __mavlink_log_request_data_t {
- uint8_t target_system; /*< System ID*/
- uint8_t target_component; /*< Component ID*/
- uint16_t id; /*< Log id (from LOG_ENTRY reply)*/
  uint32_t ofs; /*< Offset into the log*/
  uint32_t count; /*< Number of bytes*/
+ uint16_t id; /*< Log id (from LOG_ENTRY reply)*/
+ uint8_t target_system; /*< System ID*/
+ uint8_t target_component; /*< Component ID*/
 }) mavlink_log_request_data_t;
 
 #define MAVLINK_MSG_ID_LOG_REQUEST_DATA_LEN 12
@@ -17,8 +17,8 @@ typedef struct __mavlink_log_request_data_t {
 #define MAVLINK_MSG_ID_119_LEN 12
 #define MAVLINK_MSG_ID_119_MIN_LEN 12
 
-#define MAVLINK_MSG_ID_LOG_REQUEST_DATA_CRC 114
-#define MAVLINK_MSG_ID_119_CRC 114
+#define MAVLINK_MSG_ID_LOG_REQUEST_DATA_CRC 116
+#define MAVLINK_MSG_ID_119_CRC 116
 
 
 
@@ -27,22 +27,22 @@ typedef struct __mavlink_log_request_data_t {
     119, \
     "LOG_REQUEST_DATA", \
     5, \
-    {  { "target_system", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_log_request_data_t, target_system) }, \
-         { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 1, offsetof(mavlink_log_request_data_t, target_component) }, \
-         { "id", NULL, MAVLINK_TYPE_UINT16_T, 0, 2, offsetof(mavlink_log_request_data_t, id) }, \
-         { "ofs", NULL, MAVLINK_TYPE_UINT32_T, 0, 4, offsetof(mavlink_log_request_data_t, ofs) }, \
-         { "count", NULL, MAVLINK_TYPE_UINT32_T, 0, 8, offsetof(mavlink_log_request_data_t, count) }, \
+    {  { "ofs", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_log_request_data_t, ofs) }, \
+         { "count", NULL, MAVLINK_TYPE_UINT32_T, 0, 4, offsetof(mavlink_log_request_data_t, count) }, \
+         { "id", NULL, MAVLINK_TYPE_UINT16_T, 0, 8, offsetof(mavlink_log_request_data_t, id) }, \
+         { "target_system", NULL, MAVLINK_TYPE_UINT8_T, 0, 10, offsetof(mavlink_log_request_data_t, target_system) }, \
+         { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 11, offsetof(mavlink_log_request_data_t, target_component) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_LOG_REQUEST_DATA { \
     "LOG_REQUEST_DATA", \
     5, \
-    {  { "target_system", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_log_request_data_t, target_system) }, \
-         { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 1, offsetof(mavlink_log_request_data_t, target_component) }, \
-         { "id", NULL, MAVLINK_TYPE_UINT16_T, 0, 2, offsetof(mavlink_log_request_data_t, id) }, \
-         { "ofs", NULL, MAVLINK_TYPE_UINT32_T, 0, 4, offsetof(mavlink_log_request_data_t, ofs) }, \
-         { "count", NULL, MAVLINK_TYPE_UINT32_T, 0, 8, offsetof(mavlink_log_request_data_t, count) }, \
+    {  { "ofs", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_log_request_data_t, ofs) }, \
+         { "count", NULL, MAVLINK_TYPE_UINT32_T, 0, 4, offsetof(mavlink_log_request_data_t, count) }, \
+         { "id", NULL, MAVLINK_TYPE_UINT16_T, 0, 8, offsetof(mavlink_log_request_data_t, id) }, \
+         { "target_system", NULL, MAVLINK_TYPE_UINT8_T, 0, 10, offsetof(mavlink_log_request_data_t, target_system) }, \
+         { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 11, offsetof(mavlink_log_request_data_t, target_component) }, \
          } \
 }
 #endif
@@ -65,20 +65,20 @@ static inline uint16_t mavlink_msg_log_request_data_pack(uint8_t system_id, uint
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_LOG_REQUEST_DATA_LEN];
-    _mav_put_uint8_t(buf, 0, target_system);
-    _mav_put_uint8_t(buf, 1, target_component);
-    _mav_put_uint16_t(buf, 2, id);
-    _mav_put_uint32_t(buf, 4, ofs);
-    _mav_put_uint32_t(buf, 8, count);
+    _mav_put_uint32_t(buf, 0, ofs);
+    _mav_put_uint32_t(buf, 4, count);
+    _mav_put_uint16_t(buf, 8, id);
+    _mav_put_uint8_t(buf, 10, target_system);
+    _mav_put_uint8_t(buf, 11, target_component);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_LOG_REQUEST_DATA_LEN);
 #else
     mavlink_log_request_data_t packet;
-    packet.target_system = target_system;
-    packet.target_component = target_component;
-    packet.id = id;
     packet.ofs = ofs;
     packet.count = count;
+    packet.id = id;
+    packet.target_system = target_system;
+    packet.target_component = target_component;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_LOG_REQUEST_DATA_LEN);
 #endif
@@ -106,20 +106,20 @@ static inline uint16_t mavlink_msg_log_request_data_pack_chan(uint8_t system_id,
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_LOG_REQUEST_DATA_LEN];
-    _mav_put_uint8_t(buf, 0, target_system);
-    _mav_put_uint8_t(buf, 1, target_component);
-    _mav_put_uint16_t(buf, 2, id);
-    _mav_put_uint32_t(buf, 4, ofs);
-    _mav_put_uint32_t(buf, 8, count);
+    _mav_put_uint32_t(buf, 0, ofs);
+    _mav_put_uint32_t(buf, 4, count);
+    _mav_put_uint16_t(buf, 8, id);
+    _mav_put_uint8_t(buf, 10, target_system);
+    _mav_put_uint8_t(buf, 11, target_component);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_LOG_REQUEST_DATA_LEN);
 #else
     mavlink_log_request_data_t packet;
-    packet.target_system = target_system;
-    packet.target_component = target_component;
-    packet.id = id;
     packet.ofs = ofs;
     packet.count = count;
+    packet.id = id;
+    packet.target_system = target_system;
+    packet.target_component = target_component;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_LOG_REQUEST_DATA_LEN);
 #endif
@@ -171,20 +171,20 @@ static inline void mavlink_msg_log_request_data_send(mavlink_channel_t chan, uin
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_LOG_REQUEST_DATA_LEN];
-    _mav_put_uint8_t(buf, 0, target_system);
-    _mav_put_uint8_t(buf, 1, target_component);
-    _mav_put_uint16_t(buf, 2, id);
-    _mav_put_uint32_t(buf, 4, ofs);
-    _mav_put_uint32_t(buf, 8, count);
+    _mav_put_uint32_t(buf, 0, ofs);
+    _mav_put_uint32_t(buf, 4, count);
+    _mav_put_uint16_t(buf, 8, id);
+    _mav_put_uint8_t(buf, 10, target_system);
+    _mav_put_uint8_t(buf, 11, target_component);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_LOG_REQUEST_DATA, buf, MAVLINK_MSG_ID_LOG_REQUEST_DATA_MIN_LEN, MAVLINK_MSG_ID_LOG_REQUEST_DATA_LEN, MAVLINK_MSG_ID_LOG_REQUEST_DATA_CRC);
 #else
     mavlink_log_request_data_t packet;
-    packet.target_system = target_system;
-    packet.target_component = target_component;
-    packet.id = id;
     packet.ofs = ofs;
     packet.count = count;
+    packet.id = id;
+    packet.target_system = target_system;
+    packet.target_component = target_component;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_LOG_REQUEST_DATA, (const char *)&packet, MAVLINK_MSG_ID_LOG_REQUEST_DATA_MIN_LEN, MAVLINK_MSG_ID_LOG_REQUEST_DATA_LEN, MAVLINK_MSG_ID_LOG_REQUEST_DATA_CRC);
 #endif
@@ -216,20 +216,20 @@ static inline void mavlink_msg_log_request_data_send_buf(mavlink_message_t *msgb
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
-    _mav_put_uint8_t(buf, 0, target_system);
-    _mav_put_uint8_t(buf, 1, target_component);
-    _mav_put_uint16_t(buf, 2, id);
-    _mav_put_uint32_t(buf, 4, ofs);
-    _mav_put_uint32_t(buf, 8, count);
+    _mav_put_uint32_t(buf, 0, ofs);
+    _mav_put_uint32_t(buf, 4, count);
+    _mav_put_uint16_t(buf, 8, id);
+    _mav_put_uint8_t(buf, 10, target_system);
+    _mav_put_uint8_t(buf, 11, target_component);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_LOG_REQUEST_DATA, buf, MAVLINK_MSG_ID_LOG_REQUEST_DATA_MIN_LEN, MAVLINK_MSG_ID_LOG_REQUEST_DATA_LEN, MAVLINK_MSG_ID_LOG_REQUEST_DATA_CRC);
 #else
     mavlink_log_request_data_t *packet = (mavlink_log_request_data_t *)msgbuf;
-    packet->target_system = target_system;
-    packet->target_component = target_component;
-    packet->id = id;
     packet->ofs = ofs;
     packet->count = count;
+    packet->id = id;
+    packet->target_system = target_system;
+    packet->target_component = target_component;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_LOG_REQUEST_DATA, (const char *)packet, MAVLINK_MSG_ID_LOG_REQUEST_DATA_MIN_LEN, MAVLINK_MSG_ID_LOG_REQUEST_DATA_LEN, MAVLINK_MSG_ID_LOG_REQUEST_DATA_CRC);
 #endif
@@ -248,7 +248,7 @@ static inline void mavlink_msg_log_request_data_send_buf(mavlink_message_t *msgb
  */
 static inline uint8_t mavlink_msg_log_request_data_get_target_system(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint8_t(msg,  0);
+    return _MAV_RETURN_uint8_t(msg,  10);
 }
 
 /**
@@ -258,7 +258,7 @@ static inline uint8_t mavlink_msg_log_request_data_get_target_system(const mavli
  */
 static inline uint8_t mavlink_msg_log_request_data_get_target_component(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint8_t(msg,  1);
+    return _MAV_RETURN_uint8_t(msg,  11);
 }
 
 /**
@@ -268,7 +268,7 @@ static inline uint8_t mavlink_msg_log_request_data_get_target_component(const ma
  */
 static inline uint16_t mavlink_msg_log_request_data_get_id(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint16_t(msg,  2);
+    return _MAV_RETURN_uint16_t(msg,  8);
 }
 
 /**
@@ -278,7 +278,7 @@ static inline uint16_t mavlink_msg_log_request_data_get_id(const mavlink_message
  */
 static inline uint32_t mavlink_msg_log_request_data_get_ofs(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint32_t(msg,  4);
+    return _MAV_RETURN_uint32_t(msg,  0);
 }
 
 /**
@@ -288,7 +288,7 @@ static inline uint32_t mavlink_msg_log_request_data_get_ofs(const mavlink_messag
  */
 static inline uint32_t mavlink_msg_log_request_data_get_count(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint32_t(msg,  8);
+    return _MAV_RETURN_uint32_t(msg,  4);
 }
 
 /**
@@ -300,11 +300,11 @@ static inline uint32_t mavlink_msg_log_request_data_get_count(const mavlink_mess
 static inline void mavlink_msg_log_request_data_decode(const mavlink_message_t* msg, mavlink_log_request_data_t* log_request_data)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    log_request_data->target_system = mavlink_msg_log_request_data_get_target_system(msg);
-    log_request_data->target_component = mavlink_msg_log_request_data_get_target_component(msg);
-    log_request_data->id = mavlink_msg_log_request_data_get_id(msg);
     log_request_data->ofs = mavlink_msg_log_request_data_get_ofs(msg);
     log_request_data->count = mavlink_msg_log_request_data_get_count(msg);
+    log_request_data->id = mavlink_msg_log_request_data_get_id(msg);
+    log_request_data->target_system = mavlink_msg_log_request_data_get_target_system(msg);
+    log_request_data->target_component = mavlink_msg_log_request_data_get_target_component(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_LOG_REQUEST_DATA_LEN? msg->len : MAVLINK_MSG_ID_LOG_REQUEST_DATA_LEN;
         memset(log_request_data, 0, MAVLINK_MSG_ID_LOG_REQUEST_DATA_LEN);

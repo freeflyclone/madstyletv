@@ -5,9 +5,6 @@
 
 MAVPACKED(
 typedef struct __mavlink_sensor_offsets_t {
- int16_t mag_ofs_x; /*< magnetometer X offset*/
- int16_t mag_ofs_y; /*< magnetometer Y offset*/
- int16_t mag_ofs_z; /*< magnetometer Z offset*/
  float mag_declination; /*< magnetic declination (radians)*/
  int32_t raw_press; /*< raw pressure from barometer*/
  int32_t raw_temp; /*< raw temperature from barometer*/
@@ -17,6 +14,9 @@ typedef struct __mavlink_sensor_offsets_t {
  float accel_cal_x; /*< accel X calibration*/
  float accel_cal_y; /*< accel Y calibration*/
  float accel_cal_z; /*< accel Z calibration*/
+ int16_t mag_ofs_x; /*< magnetometer X offset*/
+ int16_t mag_ofs_y; /*< magnetometer Y offset*/
+ int16_t mag_ofs_z; /*< magnetometer Z offset*/
 }) mavlink_sensor_offsets_t;
 
 #define MAVLINK_MSG_ID_SENSOR_OFFSETS_LEN 42
@@ -24,8 +24,8 @@ typedef struct __mavlink_sensor_offsets_t {
 #define MAVLINK_MSG_ID_150_LEN 42
 #define MAVLINK_MSG_ID_150_MIN_LEN 42
 
-#define MAVLINK_MSG_ID_SENSOR_OFFSETS_CRC 143
-#define MAVLINK_MSG_ID_150_CRC 143
+#define MAVLINK_MSG_ID_SENSOR_OFFSETS_CRC 134
+#define MAVLINK_MSG_ID_150_CRC 134
 
 
 
@@ -34,36 +34,36 @@ typedef struct __mavlink_sensor_offsets_t {
     150, \
     "SENSOR_OFFSETS", \
     12, \
-    {  { "mag_ofs_x", NULL, MAVLINK_TYPE_INT16_T, 0, 0, offsetof(mavlink_sensor_offsets_t, mag_ofs_x) }, \
-         { "mag_ofs_y", NULL, MAVLINK_TYPE_INT16_T, 0, 2, offsetof(mavlink_sensor_offsets_t, mag_ofs_y) }, \
-         { "mag_ofs_z", NULL, MAVLINK_TYPE_INT16_T, 0, 4, offsetof(mavlink_sensor_offsets_t, mag_ofs_z) }, \
-         { "mag_declination", NULL, MAVLINK_TYPE_FLOAT, 0, 6, offsetof(mavlink_sensor_offsets_t, mag_declination) }, \
-         { "raw_press", NULL, MAVLINK_TYPE_INT32_T, 0, 10, offsetof(mavlink_sensor_offsets_t, raw_press) }, \
-         { "raw_temp", NULL, MAVLINK_TYPE_INT32_T, 0, 14, offsetof(mavlink_sensor_offsets_t, raw_temp) }, \
-         { "gyro_cal_x", NULL, MAVLINK_TYPE_FLOAT, 0, 18, offsetof(mavlink_sensor_offsets_t, gyro_cal_x) }, \
-         { "gyro_cal_y", NULL, MAVLINK_TYPE_FLOAT, 0, 22, offsetof(mavlink_sensor_offsets_t, gyro_cal_y) }, \
-         { "gyro_cal_z", NULL, MAVLINK_TYPE_FLOAT, 0, 26, offsetof(mavlink_sensor_offsets_t, gyro_cal_z) }, \
-         { "accel_cal_x", NULL, MAVLINK_TYPE_FLOAT, 0, 30, offsetof(mavlink_sensor_offsets_t, accel_cal_x) }, \
-         { "accel_cal_y", NULL, MAVLINK_TYPE_FLOAT, 0, 34, offsetof(mavlink_sensor_offsets_t, accel_cal_y) }, \
-         { "accel_cal_z", NULL, MAVLINK_TYPE_FLOAT, 0, 38, offsetof(mavlink_sensor_offsets_t, accel_cal_z) }, \
+    {  { "mag_declination", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_sensor_offsets_t, mag_declination) }, \
+         { "raw_press", NULL, MAVLINK_TYPE_INT32_T, 0, 4, offsetof(mavlink_sensor_offsets_t, raw_press) }, \
+         { "raw_temp", NULL, MAVLINK_TYPE_INT32_T, 0, 8, offsetof(mavlink_sensor_offsets_t, raw_temp) }, \
+         { "gyro_cal_x", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_sensor_offsets_t, gyro_cal_x) }, \
+         { "gyro_cal_y", NULL, MAVLINK_TYPE_FLOAT, 0, 16, offsetof(mavlink_sensor_offsets_t, gyro_cal_y) }, \
+         { "gyro_cal_z", NULL, MAVLINK_TYPE_FLOAT, 0, 20, offsetof(mavlink_sensor_offsets_t, gyro_cal_z) }, \
+         { "accel_cal_x", NULL, MAVLINK_TYPE_FLOAT, 0, 24, offsetof(mavlink_sensor_offsets_t, accel_cal_x) }, \
+         { "accel_cal_y", NULL, MAVLINK_TYPE_FLOAT, 0, 28, offsetof(mavlink_sensor_offsets_t, accel_cal_y) }, \
+         { "accel_cal_z", NULL, MAVLINK_TYPE_FLOAT, 0, 32, offsetof(mavlink_sensor_offsets_t, accel_cal_z) }, \
+         { "mag_ofs_x", NULL, MAVLINK_TYPE_INT16_T, 0, 36, offsetof(mavlink_sensor_offsets_t, mag_ofs_x) }, \
+         { "mag_ofs_y", NULL, MAVLINK_TYPE_INT16_T, 0, 38, offsetof(mavlink_sensor_offsets_t, mag_ofs_y) }, \
+         { "mag_ofs_z", NULL, MAVLINK_TYPE_INT16_T, 0, 40, offsetof(mavlink_sensor_offsets_t, mag_ofs_z) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_SENSOR_OFFSETS { \
     "SENSOR_OFFSETS", \
     12, \
-    {  { "mag_ofs_x", NULL, MAVLINK_TYPE_INT16_T, 0, 0, offsetof(mavlink_sensor_offsets_t, mag_ofs_x) }, \
-         { "mag_ofs_y", NULL, MAVLINK_TYPE_INT16_T, 0, 2, offsetof(mavlink_sensor_offsets_t, mag_ofs_y) }, \
-         { "mag_ofs_z", NULL, MAVLINK_TYPE_INT16_T, 0, 4, offsetof(mavlink_sensor_offsets_t, mag_ofs_z) }, \
-         { "mag_declination", NULL, MAVLINK_TYPE_FLOAT, 0, 6, offsetof(mavlink_sensor_offsets_t, mag_declination) }, \
-         { "raw_press", NULL, MAVLINK_TYPE_INT32_T, 0, 10, offsetof(mavlink_sensor_offsets_t, raw_press) }, \
-         { "raw_temp", NULL, MAVLINK_TYPE_INT32_T, 0, 14, offsetof(mavlink_sensor_offsets_t, raw_temp) }, \
-         { "gyro_cal_x", NULL, MAVLINK_TYPE_FLOAT, 0, 18, offsetof(mavlink_sensor_offsets_t, gyro_cal_x) }, \
-         { "gyro_cal_y", NULL, MAVLINK_TYPE_FLOAT, 0, 22, offsetof(mavlink_sensor_offsets_t, gyro_cal_y) }, \
-         { "gyro_cal_z", NULL, MAVLINK_TYPE_FLOAT, 0, 26, offsetof(mavlink_sensor_offsets_t, gyro_cal_z) }, \
-         { "accel_cal_x", NULL, MAVLINK_TYPE_FLOAT, 0, 30, offsetof(mavlink_sensor_offsets_t, accel_cal_x) }, \
-         { "accel_cal_y", NULL, MAVLINK_TYPE_FLOAT, 0, 34, offsetof(mavlink_sensor_offsets_t, accel_cal_y) }, \
-         { "accel_cal_z", NULL, MAVLINK_TYPE_FLOAT, 0, 38, offsetof(mavlink_sensor_offsets_t, accel_cal_z) }, \
+    {  { "mag_declination", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_sensor_offsets_t, mag_declination) }, \
+         { "raw_press", NULL, MAVLINK_TYPE_INT32_T, 0, 4, offsetof(mavlink_sensor_offsets_t, raw_press) }, \
+         { "raw_temp", NULL, MAVLINK_TYPE_INT32_T, 0, 8, offsetof(mavlink_sensor_offsets_t, raw_temp) }, \
+         { "gyro_cal_x", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_sensor_offsets_t, gyro_cal_x) }, \
+         { "gyro_cal_y", NULL, MAVLINK_TYPE_FLOAT, 0, 16, offsetof(mavlink_sensor_offsets_t, gyro_cal_y) }, \
+         { "gyro_cal_z", NULL, MAVLINK_TYPE_FLOAT, 0, 20, offsetof(mavlink_sensor_offsets_t, gyro_cal_z) }, \
+         { "accel_cal_x", NULL, MAVLINK_TYPE_FLOAT, 0, 24, offsetof(mavlink_sensor_offsets_t, accel_cal_x) }, \
+         { "accel_cal_y", NULL, MAVLINK_TYPE_FLOAT, 0, 28, offsetof(mavlink_sensor_offsets_t, accel_cal_y) }, \
+         { "accel_cal_z", NULL, MAVLINK_TYPE_FLOAT, 0, 32, offsetof(mavlink_sensor_offsets_t, accel_cal_z) }, \
+         { "mag_ofs_x", NULL, MAVLINK_TYPE_INT16_T, 0, 36, offsetof(mavlink_sensor_offsets_t, mag_ofs_x) }, \
+         { "mag_ofs_y", NULL, MAVLINK_TYPE_INT16_T, 0, 38, offsetof(mavlink_sensor_offsets_t, mag_ofs_y) }, \
+         { "mag_ofs_z", NULL, MAVLINK_TYPE_INT16_T, 0, 40, offsetof(mavlink_sensor_offsets_t, mag_ofs_z) }, \
          } \
 }
 #endif
@@ -93,25 +93,22 @@ static inline uint16_t mavlink_msg_sensor_offsets_pack(uint8_t system_id, uint8_
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_SENSOR_OFFSETS_LEN];
-    _mav_put_int16_t(buf, 0, mag_ofs_x);
-    _mav_put_int16_t(buf, 2, mag_ofs_y);
-    _mav_put_int16_t(buf, 4, mag_ofs_z);
-    _mav_put_float(buf, 6, mag_declination);
-    _mav_put_int32_t(buf, 10, raw_press);
-    _mav_put_int32_t(buf, 14, raw_temp);
-    _mav_put_float(buf, 18, gyro_cal_x);
-    _mav_put_float(buf, 22, gyro_cal_y);
-    _mav_put_float(buf, 26, gyro_cal_z);
-    _mav_put_float(buf, 30, accel_cal_x);
-    _mav_put_float(buf, 34, accel_cal_y);
-    _mav_put_float(buf, 38, accel_cal_z);
+    _mav_put_float(buf, 0, mag_declination);
+    _mav_put_int32_t(buf, 4, raw_press);
+    _mav_put_int32_t(buf, 8, raw_temp);
+    _mav_put_float(buf, 12, gyro_cal_x);
+    _mav_put_float(buf, 16, gyro_cal_y);
+    _mav_put_float(buf, 20, gyro_cal_z);
+    _mav_put_float(buf, 24, accel_cal_x);
+    _mav_put_float(buf, 28, accel_cal_y);
+    _mav_put_float(buf, 32, accel_cal_z);
+    _mav_put_int16_t(buf, 36, mag_ofs_x);
+    _mav_put_int16_t(buf, 38, mag_ofs_y);
+    _mav_put_int16_t(buf, 40, mag_ofs_z);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_SENSOR_OFFSETS_LEN);
 #else
     mavlink_sensor_offsets_t packet;
-    packet.mag_ofs_x = mag_ofs_x;
-    packet.mag_ofs_y = mag_ofs_y;
-    packet.mag_ofs_z = mag_ofs_z;
     packet.mag_declination = mag_declination;
     packet.raw_press = raw_press;
     packet.raw_temp = raw_temp;
@@ -121,6 +118,9 @@ static inline uint16_t mavlink_msg_sensor_offsets_pack(uint8_t system_id, uint8_
     packet.accel_cal_x = accel_cal_x;
     packet.accel_cal_y = accel_cal_y;
     packet.accel_cal_z = accel_cal_z;
+    packet.mag_ofs_x = mag_ofs_x;
+    packet.mag_ofs_y = mag_ofs_y;
+    packet.mag_ofs_z = mag_ofs_z;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_SENSOR_OFFSETS_LEN);
 #endif
@@ -155,25 +155,22 @@ static inline uint16_t mavlink_msg_sensor_offsets_pack_chan(uint8_t system_id, u
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_SENSOR_OFFSETS_LEN];
-    _mav_put_int16_t(buf, 0, mag_ofs_x);
-    _mav_put_int16_t(buf, 2, mag_ofs_y);
-    _mav_put_int16_t(buf, 4, mag_ofs_z);
-    _mav_put_float(buf, 6, mag_declination);
-    _mav_put_int32_t(buf, 10, raw_press);
-    _mav_put_int32_t(buf, 14, raw_temp);
-    _mav_put_float(buf, 18, gyro_cal_x);
-    _mav_put_float(buf, 22, gyro_cal_y);
-    _mav_put_float(buf, 26, gyro_cal_z);
-    _mav_put_float(buf, 30, accel_cal_x);
-    _mav_put_float(buf, 34, accel_cal_y);
-    _mav_put_float(buf, 38, accel_cal_z);
+    _mav_put_float(buf, 0, mag_declination);
+    _mav_put_int32_t(buf, 4, raw_press);
+    _mav_put_int32_t(buf, 8, raw_temp);
+    _mav_put_float(buf, 12, gyro_cal_x);
+    _mav_put_float(buf, 16, gyro_cal_y);
+    _mav_put_float(buf, 20, gyro_cal_z);
+    _mav_put_float(buf, 24, accel_cal_x);
+    _mav_put_float(buf, 28, accel_cal_y);
+    _mav_put_float(buf, 32, accel_cal_z);
+    _mav_put_int16_t(buf, 36, mag_ofs_x);
+    _mav_put_int16_t(buf, 38, mag_ofs_y);
+    _mav_put_int16_t(buf, 40, mag_ofs_z);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_SENSOR_OFFSETS_LEN);
 #else
     mavlink_sensor_offsets_t packet;
-    packet.mag_ofs_x = mag_ofs_x;
-    packet.mag_ofs_y = mag_ofs_y;
-    packet.mag_ofs_z = mag_ofs_z;
     packet.mag_declination = mag_declination;
     packet.raw_press = raw_press;
     packet.raw_temp = raw_temp;
@@ -183,6 +180,9 @@ static inline uint16_t mavlink_msg_sensor_offsets_pack_chan(uint8_t system_id, u
     packet.accel_cal_x = accel_cal_x;
     packet.accel_cal_y = accel_cal_y;
     packet.accel_cal_z = accel_cal_z;
+    packet.mag_ofs_x = mag_ofs_x;
+    packet.mag_ofs_y = mag_ofs_y;
+    packet.mag_ofs_z = mag_ofs_z;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_SENSOR_OFFSETS_LEN);
 #endif
@@ -241,25 +241,22 @@ static inline void mavlink_msg_sensor_offsets_send(mavlink_channel_t chan, int16
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_SENSOR_OFFSETS_LEN];
-    _mav_put_int16_t(buf, 0, mag_ofs_x);
-    _mav_put_int16_t(buf, 2, mag_ofs_y);
-    _mav_put_int16_t(buf, 4, mag_ofs_z);
-    _mav_put_float(buf, 6, mag_declination);
-    _mav_put_int32_t(buf, 10, raw_press);
-    _mav_put_int32_t(buf, 14, raw_temp);
-    _mav_put_float(buf, 18, gyro_cal_x);
-    _mav_put_float(buf, 22, gyro_cal_y);
-    _mav_put_float(buf, 26, gyro_cal_z);
-    _mav_put_float(buf, 30, accel_cal_x);
-    _mav_put_float(buf, 34, accel_cal_y);
-    _mav_put_float(buf, 38, accel_cal_z);
+    _mav_put_float(buf, 0, mag_declination);
+    _mav_put_int32_t(buf, 4, raw_press);
+    _mav_put_int32_t(buf, 8, raw_temp);
+    _mav_put_float(buf, 12, gyro_cal_x);
+    _mav_put_float(buf, 16, gyro_cal_y);
+    _mav_put_float(buf, 20, gyro_cal_z);
+    _mav_put_float(buf, 24, accel_cal_x);
+    _mav_put_float(buf, 28, accel_cal_y);
+    _mav_put_float(buf, 32, accel_cal_z);
+    _mav_put_int16_t(buf, 36, mag_ofs_x);
+    _mav_put_int16_t(buf, 38, mag_ofs_y);
+    _mav_put_int16_t(buf, 40, mag_ofs_z);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SENSOR_OFFSETS, buf, MAVLINK_MSG_ID_SENSOR_OFFSETS_MIN_LEN, MAVLINK_MSG_ID_SENSOR_OFFSETS_LEN, MAVLINK_MSG_ID_SENSOR_OFFSETS_CRC);
 #else
     mavlink_sensor_offsets_t packet;
-    packet.mag_ofs_x = mag_ofs_x;
-    packet.mag_ofs_y = mag_ofs_y;
-    packet.mag_ofs_z = mag_ofs_z;
     packet.mag_declination = mag_declination;
     packet.raw_press = raw_press;
     packet.raw_temp = raw_temp;
@@ -269,6 +266,9 @@ static inline void mavlink_msg_sensor_offsets_send(mavlink_channel_t chan, int16
     packet.accel_cal_x = accel_cal_x;
     packet.accel_cal_y = accel_cal_y;
     packet.accel_cal_z = accel_cal_z;
+    packet.mag_ofs_x = mag_ofs_x;
+    packet.mag_ofs_y = mag_ofs_y;
+    packet.mag_ofs_z = mag_ofs_z;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SENSOR_OFFSETS, (const char *)&packet, MAVLINK_MSG_ID_SENSOR_OFFSETS_MIN_LEN, MAVLINK_MSG_ID_SENSOR_OFFSETS_LEN, MAVLINK_MSG_ID_SENSOR_OFFSETS_CRC);
 #endif
@@ -300,25 +300,22 @@ static inline void mavlink_msg_sensor_offsets_send_buf(mavlink_message_t *msgbuf
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
-    _mav_put_int16_t(buf, 0, mag_ofs_x);
-    _mav_put_int16_t(buf, 2, mag_ofs_y);
-    _mav_put_int16_t(buf, 4, mag_ofs_z);
-    _mav_put_float(buf, 6, mag_declination);
-    _mav_put_int32_t(buf, 10, raw_press);
-    _mav_put_int32_t(buf, 14, raw_temp);
-    _mav_put_float(buf, 18, gyro_cal_x);
-    _mav_put_float(buf, 22, gyro_cal_y);
-    _mav_put_float(buf, 26, gyro_cal_z);
-    _mav_put_float(buf, 30, accel_cal_x);
-    _mav_put_float(buf, 34, accel_cal_y);
-    _mav_put_float(buf, 38, accel_cal_z);
+    _mav_put_float(buf, 0, mag_declination);
+    _mav_put_int32_t(buf, 4, raw_press);
+    _mav_put_int32_t(buf, 8, raw_temp);
+    _mav_put_float(buf, 12, gyro_cal_x);
+    _mav_put_float(buf, 16, gyro_cal_y);
+    _mav_put_float(buf, 20, gyro_cal_z);
+    _mav_put_float(buf, 24, accel_cal_x);
+    _mav_put_float(buf, 28, accel_cal_y);
+    _mav_put_float(buf, 32, accel_cal_z);
+    _mav_put_int16_t(buf, 36, mag_ofs_x);
+    _mav_put_int16_t(buf, 38, mag_ofs_y);
+    _mav_put_int16_t(buf, 40, mag_ofs_z);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SENSOR_OFFSETS, buf, MAVLINK_MSG_ID_SENSOR_OFFSETS_MIN_LEN, MAVLINK_MSG_ID_SENSOR_OFFSETS_LEN, MAVLINK_MSG_ID_SENSOR_OFFSETS_CRC);
 #else
     mavlink_sensor_offsets_t *packet = (mavlink_sensor_offsets_t *)msgbuf;
-    packet->mag_ofs_x = mag_ofs_x;
-    packet->mag_ofs_y = mag_ofs_y;
-    packet->mag_ofs_z = mag_ofs_z;
     packet->mag_declination = mag_declination;
     packet->raw_press = raw_press;
     packet->raw_temp = raw_temp;
@@ -328,6 +325,9 @@ static inline void mavlink_msg_sensor_offsets_send_buf(mavlink_message_t *msgbuf
     packet->accel_cal_x = accel_cal_x;
     packet->accel_cal_y = accel_cal_y;
     packet->accel_cal_z = accel_cal_z;
+    packet->mag_ofs_x = mag_ofs_x;
+    packet->mag_ofs_y = mag_ofs_y;
+    packet->mag_ofs_z = mag_ofs_z;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SENSOR_OFFSETS, (const char *)packet, MAVLINK_MSG_ID_SENSOR_OFFSETS_MIN_LEN, MAVLINK_MSG_ID_SENSOR_OFFSETS_LEN, MAVLINK_MSG_ID_SENSOR_OFFSETS_CRC);
 #endif
@@ -346,7 +346,7 @@ static inline void mavlink_msg_sensor_offsets_send_buf(mavlink_message_t *msgbuf
  */
 static inline int16_t mavlink_msg_sensor_offsets_get_mag_ofs_x(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_int16_t(msg,  0);
+    return _MAV_RETURN_int16_t(msg,  36);
 }
 
 /**
@@ -356,7 +356,7 @@ static inline int16_t mavlink_msg_sensor_offsets_get_mag_ofs_x(const mavlink_mes
  */
 static inline int16_t mavlink_msg_sensor_offsets_get_mag_ofs_y(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_int16_t(msg,  2);
+    return _MAV_RETURN_int16_t(msg,  38);
 }
 
 /**
@@ -366,7 +366,7 @@ static inline int16_t mavlink_msg_sensor_offsets_get_mag_ofs_y(const mavlink_mes
  */
 static inline int16_t mavlink_msg_sensor_offsets_get_mag_ofs_z(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_int16_t(msg,  4);
+    return _MAV_RETURN_int16_t(msg,  40);
 }
 
 /**
@@ -376,7 +376,7 @@ static inline int16_t mavlink_msg_sensor_offsets_get_mag_ofs_z(const mavlink_mes
  */
 static inline float mavlink_msg_sensor_offsets_get_mag_declination(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  6);
+    return _MAV_RETURN_float(msg,  0);
 }
 
 /**
@@ -386,7 +386,7 @@ static inline float mavlink_msg_sensor_offsets_get_mag_declination(const mavlink
  */
 static inline int32_t mavlink_msg_sensor_offsets_get_raw_press(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_int32_t(msg,  10);
+    return _MAV_RETURN_int32_t(msg,  4);
 }
 
 /**
@@ -396,7 +396,7 @@ static inline int32_t mavlink_msg_sensor_offsets_get_raw_press(const mavlink_mes
  */
 static inline int32_t mavlink_msg_sensor_offsets_get_raw_temp(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_int32_t(msg,  14);
+    return _MAV_RETURN_int32_t(msg,  8);
 }
 
 /**
@@ -406,7 +406,7 @@ static inline int32_t mavlink_msg_sensor_offsets_get_raw_temp(const mavlink_mess
  */
 static inline float mavlink_msg_sensor_offsets_get_gyro_cal_x(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  18);
+    return _MAV_RETURN_float(msg,  12);
 }
 
 /**
@@ -416,7 +416,7 @@ static inline float mavlink_msg_sensor_offsets_get_gyro_cal_x(const mavlink_mess
  */
 static inline float mavlink_msg_sensor_offsets_get_gyro_cal_y(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  22);
+    return _MAV_RETURN_float(msg,  16);
 }
 
 /**
@@ -426,7 +426,7 @@ static inline float mavlink_msg_sensor_offsets_get_gyro_cal_y(const mavlink_mess
  */
 static inline float mavlink_msg_sensor_offsets_get_gyro_cal_z(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  26);
+    return _MAV_RETURN_float(msg,  20);
 }
 
 /**
@@ -436,7 +436,7 @@ static inline float mavlink_msg_sensor_offsets_get_gyro_cal_z(const mavlink_mess
  */
 static inline float mavlink_msg_sensor_offsets_get_accel_cal_x(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  30);
+    return _MAV_RETURN_float(msg,  24);
 }
 
 /**
@@ -446,7 +446,7 @@ static inline float mavlink_msg_sensor_offsets_get_accel_cal_x(const mavlink_mes
  */
 static inline float mavlink_msg_sensor_offsets_get_accel_cal_y(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  34);
+    return _MAV_RETURN_float(msg,  28);
 }
 
 /**
@@ -456,7 +456,7 @@ static inline float mavlink_msg_sensor_offsets_get_accel_cal_y(const mavlink_mes
  */
 static inline float mavlink_msg_sensor_offsets_get_accel_cal_z(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  38);
+    return _MAV_RETURN_float(msg,  32);
 }
 
 /**
@@ -468,9 +468,6 @@ static inline float mavlink_msg_sensor_offsets_get_accel_cal_z(const mavlink_mes
 static inline void mavlink_msg_sensor_offsets_decode(const mavlink_message_t* msg, mavlink_sensor_offsets_t* sensor_offsets)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    sensor_offsets->mag_ofs_x = mavlink_msg_sensor_offsets_get_mag_ofs_x(msg);
-    sensor_offsets->mag_ofs_y = mavlink_msg_sensor_offsets_get_mag_ofs_y(msg);
-    sensor_offsets->mag_ofs_z = mavlink_msg_sensor_offsets_get_mag_ofs_z(msg);
     sensor_offsets->mag_declination = mavlink_msg_sensor_offsets_get_mag_declination(msg);
     sensor_offsets->raw_press = mavlink_msg_sensor_offsets_get_raw_press(msg);
     sensor_offsets->raw_temp = mavlink_msg_sensor_offsets_get_raw_temp(msg);
@@ -480,6 +477,9 @@ static inline void mavlink_msg_sensor_offsets_decode(const mavlink_message_t* ms
     sensor_offsets->accel_cal_x = mavlink_msg_sensor_offsets_get_accel_cal_x(msg);
     sensor_offsets->accel_cal_y = mavlink_msg_sensor_offsets_get_accel_cal_y(msg);
     sensor_offsets->accel_cal_z = mavlink_msg_sensor_offsets_get_accel_cal_z(msg);
+    sensor_offsets->mag_ofs_x = mavlink_msg_sensor_offsets_get_mag_ofs_x(msg);
+    sensor_offsets->mag_ofs_y = mavlink_msg_sensor_offsets_get_mag_ofs_y(msg);
+    sensor_offsets->mag_ofs_z = mavlink_msg_sensor_offsets_get_mag_ofs_z(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_SENSOR_OFFSETS_LEN? msg->len : MAVLINK_MSG_ID_SENSOR_OFFSETS_LEN;
         memset(sensor_offsets, 0, MAVLINK_MSG_ID_SENSOR_OFFSETS_LEN);

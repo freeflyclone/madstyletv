@@ -35,6 +35,12 @@ XUart::XUart(std::string portName) : hPort(INVALID_HANDLE_VALUE) {
 
 	if (!SetCommTimeouts(hPort, &commTimeouts))
 		throw std::runtime_error("SetCommTimeouts() failed");
+
+	if (!EscapeCommFunction(hPort, SETDTR))
+		throw std::runtime_error("EscapeCommFunction(SETDTR) failed");
+
+	if (!EscapeCommFunction(hPort, SETRTS))
+		throw std::runtime_error("EscapeCommFunction(SETRTS) failed");
 };
 
 XUart::~XUart() {
