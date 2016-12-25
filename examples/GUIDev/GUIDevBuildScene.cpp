@@ -26,7 +26,6 @@ public:
 		bool retVal = false;
 		switch (msg.msgid) {
 			case MAVLINK_MSG_ID_HEARTBEAT:
-				xprintf("Heartbeat\n");
 				retVal = true;
 				break;
 
@@ -35,61 +34,29 @@ public:
 				xprintf("Attitude: %0.4f, %0.4f, %0.4f\n", attitude.pitch, attitude.roll, attitude.yaw);
 				retVal = true;
 				break;
+
+			case MAVLINK_MSG_ID_STATUSTEXT:
+				mavlink_msg_statustext_decode(&msg, &statusText);
+				xprintf("StatusText: %s\n", statusText.text);
+				retVal = true;
+				break;
 		}
 		return retVal;
 	}
 
-	void DumpBuffer(unsigned char *b, int size) {
-		for (int i = 0; i < size; i++)
-			xprintf("%02X ", b[i]);
-		xprintf("\n");
-	}
-
-	void PackRequest() {
-		memset(&reqMsg, 0, sizeof(reqMsg));
-		memset(&request, 0, sizeof(request));
-
-		request.target_system = 1;
-		request.target_component = 1;
-		request.req_stream_id = 0;
-		request.req_message_rate = 2;
-		request.start_stop = 1;
-
-		unsigned char *foo = (unsigned char *)&reqMsg;
-
-		uint16_t retVal = mavlink_msg_request_data_stream_encode(0xFF, 0xBE, &reqMsg, &request);
-		Write((unsigned char *)&request, sizeof(request));
-
-		xprintf("%02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\n", foo[2], foo[3], foo[4], foo[5], foo[6], foo[7], foo[8], foo[9], foo[10], foo[11], foo[12], foo[13], foo[14], foo[15]);
-	}
-	
-	void SendHeartbeat() {
-
-	}
-
 	void Run() {
-		int nRead;
-		while (IsRunning()) {
-			nRead = 0;
-			if ( (nRead = Read(buffer, sizeof(buffer))) > 0) {
-				for (int i = 0; i < nRead; i++){
-					if ((parseState = mavlink_parse_char(MAVLINK_COMM_1, buffer[i], &msg, &stat)) == MAVLINK_FRAMING_OK) {
-						if (!MavlinkMessageDump(msg))
-							DumpBuffer(buffer, nRead);;
-					}
-					else if (parseState != MAVLINK_FRAMING_INCOMPLETE)
-						xprintf("parseState: %02X\n", parseState);
-				}
-			}
-		}
+		while (IsRunning())
+			if (Read(&cp, 1))
+				if ((parseState = mavlink_parse_char(MAVLINK_COMM_1, cp, &msg, &stat)) == MAVLINK_FRAMING_OK)
+					MavlinkMessageDump(msg);
 	}
 
-	unsigned char buffer[1024];
-	mavlink_message_t reqMsg;
+	unsigned char cp;
+	unsigned char buffer[512];
 	mavlink_message_t msg;
 	mavlink_status_t stat;
-	mavlink_request_data_stream_t request;
 	mavlink_attitude_t attitude;
+	mavlink_statustext_t statusText;
 
 	unsigned char parseState;
 };
