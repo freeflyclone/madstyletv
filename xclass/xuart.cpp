@@ -13,16 +13,16 @@ XUart::XUart(std::string portName) : hPort(INVALID_HANDLE_VALUE) {
 	GetCommState(hPort, &portDCB);
 
 	portDCB.fBinary = TRUE;                         // Binary mode; no EOF check 
-	portDCB.fParity = TRUE;                         // Enable parity checking  
+	portDCB.fParity = FALSE;                        // Disable parity checking  
 	portDCB.fDsrSensitivity = FALSE;                // DSR sensitivity  
 	portDCB.fErrorChar = FALSE;                     // Disable error replacement  
 	portDCB.fOutxDsrFlow = FALSE;                   // No DSR output flow control  
 	portDCB.fAbortOnError = FALSE;                  // Do not abort reads/writes on error 
 	portDCB.fNull = FALSE;                          // Disable null stripping  
-	portDCB.fTXContinueOnXoff = TRUE;               // XOFF continues Tx  
 	portDCB.BaudRate = 115200;
 	portDCB.Parity = NOPARITY;
 	portDCB.StopBits = ONESTOPBIT;
+	portDCB.ByteSize = 8;
 
 	if (!SetCommState(hPort, &portDCB))
 		throw std::runtime_error("SetCommState() failed");
