@@ -6,8 +6,8 @@
 MAVPACKED(
 typedef struct __mavlink_actuator_control_target_t {
  uint64_t time_usec; /*< Timestamp (micros since boot or Unix epoch)*/
- uint8_t group_mlx; /*< Actuator group. The "_mlx" indicates this is a multi-instance message and a MAVLink parser should use this field to difference between instances.*/
  float controls[8]; /*< Actuator controls. Normed to -1..+1 where 0 is neutral position. Throttle for single rotation direction motors is 0..1, negative range for reverse direction. Standard mapping for attitude controls (group 0): (index 0-7): roll, pitch, yaw, throttle, flaps, spoilers, airbrakes, landing gear. Load a pass-through mixer to repurpose them as generic outputs.*/
+ uint8_t group_mlx; /*< Actuator group. The "_mlx" indicates this is a multi-instance message and a MAVLink parser should use this field to difference between instances.*/
 }) mavlink_actuator_control_target_t;
 
 #define MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET_LEN 41
@@ -15,8 +15,8 @@ typedef struct __mavlink_actuator_control_target_t {
 #define MAVLINK_MSG_ID_140_LEN 41
 #define MAVLINK_MSG_ID_140_MIN_LEN 41
 
-#define MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET_CRC 239
-#define MAVLINK_MSG_ID_140_CRC 239
+#define MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET_CRC 181
+#define MAVLINK_MSG_ID_140_CRC 181
 
 #define MAVLINK_MSG_ACTUATOR_CONTROL_TARGET_FIELD_CONTROLS_LEN 8
 
@@ -26,8 +26,8 @@ typedef struct __mavlink_actuator_control_target_t {
     "ACTUATOR_CONTROL_TARGET", \
     3, \
     {  { "time_usec", NULL, MAVLINK_TYPE_UINT64_T, 0, 0, offsetof(mavlink_actuator_control_target_t, time_usec) }, \
-         { "group_mlx", NULL, MAVLINK_TYPE_UINT8_T, 0, 8, offsetof(mavlink_actuator_control_target_t, group_mlx) }, \
-         { "controls", NULL, MAVLINK_TYPE_FLOAT, 8, 9, offsetof(mavlink_actuator_control_target_t, controls) }, \
+         { "controls", NULL, MAVLINK_TYPE_FLOAT, 8, 8, offsetof(mavlink_actuator_control_target_t, controls) }, \
+         { "group_mlx", NULL, MAVLINK_TYPE_UINT8_T, 0, 40, offsetof(mavlink_actuator_control_target_t, group_mlx) }, \
          } \
 }
 #else
@@ -35,8 +35,8 @@ typedef struct __mavlink_actuator_control_target_t {
     "ACTUATOR_CONTROL_TARGET", \
     3, \
     {  { "time_usec", NULL, MAVLINK_TYPE_UINT64_T, 0, 0, offsetof(mavlink_actuator_control_target_t, time_usec) }, \
-         { "group_mlx", NULL, MAVLINK_TYPE_UINT8_T, 0, 8, offsetof(mavlink_actuator_control_target_t, group_mlx) }, \
-         { "controls", NULL, MAVLINK_TYPE_FLOAT, 8, 9, offsetof(mavlink_actuator_control_target_t, controls) }, \
+         { "controls", NULL, MAVLINK_TYPE_FLOAT, 8, 8, offsetof(mavlink_actuator_control_target_t, controls) }, \
+         { "group_mlx", NULL, MAVLINK_TYPE_UINT8_T, 0, 40, offsetof(mavlink_actuator_control_target_t, group_mlx) }, \
          } \
 }
 #endif
@@ -58,8 +58,8 @@ static inline uint16_t mavlink_msg_actuator_control_target_pack(uint8_t system_i
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET_LEN];
     _mav_put_uint64_t(buf, 0, time_usec);
-    _mav_put_uint8_t(buf, 8, group_mlx);
-    _mav_put_float_array(buf, 9, controls, 8);
+    _mav_put_uint8_t(buf, 40, group_mlx);
+    _mav_put_float_array(buf, 8, controls, 8);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET_LEN);
 #else
     mavlink_actuator_control_target_t packet;
@@ -91,8 +91,8 @@ static inline uint16_t mavlink_msg_actuator_control_target_pack_chan(uint8_t sys
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET_LEN];
     _mav_put_uint64_t(buf, 0, time_usec);
-    _mav_put_uint8_t(buf, 8, group_mlx);
-    _mav_put_float_array(buf, 9, controls, 8);
+    _mav_put_uint8_t(buf, 40, group_mlx);
+    _mav_put_float_array(buf, 8, controls, 8);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET_LEN);
 #else
     mavlink_actuator_control_target_t packet;
@@ -148,8 +148,8 @@ static inline void mavlink_msg_actuator_control_target_send(mavlink_channel_t ch
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET_LEN];
     _mav_put_uint64_t(buf, 0, time_usec);
-    _mav_put_uint8_t(buf, 8, group_mlx);
-    _mav_put_float_array(buf, 9, controls, 8);
+    _mav_put_uint8_t(buf, 40, group_mlx);
+    _mav_put_float_array(buf, 8, controls, 8);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET, buf, MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET_MIN_LEN, MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET_LEN, MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET_CRC);
 #else
     mavlink_actuator_control_target_t packet;
@@ -187,8 +187,8 @@ static inline void mavlink_msg_actuator_control_target_send_buf(mavlink_message_
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
     _mav_put_uint64_t(buf, 0, time_usec);
-    _mav_put_uint8_t(buf, 8, group_mlx);
-    _mav_put_float_array(buf, 9, controls, 8);
+    _mav_put_uint8_t(buf, 40, group_mlx);
+    _mav_put_float_array(buf, 8, controls, 8);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET, buf, MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET_MIN_LEN, MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET_LEN, MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET_CRC);
 #else
     mavlink_actuator_control_target_t *packet = (mavlink_actuator_control_target_t *)msgbuf;
@@ -222,7 +222,7 @@ static inline uint64_t mavlink_msg_actuator_control_target_get_time_usec(const m
  */
 static inline uint8_t mavlink_msg_actuator_control_target_get_group_mlx(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint8_t(msg,  8);
+    return _MAV_RETURN_uint8_t(msg,  40);
 }
 
 /**
@@ -232,7 +232,7 @@ static inline uint8_t mavlink_msg_actuator_control_target_get_group_mlx(const ma
  */
 static inline uint16_t mavlink_msg_actuator_control_target_get_controls(const mavlink_message_t* msg, float *controls)
 {
-    return _MAV_RETURN_float_array(msg, controls, 8,  9);
+    return _MAV_RETURN_float_array(msg, controls, 8,  8);
 }
 
 /**
@@ -245,8 +245,8 @@ static inline void mavlink_msg_actuator_control_target_decode(const mavlink_mess
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     actuator_control_target->time_usec = mavlink_msg_actuator_control_target_get_time_usec(msg);
-    actuator_control_target->group_mlx = mavlink_msg_actuator_control_target_get_group_mlx(msg);
     mavlink_msg_actuator_control_target_get_controls(msg, actuator_control_target->controls);
+    actuator_control_target->group_mlx = mavlink_msg_actuator_control_target_get_group_mlx(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET_LEN? msg->len : MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET_LEN;
         memset(actuator_control_target, 0, MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET_LEN);

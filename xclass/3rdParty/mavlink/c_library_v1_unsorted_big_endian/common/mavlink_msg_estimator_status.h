@@ -6,7 +6,6 @@
 MAVPACKED(
 typedef struct __mavlink_estimator_status_t {
  uint64_t time_usec; /*< Timestamp (micros since boot or Unix epoch)*/
- uint16_t flags; /*< Integer bitmask indicating which EKF outputs are valid. See definition for ESTIMATOR_STATUS_FLAGS.*/
  float vel_ratio; /*< Velocity innovation test ratio*/
  float pos_horiz_ratio; /*< Horizontal position innovation test ratio*/
  float pos_vert_ratio; /*< Vertical position innovation test ratio*/
@@ -15,6 +14,7 @@ typedef struct __mavlink_estimator_status_t {
  float tas_ratio; /*< True airspeed innovation test ratio*/
  float pos_horiz_accuracy; /*< Horizontal position 1-STD accuracy relative to the EKF local origin (m)*/
  float pos_vert_accuracy; /*< Vertical position 1-STD accuracy relative to the EKF local origin (m)*/
+ uint16_t flags; /*< Integer bitmask indicating which EKF outputs are valid. See definition for ESTIMATOR_STATUS_FLAGS.*/
 }) mavlink_estimator_status_t;
 
 #define MAVLINK_MSG_ID_ESTIMATOR_STATUS_LEN 42
@@ -22,8 +22,8 @@ typedef struct __mavlink_estimator_status_t {
 #define MAVLINK_MSG_ID_230_LEN 42
 #define MAVLINK_MSG_ID_230_MIN_LEN 42
 
-#define MAVLINK_MSG_ID_ESTIMATOR_STATUS_CRC 123
-#define MAVLINK_MSG_ID_230_CRC 123
+#define MAVLINK_MSG_ID_ESTIMATOR_STATUS_CRC 163
+#define MAVLINK_MSG_ID_230_CRC 163
 
 
 
@@ -33,15 +33,15 @@ typedef struct __mavlink_estimator_status_t {
     "ESTIMATOR_STATUS", \
     10, \
     {  { "time_usec", NULL, MAVLINK_TYPE_UINT64_T, 0, 0, offsetof(mavlink_estimator_status_t, time_usec) }, \
-         { "flags", NULL, MAVLINK_TYPE_UINT16_T, 0, 8, offsetof(mavlink_estimator_status_t, flags) }, \
-         { "vel_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 10, offsetof(mavlink_estimator_status_t, vel_ratio) }, \
-         { "pos_horiz_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 14, offsetof(mavlink_estimator_status_t, pos_horiz_ratio) }, \
-         { "pos_vert_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 18, offsetof(mavlink_estimator_status_t, pos_vert_ratio) }, \
-         { "mag_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 22, offsetof(mavlink_estimator_status_t, mag_ratio) }, \
-         { "hagl_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 26, offsetof(mavlink_estimator_status_t, hagl_ratio) }, \
-         { "tas_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 30, offsetof(mavlink_estimator_status_t, tas_ratio) }, \
-         { "pos_horiz_accuracy", NULL, MAVLINK_TYPE_FLOAT, 0, 34, offsetof(mavlink_estimator_status_t, pos_horiz_accuracy) }, \
-         { "pos_vert_accuracy", NULL, MAVLINK_TYPE_FLOAT, 0, 38, offsetof(mavlink_estimator_status_t, pos_vert_accuracy) }, \
+         { "vel_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_estimator_status_t, vel_ratio) }, \
+         { "pos_horiz_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_estimator_status_t, pos_horiz_ratio) }, \
+         { "pos_vert_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 16, offsetof(mavlink_estimator_status_t, pos_vert_ratio) }, \
+         { "mag_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 20, offsetof(mavlink_estimator_status_t, mag_ratio) }, \
+         { "hagl_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 24, offsetof(mavlink_estimator_status_t, hagl_ratio) }, \
+         { "tas_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 28, offsetof(mavlink_estimator_status_t, tas_ratio) }, \
+         { "pos_horiz_accuracy", NULL, MAVLINK_TYPE_FLOAT, 0, 32, offsetof(mavlink_estimator_status_t, pos_horiz_accuracy) }, \
+         { "pos_vert_accuracy", NULL, MAVLINK_TYPE_FLOAT, 0, 36, offsetof(mavlink_estimator_status_t, pos_vert_accuracy) }, \
+         { "flags", NULL, MAVLINK_TYPE_UINT16_T, 0, 40, offsetof(mavlink_estimator_status_t, flags) }, \
          } \
 }
 #else
@@ -49,15 +49,15 @@ typedef struct __mavlink_estimator_status_t {
     "ESTIMATOR_STATUS", \
     10, \
     {  { "time_usec", NULL, MAVLINK_TYPE_UINT64_T, 0, 0, offsetof(mavlink_estimator_status_t, time_usec) }, \
-         { "flags", NULL, MAVLINK_TYPE_UINT16_T, 0, 8, offsetof(mavlink_estimator_status_t, flags) }, \
-         { "vel_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 10, offsetof(mavlink_estimator_status_t, vel_ratio) }, \
-         { "pos_horiz_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 14, offsetof(mavlink_estimator_status_t, pos_horiz_ratio) }, \
-         { "pos_vert_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 18, offsetof(mavlink_estimator_status_t, pos_vert_ratio) }, \
-         { "mag_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 22, offsetof(mavlink_estimator_status_t, mag_ratio) }, \
-         { "hagl_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 26, offsetof(mavlink_estimator_status_t, hagl_ratio) }, \
-         { "tas_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 30, offsetof(mavlink_estimator_status_t, tas_ratio) }, \
-         { "pos_horiz_accuracy", NULL, MAVLINK_TYPE_FLOAT, 0, 34, offsetof(mavlink_estimator_status_t, pos_horiz_accuracy) }, \
-         { "pos_vert_accuracy", NULL, MAVLINK_TYPE_FLOAT, 0, 38, offsetof(mavlink_estimator_status_t, pos_vert_accuracy) }, \
+         { "vel_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_estimator_status_t, vel_ratio) }, \
+         { "pos_horiz_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_estimator_status_t, pos_horiz_ratio) }, \
+         { "pos_vert_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 16, offsetof(mavlink_estimator_status_t, pos_vert_ratio) }, \
+         { "mag_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 20, offsetof(mavlink_estimator_status_t, mag_ratio) }, \
+         { "hagl_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 24, offsetof(mavlink_estimator_status_t, hagl_ratio) }, \
+         { "tas_ratio", NULL, MAVLINK_TYPE_FLOAT, 0, 28, offsetof(mavlink_estimator_status_t, tas_ratio) }, \
+         { "pos_horiz_accuracy", NULL, MAVLINK_TYPE_FLOAT, 0, 32, offsetof(mavlink_estimator_status_t, pos_horiz_accuracy) }, \
+         { "pos_vert_accuracy", NULL, MAVLINK_TYPE_FLOAT, 0, 36, offsetof(mavlink_estimator_status_t, pos_vert_accuracy) }, \
+         { "flags", NULL, MAVLINK_TYPE_UINT16_T, 0, 40, offsetof(mavlink_estimator_status_t, flags) }, \
          } \
 }
 #endif
@@ -86,21 +86,20 @@ static inline uint16_t mavlink_msg_estimator_status_pack(uint8_t system_id, uint
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_ESTIMATOR_STATUS_LEN];
     _mav_put_uint64_t(buf, 0, time_usec);
-    _mav_put_uint16_t(buf, 8, flags);
-    _mav_put_float(buf, 10, vel_ratio);
-    _mav_put_float(buf, 14, pos_horiz_ratio);
-    _mav_put_float(buf, 18, pos_vert_ratio);
-    _mav_put_float(buf, 22, mag_ratio);
-    _mav_put_float(buf, 26, hagl_ratio);
-    _mav_put_float(buf, 30, tas_ratio);
-    _mav_put_float(buf, 34, pos_horiz_accuracy);
-    _mav_put_float(buf, 38, pos_vert_accuracy);
+    _mav_put_float(buf, 8, vel_ratio);
+    _mav_put_float(buf, 12, pos_horiz_ratio);
+    _mav_put_float(buf, 16, pos_vert_ratio);
+    _mav_put_float(buf, 20, mag_ratio);
+    _mav_put_float(buf, 24, hagl_ratio);
+    _mav_put_float(buf, 28, tas_ratio);
+    _mav_put_float(buf, 32, pos_horiz_accuracy);
+    _mav_put_float(buf, 36, pos_vert_accuracy);
+    _mav_put_uint16_t(buf, 40, flags);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_ESTIMATOR_STATUS_LEN);
 #else
     mavlink_estimator_status_t packet;
     packet.time_usec = time_usec;
-    packet.flags = flags;
     packet.vel_ratio = vel_ratio;
     packet.pos_horiz_ratio = pos_horiz_ratio;
     packet.pos_vert_ratio = pos_vert_ratio;
@@ -109,6 +108,7 @@ static inline uint16_t mavlink_msg_estimator_status_pack(uint8_t system_id, uint
     packet.tas_ratio = tas_ratio;
     packet.pos_horiz_accuracy = pos_horiz_accuracy;
     packet.pos_vert_accuracy = pos_vert_accuracy;
+    packet.flags = flags;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_ESTIMATOR_STATUS_LEN);
 #endif
@@ -142,21 +142,20 @@ static inline uint16_t mavlink_msg_estimator_status_pack_chan(uint8_t system_id,
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_ESTIMATOR_STATUS_LEN];
     _mav_put_uint64_t(buf, 0, time_usec);
-    _mav_put_uint16_t(buf, 8, flags);
-    _mav_put_float(buf, 10, vel_ratio);
-    _mav_put_float(buf, 14, pos_horiz_ratio);
-    _mav_put_float(buf, 18, pos_vert_ratio);
-    _mav_put_float(buf, 22, mag_ratio);
-    _mav_put_float(buf, 26, hagl_ratio);
-    _mav_put_float(buf, 30, tas_ratio);
-    _mav_put_float(buf, 34, pos_horiz_accuracy);
-    _mav_put_float(buf, 38, pos_vert_accuracy);
+    _mav_put_float(buf, 8, vel_ratio);
+    _mav_put_float(buf, 12, pos_horiz_ratio);
+    _mav_put_float(buf, 16, pos_vert_ratio);
+    _mav_put_float(buf, 20, mag_ratio);
+    _mav_put_float(buf, 24, hagl_ratio);
+    _mav_put_float(buf, 28, tas_ratio);
+    _mav_put_float(buf, 32, pos_horiz_accuracy);
+    _mav_put_float(buf, 36, pos_vert_accuracy);
+    _mav_put_uint16_t(buf, 40, flags);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_ESTIMATOR_STATUS_LEN);
 #else
     mavlink_estimator_status_t packet;
     packet.time_usec = time_usec;
-    packet.flags = flags;
     packet.vel_ratio = vel_ratio;
     packet.pos_horiz_ratio = pos_horiz_ratio;
     packet.pos_vert_ratio = pos_vert_ratio;
@@ -165,6 +164,7 @@ static inline uint16_t mavlink_msg_estimator_status_pack_chan(uint8_t system_id,
     packet.tas_ratio = tas_ratio;
     packet.pos_horiz_accuracy = pos_horiz_accuracy;
     packet.pos_vert_accuracy = pos_vert_accuracy;
+    packet.flags = flags;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_ESTIMATOR_STATUS_LEN);
 #endif
@@ -222,21 +222,20 @@ static inline void mavlink_msg_estimator_status_send(mavlink_channel_t chan, uin
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_ESTIMATOR_STATUS_LEN];
     _mav_put_uint64_t(buf, 0, time_usec);
-    _mav_put_uint16_t(buf, 8, flags);
-    _mav_put_float(buf, 10, vel_ratio);
-    _mav_put_float(buf, 14, pos_horiz_ratio);
-    _mav_put_float(buf, 18, pos_vert_ratio);
-    _mav_put_float(buf, 22, mag_ratio);
-    _mav_put_float(buf, 26, hagl_ratio);
-    _mav_put_float(buf, 30, tas_ratio);
-    _mav_put_float(buf, 34, pos_horiz_accuracy);
-    _mav_put_float(buf, 38, pos_vert_accuracy);
+    _mav_put_float(buf, 8, vel_ratio);
+    _mav_put_float(buf, 12, pos_horiz_ratio);
+    _mav_put_float(buf, 16, pos_vert_ratio);
+    _mav_put_float(buf, 20, mag_ratio);
+    _mav_put_float(buf, 24, hagl_ratio);
+    _mav_put_float(buf, 28, tas_ratio);
+    _mav_put_float(buf, 32, pos_horiz_accuracy);
+    _mav_put_float(buf, 36, pos_vert_accuracy);
+    _mav_put_uint16_t(buf, 40, flags);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_ESTIMATOR_STATUS, buf, MAVLINK_MSG_ID_ESTIMATOR_STATUS_MIN_LEN, MAVLINK_MSG_ID_ESTIMATOR_STATUS_LEN, MAVLINK_MSG_ID_ESTIMATOR_STATUS_CRC);
 #else
     mavlink_estimator_status_t packet;
     packet.time_usec = time_usec;
-    packet.flags = flags;
     packet.vel_ratio = vel_ratio;
     packet.pos_horiz_ratio = pos_horiz_ratio;
     packet.pos_vert_ratio = pos_vert_ratio;
@@ -245,6 +244,7 @@ static inline void mavlink_msg_estimator_status_send(mavlink_channel_t chan, uin
     packet.tas_ratio = tas_ratio;
     packet.pos_horiz_accuracy = pos_horiz_accuracy;
     packet.pos_vert_accuracy = pos_vert_accuracy;
+    packet.flags = flags;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_ESTIMATOR_STATUS, (const char *)&packet, MAVLINK_MSG_ID_ESTIMATOR_STATUS_MIN_LEN, MAVLINK_MSG_ID_ESTIMATOR_STATUS_LEN, MAVLINK_MSG_ID_ESTIMATOR_STATUS_CRC);
 #endif
@@ -277,21 +277,20 @@ static inline void mavlink_msg_estimator_status_send_buf(mavlink_message_t *msgb
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
     _mav_put_uint64_t(buf, 0, time_usec);
-    _mav_put_uint16_t(buf, 8, flags);
-    _mav_put_float(buf, 10, vel_ratio);
-    _mav_put_float(buf, 14, pos_horiz_ratio);
-    _mav_put_float(buf, 18, pos_vert_ratio);
-    _mav_put_float(buf, 22, mag_ratio);
-    _mav_put_float(buf, 26, hagl_ratio);
-    _mav_put_float(buf, 30, tas_ratio);
-    _mav_put_float(buf, 34, pos_horiz_accuracy);
-    _mav_put_float(buf, 38, pos_vert_accuracy);
+    _mav_put_float(buf, 8, vel_ratio);
+    _mav_put_float(buf, 12, pos_horiz_ratio);
+    _mav_put_float(buf, 16, pos_vert_ratio);
+    _mav_put_float(buf, 20, mag_ratio);
+    _mav_put_float(buf, 24, hagl_ratio);
+    _mav_put_float(buf, 28, tas_ratio);
+    _mav_put_float(buf, 32, pos_horiz_accuracy);
+    _mav_put_float(buf, 36, pos_vert_accuracy);
+    _mav_put_uint16_t(buf, 40, flags);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_ESTIMATOR_STATUS, buf, MAVLINK_MSG_ID_ESTIMATOR_STATUS_MIN_LEN, MAVLINK_MSG_ID_ESTIMATOR_STATUS_LEN, MAVLINK_MSG_ID_ESTIMATOR_STATUS_CRC);
 #else
     mavlink_estimator_status_t *packet = (mavlink_estimator_status_t *)msgbuf;
     packet->time_usec = time_usec;
-    packet->flags = flags;
     packet->vel_ratio = vel_ratio;
     packet->pos_horiz_ratio = pos_horiz_ratio;
     packet->pos_vert_ratio = pos_vert_ratio;
@@ -300,6 +299,7 @@ static inline void mavlink_msg_estimator_status_send_buf(mavlink_message_t *msgb
     packet->tas_ratio = tas_ratio;
     packet->pos_horiz_accuracy = pos_horiz_accuracy;
     packet->pos_vert_accuracy = pos_vert_accuracy;
+    packet->flags = flags;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_ESTIMATOR_STATUS, (const char *)packet, MAVLINK_MSG_ID_ESTIMATOR_STATUS_MIN_LEN, MAVLINK_MSG_ID_ESTIMATOR_STATUS_LEN, MAVLINK_MSG_ID_ESTIMATOR_STATUS_CRC);
 #endif
@@ -328,7 +328,7 @@ static inline uint64_t mavlink_msg_estimator_status_get_time_usec(const mavlink_
  */
 static inline uint16_t mavlink_msg_estimator_status_get_flags(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint16_t(msg,  8);
+    return _MAV_RETURN_uint16_t(msg,  40);
 }
 
 /**
@@ -338,7 +338,7 @@ static inline uint16_t mavlink_msg_estimator_status_get_flags(const mavlink_mess
  */
 static inline float mavlink_msg_estimator_status_get_vel_ratio(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  10);
+    return _MAV_RETURN_float(msg,  8);
 }
 
 /**
@@ -348,7 +348,7 @@ static inline float mavlink_msg_estimator_status_get_vel_ratio(const mavlink_mes
  */
 static inline float mavlink_msg_estimator_status_get_pos_horiz_ratio(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  14);
+    return _MAV_RETURN_float(msg,  12);
 }
 
 /**
@@ -358,7 +358,7 @@ static inline float mavlink_msg_estimator_status_get_pos_horiz_ratio(const mavli
  */
 static inline float mavlink_msg_estimator_status_get_pos_vert_ratio(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  18);
+    return _MAV_RETURN_float(msg,  16);
 }
 
 /**
@@ -368,7 +368,7 @@ static inline float mavlink_msg_estimator_status_get_pos_vert_ratio(const mavlin
  */
 static inline float mavlink_msg_estimator_status_get_mag_ratio(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  22);
+    return _MAV_RETURN_float(msg,  20);
 }
 
 /**
@@ -378,7 +378,7 @@ static inline float mavlink_msg_estimator_status_get_mag_ratio(const mavlink_mes
  */
 static inline float mavlink_msg_estimator_status_get_hagl_ratio(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  26);
+    return _MAV_RETURN_float(msg,  24);
 }
 
 /**
@@ -388,7 +388,7 @@ static inline float mavlink_msg_estimator_status_get_hagl_ratio(const mavlink_me
  */
 static inline float mavlink_msg_estimator_status_get_tas_ratio(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  30);
+    return _MAV_RETURN_float(msg,  28);
 }
 
 /**
@@ -398,7 +398,7 @@ static inline float mavlink_msg_estimator_status_get_tas_ratio(const mavlink_mes
  */
 static inline float mavlink_msg_estimator_status_get_pos_horiz_accuracy(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  34);
+    return _MAV_RETURN_float(msg,  32);
 }
 
 /**
@@ -408,7 +408,7 @@ static inline float mavlink_msg_estimator_status_get_pos_horiz_accuracy(const ma
  */
 static inline float mavlink_msg_estimator_status_get_pos_vert_accuracy(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  38);
+    return _MAV_RETURN_float(msg,  36);
 }
 
 /**
@@ -421,7 +421,6 @@ static inline void mavlink_msg_estimator_status_decode(const mavlink_message_t* 
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     estimator_status->time_usec = mavlink_msg_estimator_status_get_time_usec(msg);
-    estimator_status->flags = mavlink_msg_estimator_status_get_flags(msg);
     estimator_status->vel_ratio = mavlink_msg_estimator_status_get_vel_ratio(msg);
     estimator_status->pos_horiz_ratio = mavlink_msg_estimator_status_get_pos_horiz_ratio(msg);
     estimator_status->pos_vert_ratio = mavlink_msg_estimator_status_get_pos_vert_ratio(msg);
@@ -430,6 +429,7 @@ static inline void mavlink_msg_estimator_status_decode(const mavlink_message_t* 
     estimator_status->tas_ratio = mavlink_msg_estimator_status_get_tas_ratio(msg);
     estimator_status->pos_horiz_accuracy = mavlink_msg_estimator_status_get_pos_horiz_accuracy(msg);
     estimator_status->pos_vert_accuracy = mavlink_msg_estimator_status_get_pos_vert_accuracy(msg);
+    estimator_status->flags = mavlink_msg_estimator_status_get_flags(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_ESTIMATOR_STATUS_LEN? msg->len : MAVLINK_MSG_ID_ESTIMATOR_STATUS_LEN;
         memset(estimator_status, 0, MAVLINK_MSG_ID_ESTIMATOR_STATUS_LEN);

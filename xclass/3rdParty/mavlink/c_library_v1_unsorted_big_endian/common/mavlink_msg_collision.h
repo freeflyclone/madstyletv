@@ -5,13 +5,13 @@
 
 MAVPACKED(
 typedef struct __mavlink_collision_t {
- uint8_t src; /*< Collision data source*/
  uint32_t id; /*< Unique identifier, domain based on src field*/
- uint8_t action; /*< Action that is being taken to avoid this collision*/
- uint8_t threat_level; /*< How concerned the aircraft is about this collision*/
  float time_to_minimum_delta; /*< Estimated time until collision occurs (seconds)*/
  float altitude_minimum_delta; /*< Closest vertical distance in meters between vehicle and object*/
  float horizontal_minimum_delta; /*< Closest horizontal distance in meteres between vehicle and object*/
+ uint8_t src; /*< Collision data source*/
+ uint8_t action; /*< Action that is being taken to avoid this collision*/
+ uint8_t threat_level; /*< How concerned the aircraft is about this collision*/
 }) mavlink_collision_t;
 
 #define MAVLINK_MSG_ID_COLLISION_LEN 19
@@ -19,8 +19,8 @@ typedef struct __mavlink_collision_t {
 #define MAVLINK_MSG_ID_247_LEN 19
 #define MAVLINK_MSG_ID_247_MIN_LEN 19
 
-#define MAVLINK_MSG_ID_COLLISION_CRC 122
-#define MAVLINK_MSG_ID_247_CRC 122
+#define MAVLINK_MSG_ID_COLLISION_CRC 81
+#define MAVLINK_MSG_ID_247_CRC 81
 
 
 
@@ -29,26 +29,26 @@ typedef struct __mavlink_collision_t {
     247, \
     "COLLISION", \
     7, \
-    {  { "src", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_collision_t, src) }, \
-         { "id", NULL, MAVLINK_TYPE_UINT32_T, 0, 1, offsetof(mavlink_collision_t, id) }, \
-         { "action", NULL, MAVLINK_TYPE_UINT8_T, 0, 5, offsetof(mavlink_collision_t, action) }, \
-         { "threat_level", NULL, MAVLINK_TYPE_UINT8_T, 0, 6, offsetof(mavlink_collision_t, threat_level) }, \
-         { "time_to_minimum_delta", NULL, MAVLINK_TYPE_FLOAT, 0, 7, offsetof(mavlink_collision_t, time_to_minimum_delta) }, \
-         { "altitude_minimum_delta", NULL, MAVLINK_TYPE_FLOAT, 0, 11, offsetof(mavlink_collision_t, altitude_minimum_delta) }, \
-         { "horizontal_minimum_delta", NULL, MAVLINK_TYPE_FLOAT, 0, 15, offsetof(mavlink_collision_t, horizontal_minimum_delta) }, \
+    {  { "id", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_collision_t, id) }, \
+         { "time_to_minimum_delta", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_collision_t, time_to_minimum_delta) }, \
+         { "altitude_minimum_delta", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_collision_t, altitude_minimum_delta) }, \
+         { "horizontal_minimum_delta", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_collision_t, horizontal_minimum_delta) }, \
+         { "src", NULL, MAVLINK_TYPE_UINT8_T, 0, 16, offsetof(mavlink_collision_t, src) }, \
+         { "action", NULL, MAVLINK_TYPE_UINT8_T, 0, 17, offsetof(mavlink_collision_t, action) }, \
+         { "threat_level", NULL, MAVLINK_TYPE_UINT8_T, 0, 18, offsetof(mavlink_collision_t, threat_level) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_COLLISION { \
     "COLLISION", \
     7, \
-    {  { "src", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_collision_t, src) }, \
-         { "id", NULL, MAVLINK_TYPE_UINT32_T, 0, 1, offsetof(mavlink_collision_t, id) }, \
-         { "action", NULL, MAVLINK_TYPE_UINT8_T, 0, 5, offsetof(mavlink_collision_t, action) }, \
-         { "threat_level", NULL, MAVLINK_TYPE_UINT8_T, 0, 6, offsetof(mavlink_collision_t, threat_level) }, \
-         { "time_to_minimum_delta", NULL, MAVLINK_TYPE_FLOAT, 0, 7, offsetof(mavlink_collision_t, time_to_minimum_delta) }, \
-         { "altitude_minimum_delta", NULL, MAVLINK_TYPE_FLOAT, 0, 11, offsetof(mavlink_collision_t, altitude_minimum_delta) }, \
-         { "horizontal_minimum_delta", NULL, MAVLINK_TYPE_FLOAT, 0, 15, offsetof(mavlink_collision_t, horizontal_minimum_delta) }, \
+    {  { "id", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_collision_t, id) }, \
+         { "time_to_minimum_delta", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_collision_t, time_to_minimum_delta) }, \
+         { "altitude_minimum_delta", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_collision_t, altitude_minimum_delta) }, \
+         { "horizontal_minimum_delta", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_collision_t, horizontal_minimum_delta) }, \
+         { "src", NULL, MAVLINK_TYPE_UINT8_T, 0, 16, offsetof(mavlink_collision_t, src) }, \
+         { "action", NULL, MAVLINK_TYPE_UINT8_T, 0, 17, offsetof(mavlink_collision_t, action) }, \
+         { "threat_level", NULL, MAVLINK_TYPE_UINT8_T, 0, 18, offsetof(mavlink_collision_t, threat_level) }, \
          } \
 }
 #endif
@@ -73,24 +73,24 @@ static inline uint16_t mavlink_msg_collision_pack(uint8_t system_id, uint8_t com
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_COLLISION_LEN];
-    _mav_put_uint8_t(buf, 0, src);
-    _mav_put_uint32_t(buf, 1, id);
-    _mav_put_uint8_t(buf, 5, action);
-    _mav_put_uint8_t(buf, 6, threat_level);
-    _mav_put_float(buf, 7, time_to_minimum_delta);
-    _mav_put_float(buf, 11, altitude_minimum_delta);
-    _mav_put_float(buf, 15, horizontal_minimum_delta);
+    _mav_put_uint32_t(buf, 0, id);
+    _mav_put_float(buf, 4, time_to_minimum_delta);
+    _mav_put_float(buf, 8, altitude_minimum_delta);
+    _mav_put_float(buf, 12, horizontal_minimum_delta);
+    _mav_put_uint8_t(buf, 16, src);
+    _mav_put_uint8_t(buf, 17, action);
+    _mav_put_uint8_t(buf, 18, threat_level);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_COLLISION_LEN);
 #else
     mavlink_collision_t packet;
-    packet.src = src;
     packet.id = id;
-    packet.action = action;
-    packet.threat_level = threat_level;
     packet.time_to_minimum_delta = time_to_minimum_delta;
     packet.altitude_minimum_delta = altitude_minimum_delta;
     packet.horizontal_minimum_delta = horizontal_minimum_delta;
+    packet.src = src;
+    packet.action = action;
+    packet.threat_level = threat_level;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_COLLISION_LEN);
 #endif
@@ -120,24 +120,24 @@ static inline uint16_t mavlink_msg_collision_pack_chan(uint8_t system_id, uint8_
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_COLLISION_LEN];
-    _mav_put_uint8_t(buf, 0, src);
-    _mav_put_uint32_t(buf, 1, id);
-    _mav_put_uint8_t(buf, 5, action);
-    _mav_put_uint8_t(buf, 6, threat_level);
-    _mav_put_float(buf, 7, time_to_minimum_delta);
-    _mav_put_float(buf, 11, altitude_minimum_delta);
-    _mav_put_float(buf, 15, horizontal_minimum_delta);
+    _mav_put_uint32_t(buf, 0, id);
+    _mav_put_float(buf, 4, time_to_minimum_delta);
+    _mav_put_float(buf, 8, altitude_minimum_delta);
+    _mav_put_float(buf, 12, horizontal_minimum_delta);
+    _mav_put_uint8_t(buf, 16, src);
+    _mav_put_uint8_t(buf, 17, action);
+    _mav_put_uint8_t(buf, 18, threat_level);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_COLLISION_LEN);
 #else
     mavlink_collision_t packet;
-    packet.src = src;
     packet.id = id;
-    packet.action = action;
-    packet.threat_level = threat_level;
     packet.time_to_minimum_delta = time_to_minimum_delta;
     packet.altitude_minimum_delta = altitude_minimum_delta;
     packet.horizontal_minimum_delta = horizontal_minimum_delta;
+    packet.src = src;
+    packet.action = action;
+    packet.threat_level = threat_level;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_COLLISION_LEN);
 #endif
@@ -191,24 +191,24 @@ static inline void mavlink_msg_collision_send(mavlink_channel_t chan, uint8_t sr
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_COLLISION_LEN];
-    _mav_put_uint8_t(buf, 0, src);
-    _mav_put_uint32_t(buf, 1, id);
-    _mav_put_uint8_t(buf, 5, action);
-    _mav_put_uint8_t(buf, 6, threat_level);
-    _mav_put_float(buf, 7, time_to_minimum_delta);
-    _mav_put_float(buf, 11, altitude_minimum_delta);
-    _mav_put_float(buf, 15, horizontal_minimum_delta);
+    _mav_put_uint32_t(buf, 0, id);
+    _mav_put_float(buf, 4, time_to_minimum_delta);
+    _mav_put_float(buf, 8, altitude_minimum_delta);
+    _mav_put_float(buf, 12, horizontal_minimum_delta);
+    _mav_put_uint8_t(buf, 16, src);
+    _mav_put_uint8_t(buf, 17, action);
+    _mav_put_uint8_t(buf, 18, threat_level);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_COLLISION, buf, MAVLINK_MSG_ID_COLLISION_MIN_LEN, MAVLINK_MSG_ID_COLLISION_LEN, MAVLINK_MSG_ID_COLLISION_CRC);
 #else
     mavlink_collision_t packet;
-    packet.src = src;
     packet.id = id;
-    packet.action = action;
-    packet.threat_level = threat_level;
     packet.time_to_minimum_delta = time_to_minimum_delta;
     packet.altitude_minimum_delta = altitude_minimum_delta;
     packet.horizontal_minimum_delta = horizontal_minimum_delta;
+    packet.src = src;
+    packet.action = action;
+    packet.threat_level = threat_level;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_COLLISION, (const char *)&packet, MAVLINK_MSG_ID_COLLISION_MIN_LEN, MAVLINK_MSG_ID_COLLISION_LEN, MAVLINK_MSG_ID_COLLISION_CRC);
 #endif
@@ -240,24 +240,24 @@ static inline void mavlink_msg_collision_send_buf(mavlink_message_t *msgbuf, mav
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
-    _mav_put_uint8_t(buf, 0, src);
-    _mav_put_uint32_t(buf, 1, id);
-    _mav_put_uint8_t(buf, 5, action);
-    _mav_put_uint8_t(buf, 6, threat_level);
-    _mav_put_float(buf, 7, time_to_minimum_delta);
-    _mav_put_float(buf, 11, altitude_minimum_delta);
-    _mav_put_float(buf, 15, horizontal_minimum_delta);
+    _mav_put_uint32_t(buf, 0, id);
+    _mav_put_float(buf, 4, time_to_minimum_delta);
+    _mav_put_float(buf, 8, altitude_minimum_delta);
+    _mav_put_float(buf, 12, horizontal_minimum_delta);
+    _mav_put_uint8_t(buf, 16, src);
+    _mav_put_uint8_t(buf, 17, action);
+    _mav_put_uint8_t(buf, 18, threat_level);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_COLLISION, buf, MAVLINK_MSG_ID_COLLISION_MIN_LEN, MAVLINK_MSG_ID_COLLISION_LEN, MAVLINK_MSG_ID_COLLISION_CRC);
 #else
     mavlink_collision_t *packet = (mavlink_collision_t *)msgbuf;
-    packet->src = src;
     packet->id = id;
-    packet->action = action;
-    packet->threat_level = threat_level;
     packet->time_to_minimum_delta = time_to_minimum_delta;
     packet->altitude_minimum_delta = altitude_minimum_delta;
     packet->horizontal_minimum_delta = horizontal_minimum_delta;
+    packet->src = src;
+    packet->action = action;
+    packet->threat_level = threat_level;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_COLLISION, (const char *)packet, MAVLINK_MSG_ID_COLLISION_MIN_LEN, MAVLINK_MSG_ID_COLLISION_LEN, MAVLINK_MSG_ID_COLLISION_CRC);
 #endif
@@ -276,7 +276,7 @@ static inline void mavlink_msg_collision_send_buf(mavlink_message_t *msgbuf, mav
  */
 static inline uint8_t mavlink_msg_collision_get_src(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint8_t(msg,  0);
+    return _MAV_RETURN_uint8_t(msg,  16);
 }
 
 /**
@@ -286,7 +286,7 @@ static inline uint8_t mavlink_msg_collision_get_src(const mavlink_message_t* msg
  */
 static inline uint32_t mavlink_msg_collision_get_id(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint32_t(msg,  1);
+    return _MAV_RETURN_uint32_t(msg,  0);
 }
 
 /**
@@ -296,7 +296,7 @@ static inline uint32_t mavlink_msg_collision_get_id(const mavlink_message_t* msg
  */
 static inline uint8_t mavlink_msg_collision_get_action(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint8_t(msg,  5);
+    return _MAV_RETURN_uint8_t(msg,  17);
 }
 
 /**
@@ -306,7 +306,7 @@ static inline uint8_t mavlink_msg_collision_get_action(const mavlink_message_t* 
  */
 static inline uint8_t mavlink_msg_collision_get_threat_level(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint8_t(msg,  6);
+    return _MAV_RETURN_uint8_t(msg,  18);
 }
 
 /**
@@ -316,7 +316,7 @@ static inline uint8_t mavlink_msg_collision_get_threat_level(const mavlink_messa
  */
 static inline float mavlink_msg_collision_get_time_to_minimum_delta(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  7);
+    return _MAV_RETURN_float(msg,  4);
 }
 
 /**
@@ -326,7 +326,7 @@ static inline float mavlink_msg_collision_get_time_to_minimum_delta(const mavlin
  */
 static inline float mavlink_msg_collision_get_altitude_minimum_delta(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  11);
+    return _MAV_RETURN_float(msg,  8);
 }
 
 /**
@@ -336,7 +336,7 @@ static inline float mavlink_msg_collision_get_altitude_minimum_delta(const mavli
  */
 static inline float mavlink_msg_collision_get_horizontal_minimum_delta(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  15);
+    return _MAV_RETURN_float(msg,  12);
 }
 
 /**
@@ -348,13 +348,13 @@ static inline float mavlink_msg_collision_get_horizontal_minimum_delta(const mav
 static inline void mavlink_msg_collision_decode(const mavlink_message_t* msg, mavlink_collision_t* collision)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    collision->src = mavlink_msg_collision_get_src(msg);
     collision->id = mavlink_msg_collision_get_id(msg);
-    collision->action = mavlink_msg_collision_get_action(msg);
-    collision->threat_level = mavlink_msg_collision_get_threat_level(msg);
     collision->time_to_minimum_delta = mavlink_msg_collision_get_time_to_minimum_delta(msg);
     collision->altitude_minimum_delta = mavlink_msg_collision_get_altitude_minimum_delta(msg);
     collision->horizontal_minimum_delta = mavlink_msg_collision_get_horizontal_minimum_delta(msg);
+    collision->src = mavlink_msg_collision_get_src(msg);
+    collision->action = mavlink_msg_collision_get_action(msg);
+    collision->threat_level = mavlink_msg_collision_get_threat_level(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_COLLISION_LEN? msg->len : MAVLINK_MSG_ID_COLLISION_LEN;
         memset(collision, 0, MAVLINK_MSG_ID_COLLISION_LEN);

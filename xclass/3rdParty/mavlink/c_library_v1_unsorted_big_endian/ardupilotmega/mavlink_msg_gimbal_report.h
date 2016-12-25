@@ -5,8 +5,6 @@
 
 MAVPACKED(
 typedef struct __mavlink_gimbal_report_t {
- uint8_t target_system; /*< System ID*/
- uint8_t target_component; /*< Component ID*/
  float delta_time; /*< Time since last update (seconds)*/
  float delta_angle_x; /*< Delta angle X (radians)*/
  float delta_angle_y; /*< Delta angle Y (radians)*/
@@ -17,6 +15,8 @@ typedef struct __mavlink_gimbal_report_t {
  float joint_roll; /*< Joint ROLL (radians)*/
  float joint_el; /*< Joint EL (radians)*/
  float joint_az; /*< Joint AZ (radians)*/
+ uint8_t target_system; /*< System ID*/
+ uint8_t target_component; /*< Component ID*/
 }) mavlink_gimbal_report_t;
 
 #define MAVLINK_MSG_ID_GIMBAL_REPORT_LEN 42
@@ -24,8 +24,8 @@ typedef struct __mavlink_gimbal_report_t {
 #define MAVLINK_MSG_ID_200_LEN 42
 #define MAVLINK_MSG_ID_200_MIN_LEN 42
 
-#define MAVLINK_MSG_ID_GIMBAL_REPORT_CRC 1
-#define MAVLINK_MSG_ID_200_CRC 1
+#define MAVLINK_MSG_ID_GIMBAL_REPORT_CRC 134
+#define MAVLINK_MSG_ID_200_CRC 134
 
 
 
@@ -34,36 +34,36 @@ typedef struct __mavlink_gimbal_report_t {
     200, \
     "GIMBAL_REPORT", \
     12, \
-    {  { "target_system", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_gimbal_report_t, target_system) }, \
-         { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 1, offsetof(mavlink_gimbal_report_t, target_component) }, \
-         { "delta_time", NULL, MAVLINK_TYPE_FLOAT, 0, 2, offsetof(mavlink_gimbal_report_t, delta_time) }, \
-         { "delta_angle_x", NULL, MAVLINK_TYPE_FLOAT, 0, 6, offsetof(mavlink_gimbal_report_t, delta_angle_x) }, \
-         { "delta_angle_y", NULL, MAVLINK_TYPE_FLOAT, 0, 10, offsetof(mavlink_gimbal_report_t, delta_angle_y) }, \
-         { "delta_angle_z", NULL, MAVLINK_TYPE_FLOAT, 0, 14, offsetof(mavlink_gimbal_report_t, delta_angle_z) }, \
-         { "delta_velocity_x", NULL, MAVLINK_TYPE_FLOAT, 0, 18, offsetof(mavlink_gimbal_report_t, delta_velocity_x) }, \
-         { "delta_velocity_y", NULL, MAVLINK_TYPE_FLOAT, 0, 22, offsetof(mavlink_gimbal_report_t, delta_velocity_y) }, \
-         { "delta_velocity_z", NULL, MAVLINK_TYPE_FLOAT, 0, 26, offsetof(mavlink_gimbal_report_t, delta_velocity_z) }, \
-         { "joint_roll", NULL, MAVLINK_TYPE_FLOAT, 0, 30, offsetof(mavlink_gimbal_report_t, joint_roll) }, \
-         { "joint_el", NULL, MAVLINK_TYPE_FLOAT, 0, 34, offsetof(mavlink_gimbal_report_t, joint_el) }, \
-         { "joint_az", NULL, MAVLINK_TYPE_FLOAT, 0, 38, offsetof(mavlink_gimbal_report_t, joint_az) }, \
+    {  { "delta_time", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_gimbal_report_t, delta_time) }, \
+         { "delta_angle_x", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_gimbal_report_t, delta_angle_x) }, \
+         { "delta_angle_y", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_gimbal_report_t, delta_angle_y) }, \
+         { "delta_angle_z", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_gimbal_report_t, delta_angle_z) }, \
+         { "delta_velocity_x", NULL, MAVLINK_TYPE_FLOAT, 0, 16, offsetof(mavlink_gimbal_report_t, delta_velocity_x) }, \
+         { "delta_velocity_y", NULL, MAVLINK_TYPE_FLOAT, 0, 20, offsetof(mavlink_gimbal_report_t, delta_velocity_y) }, \
+         { "delta_velocity_z", NULL, MAVLINK_TYPE_FLOAT, 0, 24, offsetof(mavlink_gimbal_report_t, delta_velocity_z) }, \
+         { "joint_roll", NULL, MAVLINK_TYPE_FLOAT, 0, 28, offsetof(mavlink_gimbal_report_t, joint_roll) }, \
+         { "joint_el", NULL, MAVLINK_TYPE_FLOAT, 0, 32, offsetof(mavlink_gimbal_report_t, joint_el) }, \
+         { "joint_az", NULL, MAVLINK_TYPE_FLOAT, 0, 36, offsetof(mavlink_gimbal_report_t, joint_az) }, \
+         { "target_system", NULL, MAVLINK_TYPE_UINT8_T, 0, 40, offsetof(mavlink_gimbal_report_t, target_system) }, \
+         { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 41, offsetof(mavlink_gimbal_report_t, target_component) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_GIMBAL_REPORT { \
     "GIMBAL_REPORT", \
     12, \
-    {  { "target_system", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_gimbal_report_t, target_system) }, \
-         { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 1, offsetof(mavlink_gimbal_report_t, target_component) }, \
-         { "delta_time", NULL, MAVLINK_TYPE_FLOAT, 0, 2, offsetof(mavlink_gimbal_report_t, delta_time) }, \
-         { "delta_angle_x", NULL, MAVLINK_TYPE_FLOAT, 0, 6, offsetof(mavlink_gimbal_report_t, delta_angle_x) }, \
-         { "delta_angle_y", NULL, MAVLINK_TYPE_FLOAT, 0, 10, offsetof(mavlink_gimbal_report_t, delta_angle_y) }, \
-         { "delta_angle_z", NULL, MAVLINK_TYPE_FLOAT, 0, 14, offsetof(mavlink_gimbal_report_t, delta_angle_z) }, \
-         { "delta_velocity_x", NULL, MAVLINK_TYPE_FLOAT, 0, 18, offsetof(mavlink_gimbal_report_t, delta_velocity_x) }, \
-         { "delta_velocity_y", NULL, MAVLINK_TYPE_FLOAT, 0, 22, offsetof(mavlink_gimbal_report_t, delta_velocity_y) }, \
-         { "delta_velocity_z", NULL, MAVLINK_TYPE_FLOAT, 0, 26, offsetof(mavlink_gimbal_report_t, delta_velocity_z) }, \
-         { "joint_roll", NULL, MAVLINK_TYPE_FLOAT, 0, 30, offsetof(mavlink_gimbal_report_t, joint_roll) }, \
-         { "joint_el", NULL, MAVLINK_TYPE_FLOAT, 0, 34, offsetof(mavlink_gimbal_report_t, joint_el) }, \
-         { "joint_az", NULL, MAVLINK_TYPE_FLOAT, 0, 38, offsetof(mavlink_gimbal_report_t, joint_az) }, \
+    {  { "delta_time", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_gimbal_report_t, delta_time) }, \
+         { "delta_angle_x", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_gimbal_report_t, delta_angle_x) }, \
+         { "delta_angle_y", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_gimbal_report_t, delta_angle_y) }, \
+         { "delta_angle_z", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_gimbal_report_t, delta_angle_z) }, \
+         { "delta_velocity_x", NULL, MAVLINK_TYPE_FLOAT, 0, 16, offsetof(mavlink_gimbal_report_t, delta_velocity_x) }, \
+         { "delta_velocity_y", NULL, MAVLINK_TYPE_FLOAT, 0, 20, offsetof(mavlink_gimbal_report_t, delta_velocity_y) }, \
+         { "delta_velocity_z", NULL, MAVLINK_TYPE_FLOAT, 0, 24, offsetof(mavlink_gimbal_report_t, delta_velocity_z) }, \
+         { "joint_roll", NULL, MAVLINK_TYPE_FLOAT, 0, 28, offsetof(mavlink_gimbal_report_t, joint_roll) }, \
+         { "joint_el", NULL, MAVLINK_TYPE_FLOAT, 0, 32, offsetof(mavlink_gimbal_report_t, joint_el) }, \
+         { "joint_az", NULL, MAVLINK_TYPE_FLOAT, 0, 36, offsetof(mavlink_gimbal_report_t, joint_az) }, \
+         { "target_system", NULL, MAVLINK_TYPE_UINT8_T, 0, 40, offsetof(mavlink_gimbal_report_t, target_system) }, \
+         { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 41, offsetof(mavlink_gimbal_report_t, target_component) }, \
          } \
 }
 #endif
@@ -93,24 +93,22 @@ static inline uint16_t mavlink_msg_gimbal_report_pack(uint8_t system_id, uint8_t
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_GIMBAL_REPORT_LEN];
-    _mav_put_uint8_t(buf, 0, target_system);
-    _mav_put_uint8_t(buf, 1, target_component);
-    _mav_put_float(buf, 2, delta_time);
-    _mav_put_float(buf, 6, delta_angle_x);
-    _mav_put_float(buf, 10, delta_angle_y);
-    _mav_put_float(buf, 14, delta_angle_z);
-    _mav_put_float(buf, 18, delta_velocity_x);
-    _mav_put_float(buf, 22, delta_velocity_y);
-    _mav_put_float(buf, 26, delta_velocity_z);
-    _mav_put_float(buf, 30, joint_roll);
-    _mav_put_float(buf, 34, joint_el);
-    _mav_put_float(buf, 38, joint_az);
+    _mav_put_float(buf, 0, delta_time);
+    _mav_put_float(buf, 4, delta_angle_x);
+    _mav_put_float(buf, 8, delta_angle_y);
+    _mav_put_float(buf, 12, delta_angle_z);
+    _mav_put_float(buf, 16, delta_velocity_x);
+    _mav_put_float(buf, 20, delta_velocity_y);
+    _mav_put_float(buf, 24, delta_velocity_z);
+    _mav_put_float(buf, 28, joint_roll);
+    _mav_put_float(buf, 32, joint_el);
+    _mav_put_float(buf, 36, joint_az);
+    _mav_put_uint8_t(buf, 40, target_system);
+    _mav_put_uint8_t(buf, 41, target_component);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_GIMBAL_REPORT_LEN);
 #else
     mavlink_gimbal_report_t packet;
-    packet.target_system = target_system;
-    packet.target_component = target_component;
     packet.delta_time = delta_time;
     packet.delta_angle_x = delta_angle_x;
     packet.delta_angle_y = delta_angle_y;
@@ -121,6 +119,8 @@ static inline uint16_t mavlink_msg_gimbal_report_pack(uint8_t system_id, uint8_t
     packet.joint_roll = joint_roll;
     packet.joint_el = joint_el;
     packet.joint_az = joint_az;
+    packet.target_system = target_system;
+    packet.target_component = target_component;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_GIMBAL_REPORT_LEN);
 #endif
@@ -155,24 +155,22 @@ static inline uint16_t mavlink_msg_gimbal_report_pack_chan(uint8_t system_id, ui
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_GIMBAL_REPORT_LEN];
-    _mav_put_uint8_t(buf, 0, target_system);
-    _mav_put_uint8_t(buf, 1, target_component);
-    _mav_put_float(buf, 2, delta_time);
-    _mav_put_float(buf, 6, delta_angle_x);
-    _mav_put_float(buf, 10, delta_angle_y);
-    _mav_put_float(buf, 14, delta_angle_z);
-    _mav_put_float(buf, 18, delta_velocity_x);
-    _mav_put_float(buf, 22, delta_velocity_y);
-    _mav_put_float(buf, 26, delta_velocity_z);
-    _mav_put_float(buf, 30, joint_roll);
-    _mav_put_float(buf, 34, joint_el);
-    _mav_put_float(buf, 38, joint_az);
+    _mav_put_float(buf, 0, delta_time);
+    _mav_put_float(buf, 4, delta_angle_x);
+    _mav_put_float(buf, 8, delta_angle_y);
+    _mav_put_float(buf, 12, delta_angle_z);
+    _mav_put_float(buf, 16, delta_velocity_x);
+    _mav_put_float(buf, 20, delta_velocity_y);
+    _mav_put_float(buf, 24, delta_velocity_z);
+    _mav_put_float(buf, 28, joint_roll);
+    _mav_put_float(buf, 32, joint_el);
+    _mav_put_float(buf, 36, joint_az);
+    _mav_put_uint8_t(buf, 40, target_system);
+    _mav_put_uint8_t(buf, 41, target_component);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_GIMBAL_REPORT_LEN);
 #else
     mavlink_gimbal_report_t packet;
-    packet.target_system = target_system;
-    packet.target_component = target_component;
     packet.delta_time = delta_time;
     packet.delta_angle_x = delta_angle_x;
     packet.delta_angle_y = delta_angle_y;
@@ -183,6 +181,8 @@ static inline uint16_t mavlink_msg_gimbal_report_pack_chan(uint8_t system_id, ui
     packet.joint_roll = joint_roll;
     packet.joint_el = joint_el;
     packet.joint_az = joint_az;
+    packet.target_system = target_system;
+    packet.target_component = target_component;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_GIMBAL_REPORT_LEN);
 #endif
@@ -241,24 +241,22 @@ static inline void mavlink_msg_gimbal_report_send(mavlink_channel_t chan, uint8_
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_GIMBAL_REPORT_LEN];
-    _mav_put_uint8_t(buf, 0, target_system);
-    _mav_put_uint8_t(buf, 1, target_component);
-    _mav_put_float(buf, 2, delta_time);
-    _mav_put_float(buf, 6, delta_angle_x);
-    _mav_put_float(buf, 10, delta_angle_y);
-    _mav_put_float(buf, 14, delta_angle_z);
-    _mav_put_float(buf, 18, delta_velocity_x);
-    _mav_put_float(buf, 22, delta_velocity_y);
-    _mav_put_float(buf, 26, delta_velocity_z);
-    _mav_put_float(buf, 30, joint_roll);
-    _mav_put_float(buf, 34, joint_el);
-    _mav_put_float(buf, 38, joint_az);
+    _mav_put_float(buf, 0, delta_time);
+    _mav_put_float(buf, 4, delta_angle_x);
+    _mav_put_float(buf, 8, delta_angle_y);
+    _mav_put_float(buf, 12, delta_angle_z);
+    _mav_put_float(buf, 16, delta_velocity_x);
+    _mav_put_float(buf, 20, delta_velocity_y);
+    _mav_put_float(buf, 24, delta_velocity_z);
+    _mav_put_float(buf, 28, joint_roll);
+    _mav_put_float(buf, 32, joint_el);
+    _mav_put_float(buf, 36, joint_az);
+    _mav_put_uint8_t(buf, 40, target_system);
+    _mav_put_uint8_t(buf, 41, target_component);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT, buf, MAVLINK_MSG_ID_GIMBAL_REPORT_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_CRC);
 #else
     mavlink_gimbal_report_t packet;
-    packet.target_system = target_system;
-    packet.target_component = target_component;
     packet.delta_time = delta_time;
     packet.delta_angle_x = delta_angle_x;
     packet.delta_angle_y = delta_angle_y;
@@ -269,6 +267,8 @@ static inline void mavlink_msg_gimbal_report_send(mavlink_channel_t chan, uint8_
     packet.joint_roll = joint_roll;
     packet.joint_el = joint_el;
     packet.joint_az = joint_az;
+    packet.target_system = target_system;
+    packet.target_component = target_component;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT, (const char *)&packet, MAVLINK_MSG_ID_GIMBAL_REPORT_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_CRC);
 #endif
@@ -300,24 +300,22 @@ static inline void mavlink_msg_gimbal_report_send_buf(mavlink_message_t *msgbuf,
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
-    _mav_put_uint8_t(buf, 0, target_system);
-    _mav_put_uint8_t(buf, 1, target_component);
-    _mav_put_float(buf, 2, delta_time);
-    _mav_put_float(buf, 6, delta_angle_x);
-    _mav_put_float(buf, 10, delta_angle_y);
-    _mav_put_float(buf, 14, delta_angle_z);
-    _mav_put_float(buf, 18, delta_velocity_x);
-    _mav_put_float(buf, 22, delta_velocity_y);
-    _mav_put_float(buf, 26, delta_velocity_z);
-    _mav_put_float(buf, 30, joint_roll);
-    _mav_put_float(buf, 34, joint_el);
-    _mav_put_float(buf, 38, joint_az);
+    _mav_put_float(buf, 0, delta_time);
+    _mav_put_float(buf, 4, delta_angle_x);
+    _mav_put_float(buf, 8, delta_angle_y);
+    _mav_put_float(buf, 12, delta_angle_z);
+    _mav_put_float(buf, 16, delta_velocity_x);
+    _mav_put_float(buf, 20, delta_velocity_y);
+    _mav_put_float(buf, 24, delta_velocity_z);
+    _mav_put_float(buf, 28, joint_roll);
+    _mav_put_float(buf, 32, joint_el);
+    _mav_put_float(buf, 36, joint_az);
+    _mav_put_uint8_t(buf, 40, target_system);
+    _mav_put_uint8_t(buf, 41, target_component);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT, buf, MAVLINK_MSG_ID_GIMBAL_REPORT_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_CRC);
 #else
     mavlink_gimbal_report_t *packet = (mavlink_gimbal_report_t *)msgbuf;
-    packet->target_system = target_system;
-    packet->target_component = target_component;
     packet->delta_time = delta_time;
     packet->delta_angle_x = delta_angle_x;
     packet->delta_angle_y = delta_angle_y;
@@ -328,6 +326,8 @@ static inline void mavlink_msg_gimbal_report_send_buf(mavlink_message_t *msgbuf,
     packet->joint_roll = joint_roll;
     packet->joint_el = joint_el;
     packet->joint_az = joint_az;
+    packet->target_system = target_system;
+    packet->target_component = target_component;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT, (const char *)packet, MAVLINK_MSG_ID_GIMBAL_REPORT_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_CRC);
 #endif
@@ -346,7 +346,7 @@ static inline void mavlink_msg_gimbal_report_send_buf(mavlink_message_t *msgbuf,
  */
 static inline uint8_t mavlink_msg_gimbal_report_get_target_system(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint8_t(msg,  0);
+    return _MAV_RETURN_uint8_t(msg,  40);
 }
 
 /**
@@ -356,7 +356,7 @@ static inline uint8_t mavlink_msg_gimbal_report_get_target_system(const mavlink_
  */
 static inline uint8_t mavlink_msg_gimbal_report_get_target_component(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint8_t(msg,  1);
+    return _MAV_RETURN_uint8_t(msg,  41);
 }
 
 /**
@@ -366,7 +366,7 @@ static inline uint8_t mavlink_msg_gimbal_report_get_target_component(const mavli
  */
 static inline float mavlink_msg_gimbal_report_get_delta_time(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  2);
+    return _MAV_RETURN_float(msg,  0);
 }
 
 /**
@@ -376,7 +376,7 @@ static inline float mavlink_msg_gimbal_report_get_delta_time(const mavlink_messa
  */
 static inline float mavlink_msg_gimbal_report_get_delta_angle_x(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  6);
+    return _MAV_RETURN_float(msg,  4);
 }
 
 /**
@@ -386,7 +386,7 @@ static inline float mavlink_msg_gimbal_report_get_delta_angle_x(const mavlink_me
  */
 static inline float mavlink_msg_gimbal_report_get_delta_angle_y(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  10);
+    return _MAV_RETURN_float(msg,  8);
 }
 
 /**
@@ -396,7 +396,7 @@ static inline float mavlink_msg_gimbal_report_get_delta_angle_y(const mavlink_me
  */
 static inline float mavlink_msg_gimbal_report_get_delta_angle_z(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  14);
+    return _MAV_RETURN_float(msg,  12);
 }
 
 /**
@@ -406,7 +406,7 @@ static inline float mavlink_msg_gimbal_report_get_delta_angle_z(const mavlink_me
  */
 static inline float mavlink_msg_gimbal_report_get_delta_velocity_x(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  18);
+    return _MAV_RETURN_float(msg,  16);
 }
 
 /**
@@ -416,7 +416,7 @@ static inline float mavlink_msg_gimbal_report_get_delta_velocity_x(const mavlink
  */
 static inline float mavlink_msg_gimbal_report_get_delta_velocity_y(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  22);
+    return _MAV_RETURN_float(msg,  20);
 }
 
 /**
@@ -426,7 +426,7 @@ static inline float mavlink_msg_gimbal_report_get_delta_velocity_y(const mavlink
  */
 static inline float mavlink_msg_gimbal_report_get_delta_velocity_z(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  26);
+    return _MAV_RETURN_float(msg,  24);
 }
 
 /**
@@ -436,7 +436,7 @@ static inline float mavlink_msg_gimbal_report_get_delta_velocity_z(const mavlink
  */
 static inline float mavlink_msg_gimbal_report_get_joint_roll(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  30);
+    return _MAV_RETURN_float(msg,  28);
 }
 
 /**
@@ -446,7 +446,7 @@ static inline float mavlink_msg_gimbal_report_get_joint_roll(const mavlink_messa
  */
 static inline float mavlink_msg_gimbal_report_get_joint_el(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  34);
+    return _MAV_RETURN_float(msg,  32);
 }
 
 /**
@@ -456,7 +456,7 @@ static inline float mavlink_msg_gimbal_report_get_joint_el(const mavlink_message
  */
 static inline float mavlink_msg_gimbal_report_get_joint_az(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  38);
+    return _MAV_RETURN_float(msg,  36);
 }
 
 /**
@@ -468,8 +468,6 @@ static inline float mavlink_msg_gimbal_report_get_joint_az(const mavlink_message
 static inline void mavlink_msg_gimbal_report_decode(const mavlink_message_t* msg, mavlink_gimbal_report_t* gimbal_report)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    gimbal_report->target_system = mavlink_msg_gimbal_report_get_target_system(msg);
-    gimbal_report->target_component = mavlink_msg_gimbal_report_get_target_component(msg);
     gimbal_report->delta_time = mavlink_msg_gimbal_report_get_delta_time(msg);
     gimbal_report->delta_angle_x = mavlink_msg_gimbal_report_get_delta_angle_x(msg);
     gimbal_report->delta_angle_y = mavlink_msg_gimbal_report_get_delta_angle_y(msg);
@@ -480,6 +478,8 @@ static inline void mavlink_msg_gimbal_report_decode(const mavlink_message_t* msg
     gimbal_report->joint_roll = mavlink_msg_gimbal_report_get_joint_roll(msg);
     gimbal_report->joint_el = mavlink_msg_gimbal_report_get_joint_el(msg);
     gimbal_report->joint_az = mavlink_msg_gimbal_report_get_joint_az(msg);
+    gimbal_report->target_system = mavlink_msg_gimbal_report_get_target_system(msg);
+    gimbal_report->target_component = mavlink_msg_gimbal_report_get_target_component(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_GIMBAL_REPORT_LEN? msg->len : MAVLINK_MSG_ID_GIMBAL_REPORT_LEN;
         memset(gimbal_report, 0, MAVLINK_MSG_ID_GIMBAL_REPORT_LEN);

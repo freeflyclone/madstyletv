@@ -5,14 +5,14 @@
 
 MAVPACKED(
 typedef struct __mavlink_battery_status_t {
- uint8_t id; /*< Battery ID*/
- uint8_t battery_function; /*< Function of the battery*/
- uint8_t type; /*< Type (chemistry) of the battery*/
+ int32_t current_consumed; /*< Consumed charge, in milliampere hours (1 = 1 mAh), -1: autopilot does not provide mAh consumption estimate*/
+ int32_t energy_consumed; /*< Consumed energy, in 100*Joules (intergrated U*I*dt)  (1 = 100 Joule), -1: autopilot does not provide energy consumption estimate*/
  int16_t temperature; /*< Temperature of the battery in centi-degrees celsius. INT16_MAX for unknown temperature.*/
  uint16_t voltages[10]; /*< Battery voltage of cells, in millivolts (1 = 1 millivolt). Cells above the valid cell count for this battery should have the UINT16_MAX value.*/
  int16_t current_battery; /*< Battery current, in 10*milliamperes (1 = 10 milliampere), -1: autopilot does not measure the current*/
- int32_t current_consumed; /*< Consumed charge, in milliampere hours (1 = 1 mAh), -1: autopilot does not provide mAh consumption estimate*/
- int32_t energy_consumed; /*< Consumed energy, in 100*Joules (intergrated U*I*dt)  (1 = 100 Joule), -1: autopilot does not provide energy consumption estimate*/
+ uint8_t id; /*< Battery ID*/
+ uint8_t battery_function; /*< Function of the battery*/
+ uint8_t type; /*< Type (chemistry) of the battery*/
  int8_t battery_remaining; /*< Remaining battery energy: (0%: 0, 100%: 100), -1: autopilot does not estimate the remaining battery*/
 }) mavlink_battery_status_t;
 
@@ -21,8 +21,8 @@ typedef struct __mavlink_battery_status_t {
 #define MAVLINK_MSG_ID_147_LEN 36
 #define MAVLINK_MSG_ID_147_MIN_LEN 36
 
-#define MAVLINK_MSG_ID_BATTERY_STATUS_CRC 18
-#define MAVLINK_MSG_ID_147_CRC 18
+#define MAVLINK_MSG_ID_BATTERY_STATUS_CRC 154
+#define MAVLINK_MSG_ID_147_CRC 154
 
 #define MAVLINK_MSG_BATTERY_STATUS_FIELD_VOLTAGES_LEN 10
 
@@ -31,14 +31,14 @@ typedef struct __mavlink_battery_status_t {
     147, \
     "BATTERY_STATUS", \
     9, \
-    {  { "id", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_battery_status_t, id) }, \
-         { "battery_function", NULL, MAVLINK_TYPE_UINT8_T, 0, 1, offsetof(mavlink_battery_status_t, battery_function) }, \
-         { "type", NULL, MAVLINK_TYPE_UINT8_T, 0, 2, offsetof(mavlink_battery_status_t, type) }, \
-         { "temperature", NULL, MAVLINK_TYPE_INT16_T, 0, 3, offsetof(mavlink_battery_status_t, temperature) }, \
-         { "voltages", NULL, MAVLINK_TYPE_UINT16_T, 10, 5, offsetof(mavlink_battery_status_t, voltages) }, \
-         { "current_battery", NULL, MAVLINK_TYPE_INT16_T, 0, 25, offsetof(mavlink_battery_status_t, current_battery) }, \
-         { "current_consumed", NULL, MAVLINK_TYPE_INT32_T, 0, 27, offsetof(mavlink_battery_status_t, current_consumed) }, \
-         { "energy_consumed", NULL, MAVLINK_TYPE_INT32_T, 0, 31, offsetof(mavlink_battery_status_t, energy_consumed) }, \
+    {  { "current_consumed", NULL, MAVLINK_TYPE_INT32_T, 0, 0, offsetof(mavlink_battery_status_t, current_consumed) }, \
+         { "energy_consumed", NULL, MAVLINK_TYPE_INT32_T, 0, 4, offsetof(mavlink_battery_status_t, energy_consumed) }, \
+         { "temperature", NULL, MAVLINK_TYPE_INT16_T, 0, 8, offsetof(mavlink_battery_status_t, temperature) }, \
+         { "voltages", NULL, MAVLINK_TYPE_UINT16_T, 10, 10, offsetof(mavlink_battery_status_t, voltages) }, \
+         { "current_battery", NULL, MAVLINK_TYPE_INT16_T, 0, 30, offsetof(mavlink_battery_status_t, current_battery) }, \
+         { "id", NULL, MAVLINK_TYPE_UINT8_T, 0, 32, offsetof(mavlink_battery_status_t, id) }, \
+         { "battery_function", NULL, MAVLINK_TYPE_UINT8_T, 0, 33, offsetof(mavlink_battery_status_t, battery_function) }, \
+         { "type", NULL, MAVLINK_TYPE_UINT8_T, 0, 34, offsetof(mavlink_battery_status_t, type) }, \
          { "battery_remaining", NULL, MAVLINK_TYPE_INT8_T, 0, 35, offsetof(mavlink_battery_status_t, battery_remaining) }, \
          } \
 }
@@ -46,14 +46,14 @@ typedef struct __mavlink_battery_status_t {
 #define MAVLINK_MESSAGE_INFO_BATTERY_STATUS { \
     "BATTERY_STATUS", \
     9, \
-    {  { "id", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_battery_status_t, id) }, \
-         { "battery_function", NULL, MAVLINK_TYPE_UINT8_T, 0, 1, offsetof(mavlink_battery_status_t, battery_function) }, \
-         { "type", NULL, MAVLINK_TYPE_UINT8_T, 0, 2, offsetof(mavlink_battery_status_t, type) }, \
-         { "temperature", NULL, MAVLINK_TYPE_INT16_T, 0, 3, offsetof(mavlink_battery_status_t, temperature) }, \
-         { "voltages", NULL, MAVLINK_TYPE_UINT16_T, 10, 5, offsetof(mavlink_battery_status_t, voltages) }, \
-         { "current_battery", NULL, MAVLINK_TYPE_INT16_T, 0, 25, offsetof(mavlink_battery_status_t, current_battery) }, \
-         { "current_consumed", NULL, MAVLINK_TYPE_INT32_T, 0, 27, offsetof(mavlink_battery_status_t, current_consumed) }, \
-         { "energy_consumed", NULL, MAVLINK_TYPE_INT32_T, 0, 31, offsetof(mavlink_battery_status_t, energy_consumed) }, \
+    {  { "current_consumed", NULL, MAVLINK_TYPE_INT32_T, 0, 0, offsetof(mavlink_battery_status_t, current_consumed) }, \
+         { "energy_consumed", NULL, MAVLINK_TYPE_INT32_T, 0, 4, offsetof(mavlink_battery_status_t, energy_consumed) }, \
+         { "temperature", NULL, MAVLINK_TYPE_INT16_T, 0, 8, offsetof(mavlink_battery_status_t, temperature) }, \
+         { "voltages", NULL, MAVLINK_TYPE_UINT16_T, 10, 10, offsetof(mavlink_battery_status_t, voltages) }, \
+         { "current_battery", NULL, MAVLINK_TYPE_INT16_T, 0, 30, offsetof(mavlink_battery_status_t, current_battery) }, \
+         { "id", NULL, MAVLINK_TYPE_UINT8_T, 0, 32, offsetof(mavlink_battery_status_t, id) }, \
+         { "battery_function", NULL, MAVLINK_TYPE_UINT8_T, 0, 33, offsetof(mavlink_battery_status_t, battery_function) }, \
+         { "type", NULL, MAVLINK_TYPE_UINT8_T, 0, 34, offsetof(mavlink_battery_status_t, type) }, \
          { "battery_remaining", NULL, MAVLINK_TYPE_INT8_T, 0, 35, offsetof(mavlink_battery_status_t, battery_remaining) }, \
          } \
 }
@@ -81,25 +81,25 @@ static inline uint16_t mavlink_msg_battery_status_pack(uint8_t system_id, uint8_
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_BATTERY_STATUS_LEN];
-    _mav_put_uint8_t(buf, 0, id);
-    _mav_put_uint8_t(buf, 1, battery_function);
-    _mav_put_uint8_t(buf, 2, type);
-    _mav_put_int16_t(buf, 3, temperature);
-    _mav_put_int16_t(buf, 25, current_battery);
-    _mav_put_int32_t(buf, 27, current_consumed);
-    _mav_put_int32_t(buf, 31, energy_consumed);
+    _mav_put_int32_t(buf, 0, current_consumed);
+    _mav_put_int32_t(buf, 4, energy_consumed);
+    _mav_put_int16_t(buf, 8, temperature);
+    _mav_put_int16_t(buf, 30, current_battery);
+    _mav_put_uint8_t(buf, 32, id);
+    _mav_put_uint8_t(buf, 33, battery_function);
+    _mav_put_uint8_t(buf, 34, type);
     _mav_put_int8_t(buf, 35, battery_remaining);
-    _mav_put_uint16_t_array(buf, 5, voltages, 10);
+    _mav_put_uint16_t_array(buf, 10, voltages, 10);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_BATTERY_STATUS_LEN);
 #else
     mavlink_battery_status_t packet;
+    packet.current_consumed = current_consumed;
+    packet.energy_consumed = energy_consumed;
+    packet.temperature = temperature;
+    packet.current_battery = current_battery;
     packet.id = id;
     packet.battery_function = battery_function;
     packet.type = type;
-    packet.temperature = temperature;
-    packet.current_battery = current_battery;
-    packet.current_consumed = current_consumed;
-    packet.energy_consumed = energy_consumed;
     packet.battery_remaining = battery_remaining;
     mav_array_memcpy(packet.voltages, voltages, sizeof(uint16_t)*10);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_BATTERY_STATUS_LEN);
@@ -132,25 +132,25 @@ static inline uint16_t mavlink_msg_battery_status_pack_chan(uint8_t system_id, u
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_BATTERY_STATUS_LEN];
-    _mav_put_uint8_t(buf, 0, id);
-    _mav_put_uint8_t(buf, 1, battery_function);
-    _mav_put_uint8_t(buf, 2, type);
-    _mav_put_int16_t(buf, 3, temperature);
-    _mav_put_int16_t(buf, 25, current_battery);
-    _mav_put_int32_t(buf, 27, current_consumed);
-    _mav_put_int32_t(buf, 31, energy_consumed);
+    _mav_put_int32_t(buf, 0, current_consumed);
+    _mav_put_int32_t(buf, 4, energy_consumed);
+    _mav_put_int16_t(buf, 8, temperature);
+    _mav_put_int16_t(buf, 30, current_battery);
+    _mav_put_uint8_t(buf, 32, id);
+    _mav_put_uint8_t(buf, 33, battery_function);
+    _mav_put_uint8_t(buf, 34, type);
     _mav_put_int8_t(buf, 35, battery_remaining);
-    _mav_put_uint16_t_array(buf, 5, voltages, 10);
+    _mav_put_uint16_t_array(buf, 10, voltages, 10);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_BATTERY_STATUS_LEN);
 #else
     mavlink_battery_status_t packet;
+    packet.current_consumed = current_consumed;
+    packet.energy_consumed = energy_consumed;
+    packet.temperature = temperature;
+    packet.current_battery = current_battery;
     packet.id = id;
     packet.battery_function = battery_function;
     packet.type = type;
-    packet.temperature = temperature;
-    packet.current_battery = current_battery;
-    packet.current_consumed = current_consumed;
-    packet.energy_consumed = energy_consumed;
     packet.battery_remaining = battery_remaining;
     mav_array_memcpy(packet.voltages, voltages, sizeof(uint16_t)*10);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_BATTERY_STATUS_LEN);
@@ -207,25 +207,25 @@ static inline void mavlink_msg_battery_status_send(mavlink_channel_t chan, uint8
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_BATTERY_STATUS_LEN];
-    _mav_put_uint8_t(buf, 0, id);
-    _mav_put_uint8_t(buf, 1, battery_function);
-    _mav_put_uint8_t(buf, 2, type);
-    _mav_put_int16_t(buf, 3, temperature);
-    _mav_put_int16_t(buf, 25, current_battery);
-    _mav_put_int32_t(buf, 27, current_consumed);
-    _mav_put_int32_t(buf, 31, energy_consumed);
+    _mav_put_int32_t(buf, 0, current_consumed);
+    _mav_put_int32_t(buf, 4, energy_consumed);
+    _mav_put_int16_t(buf, 8, temperature);
+    _mav_put_int16_t(buf, 30, current_battery);
+    _mav_put_uint8_t(buf, 32, id);
+    _mav_put_uint8_t(buf, 33, battery_function);
+    _mav_put_uint8_t(buf, 34, type);
     _mav_put_int8_t(buf, 35, battery_remaining);
-    _mav_put_uint16_t_array(buf, 5, voltages, 10);
+    _mav_put_uint16_t_array(buf, 10, voltages, 10);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_BATTERY_STATUS, buf, MAVLINK_MSG_ID_BATTERY_STATUS_MIN_LEN, MAVLINK_MSG_ID_BATTERY_STATUS_LEN, MAVLINK_MSG_ID_BATTERY_STATUS_CRC);
 #else
     mavlink_battery_status_t packet;
+    packet.current_consumed = current_consumed;
+    packet.energy_consumed = energy_consumed;
+    packet.temperature = temperature;
+    packet.current_battery = current_battery;
     packet.id = id;
     packet.battery_function = battery_function;
     packet.type = type;
-    packet.temperature = temperature;
-    packet.current_battery = current_battery;
-    packet.current_consumed = current_consumed;
-    packet.energy_consumed = energy_consumed;
     packet.battery_remaining = battery_remaining;
     mav_array_memcpy(packet.voltages, voltages, sizeof(uint16_t)*10);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_BATTERY_STATUS, (const char *)&packet, MAVLINK_MSG_ID_BATTERY_STATUS_MIN_LEN, MAVLINK_MSG_ID_BATTERY_STATUS_LEN, MAVLINK_MSG_ID_BATTERY_STATUS_CRC);
@@ -258,25 +258,25 @@ static inline void mavlink_msg_battery_status_send_buf(mavlink_message_t *msgbuf
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
-    _mav_put_uint8_t(buf, 0, id);
-    _mav_put_uint8_t(buf, 1, battery_function);
-    _mav_put_uint8_t(buf, 2, type);
-    _mav_put_int16_t(buf, 3, temperature);
-    _mav_put_int16_t(buf, 25, current_battery);
-    _mav_put_int32_t(buf, 27, current_consumed);
-    _mav_put_int32_t(buf, 31, energy_consumed);
+    _mav_put_int32_t(buf, 0, current_consumed);
+    _mav_put_int32_t(buf, 4, energy_consumed);
+    _mav_put_int16_t(buf, 8, temperature);
+    _mav_put_int16_t(buf, 30, current_battery);
+    _mav_put_uint8_t(buf, 32, id);
+    _mav_put_uint8_t(buf, 33, battery_function);
+    _mav_put_uint8_t(buf, 34, type);
     _mav_put_int8_t(buf, 35, battery_remaining);
-    _mav_put_uint16_t_array(buf, 5, voltages, 10);
+    _mav_put_uint16_t_array(buf, 10, voltages, 10);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_BATTERY_STATUS, buf, MAVLINK_MSG_ID_BATTERY_STATUS_MIN_LEN, MAVLINK_MSG_ID_BATTERY_STATUS_LEN, MAVLINK_MSG_ID_BATTERY_STATUS_CRC);
 #else
     mavlink_battery_status_t *packet = (mavlink_battery_status_t *)msgbuf;
+    packet->current_consumed = current_consumed;
+    packet->energy_consumed = energy_consumed;
+    packet->temperature = temperature;
+    packet->current_battery = current_battery;
     packet->id = id;
     packet->battery_function = battery_function;
     packet->type = type;
-    packet->temperature = temperature;
-    packet->current_battery = current_battery;
-    packet->current_consumed = current_consumed;
-    packet->energy_consumed = energy_consumed;
     packet->battery_remaining = battery_remaining;
     mav_array_memcpy(packet->voltages, voltages, sizeof(uint16_t)*10);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_BATTERY_STATUS, (const char *)packet, MAVLINK_MSG_ID_BATTERY_STATUS_MIN_LEN, MAVLINK_MSG_ID_BATTERY_STATUS_LEN, MAVLINK_MSG_ID_BATTERY_STATUS_CRC);
@@ -296,7 +296,7 @@ static inline void mavlink_msg_battery_status_send_buf(mavlink_message_t *msgbuf
  */
 static inline uint8_t mavlink_msg_battery_status_get_id(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint8_t(msg,  0);
+    return _MAV_RETURN_uint8_t(msg,  32);
 }
 
 /**
@@ -306,7 +306,7 @@ static inline uint8_t mavlink_msg_battery_status_get_id(const mavlink_message_t*
  */
 static inline uint8_t mavlink_msg_battery_status_get_battery_function(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint8_t(msg,  1);
+    return _MAV_RETURN_uint8_t(msg,  33);
 }
 
 /**
@@ -316,7 +316,7 @@ static inline uint8_t mavlink_msg_battery_status_get_battery_function(const mavl
  */
 static inline uint8_t mavlink_msg_battery_status_get_type(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint8_t(msg,  2);
+    return _MAV_RETURN_uint8_t(msg,  34);
 }
 
 /**
@@ -326,7 +326,7 @@ static inline uint8_t mavlink_msg_battery_status_get_type(const mavlink_message_
  */
 static inline int16_t mavlink_msg_battery_status_get_temperature(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_int16_t(msg,  3);
+    return _MAV_RETURN_int16_t(msg,  8);
 }
 
 /**
@@ -336,7 +336,7 @@ static inline int16_t mavlink_msg_battery_status_get_temperature(const mavlink_m
  */
 static inline uint16_t mavlink_msg_battery_status_get_voltages(const mavlink_message_t* msg, uint16_t *voltages)
 {
-    return _MAV_RETURN_uint16_t_array(msg, voltages, 10,  5);
+    return _MAV_RETURN_uint16_t_array(msg, voltages, 10,  10);
 }
 
 /**
@@ -346,7 +346,7 @@ static inline uint16_t mavlink_msg_battery_status_get_voltages(const mavlink_mes
  */
 static inline int16_t mavlink_msg_battery_status_get_current_battery(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_int16_t(msg,  25);
+    return _MAV_RETURN_int16_t(msg,  30);
 }
 
 /**
@@ -356,7 +356,7 @@ static inline int16_t mavlink_msg_battery_status_get_current_battery(const mavli
  */
 static inline int32_t mavlink_msg_battery_status_get_current_consumed(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_int32_t(msg,  27);
+    return _MAV_RETURN_int32_t(msg,  0);
 }
 
 /**
@@ -366,7 +366,7 @@ static inline int32_t mavlink_msg_battery_status_get_current_consumed(const mavl
  */
 static inline int32_t mavlink_msg_battery_status_get_energy_consumed(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_int32_t(msg,  31);
+    return _MAV_RETURN_int32_t(msg,  4);
 }
 
 /**
@@ -388,14 +388,14 @@ static inline int8_t mavlink_msg_battery_status_get_battery_remaining(const mavl
 static inline void mavlink_msg_battery_status_decode(const mavlink_message_t* msg, mavlink_battery_status_t* battery_status)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    battery_status->id = mavlink_msg_battery_status_get_id(msg);
-    battery_status->battery_function = mavlink_msg_battery_status_get_battery_function(msg);
-    battery_status->type = mavlink_msg_battery_status_get_type(msg);
+    battery_status->current_consumed = mavlink_msg_battery_status_get_current_consumed(msg);
+    battery_status->energy_consumed = mavlink_msg_battery_status_get_energy_consumed(msg);
     battery_status->temperature = mavlink_msg_battery_status_get_temperature(msg);
     mavlink_msg_battery_status_get_voltages(msg, battery_status->voltages);
     battery_status->current_battery = mavlink_msg_battery_status_get_current_battery(msg);
-    battery_status->current_consumed = mavlink_msg_battery_status_get_current_consumed(msg);
-    battery_status->energy_consumed = mavlink_msg_battery_status_get_energy_consumed(msg);
+    battery_status->id = mavlink_msg_battery_status_get_id(msg);
+    battery_status->battery_function = mavlink_msg_battery_status_get_battery_function(msg);
+    battery_status->type = mavlink_msg_battery_status_get_type(msg);
     battery_status->battery_remaining = mavlink_msg_battery_status_get_battery_remaining(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_BATTERY_STATUS_LEN? msg->len : MAVLINK_MSG_ID_BATTERY_STATUS_LEN;

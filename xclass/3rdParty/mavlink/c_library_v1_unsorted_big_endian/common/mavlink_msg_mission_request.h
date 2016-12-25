@@ -5,9 +5,9 @@
 
 MAVPACKED(
 typedef struct __mavlink_mission_request_t {
+ uint16_t seq; /*< Sequence*/
  uint8_t target_system; /*< System ID*/
  uint8_t target_component; /*< Component ID*/
- uint16_t seq; /*< Sequence*/
 }) mavlink_mission_request_t;
 
 #define MAVLINK_MSG_ID_MISSION_REQUEST_LEN 4
@@ -15,8 +15,8 @@ typedef struct __mavlink_mission_request_t {
 #define MAVLINK_MSG_ID_40_LEN 4
 #define MAVLINK_MSG_ID_40_MIN_LEN 4
 
-#define MAVLINK_MSG_ID_MISSION_REQUEST_CRC 220
-#define MAVLINK_MSG_ID_40_CRC 220
+#define MAVLINK_MSG_ID_MISSION_REQUEST_CRC 230
+#define MAVLINK_MSG_ID_40_CRC 230
 
 
 
@@ -25,18 +25,18 @@ typedef struct __mavlink_mission_request_t {
     40, \
     "MISSION_REQUEST", \
     3, \
-    {  { "target_system", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_mission_request_t, target_system) }, \
-         { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 1, offsetof(mavlink_mission_request_t, target_component) }, \
-         { "seq", NULL, MAVLINK_TYPE_UINT16_T, 0, 2, offsetof(mavlink_mission_request_t, seq) }, \
+    {  { "seq", NULL, MAVLINK_TYPE_UINT16_T, 0, 0, offsetof(mavlink_mission_request_t, seq) }, \
+         { "target_system", NULL, MAVLINK_TYPE_UINT8_T, 0, 2, offsetof(mavlink_mission_request_t, target_system) }, \
+         { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 3, offsetof(mavlink_mission_request_t, target_component) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_MISSION_REQUEST { \
     "MISSION_REQUEST", \
     3, \
-    {  { "target_system", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_mission_request_t, target_system) }, \
-         { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 1, offsetof(mavlink_mission_request_t, target_component) }, \
-         { "seq", NULL, MAVLINK_TYPE_UINT16_T, 0, 2, offsetof(mavlink_mission_request_t, seq) }, \
+    {  { "seq", NULL, MAVLINK_TYPE_UINT16_T, 0, 0, offsetof(mavlink_mission_request_t, seq) }, \
+         { "target_system", NULL, MAVLINK_TYPE_UINT8_T, 0, 2, offsetof(mavlink_mission_request_t, target_system) }, \
+         { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 3, offsetof(mavlink_mission_request_t, target_component) }, \
          } \
 }
 #endif
@@ -57,16 +57,16 @@ static inline uint16_t mavlink_msg_mission_request_pack(uint8_t system_id, uint8
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_MISSION_REQUEST_LEN];
-    _mav_put_uint8_t(buf, 0, target_system);
-    _mav_put_uint8_t(buf, 1, target_component);
-    _mav_put_uint16_t(buf, 2, seq);
+    _mav_put_uint16_t(buf, 0, seq);
+    _mav_put_uint8_t(buf, 2, target_system);
+    _mav_put_uint8_t(buf, 3, target_component);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_MISSION_REQUEST_LEN);
 #else
     mavlink_mission_request_t packet;
+    packet.seq = seq;
     packet.target_system = target_system;
     packet.target_component = target_component;
-    packet.seq = seq;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_MISSION_REQUEST_LEN);
 #endif
@@ -92,16 +92,16 @@ static inline uint16_t mavlink_msg_mission_request_pack_chan(uint8_t system_id, 
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_MISSION_REQUEST_LEN];
-    _mav_put_uint8_t(buf, 0, target_system);
-    _mav_put_uint8_t(buf, 1, target_component);
-    _mav_put_uint16_t(buf, 2, seq);
+    _mav_put_uint16_t(buf, 0, seq);
+    _mav_put_uint8_t(buf, 2, target_system);
+    _mav_put_uint8_t(buf, 3, target_component);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_MISSION_REQUEST_LEN);
 #else
     mavlink_mission_request_t packet;
+    packet.seq = seq;
     packet.target_system = target_system;
     packet.target_component = target_component;
-    packet.seq = seq;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_MISSION_REQUEST_LEN);
 #endif
@@ -151,16 +151,16 @@ static inline void mavlink_msg_mission_request_send(mavlink_channel_t chan, uint
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_MISSION_REQUEST_LEN];
-    _mav_put_uint8_t(buf, 0, target_system);
-    _mav_put_uint8_t(buf, 1, target_component);
-    _mav_put_uint16_t(buf, 2, seq);
+    _mav_put_uint16_t(buf, 0, seq);
+    _mav_put_uint8_t(buf, 2, target_system);
+    _mav_put_uint8_t(buf, 3, target_component);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_MISSION_REQUEST, buf, MAVLINK_MSG_ID_MISSION_REQUEST_MIN_LEN, MAVLINK_MSG_ID_MISSION_REQUEST_LEN, MAVLINK_MSG_ID_MISSION_REQUEST_CRC);
 #else
     mavlink_mission_request_t packet;
+    packet.seq = seq;
     packet.target_system = target_system;
     packet.target_component = target_component;
-    packet.seq = seq;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_MISSION_REQUEST, (const char *)&packet, MAVLINK_MSG_ID_MISSION_REQUEST_MIN_LEN, MAVLINK_MSG_ID_MISSION_REQUEST_LEN, MAVLINK_MSG_ID_MISSION_REQUEST_CRC);
 #endif
@@ -192,16 +192,16 @@ static inline void mavlink_msg_mission_request_send_buf(mavlink_message_t *msgbu
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
-    _mav_put_uint8_t(buf, 0, target_system);
-    _mav_put_uint8_t(buf, 1, target_component);
-    _mav_put_uint16_t(buf, 2, seq);
+    _mav_put_uint16_t(buf, 0, seq);
+    _mav_put_uint8_t(buf, 2, target_system);
+    _mav_put_uint8_t(buf, 3, target_component);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_MISSION_REQUEST, buf, MAVLINK_MSG_ID_MISSION_REQUEST_MIN_LEN, MAVLINK_MSG_ID_MISSION_REQUEST_LEN, MAVLINK_MSG_ID_MISSION_REQUEST_CRC);
 #else
     mavlink_mission_request_t *packet = (mavlink_mission_request_t *)msgbuf;
+    packet->seq = seq;
     packet->target_system = target_system;
     packet->target_component = target_component;
-    packet->seq = seq;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_MISSION_REQUEST, (const char *)packet, MAVLINK_MSG_ID_MISSION_REQUEST_MIN_LEN, MAVLINK_MSG_ID_MISSION_REQUEST_LEN, MAVLINK_MSG_ID_MISSION_REQUEST_CRC);
 #endif
@@ -220,7 +220,7 @@ static inline void mavlink_msg_mission_request_send_buf(mavlink_message_t *msgbu
  */
 static inline uint8_t mavlink_msg_mission_request_get_target_system(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint8_t(msg,  0);
+    return _MAV_RETURN_uint8_t(msg,  2);
 }
 
 /**
@@ -230,7 +230,7 @@ static inline uint8_t mavlink_msg_mission_request_get_target_system(const mavlin
  */
 static inline uint8_t mavlink_msg_mission_request_get_target_component(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint8_t(msg,  1);
+    return _MAV_RETURN_uint8_t(msg,  3);
 }
 
 /**
@@ -240,7 +240,7 @@ static inline uint8_t mavlink_msg_mission_request_get_target_component(const mav
  */
 static inline uint16_t mavlink_msg_mission_request_get_seq(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint16_t(msg,  2);
+    return _MAV_RETURN_uint16_t(msg,  0);
 }
 
 /**
@@ -252,9 +252,9 @@ static inline uint16_t mavlink_msg_mission_request_get_seq(const mavlink_message
 static inline void mavlink_msg_mission_request_decode(const mavlink_message_t* msg, mavlink_mission_request_t* mission_request)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
+    mission_request->seq = mavlink_msg_mission_request_get_seq(msg);
     mission_request->target_system = mavlink_msg_mission_request_get_target_system(msg);
     mission_request->target_component = mavlink_msg_mission_request_get_target_component(msg);
-    mission_request->seq = mavlink_msg_mission_request_get_seq(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_MISSION_REQUEST_LEN? msg->len : MAVLINK_MSG_ID_MISSION_REQUEST_LEN;
         memset(mission_request, 0, MAVLINK_MSG_ID_MISSION_REQUEST_LEN);

@@ -5,12 +5,12 @@
 
 MAVPACKED(
 typedef struct __mavlink_compassmot_status_t {
- uint16_t throttle; /*< throttle (percent*10)*/
  float current; /*< current (amps)*/
- uint16_t interference; /*< interference (percent)*/
  float CompensationX; /*< Motor Compensation X*/
  float CompensationY; /*< Motor Compensation Y*/
  float CompensationZ; /*< Motor Compensation Z*/
+ uint16_t throttle; /*< throttle (percent*10)*/
+ uint16_t interference; /*< interference (percent)*/
 }) mavlink_compassmot_status_t;
 
 #define MAVLINK_MSG_ID_COMPASSMOT_STATUS_LEN 20
@@ -18,8 +18,8 @@ typedef struct __mavlink_compassmot_status_t {
 #define MAVLINK_MSG_ID_177_LEN 20
 #define MAVLINK_MSG_ID_177_MIN_LEN 20
 
-#define MAVLINK_MSG_ID_COMPASSMOT_STATUS_CRC 78
-#define MAVLINK_MSG_ID_177_CRC 78
+#define MAVLINK_MSG_ID_COMPASSMOT_STATUS_CRC 240
+#define MAVLINK_MSG_ID_177_CRC 240
 
 
 
@@ -28,24 +28,24 @@ typedef struct __mavlink_compassmot_status_t {
     177, \
     "COMPASSMOT_STATUS", \
     6, \
-    {  { "throttle", NULL, MAVLINK_TYPE_UINT16_T, 0, 0, offsetof(mavlink_compassmot_status_t, throttle) }, \
-         { "current", NULL, MAVLINK_TYPE_FLOAT, 0, 2, offsetof(mavlink_compassmot_status_t, current) }, \
-         { "interference", NULL, MAVLINK_TYPE_UINT16_T, 0, 6, offsetof(mavlink_compassmot_status_t, interference) }, \
-         { "CompensationX", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_compassmot_status_t, CompensationX) }, \
-         { "CompensationY", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_compassmot_status_t, CompensationY) }, \
-         { "CompensationZ", NULL, MAVLINK_TYPE_FLOAT, 0, 16, offsetof(mavlink_compassmot_status_t, CompensationZ) }, \
+    {  { "current", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_compassmot_status_t, current) }, \
+         { "CompensationX", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_compassmot_status_t, CompensationX) }, \
+         { "CompensationY", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_compassmot_status_t, CompensationY) }, \
+         { "CompensationZ", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_compassmot_status_t, CompensationZ) }, \
+         { "throttle", NULL, MAVLINK_TYPE_UINT16_T, 0, 16, offsetof(mavlink_compassmot_status_t, throttle) }, \
+         { "interference", NULL, MAVLINK_TYPE_UINT16_T, 0, 18, offsetof(mavlink_compassmot_status_t, interference) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_COMPASSMOT_STATUS { \
     "COMPASSMOT_STATUS", \
     6, \
-    {  { "throttle", NULL, MAVLINK_TYPE_UINT16_T, 0, 0, offsetof(mavlink_compassmot_status_t, throttle) }, \
-         { "current", NULL, MAVLINK_TYPE_FLOAT, 0, 2, offsetof(mavlink_compassmot_status_t, current) }, \
-         { "interference", NULL, MAVLINK_TYPE_UINT16_T, 0, 6, offsetof(mavlink_compassmot_status_t, interference) }, \
-         { "CompensationX", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_compassmot_status_t, CompensationX) }, \
-         { "CompensationY", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_compassmot_status_t, CompensationY) }, \
-         { "CompensationZ", NULL, MAVLINK_TYPE_FLOAT, 0, 16, offsetof(mavlink_compassmot_status_t, CompensationZ) }, \
+    {  { "current", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_compassmot_status_t, current) }, \
+         { "CompensationX", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_compassmot_status_t, CompensationX) }, \
+         { "CompensationY", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_compassmot_status_t, CompensationY) }, \
+         { "CompensationZ", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_compassmot_status_t, CompensationZ) }, \
+         { "throttle", NULL, MAVLINK_TYPE_UINT16_T, 0, 16, offsetof(mavlink_compassmot_status_t, throttle) }, \
+         { "interference", NULL, MAVLINK_TYPE_UINT16_T, 0, 18, offsetof(mavlink_compassmot_status_t, interference) }, \
          } \
 }
 #endif
@@ -69,22 +69,22 @@ static inline uint16_t mavlink_msg_compassmot_status_pack(uint8_t system_id, uin
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_COMPASSMOT_STATUS_LEN];
-    _mav_put_uint16_t(buf, 0, throttle);
-    _mav_put_float(buf, 2, current);
-    _mav_put_uint16_t(buf, 6, interference);
-    _mav_put_float(buf, 8, CompensationX);
-    _mav_put_float(buf, 12, CompensationY);
-    _mav_put_float(buf, 16, CompensationZ);
+    _mav_put_float(buf, 0, current);
+    _mav_put_float(buf, 4, CompensationX);
+    _mav_put_float(buf, 8, CompensationY);
+    _mav_put_float(buf, 12, CompensationZ);
+    _mav_put_uint16_t(buf, 16, throttle);
+    _mav_put_uint16_t(buf, 18, interference);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_COMPASSMOT_STATUS_LEN);
 #else
     mavlink_compassmot_status_t packet;
-    packet.throttle = throttle;
     packet.current = current;
-    packet.interference = interference;
     packet.CompensationX = CompensationX;
     packet.CompensationY = CompensationY;
     packet.CompensationZ = CompensationZ;
+    packet.throttle = throttle;
+    packet.interference = interference;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_COMPASSMOT_STATUS_LEN);
 #endif
@@ -113,22 +113,22 @@ static inline uint16_t mavlink_msg_compassmot_status_pack_chan(uint8_t system_id
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_COMPASSMOT_STATUS_LEN];
-    _mav_put_uint16_t(buf, 0, throttle);
-    _mav_put_float(buf, 2, current);
-    _mav_put_uint16_t(buf, 6, interference);
-    _mav_put_float(buf, 8, CompensationX);
-    _mav_put_float(buf, 12, CompensationY);
-    _mav_put_float(buf, 16, CompensationZ);
+    _mav_put_float(buf, 0, current);
+    _mav_put_float(buf, 4, CompensationX);
+    _mav_put_float(buf, 8, CompensationY);
+    _mav_put_float(buf, 12, CompensationZ);
+    _mav_put_uint16_t(buf, 16, throttle);
+    _mav_put_uint16_t(buf, 18, interference);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_COMPASSMOT_STATUS_LEN);
 #else
     mavlink_compassmot_status_t packet;
-    packet.throttle = throttle;
     packet.current = current;
-    packet.interference = interference;
     packet.CompensationX = CompensationX;
     packet.CompensationY = CompensationY;
     packet.CompensationZ = CompensationZ;
+    packet.throttle = throttle;
+    packet.interference = interference;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_COMPASSMOT_STATUS_LEN);
 #endif
@@ -181,22 +181,22 @@ static inline void mavlink_msg_compassmot_status_send(mavlink_channel_t chan, ui
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_COMPASSMOT_STATUS_LEN];
-    _mav_put_uint16_t(buf, 0, throttle);
-    _mav_put_float(buf, 2, current);
-    _mav_put_uint16_t(buf, 6, interference);
-    _mav_put_float(buf, 8, CompensationX);
-    _mav_put_float(buf, 12, CompensationY);
-    _mav_put_float(buf, 16, CompensationZ);
+    _mav_put_float(buf, 0, current);
+    _mav_put_float(buf, 4, CompensationX);
+    _mav_put_float(buf, 8, CompensationY);
+    _mav_put_float(buf, 12, CompensationZ);
+    _mav_put_uint16_t(buf, 16, throttle);
+    _mav_put_uint16_t(buf, 18, interference);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_COMPASSMOT_STATUS, buf, MAVLINK_MSG_ID_COMPASSMOT_STATUS_MIN_LEN, MAVLINK_MSG_ID_COMPASSMOT_STATUS_LEN, MAVLINK_MSG_ID_COMPASSMOT_STATUS_CRC);
 #else
     mavlink_compassmot_status_t packet;
-    packet.throttle = throttle;
     packet.current = current;
-    packet.interference = interference;
     packet.CompensationX = CompensationX;
     packet.CompensationY = CompensationY;
     packet.CompensationZ = CompensationZ;
+    packet.throttle = throttle;
+    packet.interference = interference;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_COMPASSMOT_STATUS, (const char *)&packet, MAVLINK_MSG_ID_COMPASSMOT_STATUS_MIN_LEN, MAVLINK_MSG_ID_COMPASSMOT_STATUS_LEN, MAVLINK_MSG_ID_COMPASSMOT_STATUS_CRC);
 #endif
@@ -228,22 +228,22 @@ static inline void mavlink_msg_compassmot_status_send_buf(mavlink_message_t *msg
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
-    _mav_put_uint16_t(buf, 0, throttle);
-    _mav_put_float(buf, 2, current);
-    _mav_put_uint16_t(buf, 6, interference);
-    _mav_put_float(buf, 8, CompensationX);
-    _mav_put_float(buf, 12, CompensationY);
-    _mav_put_float(buf, 16, CompensationZ);
+    _mav_put_float(buf, 0, current);
+    _mav_put_float(buf, 4, CompensationX);
+    _mav_put_float(buf, 8, CompensationY);
+    _mav_put_float(buf, 12, CompensationZ);
+    _mav_put_uint16_t(buf, 16, throttle);
+    _mav_put_uint16_t(buf, 18, interference);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_COMPASSMOT_STATUS, buf, MAVLINK_MSG_ID_COMPASSMOT_STATUS_MIN_LEN, MAVLINK_MSG_ID_COMPASSMOT_STATUS_LEN, MAVLINK_MSG_ID_COMPASSMOT_STATUS_CRC);
 #else
     mavlink_compassmot_status_t *packet = (mavlink_compassmot_status_t *)msgbuf;
-    packet->throttle = throttle;
     packet->current = current;
-    packet->interference = interference;
     packet->CompensationX = CompensationX;
     packet->CompensationY = CompensationY;
     packet->CompensationZ = CompensationZ;
+    packet->throttle = throttle;
+    packet->interference = interference;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_COMPASSMOT_STATUS, (const char *)packet, MAVLINK_MSG_ID_COMPASSMOT_STATUS_MIN_LEN, MAVLINK_MSG_ID_COMPASSMOT_STATUS_LEN, MAVLINK_MSG_ID_COMPASSMOT_STATUS_CRC);
 #endif
@@ -262,7 +262,7 @@ static inline void mavlink_msg_compassmot_status_send_buf(mavlink_message_t *msg
  */
 static inline uint16_t mavlink_msg_compassmot_status_get_throttle(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint16_t(msg,  0);
+    return _MAV_RETURN_uint16_t(msg,  16);
 }
 
 /**
@@ -272,7 +272,7 @@ static inline uint16_t mavlink_msg_compassmot_status_get_throttle(const mavlink_
  */
 static inline float mavlink_msg_compassmot_status_get_current(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  2);
+    return _MAV_RETURN_float(msg,  0);
 }
 
 /**
@@ -282,7 +282,7 @@ static inline float mavlink_msg_compassmot_status_get_current(const mavlink_mess
  */
 static inline uint16_t mavlink_msg_compassmot_status_get_interference(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint16_t(msg,  6);
+    return _MAV_RETURN_uint16_t(msg,  18);
 }
 
 /**
@@ -292,7 +292,7 @@ static inline uint16_t mavlink_msg_compassmot_status_get_interference(const mavl
  */
 static inline float mavlink_msg_compassmot_status_get_CompensationX(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  8);
+    return _MAV_RETURN_float(msg,  4);
 }
 
 /**
@@ -302,7 +302,7 @@ static inline float mavlink_msg_compassmot_status_get_CompensationX(const mavlin
  */
 static inline float mavlink_msg_compassmot_status_get_CompensationY(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  12);
+    return _MAV_RETURN_float(msg,  8);
 }
 
 /**
@@ -312,7 +312,7 @@ static inline float mavlink_msg_compassmot_status_get_CompensationY(const mavlin
  */
 static inline float mavlink_msg_compassmot_status_get_CompensationZ(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  16);
+    return _MAV_RETURN_float(msg,  12);
 }
 
 /**
@@ -324,12 +324,12 @@ static inline float mavlink_msg_compassmot_status_get_CompensationZ(const mavlin
 static inline void mavlink_msg_compassmot_status_decode(const mavlink_message_t* msg, mavlink_compassmot_status_t* compassmot_status)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    compassmot_status->throttle = mavlink_msg_compassmot_status_get_throttle(msg);
     compassmot_status->current = mavlink_msg_compassmot_status_get_current(msg);
-    compassmot_status->interference = mavlink_msg_compassmot_status_get_interference(msg);
     compassmot_status->CompensationX = mavlink_msg_compassmot_status_get_CompensationX(msg);
     compassmot_status->CompensationY = mavlink_msg_compassmot_status_get_CompensationY(msg);
     compassmot_status->CompensationZ = mavlink_msg_compassmot_status_get_CompensationZ(msg);
+    compassmot_status->throttle = mavlink_msg_compassmot_status_get_throttle(msg);
+    compassmot_status->interference = mavlink_msg_compassmot_status_get_interference(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_COMPASSMOT_STATUS_LEN? msg->len : MAVLINK_MSG_ID_COMPASSMOT_STATUS_LEN;
         memset(compassmot_status, 0, MAVLINK_MSG_ID_COMPASSMOT_STATUS_LEN);

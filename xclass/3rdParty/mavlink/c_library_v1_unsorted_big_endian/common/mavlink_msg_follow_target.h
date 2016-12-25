@@ -6,7 +6,7 @@
 MAVPACKED(
 typedef struct __mavlink_follow_target_t {
  uint64_t timestamp; /*< Timestamp in milliseconds since system boot*/
- uint8_t est_capabilities; /*< bit positions for tracker reporting capabilities (POS = 0, VEL = 1, ACCEL = 2, ATT + RATES = 3)*/
+ uint64_t custom_state; /*< button states or switches of a tracker device*/
  int32_t lat; /*< Latitude (WGS84), in degrees * 1E7*/
  int32_t lon; /*< Longitude (WGS84), in degrees * 1E7*/
  float alt; /*< AMSL, in meters*/
@@ -15,7 +15,7 @@ typedef struct __mavlink_follow_target_t {
  float attitude_q[4]; /*< (1 0 0 0 for unknown)*/
  float rates[3]; /*< (0 0 0 for unknown)*/
  float position_cov[3]; /*< eph epv*/
- uint64_t custom_state; /*< button states or switches of a tracker device*/
+ uint8_t est_capabilities; /*< bit positions for tracker reporting capabilities (POS = 0, VEL = 1, ACCEL = 2, ATT + RATES = 3)*/
 }) mavlink_follow_target_t;
 
 #define MAVLINK_MSG_ID_FOLLOW_TARGET_LEN 93
@@ -23,8 +23,8 @@ typedef struct __mavlink_follow_target_t {
 #define MAVLINK_MSG_ID_144_LEN 93
 #define MAVLINK_MSG_ID_144_MIN_LEN 93
 
-#define MAVLINK_MSG_ID_FOLLOW_TARGET_CRC 200
-#define MAVLINK_MSG_ID_144_CRC 200
+#define MAVLINK_MSG_ID_FOLLOW_TARGET_CRC 127
+#define MAVLINK_MSG_ID_144_CRC 127
 
 #define MAVLINK_MSG_FOLLOW_TARGET_FIELD_VEL_LEN 3
 #define MAVLINK_MSG_FOLLOW_TARGET_FIELD_ACC_LEN 3
@@ -38,16 +38,16 @@ typedef struct __mavlink_follow_target_t {
     "FOLLOW_TARGET", \
     11, \
     {  { "timestamp", NULL, MAVLINK_TYPE_UINT64_T, 0, 0, offsetof(mavlink_follow_target_t, timestamp) }, \
-         { "est_capabilities", NULL, MAVLINK_TYPE_UINT8_T, 0, 8, offsetof(mavlink_follow_target_t, est_capabilities) }, \
-         { "lat", NULL, MAVLINK_TYPE_INT32_T, 0, 9, offsetof(mavlink_follow_target_t, lat) }, \
-         { "lon", NULL, MAVLINK_TYPE_INT32_T, 0, 13, offsetof(mavlink_follow_target_t, lon) }, \
-         { "alt", NULL, MAVLINK_TYPE_FLOAT, 0, 17, offsetof(mavlink_follow_target_t, alt) }, \
-         { "vel", NULL, MAVLINK_TYPE_FLOAT, 3, 21, offsetof(mavlink_follow_target_t, vel) }, \
-         { "acc", NULL, MAVLINK_TYPE_FLOAT, 3, 33, offsetof(mavlink_follow_target_t, acc) }, \
-         { "attitude_q", NULL, MAVLINK_TYPE_FLOAT, 4, 45, offsetof(mavlink_follow_target_t, attitude_q) }, \
-         { "rates", NULL, MAVLINK_TYPE_FLOAT, 3, 61, offsetof(mavlink_follow_target_t, rates) }, \
-         { "position_cov", NULL, MAVLINK_TYPE_FLOAT, 3, 73, offsetof(mavlink_follow_target_t, position_cov) }, \
-         { "custom_state", NULL, MAVLINK_TYPE_UINT64_T, 0, 85, offsetof(mavlink_follow_target_t, custom_state) }, \
+         { "custom_state", NULL, MAVLINK_TYPE_UINT64_T, 0, 8, offsetof(mavlink_follow_target_t, custom_state) }, \
+         { "lat", NULL, MAVLINK_TYPE_INT32_T, 0, 16, offsetof(mavlink_follow_target_t, lat) }, \
+         { "lon", NULL, MAVLINK_TYPE_INT32_T, 0, 20, offsetof(mavlink_follow_target_t, lon) }, \
+         { "alt", NULL, MAVLINK_TYPE_FLOAT, 0, 24, offsetof(mavlink_follow_target_t, alt) }, \
+         { "vel", NULL, MAVLINK_TYPE_FLOAT, 3, 28, offsetof(mavlink_follow_target_t, vel) }, \
+         { "acc", NULL, MAVLINK_TYPE_FLOAT, 3, 40, offsetof(mavlink_follow_target_t, acc) }, \
+         { "attitude_q", NULL, MAVLINK_TYPE_FLOAT, 4, 52, offsetof(mavlink_follow_target_t, attitude_q) }, \
+         { "rates", NULL, MAVLINK_TYPE_FLOAT, 3, 68, offsetof(mavlink_follow_target_t, rates) }, \
+         { "position_cov", NULL, MAVLINK_TYPE_FLOAT, 3, 80, offsetof(mavlink_follow_target_t, position_cov) }, \
+         { "est_capabilities", NULL, MAVLINK_TYPE_UINT8_T, 0, 92, offsetof(mavlink_follow_target_t, est_capabilities) }, \
          } \
 }
 #else
@@ -55,16 +55,16 @@ typedef struct __mavlink_follow_target_t {
     "FOLLOW_TARGET", \
     11, \
     {  { "timestamp", NULL, MAVLINK_TYPE_UINT64_T, 0, 0, offsetof(mavlink_follow_target_t, timestamp) }, \
-         { "est_capabilities", NULL, MAVLINK_TYPE_UINT8_T, 0, 8, offsetof(mavlink_follow_target_t, est_capabilities) }, \
-         { "lat", NULL, MAVLINK_TYPE_INT32_T, 0, 9, offsetof(mavlink_follow_target_t, lat) }, \
-         { "lon", NULL, MAVLINK_TYPE_INT32_T, 0, 13, offsetof(mavlink_follow_target_t, lon) }, \
-         { "alt", NULL, MAVLINK_TYPE_FLOAT, 0, 17, offsetof(mavlink_follow_target_t, alt) }, \
-         { "vel", NULL, MAVLINK_TYPE_FLOAT, 3, 21, offsetof(mavlink_follow_target_t, vel) }, \
-         { "acc", NULL, MAVLINK_TYPE_FLOAT, 3, 33, offsetof(mavlink_follow_target_t, acc) }, \
-         { "attitude_q", NULL, MAVLINK_TYPE_FLOAT, 4, 45, offsetof(mavlink_follow_target_t, attitude_q) }, \
-         { "rates", NULL, MAVLINK_TYPE_FLOAT, 3, 61, offsetof(mavlink_follow_target_t, rates) }, \
-         { "position_cov", NULL, MAVLINK_TYPE_FLOAT, 3, 73, offsetof(mavlink_follow_target_t, position_cov) }, \
-         { "custom_state", NULL, MAVLINK_TYPE_UINT64_T, 0, 85, offsetof(mavlink_follow_target_t, custom_state) }, \
+         { "custom_state", NULL, MAVLINK_TYPE_UINT64_T, 0, 8, offsetof(mavlink_follow_target_t, custom_state) }, \
+         { "lat", NULL, MAVLINK_TYPE_INT32_T, 0, 16, offsetof(mavlink_follow_target_t, lat) }, \
+         { "lon", NULL, MAVLINK_TYPE_INT32_T, 0, 20, offsetof(mavlink_follow_target_t, lon) }, \
+         { "alt", NULL, MAVLINK_TYPE_FLOAT, 0, 24, offsetof(mavlink_follow_target_t, alt) }, \
+         { "vel", NULL, MAVLINK_TYPE_FLOAT, 3, 28, offsetof(mavlink_follow_target_t, vel) }, \
+         { "acc", NULL, MAVLINK_TYPE_FLOAT, 3, 40, offsetof(mavlink_follow_target_t, acc) }, \
+         { "attitude_q", NULL, MAVLINK_TYPE_FLOAT, 4, 52, offsetof(mavlink_follow_target_t, attitude_q) }, \
+         { "rates", NULL, MAVLINK_TYPE_FLOAT, 3, 68, offsetof(mavlink_follow_target_t, rates) }, \
+         { "position_cov", NULL, MAVLINK_TYPE_FLOAT, 3, 80, offsetof(mavlink_follow_target_t, position_cov) }, \
+         { "est_capabilities", NULL, MAVLINK_TYPE_UINT8_T, 0, 92, offsetof(mavlink_follow_target_t, est_capabilities) }, \
          } \
 }
 #endif
@@ -94,25 +94,25 @@ static inline uint16_t mavlink_msg_follow_target_pack(uint8_t system_id, uint8_t
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_FOLLOW_TARGET_LEN];
     _mav_put_uint64_t(buf, 0, timestamp);
-    _mav_put_uint8_t(buf, 8, est_capabilities);
-    _mav_put_int32_t(buf, 9, lat);
-    _mav_put_int32_t(buf, 13, lon);
-    _mav_put_float(buf, 17, alt);
-    _mav_put_uint64_t(buf, 85, custom_state);
-    _mav_put_float_array(buf, 21, vel, 3);
-    _mav_put_float_array(buf, 33, acc, 3);
-    _mav_put_float_array(buf, 45, attitude_q, 4);
-    _mav_put_float_array(buf, 61, rates, 3);
-    _mav_put_float_array(buf, 73, position_cov, 3);
+    _mav_put_uint64_t(buf, 8, custom_state);
+    _mav_put_int32_t(buf, 16, lat);
+    _mav_put_int32_t(buf, 20, lon);
+    _mav_put_float(buf, 24, alt);
+    _mav_put_uint8_t(buf, 92, est_capabilities);
+    _mav_put_float_array(buf, 28, vel, 3);
+    _mav_put_float_array(buf, 40, acc, 3);
+    _mav_put_float_array(buf, 52, attitude_q, 4);
+    _mav_put_float_array(buf, 68, rates, 3);
+    _mav_put_float_array(buf, 80, position_cov, 3);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_FOLLOW_TARGET_LEN);
 #else
     mavlink_follow_target_t packet;
     packet.timestamp = timestamp;
-    packet.est_capabilities = est_capabilities;
+    packet.custom_state = custom_state;
     packet.lat = lat;
     packet.lon = lon;
     packet.alt = alt;
-    packet.custom_state = custom_state;
+    packet.est_capabilities = est_capabilities;
     mav_array_memcpy(packet.vel, vel, sizeof(float)*3);
     mav_array_memcpy(packet.acc, acc, sizeof(float)*3);
     mav_array_memcpy(packet.attitude_q, attitude_q, sizeof(float)*4);
@@ -151,25 +151,25 @@ static inline uint16_t mavlink_msg_follow_target_pack_chan(uint8_t system_id, ui
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_FOLLOW_TARGET_LEN];
     _mav_put_uint64_t(buf, 0, timestamp);
-    _mav_put_uint8_t(buf, 8, est_capabilities);
-    _mav_put_int32_t(buf, 9, lat);
-    _mav_put_int32_t(buf, 13, lon);
-    _mav_put_float(buf, 17, alt);
-    _mav_put_uint64_t(buf, 85, custom_state);
-    _mav_put_float_array(buf, 21, vel, 3);
-    _mav_put_float_array(buf, 33, acc, 3);
-    _mav_put_float_array(buf, 45, attitude_q, 4);
-    _mav_put_float_array(buf, 61, rates, 3);
-    _mav_put_float_array(buf, 73, position_cov, 3);
+    _mav_put_uint64_t(buf, 8, custom_state);
+    _mav_put_int32_t(buf, 16, lat);
+    _mav_put_int32_t(buf, 20, lon);
+    _mav_put_float(buf, 24, alt);
+    _mav_put_uint8_t(buf, 92, est_capabilities);
+    _mav_put_float_array(buf, 28, vel, 3);
+    _mav_put_float_array(buf, 40, acc, 3);
+    _mav_put_float_array(buf, 52, attitude_q, 4);
+    _mav_put_float_array(buf, 68, rates, 3);
+    _mav_put_float_array(buf, 80, position_cov, 3);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_FOLLOW_TARGET_LEN);
 #else
     mavlink_follow_target_t packet;
     packet.timestamp = timestamp;
-    packet.est_capabilities = est_capabilities;
+    packet.custom_state = custom_state;
     packet.lat = lat;
     packet.lon = lon;
     packet.alt = alt;
-    packet.custom_state = custom_state;
+    packet.est_capabilities = est_capabilities;
     mav_array_memcpy(packet.vel, vel, sizeof(float)*3);
     mav_array_memcpy(packet.acc, acc, sizeof(float)*3);
     mav_array_memcpy(packet.attitude_q, attitude_q, sizeof(float)*4);
@@ -232,25 +232,25 @@ static inline void mavlink_msg_follow_target_send(mavlink_channel_t chan, uint64
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_FOLLOW_TARGET_LEN];
     _mav_put_uint64_t(buf, 0, timestamp);
-    _mav_put_uint8_t(buf, 8, est_capabilities);
-    _mav_put_int32_t(buf, 9, lat);
-    _mav_put_int32_t(buf, 13, lon);
-    _mav_put_float(buf, 17, alt);
-    _mav_put_uint64_t(buf, 85, custom_state);
-    _mav_put_float_array(buf, 21, vel, 3);
-    _mav_put_float_array(buf, 33, acc, 3);
-    _mav_put_float_array(buf, 45, attitude_q, 4);
-    _mav_put_float_array(buf, 61, rates, 3);
-    _mav_put_float_array(buf, 73, position_cov, 3);
+    _mav_put_uint64_t(buf, 8, custom_state);
+    _mav_put_int32_t(buf, 16, lat);
+    _mav_put_int32_t(buf, 20, lon);
+    _mav_put_float(buf, 24, alt);
+    _mav_put_uint8_t(buf, 92, est_capabilities);
+    _mav_put_float_array(buf, 28, vel, 3);
+    _mav_put_float_array(buf, 40, acc, 3);
+    _mav_put_float_array(buf, 52, attitude_q, 4);
+    _mav_put_float_array(buf, 68, rates, 3);
+    _mav_put_float_array(buf, 80, position_cov, 3);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_FOLLOW_TARGET, buf, MAVLINK_MSG_ID_FOLLOW_TARGET_MIN_LEN, MAVLINK_MSG_ID_FOLLOW_TARGET_LEN, MAVLINK_MSG_ID_FOLLOW_TARGET_CRC);
 #else
     mavlink_follow_target_t packet;
     packet.timestamp = timestamp;
-    packet.est_capabilities = est_capabilities;
+    packet.custom_state = custom_state;
     packet.lat = lat;
     packet.lon = lon;
     packet.alt = alt;
-    packet.custom_state = custom_state;
+    packet.est_capabilities = est_capabilities;
     mav_array_memcpy(packet.vel, vel, sizeof(float)*3);
     mav_array_memcpy(packet.acc, acc, sizeof(float)*3);
     mav_array_memcpy(packet.attitude_q, attitude_q, sizeof(float)*4);
@@ -287,25 +287,25 @@ static inline void mavlink_msg_follow_target_send_buf(mavlink_message_t *msgbuf,
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
     _mav_put_uint64_t(buf, 0, timestamp);
-    _mav_put_uint8_t(buf, 8, est_capabilities);
-    _mav_put_int32_t(buf, 9, lat);
-    _mav_put_int32_t(buf, 13, lon);
-    _mav_put_float(buf, 17, alt);
-    _mav_put_uint64_t(buf, 85, custom_state);
-    _mav_put_float_array(buf, 21, vel, 3);
-    _mav_put_float_array(buf, 33, acc, 3);
-    _mav_put_float_array(buf, 45, attitude_q, 4);
-    _mav_put_float_array(buf, 61, rates, 3);
-    _mav_put_float_array(buf, 73, position_cov, 3);
+    _mav_put_uint64_t(buf, 8, custom_state);
+    _mav_put_int32_t(buf, 16, lat);
+    _mav_put_int32_t(buf, 20, lon);
+    _mav_put_float(buf, 24, alt);
+    _mav_put_uint8_t(buf, 92, est_capabilities);
+    _mav_put_float_array(buf, 28, vel, 3);
+    _mav_put_float_array(buf, 40, acc, 3);
+    _mav_put_float_array(buf, 52, attitude_q, 4);
+    _mav_put_float_array(buf, 68, rates, 3);
+    _mav_put_float_array(buf, 80, position_cov, 3);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_FOLLOW_TARGET, buf, MAVLINK_MSG_ID_FOLLOW_TARGET_MIN_LEN, MAVLINK_MSG_ID_FOLLOW_TARGET_LEN, MAVLINK_MSG_ID_FOLLOW_TARGET_CRC);
 #else
     mavlink_follow_target_t *packet = (mavlink_follow_target_t *)msgbuf;
     packet->timestamp = timestamp;
-    packet->est_capabilities = est_capabilities;
+    packet->custom_state = custom_state;
     packet->lat = lat;
     packet->lon = lon;
     packet->alt = alt;
-    packet->custom_state = custom_state;
+    packet->est_capabilities = est_capabilities;
     mav_array_memcpy(packet->vel, vel, sizeof(float)*3);
     mav_array_memcpy(packet->acc, acc, sizeof(float)*3);
     mav_array_memcpy(packet->attitude_q, attitude_q, sizeof(float)*4);
@@ -338,7 +338,7 @@ static inline uint64_t mavlink_msg_follow_target_get_timestamp(const mavlink_mes
  */
 static inline uint8_t mavlink_msg_follow_target_get_est_capabilities(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint8_t(msg,  8);
+    return _MAV_RETURN_uint8_t(msg,  92);
 }
 
 /**
@@ -348,7 +348,7 @@ static inline uint8_t mavlink_msg_follow_target_get_est_capabilities(const mavli
  */
 static inline int32_t mavlink_msg_follow_target_get_lat(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_int32_t(msg,  9);
+    return _MAV_RETURN_int32_t(msg,  16);
 }
 
 /**
@@ -358,7 +358,7 @@ static inline int32_t mavlink_msg_follow_target_get_lat(const mavlink_message_t*
  */
 static inline int32_t mavlink_msg_follow_target_get_lon(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_int32_t(msg,  13);
+    return _MAV_RETURN_int32_t(msg,  20);
 }
 
 /**
@@ -368,7 +368,7 @@ static inline int32_t mavlink_msg_follow_target_get_lon(const mavlink_message_t*
  */
 static inline float mavlink_msg_follow_target_get_alt(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_float(msg,  17);
+    return _MAV_RETURN_float(msg,  24);
 }
 
 /**
@@ -378,7 +378,7 @@ static inline float mavlink_msg_follow_target_get_alt(const mavlink_message_t* m
  */
 static inline uint16_t mavlink_msg_follow_target_get_vel(const mavlink_message_t* msg, float *vel)
 {
-    return _MAV_RETURN_float_array(msg, vel, 3,  21);
+    return _MAV_RETURN_float_array(msg, vel, 3,  28);
 }
 
 /**
@@ -388,7 +388,7 @@ static inline uint16_t mavlink_msg_follow_target_get_vel(const mavlink_message_t
  */
 static inline uint16_t mavlink_msg_follow_target_get_acc(const mavlink_message_t* msg, float *acc)
 {
-    return _MAV_RETURN_float_array(msg, acc, 3,  33);
+    return _MAV_RETURN_float_array(msg, acc, 3,  40);
 }
 
 /**
@@ -398,7 +398,7 @@ static inline uint16_t mavlink_msg_follow_target_get_acc(const mavlink_message_t
  */
 static inline uint16_t mavlink_msg_follow_target_get_attitude_q(const mavlink_message_t* msg, float *attitude_q)
 {
-    return _MAV_RETURN_float_array(msg, attitude_q, 4,  45);
+    return _MAV_RETURN_float_array(msg, attitude_q, 4,  52);
 }
 
 /**
@@ -408,7 +408,7 @@ static inline uint16_t mavlink_msg_follow_target_get_attitude_q(const mavlink_me
  */
 static inline uint16_t mavlink_msg_follow_target_get_rates(const mavlink_message_t* msg, float *rates)
 {
-    return _MAV_RETURN_float_array(msg, rates, 3,  61);
+    return _MAV_RETURN_float_array(msg, rates, 3,  68);
 }
 
 /**
@@ -418,7 +418,7 @@ static inline uint16_t mavlink_msg_follow_target_get_rates(const mavlink_message
  */
 static inline uint16_t mavlink_msg_follow_target_get_position_cov(const mavlink_message_t* msg, float *position_cov)
 {
-    return _MAV_RETURN_float_array(msg, position_cov, 3,  73);
+    return _MAV_RETURN_float_array(msg, position_cov, 3,  80);
 }
 
 /**
@@ -428,7 +428,7 @@ static inline uint16_t mavlink_msg_follow_target_get_position_cov(const mavlink_
  */
 static inline uint64_t mavlink_msg_follow_target_get_custom_state(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint64_t(msg,  85);
+    return _MAV_RETURN_uint64_t(msg,  8);
 }
 
 /**
@@ -441,7 +441,7 @@ static inline void mavlink_msg_follow_target_decode(const mavlink_message_t* msg
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     follow_target->timestamp = mavlink_msg_follow_target_get_timestamp(msg);
-    follow_target->est_capabilities = mavlink_msg_follow_target_get_est_capabilities(msg);
+    follow_target->custom_state = mavlink_msg_follow_target_get_custom_state(msg);
     follow_target->lat = mavlink_msg_follow_target_get_lat(msg);
     follow_target->lon = mavlink_msg_follow_target_get_lon(msg);
     follow_target->alt = mavlink_msg_follow_target_get_alt(msg);
@@ -450,7 +450,7 @@ static inline void mavlink_msg_follow_target_decode(const mavlink_message_t* msg
     mavlink_msg_follow_target_get_attitude_q(msg, follow_target->attitude_q);
     mavlink_msg_follow_target_get_rates(msg, follow_target->rates);
     mavlink_msg_follow_target_get_position_cov(msg, follow_target->position_cov);
-    follow_target->custom_state = mavlink_msg_follow_target_get_custom_state(msg);
+    follow_target->est_capabilities = mavlink_msg_follow_target_get_est_capabilities(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_FOLLOW_TARGET_LEN? msg->len : MAVLINK_MSG_ID_FOLLOW_TARGET_LEN;
         memset(follow_target, 0, MAVLINK_MSG_ID_FOLLOW_TARGET_LEN);
