@@ -3,7 +3,7 @@
 // --------------------------
 // XMavlink::ReadThread class
 // --------------------------
-XMavlink::ReadThread::ReadThread(XMavlink *pm) : XThread("XMavlink::ReadThread"), pMavlink(pm) {
+XMavlink::ReadThread::ReadThread(XMavlink &pm) : XThread("XMavlink::ReadThread"), pMavlink(pm) {
 	Start();
 }
 
@@ -11,49 +11,20 @@ XMavlink::ReadThread::~ReadThread() {
 	Stop();
 }
 
+// read a byte, pass it to mavlink_parse_char, if we get a message, 
+// call possibly mulitple Listener functions connected to the received msgid 
 void XMavlink::ReadThread::Run() {
 	while (IsRunning())
-		if (pMavlink->Read(&cp, 1))
-			if ((parseState = mavlink_parse_char(MAVLINK_COMM_1, cp, &pMavlink->messages.msg, &pMavlink->messages.stat)) == MAVLINK_FRAMING_OK)
-				MessageDump();
-}
-
-bool XMavlink::ReadThread::MessageDump() {
-	bool retVal = false;
-	switch (pMavlink->messages.msg.msgid) {
-	case MAVLINK_MSG_ID_HEARTBEAT:
-		retVal = true;
-		break;
-
-	case MAVLINK_MSG_ID_ATTITUDE:
-		xprintf("Attitude\n");
-		retVal = true;
-		break;
-
-	case MAVLINK_MSG_ID_STATUSTEXT:
-		xprintf("StatusText\n");
-		retVal = true;
-		break;
-
-	case MAVLINK_MSG_ID_SYS_STATUS:
-		xprintf("Status\n");
-		break;
-
-	case MAVLINK_MSG_ID_VFR_HUD:
-		xprintf("VFR HUD\n");
-		break;
-
-	default:
-		xprintf("msgid: %d\n", pMavlink->messages.msg.msgid);
-		break;
-	}
-	return retVal;
+		if (pMavlink.Read(&cp, 1))
+			if ((parseState = mavlink_parse_char(MAVLINK_COMM_1, cp, &pMavlink.msg, &pMavlink.stat)) == MAVLINK_FRAMING_OK)
+				for (auto fn : pMavlink.listeners[pMavlink.msg.msgid])
+					fn(pMavlink.msg);
 }
 
 // ---------------------------
 // XMavlink::WriteThread class
 // ---------------------------
-XMavlink::WriteThread::WriteThread(XMavlink *pm) : XThread("XMavlink::WriteThread"), pMavlink(pm) {
+XMavlink::WriteThread::WriteThread(XMavlink &pm) : XThread("XMavlink::WriteThread"), pMavlink(pm) {
 	Start();
 }
 
@@ -62,7 +33,6 @@ XMavlink::WriteThread::~WriteThread() {
 }
 
 void XMavlink::WriteThread::Run() {
-	xprintf("XMavlink::WriteThread::Run() started.\n");
 	while (IsRunning()) {
 		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(100));
 	}
@@ -72,8 +42,8 @@ void XMavlink::WriteThread::Run() {
 // XMavlink main class
 // ---------------------------
 XMavlink::XMavlink(std::string portName) : XUart(portName), rThread(NULL), wThread(NULL) {
-	rThread = new ReadThread(this);
-	wThread = new WriteThread(this);
+	rThread = new ReadThread(*this);
+	wThread = new WriteThread(*this);
 }
 
 XMavlink::~XMavlink() {
@@ -81,4 +51,8 @@ XMavlink::~XMavlink() {
 		delete rThread;
 	if (wThread)
 		delete wThread;
+}
+
+void XMavlink::AddListener(uint8_t msgid, Listener fn) {
+	listeners[msgid].push_back(fn);
 }
