@@ -1,3 +1,13 @@
+/*
+** XMavlink - a class for managing an asynchronous full-duplex MAVLINK 
+**   data stream over a serial port.  There is no knowledge of the
+**   contents of MAVLINK packets beyond mavlink_message_t.msgid
+**	 which is needed for routing.
+**
+** The class supports adding so-called Listener functions as needed
+** (using C++ lambda functions) to provide higher level functionality,
+** such as using sensor data, mission planning, vehicle configuration, etc.
+*/
 #ifndef XMAVLINK_H
 #define XMAVLINK_H
 
@@ -5,16 +15,17 @@
 #include "xuart.h"
 
 // ignore double to float precision loss warning from mavlink headers
+// (rather than actually FIX it in the auto generated header files)
 #pragma warning(disable:4244)
 #include "ardupilotmega/mavlink.h"
 
 class XMavlink : public XUart {
 public:
-	// define a function type that takes a MAVLINK message
+	// A function type that accepts a MAVLINK message.
 	typedef std::function<void(mavlink_message_t)> Listener;
-	// define a list of those functions so we can call multiple functions per msgid
+	// A list of functions that allows calling multiple functions per message.
 	typedef std::vector<Listener> Listeners;
-	// define a map of those lists by msgid so that a function will only be called with it's registered msgid
+	// A map of function lists, sorted by msgid, that allows calling multiple functions only for their registered msgid.
 	typedef std::map<uint8_t, Listeners> ListenersMap;
 
 	class ReadThread : public XThread {
@@ -33,7 +44,7 @@ public:
 		WriteThread(XMavlink &);
 		~WriteThread();
 		void Run();
-		bool WriteMessage(mavlink_message_t);
+		bool WriteMessage(const mavlink_message_t&);
 
 	private:
 		XMavlink &pMavlink;
@@ -42,6 +53,7 @@ public:
 	XMavlink(std::string portName);
 	~XMavlink();
 	void AddListener(uint8_t, Listener);
+	void AddListener(Listener);
 
 private:
 	mavlink_message_t msg;
@@ -49,7 +61,8 @@ private:
 
 	ReadThread *rThread;
 	WriteThread *wThread;
-	ListenersMap listeners;
+	Listeners listeners;
+	ListenersMap listenersMap;
 };
 
 
