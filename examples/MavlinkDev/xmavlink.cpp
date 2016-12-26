@@ -1,6 +1,9 @@
 #include "xmavlink.h"
 
-XMavlink::ReadThread::ReadThread(XUart *px) : XThread("ReadThread"), pXUart(px) {
+// --------------------------
+// XMavlink::ReadThread class
+// --------------------------
+XMavlink::ReadThread::ReadThread(XMavlink *pm) : XThread("XMavlink::ReadThread"), pMavlink(pm) {
 	Start();
 }
 
@@ -10,14 +13,14 @@ XMavlink::ReadThread::~ReadThread() {
 
 void XMavlink::ReadThread::Run() {
 	while (IsRunning())
-		if (pXUart->Read(&cp, 1))
-			if ((parseState = mavlink_parse_char(MAVLINK_COMM_1, cp, &msg, &stat)) == MAVLINK_FRAMING_OK)
-				MessageDump(msg);
+		if (pMavlink->Read(&cp, 1))
+			if ((parseState = mavlink_parse_char(MAVLINK_COMM_1, cp, &pMavlink->messages.msg, &pMavlink->messages.stat)) == MAVLINK_FRAMING_OK)
+				MessageDump();
 }
 
-bool XMavlink::ReadThread::MessageDump(mavlink_message_t msg) {
+bool XMavlink::ReadThread::MessageDump() {
 	bool retVal = false;
-	switch (msg.msgid) {
+	switch (pMavlink->messages.msg.msgid) {
 	case MAVLINK_MSG_ID_HEARTBEAT:
 		retVal = true;
 		break;
@@ -41,16 +44,41 @@ bool XMavlink::ReadThread::MessageDump(mavlink_message_t msg) {
 		break;
 
 	default:
-		xprintf("msgid: %d\n", msg.msgid);
+		xprintf("msgid: %d\n", pMavlink->messages.msg.msgid);
 		break;
 	}
 	return retVal;
 }
 
-XMavlink::XMavlink(std::string portName) : XUart(portName) {
-	rxThread = new ReadThread(this);
+// ---------------------------
+// XMavlink::WriteThread class
+// ---------------------------
+XMavlink::WriteThread::WriteThread(XMavlink *pm) : XThread("XMavlink::WriteThread"), pMavlink(pm) {
+	Start();
+}
+
+XMavlink::WriteThread::~WriteThread() {
+	Stop();
+}
+
+void XMavlink::WriteThread::Run() {
+	xprintf("XMavlink::WriteThread::Run() started.\n");
+	while (IsRunning()) {
+		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(100));
+	}
+}
+
+// ---------------------------
+// XMavlink main class
+// ---------------------------
+XMavlink::XMavlink(std::string portName) : XUart(portName), rThread(NULL), wThread(NULL) {
+	rThread = new ReadThread(this);
+	wThread = new WriteThread(this);
 }
 
 XMavlink::~XMavlink() {
-	delete rxThread;
+	if (rThread)
+		delete rThread;
+	if (wThread)
+		delete wThread;
 }
