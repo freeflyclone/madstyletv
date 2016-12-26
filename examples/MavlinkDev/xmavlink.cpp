@@ -13,12 +13,16 @@ XMavlink::ReadThread::~ReadThread() {
 
 // read a byte, pass it to mavlink_parse_char, if we get a message, 
 // call possibly mulitple Listener functions connected to the received msgid 
+// and/or possibly multiple Listener functions that receive ALL msgid's
 void XMavlink::ReadThread::Run() {
 	while (IsRunning())
 		if (pMavlink.Read(&cp, 1))
-			if ((parseState = mavlink_parse_char(MAVLINK_COMM_1, cp, &pMavlink.msg, &pMavlink.stat)) == MAVLINK_FRAMING_OK)
-				for (auto fn : pMavlink.listeners[pMavlink.msg.msgid])
+			if ((parseState = mavlink_parse_char(MAVLINK_COMM_1, cp, &pMavlink.msg, &pMavlink.stat)) == MAVLINK_FRAMING_OK) {
+				for (auto fn : pMavlink.listenersMap[pMavlink.msg.msgid])
 					fn(pMavlink.msg);
+				for (auto fn : pMavlink.listeners)
+					fn(pMavlink.msg);
+			}
 }
 
 // ---------------------------
@@ -53,6 +57,12 @@ XMavlink::~XMavlink() {
 		delete wThread;
 }
 
+// attach a Listener to a specific msgid
 void XMavlink::AddListener(uint8_t msgid, Listener fn) {
-	listeners[msgid].push_back(fn);
+	listenersMap[msgid].push_back(fn);
+}
+
+// attach a Listener for ALL msgids
+void XMavlink::AddListener(Listener fn) {
+	listeners.push_back(fn);
 }
