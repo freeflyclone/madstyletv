@@ -212,9 +212,6 @@
     <ClCompile Include="xgl\xglmaterial.cpp">
       <Filter>xgl\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="xgl\xglobject.cpp">
-      <Filter>xgl\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="xgl\xglprojector.cpp">
       <Filter>xgl\Source Files</Filter>
     </ClCompile>

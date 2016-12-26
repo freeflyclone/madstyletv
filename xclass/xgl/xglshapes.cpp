@@ -7,10 +7,10 @@ XGLShape::XGLShape() {
 }
 
 XGLShape::~XGLShape(){
-    //xprintf("XGLShape::~XGLShape(%s) %s children\n", name.c_str(), Children().size()?"has":"does not have");
+    //xprintf("XGLShape::~XGLShape(%s) %s children\n", Name().c_str(), Children().size()?"has":"does not have");
 	if (Children().size()) {
-		XGLObjectChildren children = Children();
-		XGLObjectChildren::iterator ci;
+		XObjectChildren children = Children();
+		XObjectChildren::iterator ci;
 		for (ci = children.begin(); ci < children.end(); ci++) {
 			XGLShape *child = (XGLShape *)*ci;
 			delete child;
@@ -55,8 +55,10 @@ void XGLShape::Render(float clock) {
 		Unbind();
 
 	for (auto child : Children()) {
-		XGLShape *childShape = (XGLShape *)child;
-		childShape->Render(model * childShape->model, clock);
+		if (dynamic_cast<XGLShape *>(child)) {
+			XGLShape *childShape = (XGLShape *)child;
+			childShape->Render(model * childShape->model, clock);
+		}
 	}
 }
 
@@ -75,8 +77,10 @@ void XGLShape::Render(glm::mat4 modelChain, float clock) {
 		Unbind();
 
 	for (auto child : Children()) {
-		XGLShape *childShape = (XGLShape *)child;
-		childShape->Render(modelChain * childShape->model, clock);
+		if (dynamic_cast<XGLShape *>(child)) {
+			XGLShape *childShape = (XGLShape *)child;
+			childShape->Render(modelChain * childShape->model, clock);
+		}
 	}
 }
 

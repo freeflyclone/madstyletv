@@ -26,12 +26,21 @@ void ExampleXGL::BuildScene() {
 	shape->attributes.diffuseColor = XGLColors::red;
 
 	AddShape("shaders/diffuse", [&](){ shape = new XGLCube(); return shape; });
+	shape->SetName("Mavlink Plane", false);
 
 	try {
 		// presently, XMavlink is derived from XUart.  The device name
 		// of the serial port specifies which UART our MAVLINK device is connected to.
 		// This should come from the configuration file.
 		mavlink = new XMavlink("\\\\.\\COM17");
+
+		// We're going to be adding an XMavlink::Listener for this shape, which is called
+		// in the XMavlink::ReceiveThread (ie: not this thread) context.  Depending on
+		// the timing of application shutdown, it's possible that "shape" will be deleted
+		// as the Listener is being called, and the Listener will crash.  By making
+		// "mavlink" an XObject child of "shape", it will get deleted first, thus preventing
+		// an invalid callback from occuring.
+		shape->AddChild(mavlink);
 
 		// add a XMavlink::Listener function for ATTITUDE messages, that will move "shape" accordingly
 		mavlink->AddListener(MAVLINK_MSG_ID_ATTITUDE, [&](mavlink_message_t msg){

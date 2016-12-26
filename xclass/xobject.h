@@ -27,7 +27,7 @@ typedef std::vector<XObjectPtr> XObjectChildren;
 class XObject {
 public:
 	XObject(std::string n = "XObject");
-	~XObject();
+	virtual ~XObject();
 
 	void SetName(std::string n, bool makeUnique = true);
 	void AddChild(XObject *o);

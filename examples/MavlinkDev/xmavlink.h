@@ -18,7 +18,7 @@
 #pragma warning(disable:4244)
 #include "ardupilotmega/mavlink.h"
 
-class XMavlink : public XUart {
+class XMavlink : public XObject, public XUart {
 public:
 	// A function type that accepts a MAVLINK message.
 	typedef std::function<void(mavlink_message_t)> Listener;
