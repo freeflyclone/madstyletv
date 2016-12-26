@@ -1,0 +1,18 @@
+PARAM SR0_EXTRA1 - stream rate of ATTITUDE to GCS, in Hz
+PARAM SR1_RAW_SENS - " of RAW_IMU, SCALED_IMU, SCALED_PRESSURE, and SENSOR_OFFSETS
+
+msgReceived = mavlink_parse_char(MAVLINK_COMM_1, cp, &message, &status);
+
+write_message(const mavlink_message_t &message)
+{
+	char buf[300];
+
+	// Translate message to buffer
+	unsigned len = mavlink_msg_to_send_buffer((uint8_t*)buf, &message);
+
+	// Write buffer to serial port, locks port while writing
+	int bytesWritten = _write_port(buf,len);
+
+	return bytesWritten;
+}
+

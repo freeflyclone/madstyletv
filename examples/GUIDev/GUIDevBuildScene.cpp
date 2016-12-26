@@ -10,71 +10,6 @@
 ** given application.
 **************************************************************/
 #include "ExampleXGL.h"
-#include "xuart.h"
-#include "ardupilotmega/mavlink.h"
-
-class XMavlink : public XUart, public XThread {
-public:
-	XMavlink(std::string portName) : XUart(portName), XThread(portName + "Thread") {
-		Start();
-	}
-	~XMavlink() {
-		Stop();
-	}
-
-	bool MavlinkMessageDump(mavlink_message_t msg) {
-		bool retVal = false;
-		switch (msg.msgid) {
-			case MAVLINK_MSG_ID_HEARTBEAT:
-				retVal = true;
-				break;
-
-			case MAVLINK_MSG_ID_ATTITUDE:
-				mavlink_msg_attitude_decode(&msg, &attitude);
-				xprintf("Attitude: %0.4f, %0.4f, %0.4f\n", attitude.pitch, attitude.roll, attitude.yaw);
-				retVal = true;
-				break;
-
-			case MAVLINK_MSG_ID_STATUSTEXT:
-				mavlink_msg_statustext_decode(&msg, &statusText);
-				xprintf("StatusText: %s\n", statusText.text);
-				retVal = true;
-				break;
-
-			case MAVLINK_MSG_ID_SYS_STATUS:
-				mavlink_msg_sys_status_decode(&msg, &sysStatus);
-				xprintf("Status: 0x%04X, 0x%04X, 0x%04X\n", sysStatus.onboard_control_sensors_present, sysStatus.onboard_control_sensors_enabled, sysStatus.onboard_control_sensors_health);
-				break;
-
-			case MAVLINK_MSG_ID_VFR_HUD:
-				xprintf("VFR HUD\n");
-				break;
-
-			default:
-				xprintf("msgid: %d\n", msg.msgid);
-				break;
-		}
-		return retVal;
-	}
-
-	void Run() {
-		while (IsRunning())
-			if (Read(&cp, 1))
-				if ((parseState = mavlink_parse_char(MAVLINK_COMM_1, cp, &msg, &stat)) == MAVLINK_FRAMING_OK)
-					MavlinkMessageDump(msg);
-	}
-
-	unsigned char cp;
-	unsigned char buffer[512];
-	mavlink_message_t msg;
-	mavlink_status_t stat;
-	mavlink_attitude_t attitude;
-	mavlink_sys_status_t sysStatus;
-	mavlink_vfr_hud_t vfrHud;
-	mavlink_statustext_t statusText;
-
-	unsigned char parseState;
-};
 
 class XGLGuiTextEdit : public XGLGuiCanvas {
 public:
@@ -123,8 +58,6 @@ private:
 	XGLGuiLabel *label;
 };
 
-XMavlink *xmavlink;
-
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 	XGLGuiManager *gm = GetGuiManager();
@@ -144,11 +77,4 @@ void ExampleXGL::BuildScene() {
 	gw->AddChildShape("shaders/ortho-tex", [&gte, this]() { gte = new XGLGuiTextEdit(this, "Text Edit 2", 20, 80, 200, 24); return gte; });
 	gw->AddChildShape("shaders/ortho-tex", [&gte, this]() { gte = new XGLGuiTextEdit(this, "Text Edit 3", 20, 120, 200, 24); return gte; });
 	gw->AddChildShape("shaders/ortho-tex", [&gte, this]() { gte = new XGLGuiTextEdit(this, "Text Edit 4", 20, 160, 200, 24); return gte; });
-
-	try {
-		xmavlink = new XMavlink("\\\\.\\COM17");
-	}
-	catch (std::runtime_error e) {
-		xprintf("That didn't work: %s\n", e.what());
-	}
 }
