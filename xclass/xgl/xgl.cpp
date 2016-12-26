@@ -268,8 +268,8 @@ void XGL::IterateShapesMap(){
 }
 
 bool XGL::GuiResolveMouseEvent(XGLShape *shape, int x, int y, int flags) {
-	XGLObjectChildren guiChildren = shape->Children();
-	XGLObjectChildren::reverse_iterator rit;
+	XObjectChildren guiChildren = shape->Children();
+	XObjectChildren::reverse_iterator rit;
 	bool handledByChild = false;
 	glm::vec4 ul, lr, mc;
 

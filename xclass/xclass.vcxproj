@@ -277,7 +277,6 @@
     <ClCompile Include="xgl\xglgui.cpp" />
     <ClCompile Include="xgl\xgllight.cpp" />
     <ClCompile Include="xgl\xglmaterial.cpp" />
-    <ClCompile Include="xgl\xglobject.cpp" />
     <ClCompile Include="xgl\xglpixelbuffer.cpp" />
     <ClCompile Include="xgl\xglprojector.cpp" />
     <ClCompile Include="xgl\xglshader.cpp" />

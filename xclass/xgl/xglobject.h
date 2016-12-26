@@ -27,31 +27,11 @@
 #include <map>
 #include <memory>
 #include <vector>
+#include "xobject.h"
 #include "xutils.h"
 
-class XGLObject;
-
-typedef XGLObject* XGLObjectPtr;
-typedef std::vector<XGLObjectPtr> XGLObjectChildren;
-
-class XGLObject {
+class XGLObject : public XObject {
 public:
-	XGLObject(std::string n = "XGLObject");
-	~XGLObject();
-
-	void SetName(std::string n, bool makeUnique = true);
-	void AddChild(XGLObject *o);
-
-	XGLObjectChildren Children() { return *uchildren; }
-	void DumpChildren();
-	XGLObjectPtr FindObject(std::string n);
-
-	XGLObjectPtr Parent() { return parent; }
-	std::string Name() { return name; }
-
-private:
-	std::unique_ptr<XGLObjectChildren> uchildren;
-	std::string name;
-	XGLObjectPtr parent;
+	XGLObject(std::string n = "XGLObject") : XObject(n){};
 };
 

@@ -44,7 +44,6 @@ XUart::XUart(std::string portName) : hPort(INVALID_HANDLE_VALUE) {
 };
 
 XUart::~XUart() {
-	xprintf("XUart::~XUart()\n");
 	if (hPort != INVALID_HANDLE_VALUE)
 		CloseHandle(hPort);
 };
