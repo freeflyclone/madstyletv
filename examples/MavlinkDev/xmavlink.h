@@ -3,6 +3,9 @@
 
 #include "xclasses.h"
 #include "xuart.h"
+
+// ignore double to float precision loss warning from mavlink headers
+#pragma warning(disable:4244)
 #include "ardupilotmega/mavlink.h"
 
 class XMavlink : public XUart {
