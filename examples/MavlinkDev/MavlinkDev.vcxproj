@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{FC6BA931-21C5-4DDF-88C3-CA9136AB8EA9}</ProjectGuid>
+    <ProjectGuid>{73DE473B-0B51-4F7D-B7B9-7E0612ED8E4B}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>GUIDev</RootNamespace>
+    <RootNamespace>MavlinkDev</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -57,21 +57,25 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\xclass\ffmpeg.props" />
     <Import Project="..\..\xclass\xclass.props" />
+    <Import Project="..\..\xclass\mavlink.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\xclass\ffmpeg.props" />
     <Import Project="..\..\xclass\xclass.props" />
+    <Import Project="..\..\xclass\mavlink.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\xclass\ffmpeg.props" />
     <Import Project="..\..\xclass\xclass.props" />
+    <Import Project="..\..\xclass\mavlink.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\xclass\ffmpeg.props" />
     <Import Project="..\..\xclass\xclass.props" />
+    <Import Project="..\..\xclass\mavlink.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -174,13 +178,11 @@
     <ClCompile Include="..\common\ExampleGUI.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
-    <ClCompile Include="GUIDevBuildScene.cpp" />
+    <ClCompile Include="MavlinkDevBuildScene.cpp" />
+    <ClCompile Include="xmavlink.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\shaders\ortho-tex.frag" />
-    <None Include="..\..\shaders\ortho-tex.vert" />
-    <None Include="..\..\shaders\ortho.frag" />
-    <None Include="..\..\shaders\ortho.vert" />
+    <ClInclude Include="xmavlink.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
