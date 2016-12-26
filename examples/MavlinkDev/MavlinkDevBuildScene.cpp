@@ -2,17 +2,30 @@
 ** MavlinkDevBuildScene.cpp
 **
 ** Demonstrate instantiation of XMavlink object in the
-** XGL framework
+** XGL framework.  Add an XMavlink::Listener function for the
+** MAVLINK_MSG_ID_ATTITUDE message and take the yaw,pitch and
+** roll, build it into a model transformation matrix, and
+** apply it to a shape.  Thus the IMU sensor is visualized
+** in real-time from a MAVLINK compatible flight controller.
 **************************************************************/
 #include "ExampleXGL.h"
 #include "xmavlink.h"
 
 XMavlink *mavlink;
 
-void ExampleXGL::BuildScene() {
-	XGLShape *shape;
+XGLShape *shape;
 
-	AddShape("shaders/000-simple", [&shape](){ shape = new XGLTriangle(); return shape; });
+void ExampleXGL::BuildScene() {
+
+	AddShape("shaders/specular", [&](){shape = new XGLSphere(1.0, 64); return shape; });
+	shape->model = glm::translate(glm::mat4(), glm::vec3(10, 0, 0));
+	shape->attributes.diffuseColor = XGLColors::green;
+
+	AddShape("shaders/specular", [&](){shape = new XGLSphere(1.0, 64); return shape; });
+	shape->model = glm::translate(glm::mat4(), glm::vec3(0, 10, 0));
+	shape->attributes.diffuseColor = XGLColors::red;
+
+	AddShape("shaders/diffuse", [&](){ shape = new XGLCube(); return shape; });
 
 	try {
 		// presently, XMavlink is derived from XUart.  The device name
@@ -21,8 +34,21 @@ void ExampleXGL::BuildScene() {
 		mavlink = new XMavlink("\\\\.\\COM17");
 
 		// add a XMavlink::Listener function for ATTITUDE messages, that will move "shape" accordingly
-		mavlink->AddListener(MAVLINK_MSG_ID_ATTITUDE, [&shape](mavlink_message_t msg){
-			xprintf("Listener attitude\n");
+		mavlink->AddListener(MAVLINK_MSG_ID_ATTITUDE, [&](mavlink_message_t msg){
+			mavlink_attitude_t attitude;
+			mavlink_msg_attitude_decode(&msg, &attitude);
+
+			// build a rotation matrix out of yaw, pitch, and roll from attitude message
+			glm::mat4 yaw = glm::rotate(glm::mat4(), -attitude.yaw, glm::vec3(0, 0, 1));
+			glm::mat4 pitch = glm::rotate(glm::mat4(), -attitude.pitch, glm::vec3(0, 1, 0));
+			glm::mat4 roll = glm::rotate(glm::mat4(), attitude.roll, glm::vec3(1, 0, 0));
+			glm::mat4 rotate = yaw * pitch * roll;
+
+			// scale the cube to make it look like a plane
+			glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(8, 4, 0.1));
+
+			// apply combined rotation and scale to the shape's model matrix
+			shape->model = rotate * scale;
 		});
 	}
 	catch (std::runtime_error e) {
