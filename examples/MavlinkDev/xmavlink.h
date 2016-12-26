@@ -12,7 +12,6 @@
 #define XMAVLINK_H
 
 #include "xclasses.h"
-#include "xuart.h"
 
 // ignore double to float precision loss warning from mavlink headers
 // (rather than actually FIX it in the auto generated header files)
