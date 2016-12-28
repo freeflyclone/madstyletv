@@ -72,12 +72,58 @@ int XUart::Write(unsigned char *b, int size) {
 }
 #else
 XUart::XUart(std::string portName) : portFd(0) {
+    struct termios tty;
+
+    if( (portFd = open(portName.c_str(), O_RDWR | O_NOCTTY | O_SYNC)) < 0)
+        throw std::runtime_error("failed to open serial port: "+portName);
+
+    memset (&tty, 0, sizeof tty);
+
+    if (tcgetattr (portFd, &tty) != 0)
+        throw std::runtime_error("tcgetattr() failed for port: "+portName);
+
+    cfsetospeed (&tty, B115200);
+    cfsetispeed (&tty, B115200);
+
+    tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;
+    tty.c_iflag &= ~IGNBRK;
+    tty.c_lflag = 0;
+    tty.c_oflag = 0;
+    tty.c_cc[VMIN]  = 1;
+    tty.c_cc[VTIME] = 5;
+    tty.c_iflag &= ~(IXON | IXOFF | IXANY);
+    tty.c_cflag |= (CLOCAL | CREAD);
+    tty.c_cflag &= ~(PARENB | PARODD);
+    tty.c_cflag |= 0;
+    tty.c_cflag &= ~CSTOPB;
+    tty.c_cflag &= ~CRTSCTS;
+
+    if (tcsetattr (portFd, TCSANOW, &tty) != 0)
+        throw std::runtime_error("tcsetattr() failed for port: "+portName);
 }
+
 XUart::~XUart() {
+    if (portFd)
+        close(portFd);
 }
+
 int XUart::Read(unsigned char *b, int size) {
+    int nRead = 0;
+    if ( (nRead = read(portFd, b, size)) > 0)
+        return nRead;
+    else {
+        xprintf("read() failed with: %08X\n", errno);
+        return 0;
+    }
 }
 
 int XUart::Write(unsigned char *b, int size) {
+    int nWrite = 0;
+    if ( (nWrite = write(portFd, b, size)) > 0)
+        return nWrite;
+    else {
+        xprintf("write() failed with: %08X\n", errno);
+        return 0;
+    }
 }
 #endif

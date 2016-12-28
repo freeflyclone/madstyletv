@@ -21,6 +21,13 @@ private:
 	COMMTIMEOUTS   commTimeouts;
 };
 #else
+
+#include <stdio.h>
+#include <termios.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <string.h>
+
 class XUart {
 public: 
 	XUart(std::string);

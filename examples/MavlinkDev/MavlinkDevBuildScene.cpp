@@ -32,7 +32,8 @@ void ExampleXGL::BuildScene() {
 		// presently, XMavlink is derived from XUart.  The device name
 		// of the serial port specifies which UART our MAVLINK device is connected to.
 		// This should come from the configuration file.
-		mavlink = new XMavlink("\\\\.\\COM17");
+        //mavlink = new XMavlink("\\\\.\\COM17");
+        mavlink = new XMavlink("/dev/ttyACM0");
 
 		// We're going to be adding an XMavlink::Listener for this shape, which is called
 		// in the XMavlink::ReceiveThread (ie: not this thread) context.  Depending on
