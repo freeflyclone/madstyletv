@@ -1,6 +1,7 @@
 examples/common
 examples/Example01
 examples/Example02
+examples/MavlinkDev
 examples/PhysXTest
 examples/SDFTest
 osx/common
@@ -11,6 +12,17 @@ xclass/3rdParty/freetype/include/freetype2
 xclass/3rdParty/freetype/include/freetype2/freetype
 xclass/3rdParty/freetype/include/freetype2/freetype/config
 xclass/3rdParty/libpng/include
+xclass/3rdParty/mavlink/c_library_v1
+xclass/3rdParty/mavlink/c_library_v1/ardupilotmega
+xclass/3rdParty/mavlink/c_library_v1/ASLUAV
+xclass/3rdParty/mavlink/c_library_v1/autoquad
+xclass/3rdParty/mavlink/c_library_v1/common
+xclass/3rdParty/mavlink/c_library_v1/matrixpilot
+xclass/3rdParty/mavlink/c_library_v1/minimal
+xclass/3rdParty/mavlink/c_library_v1/slugs
+xclass/3rdParty/mavlink/c_library_v1/standard
+xclass/3rdParty/mavlink/c_library_v1/test
+xclass/3rdParty/mavlink/c_library_v1/uAvionix
 xclass/3rdParty/soil
 xclass/3rdParty/soil/src
 xclass/3rdParty/zlib/include

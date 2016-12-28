@@ -42,6 +42,7 @@ CPPSOURCES=${XGLDIR}/xgl.cpp \
 	${XGLDIR}/xglcamera.cpp \
 	${XGLDIR}/xglfont.cpp \
 	${XGLDIR}/xglframebuffer.cpp \
+	${XGLDIR}/xglgui.cpp \
 	${XGLDIR}/xgllight.cpp \
 	${XGLDIR}/xglmaterial.cpp \
 	${XGLDIR}/xglprojector.cpp \
