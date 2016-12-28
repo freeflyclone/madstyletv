@@ -60,6 +60,7 @@ CPPSOURCES=${XGLDIR}/xgl.cpp \
 	${XCLASSDIR}/JSONValue.cpp \
 	${XCLASSDIR}/xshmem.cpp \
 	${XCLASSDIR}/xobject.cpp \
+	${XCLASSDIR}/xuart.cpp \
 
 
 CSOURCES=${XGLDIR}/glew.c \
