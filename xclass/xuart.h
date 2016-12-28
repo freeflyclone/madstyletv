@@ -3,9 +3,10 @@
 
 #include <string>
 #include <sstream>
-#include <Windows.h>
 #include "xutils.h"
 
+#ifdef WIN32
+#include <Windows.h>
 class XUart {
 public:
 	XUart(std::string portName);
@@ -19,5 +20,18 @@ private:
 	DCB portDCB;
 	COMMTIMEOUTS   commTimeouts;
 };
+#else
+class XUart {
+public: 
+	XUart(std::string);
+	~XUart();
 
+	int Read(unsigned char *b, int size);
+	int Write(unsigned char *b, int size);
+
+private:
+	int portFd;
+};
 #endif
+
+#endif // XUART_H

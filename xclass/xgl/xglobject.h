@@ -30,6 +30,8 @@
 #include "xobject.h"
 #include "xutils.h"
 
+typedef XObjectPtr XGLObjectPtr;
+
 class XGLObject : public XObject {
 public:
 	XGLObject(std::string n = "XGLObject") : XObject(n){};

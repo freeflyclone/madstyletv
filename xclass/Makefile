@@ -44,7 +44,6 @@ CPPSOURCES=${XGLDIR}/xgl.cpp \
 	${XGLDIR}/xglframebuffer.cpp \
 	${XGLDIR}/xgllight.cpp \
 	${XGLDIR}/xglmaterial.cpp \
-	${XGLDIR}/xglobject.cpp \
 	${XGLDIR}/xglprojector.cpp \
 	${XGLDIR}/xglshader.cpp \
 	${XGLDIR}/xglshapes.cpp \
@@ -59,6 +58,7 @@ CPPSOURCES=${XGLDIR}/xgl.cpp \
 	${XCLASSDIR}/JSON.cpp \
 	${XCLASSDIR}/JSONValue.cpp \
 	${XCLASSDIR}/xshmem.cpp \
+	${XCLASSDIR}/xobject.cpp \
 
 
 CSOURCES=${XGLDIR}/glew.c \

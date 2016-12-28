@@ -1,5 +1,6 @@
 #include "xuart.h"
 
+#ifdef WIN32
 XUart::XUart(std::string portName) : hPort(INVALID_HANDLE_VALUE) {
 	// Windows needs a wide string if we're configured for Unicode, and we are.
 	std::wstringstream ws;
@@ -69,3 +70,14 @@ int XUart::Write(unsigned char *b, int size) {
 		return 0;
 	}
 }
+#else
+XUart::XUart(std::string portName) : portFd(0) {
+}
+XUart::~XUart() {
+}
+int XUart::Read(unsigned char *b, int size) {
+}
+
+int XUart::Write(unsigned char *b, int size) {
+}
+#endif

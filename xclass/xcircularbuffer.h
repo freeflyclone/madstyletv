@@ -60,8 +60,8 @@ public:
 private:
 	const int size;
 	unsigned char *buff;
-	std::atomic_uint64_t rIdx;
-	std::atomic_uint64_t wIdx;
+	std::atomic<std::uint64_t> rIdx;
+	std::atomic<std::uint64_t> wIdx;
 	XSemaphore emptyCount;
 	XSemaphore fullCount;
 };
