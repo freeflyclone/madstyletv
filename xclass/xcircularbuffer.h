@@ -16,6 +16,7 @@
 #include <stdexcept>
 #include <mutex>
 #include <atomic>
+#include <cstdint>
 
 #include <xthread.h>
 
