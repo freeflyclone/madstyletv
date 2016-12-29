@@ -42,6 +42,8 @@ CSOURCES=${XGLDIR}/glew.c \
 OBJS = $(patsubst %.cpp,%.o,${CPPSOURCES})
 OBJS += $(patsubst %.c,%.o,${CSOURCES})
 
+all: ${XCLASSLIB}
+
 ${XCLASSLIB}: ${OBJS}
 	${AR} rcs ${XCLASSLIB} $? 
 

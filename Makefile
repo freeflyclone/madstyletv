@@ -9,6 +9,6 @@ all: $(SUBDIRS)
 
 clean: $(SUBDIRS)
 	for subdir in $(SUBDIRS); do \
-		$(MAKE) -C $$subdir -j 12 clean ; \
+		$(MAKE) -C $$subdir clean ; \
 	done
 

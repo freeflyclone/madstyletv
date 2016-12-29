@@ -1,4 +1,4 @@
-SUBDIRS=Example02 MavlinkDev
+SUBDIRS=Example02 MavlinkDev PhysXTest
 
 .PHONY: clean all
 
