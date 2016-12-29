@@ -1,4 +1,4 @@
-MadStyle TV - Open source project
+MadStyle TV - OpenGL C++11 Open Source framework for non-gaming applications
 --------------------------------
 The goal of the project is to provide a cross-platform OpenGL / Multimedia framework, to serve as a guide for learning C++, OpenGL and multimedia technologies.
 
