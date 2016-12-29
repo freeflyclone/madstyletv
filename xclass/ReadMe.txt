@@ -13,11 +13,16 @@ $(HOME)/src/madstyletv/xclass then
 
 in your .bashrc file would do the trick.
 
+Optionals Features
+------------------
+
 If you've installed ffmpeg development libraries to a well
 known location, then 
 
-	export HAS_FFMPEG
+	export HAS_FFMPEG=1
 
 in your .bashrc will cause the linux build to include
-ffmpeg.  This will allow playing of multimedia streams
-within the framework.
+ffmpeg.  This will cause the XAVEncoder class to be 
+available within the framework.
+
+
