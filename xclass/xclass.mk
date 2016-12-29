@@ -26,6 +26,7 @@ CXXFLAGS +=-std=c++14\
 	-I${THIRDPARTYDIR}/mavlink/c_library_v1 \
 	-I${XCLASSDIR} \
 	-I/usr/include/AL \
+	-I/usr/local/include/AL \
 	-DNDEBUG \
 	-D_GNU_SOURCE=1 \
 	-DGLEW_STATIC \
@@ -45,6 +46,7 @@ CFLAGS +=-std=c11 \
 LDFLAGS +=\
         -L${XCLASSDIR} \
         -L${THIRDPARTYDIR}/glfw/lib \
+	-L/usr/local/lib \
         -L/usr/lib/x86_64-linux-gnu
 
 LIBS =-lxclass -lglfw3 -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXinerama -lXcursor -lpthread -lexpat -lfreetype 
