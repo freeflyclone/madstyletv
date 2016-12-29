@@ -1,4 +1,4 @@
-SUBDIRS=xclass examples
+SUBDIRS=xclass xclass/3rdParty examples
 include toplevel.mk
 
 all: $(SUBDIRS)

@@ -1,3 +1,6 @@
 [submodule "xclass/3rdParty/mavlink/c_library_v1"]
 	path = xclass/3rdParty/mavlink/c_library_v1
 	url = https://github.com/mavlink/c_library_v1
+[submodule "xclass/3rdParty/openal-soft"]
+	path = xclass/3rdParty/openal-soft
+	url = git://github.com/kcat/openal-soft.git
