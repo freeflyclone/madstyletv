@@ -1,65 +1,37 @@
-# map environment variables to internal variables
-XCLASSDIR=${XCLASS_DIR}
-PHYSXDIR=${PHYSX_DIR}
+include ../../xclass/xclass.mk
 
-XGLDIR=${XCLASSDIR}/xgl
-XALDIR=${XCLASSDIR}/xal
-XAVDIR=${XCLASSDIR}/xav
+PHYSXDIR=${PHYSX_DIR}
 EXAMPLESDIR=${XCLASSDIR}/../examples
-THIRDPARTYDIR=${XCLASSDIR}/3rdParty
+
+CXXFLAGS+=-I${PHYSX_DIR}/Include\
+	-I${EXAMPLESDIR}/common\
+	-I.
+
+LDFLAGS+=-L${PHYSX_DIR}/Lib/linux64\
+	-L${PHYSX_DIR}/Bin/linux64\
+
 
 PROGRAM=PhysXTest
-LIB=${XCLASSDIR}/libxclass.a
 
-CXXFLAGS +=-std=c++14\
-	-I${XALDIR} \
-	-I${XAVDIR} \
-	-I${XGLDIR} \
-	-I${XGLDIR}/glm \
-	-I${XGLDIR}/glm/gtc \
-	-I${THIRDPARTYDIR}/soil/src \
-	-I${THIRDPARTYDIR}/freetype/include/freetype2 \
-	-I${XCLASSDIR} \
-	-I${EXAMPLESDIR}/common \
-	-I${EXAMPLESDIR}/PhysXTest \
-	-I/usr/include/AL \
-	-I${PHYSXDIR}/Include \
-	-DNDEBUG \
-	-D_GNU_SOURCE=1 \
-	-DGLEW_STATIC \
-	-Wno-deprecated-declarations \
-	-g
+CPPSOURCES=PhysXTestBuildScene.cpp\
+	physx-main.cpp\
+	physx-xgl.cpp\
+	${EXAMPLESDIR}/common/ExampleXGL.cpp\
+	${EXAMPLESDIR}/common/ExampleGUI.cpp\
 
-CFLAGS +=-std=c11 \
-	-I${XALDIR} \
-	-I${XAVDIR} \
-	-I${XGLDIR} \
-	-I${XGLDIR}/glm \
-	-I${XCLASSDIR} \
-	-D_GNU_SOURCE=1 \
-	-DGLEW_STATIC \
-	-g
 
-COMMON=${EXAMPLESDIR}/common/ExampleXGL.cpp ${EXAMPLESDIR}/common/ExampleGUI.cpp
-
-COMMONOBJS = $(patsubst %.cpp,%.o,${COMMON})
-
-LDFLAGS +=\
-	-L${XCLASSDIR} \
-	-L${THIRDPARTYDIR}/glfw/lib \
-	-L${PHYSXDIR}/Lib/linux64 \
-	-L${PHYSXDIR}/Bin/linux64 \
-	-L/usr/lib/x86_64-linux-gnu
-
-LIBS=-lxclass -lglfw3 -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXinerama -lXcursor -lpthread -lexpat -lfreetype -lopencv_core -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d -lavformat -lavcodec -lavutil
+OBJS = $(patsubst %.cpp,%.o,${CPPSOURCES})
 
 PHYSX_LIBS=-lPhysX3Extensions -lPhysX3Common_x64 -lPhysX3_x64 -lPhysX3Cooking_x64 -lPhysX3CharacterKinematic_x64 -lPhysX3Vehicle -lPhysXProfileSDK -lPhysXVisualDebuggerSDK -lPxTask
 
+#QtCreator likes an 'all' target
+
 all: ${PROGRAM}
 
-${PROGRAM}: ${LIB} ${COMMONOBJS} PhysXTestBuildScene.o physx-xgl.o physx-main.o
-	${CXX} ${CXXFLAGS} $? ${LDFLAGS} ${LIBS} ${PHYSX_LIBS} -o $@
+${PROGRAM}: ${OBJS} ${LIB}
+	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} ${PHYSX_LIBS} -o $@
 
 clean:
 	@-rm -rf ${PROGRAM}
-	@-rm -rf ${COMMONOBJS}
+	@-rm -rf ${OBJS}
+
