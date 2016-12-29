@@ -23,7 +23,7 @@ CXXFLAGS +=-std=c++14\
 	-I${XGLDIR}/glm/gtc \
 	-I${THIRDPARTYDIR}/soil/src \
 	-I${THIRDPARTYDIR}/freetype/include/freetype2 \
-	-I${THIRDPARTYDIR}/anttweakbar/include \
+	-I${THIRDPARTYDIR}/mavlink/c_library_v1 \
 	-I${XCLASSDIR} \
 	-I/usr/include/AL \
 	-DNDEBUG \
