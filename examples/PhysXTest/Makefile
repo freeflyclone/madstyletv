@@ -1,3 +1,4 @@
+include ../../toplevel.mk
 include ../../xclass/xclass.mk
 include ../examples.mk
 
@@ -25,7 +26,7 @@ CPPSOURCES=PhysXTestBuildScene.cpp\
 
 OBJS = $(patsubst %.cpp,%.o,${CPPSOURCES})
 
-PHYSX_LIBS=-lPhysX3Extensions \
+LIBS+=-lPhysX3Extensions \
 	-lPhysX3Common_x64 \
 	-lPhysX3_x64 \
 	-lPhysX3Cooking_x64 \
@@ -38,7 +39,7 @@ PHYSX_LIBS=-lPhysX3Extensions \
 all: ${PROGRAM}
 
 ${PROGRAM}: ${OBJS} ${LIB}
-	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} ${PHYSX_LIBS} -o $@
+	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} -o $@
 
 clean:
 	@-rm -rf ${PROGRAM}

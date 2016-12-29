@@ -1,8 +1,5 @@
+include ../toplevel.mk
 include xclass.mk
-
-ifndef XCLASS_DIR
-$(error XCLASS_DIR environment variable must be set.  See readme.txt)
-endif
 
 CPPSOURCES=${XGLDIR}/xgl.cpp \
 	${XGLDIR}/xglbuffer.cpp \
@@ -39,15 +36,15 @@ CSOURCES=${XGLDIR}/glew.c \
 	${THIRDPARTYDIR}/soil/src/stb_image_aug.c \
 
 
-OBJS = $(patsubst %.cpp,%.o,${CPPSOURCES})
-OBJS += $(patsubst %.c,%.o,${CSOURCES})
+LIB_OBJS = $(patsubst %.cpp,%.o,${CPPSOURCES})
+LIB_OBJS += $(patsubst %.c,%.o,${CSOURCES})
 
 all: ${XCLASSLIB}
 
-${XCLASSLIB}: ${OBJS}
+${XCLASSLIB}: ${LIB_OBJS}
 	${AR} rcs ${XCLASSLIB} $? 
 
 clean:
-	@-rm -rf ${OBJS}
+	@-rm -rf ${LIB_OBJS}
 	@-rm -rf ${XCLASSLIB}
 

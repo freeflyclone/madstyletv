@@ -1,3 +1,4 @@
+include ../../toplevel.mk
 include ../../xclass/xclass.mk
 include ../examples.mk
 

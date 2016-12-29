@@ -1,6 +1,5 @@
 SUBDIRS=xclass examples
-
-.PHONY: clean all
+include toplevel.mk
 
 all: $(SUBDIRS)
 	for subdir in $(SUBDIRS); do \
