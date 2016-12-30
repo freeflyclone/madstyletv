@@ -1,7 +1,5 @@
-MadStyle TV - OpenGL, C++11, multi-threadedm and cross platform
---------------------------------
-Open Source framework/engine for non-gaming applications
---------------------------------
+## MadStyle TV - Open Source framework/engine for non-gaming applications
+### OpenGL, C++11, multi-threaded, and cross platform
 The goal of the project is to provide a cross-platform OpenGL / Multimedia framework, to serve as a guide for learning C++, OpenGL and multimedia technologies.
 
 OpenGL 3.2 core profile at a minimum, is utilized to be compatible with OSX.
