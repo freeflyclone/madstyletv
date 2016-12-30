@@ -1,4 +1,4 @@
-## MadStyle TV - Open Source engine for non-gaming applications
+## MadStyle TV - Open source engine for non-gaming applications
 ### OpenGL, C++11, multi-threaded, and cross platform
 This project provides a cross-platform OpenGL / Multimedia framework, to serve as a guide for learning C++, OpenGL and multimedia technologies.
 
