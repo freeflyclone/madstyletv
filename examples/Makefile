@@ -1,4 +1,4 @@
-SUBDIRS=Example02 OpenALTest OpenCVTest OpenCVWebcam #MavlinkDev PhysXTest
+SUBDIRS=Example02 OpenALTest #OpenCVTest OpenCVWebcam #MavlinkDev PhysXTest
 
 .PHONY: clean all
 
