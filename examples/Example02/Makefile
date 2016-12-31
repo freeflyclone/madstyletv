@@ -13,11 +13,3 @@ ${PROGRAM}: ${EXAMPLESCOMMONOBJS} ${LIB} ${PROGRAM}.o
 clean:
 	@-rm -rf ${PROGRAM}
 	@-rm -rf ${EXAMPLESCOMMONOBJS}
-
-test:
-	@echo ${MAKEFILE_LIST}
-	@echo number of entries is MAKEFILE_LIST: $(words $(MAKEFILE_LIST))
-	@echo TOPDIR: $(TOPDIR)
-	@echo XCLASSDIR: $(XCLASSDIR)
-	@echo EXAMPLESDIR: $(EXAMPLESDIR)
-

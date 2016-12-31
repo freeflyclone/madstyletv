@@ -1,18 +1,17 @@
-include ../../toplevel.mk
-include ../../xclass/xclass.mk
-include ../examples.mk
-
 PROGRAM=OpenALTest
+
+include ../../toplevel.mk
+include $(TOPDIR)/xclass/xclass.mk
+include $(TOPDIR)/examples/examples.mk
 
 LIBS+=-lopenal
 
 #QtCreator likes an 'all' target
 all: ${PROGRAM}
 
-${PROGRAM}: ${COMMONOBJS} ${LIB} OpenALTestBuildScene.o
-	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} -o $@
+${PROGRAM}: ${EXAMPLESCOMMONOBJS} ${LIB} ${PROGRAM}BuildScene.o
+	$(call PROGRAM_BUILD)
 
 clean:
 	@-rm -rf ${PROGRAM}
-	@-rm -rf ${COMMONOBJS}
-
+	@-rm -rf ${EXAMPLESCOMMONOBJS}
