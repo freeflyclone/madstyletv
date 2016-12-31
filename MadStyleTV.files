@@ -635,3 +635,6 @@ xclass/xutils.h
 xclass/Makefile
 Makefile
 examples/Makefile
+xclass/3rdParty/Makefile
+toplevel.mk
+examples/Example02/Makefile

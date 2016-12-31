@@ -1,4 +1,4 @@
-SUBDIRS=xclass xclass/3rdParty examples
+SUBDIRS=xclass/3rdParty xclass examples
 include toplevel.mk
 
 all: $(SUBDIRS)
@@ -10,4 +10,3 @@ clean: $(SUBDIRS)
 	for subdir in $(SUBDIRS); do \
 		$(MAKE) -C $$subdir clean ; \
 	done
-

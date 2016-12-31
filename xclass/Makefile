@@ -1,5 +1,5 @@
 include ../toplevel.mk
-include xclass.mk
+include $(TOPDIR)/xclass/xclass.mk
 
 CPPSOURCES=${XGLDIR}/xgl.cpp \
 	${XGLDIR}/xglbuffer.cpp \

@@ -9,7 +9,7 @@ export
 XCLASSLIB=libxclass.a
 
 # map environment variables to internal variables
-XCLASSDIR=${XCLASS_DIR}
+XCLASSDIR=${TOPDIR}xclass
 XGLDIR=${XCLASSDIR}/xgl
 XALDIR=${XCLASSDIR}/xal
 XAVDIR=${XCLASSDIR}/xav

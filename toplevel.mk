@@ -1,5 +1,24 @@
+# Defines variables that help all the subdir Makefiles
+# know where to find stuff, as well as project level
+# build settings.
+#
+# Note:
+#   The way TOPDIR is created here absolutely depends on
+#   this file being the first include in ALL subdir
+#   Makefiles, regardless of tree depth, and that each
+#   subdir Makefile includes this file with a relative
+#   path, which means that the deeper in the source tree
+#   a Makefile is, the more "../"es are going to be
+#   needed.
+#-------------------------------------------------------
 .PHONY: clean all
 
-ifndef XCLASS_DIR
-$(error XCLASS_DIR environment variable must be set.  See readme.txt)
-endif
+# As it's name might suggest, TOPDIR is the
+# top-most directory of the madstyletv source code
+# tree.  All subdir Makefiles rely on this
+TOPDIR := $(dir $(lastword $(MAKEFILE_LIST)))
+
+# A user-defined gmake function for building a program.
+# It also copies it to the project's "bin" folder.
+PROGRAM_BUILD = $(CXX) $? $(LDFLAGS) $(LIBS) -o $@ ; cp $@ $(TOPDIR)bin
+
