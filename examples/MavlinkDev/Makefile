@@ -1,16 +1,9 @@
-include ../../toplevel.mk
-include ../../xclass/xclass.mk
-include ../examples.mk
-
 PROGRAM=MavlinkDev
 
-#QtCreator likes an 'all' target
-all: ${PROGRAM}
+include ../../topheader.mk
+include $(TOPDIR)xclass/xclass.mk
+include $(TOPDIR)examples/examples.mk
 
-${PROGRAM}: ${COMMONOBJS} ${LIB} MavlinkDevBuildScene.o xmavlink.o
-	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} -o $@
+PROGRAM_SOURCES += $(PROGRAM)BuildScene.cpp xmavlink.cpp
 
-clean:
-	@-rm -rf ${PROGRAM}
-	@-rm -rf ${COMMONOBJS}
-
+include $(TOPDIR)/topfooter.mk

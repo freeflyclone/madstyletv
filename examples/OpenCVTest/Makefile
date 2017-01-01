@@ -1,20 +1,14 @@
 PROGRAM=OpenCVTest
 
-include ../../toplevel.mk
+include ../../topheader.mk
 include $(TOPDIR)/xclass/xclass.mk
 include $(TOPDIR)/examples/examples.mk
+
+PROGRAM_SOURCES += $(PROGRAM)BuildScene.cpp
 
 LIBS+=-lopencv_core \
 	-lopencv_videoio\
 	-lopencv_imgcodecs\
 	-lopencv_imgproc
 
-#QtCreator likes an 'all' target
-all: ${PROGRAM}
-
-${PROGRAM}: ${EXAMPLESCOMMONOBJS} ${LIB} ${PROGRAM}BuildScene.o
-	$(call PROGRAM_BUILD)
-
-clean:
-	@-rm -rf ${PROGRAM}
-	@-rm -rf ${EXAMPLESCOMMONOBJS}
+include $(TOPDIR)/topfooter.mk

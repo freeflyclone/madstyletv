@@ -1,8 +1,12 @@
-include ../../toplevel.mk
-include ../../xclass/xclass.mk
-include ../examples.mk
+ifeq ($(PHYSX_DIR),)
+$(error If you want to build the PhysX example, install the PhysX SDK)
+endif
 
 PROGRAM=PhysXTest
+
+include ../../topheader.mk
+include $(TOPDIR)/xclass/xclass.mk
+include $(TOPDIR)/examples/examples.mk
 
 PHYSXDIR=${PHYSX_DIR}
 
@@ -13,18 +17,10 @@ LDFLAGS+=-L${PHYSX_DIR}/Lib/linux64\
 	-L${PHYSX_DIR}/Bin/linux64\
 
 
-# Other examples use main.cpp and ExampleXGL.cpp from examples/common
-# In this case, we're overriding the ExampleXGL class to include
-# PhysX in the scene rendering phase, in a way that's more complex
-# than the usual ExampleXGL::BuildScene() technique allows.
-CPPSOURCES=PhysXTestBuildScene.cpp\
-	physx-main.cpp\
-	physx-xgl.cpp\
-	${EXAMPLESDIR}/common/ExampleXGL.cpp\
-	${EXAMPLESDIR}/common/ExampleGUI.cpp\
-
-
-OBJS = $(patsubst %.cpp,%.o,${CPPSOURCES})
+PROGRAM_SOURCES = $(PROGRAM_SOURCES_NO_MAIN) \
+	$(PROGRAM)BuildScene.cpp \
+	physx-main.cpp \
+	physx-xgl.cpp \
 
 LIBS+=-lPhysX3Extensions \
 	-lPhysX3Common_x64 \
@@ -36,12 +32,4 @@ LIBS+=-lPhysX3Extensions \
 	-lPhysXVisualDebuggerSDK \
 	-lPxTask
 
-all: ${PROGRAM}
-
-${PROGRAM}: ${OBJS} ${LIB}
-	${CXX} ${CPPFLAGS} $? ${LDFLAGS} ${LIBS} -o $@
-
-clean:
-	@-rm -rf ${PROGRAM}
-	@-rm -rf ${OBJS}
-
+include $(TOPDIR)topfooter.mk

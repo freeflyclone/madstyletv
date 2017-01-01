@@ -12,3 +12,7 @@ CXXFLAGS += -I${EXAMPLESDIR} -I${EXAMPLESDIR}/common
 PROGRAM_SOURCES += ${EXAMPLESDIR}/common/main.cpp \
 	${EXAMPLESDIR}/common/ExampleXGL.cpp \
 	${EXAMPLESDIR}/common/ExampleGUI.cpp
+
+PROGRAM_SOURCES_NO_MAIN = \
+	${EXAMPLESDIR}/common/ExampleXGL.cpp \
+	${EXAMPLESDIR}/common/ExampleGUI.cpp
