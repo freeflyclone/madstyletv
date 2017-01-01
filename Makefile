@@ -1,5 +1,6 @@
 SUBDIRS=xclass/3rdParty xclass examples
-include toplevel.mk
+
+include topheader.mk
 
 all: $(SUBDIRS)
 	for subdir in $(SUBDIRS); do \

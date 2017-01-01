@@ -3,9 +3,8 @@
 # of the build is to copy 3rdParty stuff to /usr/local/...
 # which is fairly standard for Linux
 # --------------------------------------------------------
-include ../../toplevel.mk
-include ../xclass.mk
-
+include ../../topheader.mk
+include $(TOPDIR)/xclass/xclass.mk
 
 all: 
 	@echo making 'all' in 3rdParty
