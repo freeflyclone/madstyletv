@@ -5,6 +5,7 @@
 # --------------------------------------------------------
 include ../../topheader.mk
 
+#set some variables to see if some 3rdParty library source was fetched
 OPENAL=$(shell ls openal-soft)
 OPENCV=$(shell ls opencv)
 
