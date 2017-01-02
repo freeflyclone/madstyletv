@@ -28,7 +28,6 @@
 		591997561D63F261003F62FF /* xglfont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5919972B1D63F00D003F62FF /* xglfont.cpp */; };
 		591997571D63F261003F62FF /* xgllight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5919972D1D63F00D003F62FF /* xgllight.cpp */; };
 		591997581D63F261003F62FF /* xglmaterial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5919972F1D63F00D003F62FF /* xglmaterial.cpp */; };
-		591997591D63F261003F62FF /* xglobject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 591997311D63F00D003F62FF /* xglobject.cpp */; };
 		5919975A1D63F261003F62FF /* xglprojector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 591997341D63F00D003F62FF /* xglprojector.cpp */; };
 		5919975B1D63F261003F62FF /* xglshader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 591997361D63F00D003F62FF /* xglshader.cpp */; };
 		5919975C1D63F261003F62FF /* xglshapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 591997381D63F00D003F62FF /* xglshapes.cpp */; };
@@ -49,8 +48,9 @@
 		5962D3851D6B80AB006BCD52 /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3841D6B80AB006BCD52 /* OpenGLView.mm */; };
 		5962D3891D6B81D8006BCD52 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3881D6B81D8006BCD52 /* main.m */; };
 		596DEB901DDE7EC2001D604C /* ExampleGUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 596DEB8F1DDE7EC2001D604C /* ExampleGUI.cpp */; };
-		596F77A41E01FD9C0079D370 /* xglgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 596F77A21E01FD9C0079D370 /* xglgui.cpp */; };
 		596F77A51E01FDFA0079D370 /* xglgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 596F77A21E01FD9C0079D370 /* xglgui.cpp */; };
+		597FDBA21E1A18E000E449B0 /* xobject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 597FDB9C1E1A140400E449B0 /* xobject.cpp */; };
+		597FDBA31E1A1D7B00E449B0 /* xmavlink.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 597FDB9A1E1A140400E449B0 /* xmavlink.cpp */; };
 		5984BD951D6B88650047DF80 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5984BD941D6B88650047DF80 /* Assets.xcassets */; };
 		5993CC321D6B9031006105A9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5993CC301D6B9031006105A9 /* MainMenu.xib */; };
 		599A90EC1DB7DDB900EAD8C9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3881D6B81D8006BCD52 /* main.m */; };
@@ -501,7 +501,6 @@
 		5919972E1D63F00D003F62FF /* xgllight.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xgllight.h; sourceTree = "<group>"; };
 		5919972F1D63F00D003F62FF /* xglmaterial.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = xglmaterial.cpp; sourceTree = "<group>"; };
 		591997301D63F00D003F62FF /* xglmaterial.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xglmaterial.h; sourceTree = "<group>"; };
-		591997311D63F00D003F62FF /* xglobject.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = xglobject.cpp; sourceTree = "<group>"; };
 		591997321D63F00D003F62FF /* xglobject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xglobject.h; sourceTree = "<group>"; };
 		591997331D63F00D003F62FF /* xglprimitives.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xglprimitives.h; sourceTree = "<group>"; };
 		591997341D63F00D003F62FF /* xglprojector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = xglprojector.cpp; sourceTree = "<group>"; };
@@ -531,6 +530,11 @@
 		596DEB8F1DDE7EC2001D604C /* ExampleGUI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExampleGUI.cpp; sourceTree = "<group>"; };
 		596F77A21E01FD9C0079D370 /* xglgui.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = xglgui.cpp; sourceTree = "<group>"; };
 		596F77A31E01FD9C0079D370 /* xglgui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xglgui.h; sourceTree = "<group>"; };
+		597FDB9A1E1A140400E449B0 /* xmavlink.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = xmavlink.cpp; sourceTree = "<group>"; };
+		597FDB9B1E1A140400E449B0 /* xmavlink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xmavlink.h; sourceTree = "<group>"; };
+		597FDB9C1E1A140400E449B0 /* xobject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = xobject.cpp; sourceTree = "<group>"; };
+		597FDB9D1E1A140400E449B0 /* xobject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xobject.h; sourceTree = "<group>"; };
+		597FDBA01E1A145800E449B0 /* xclasses.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xclasses.h; sourceTree = "<group>"; };
 		5984BD941D6B88650047DF80 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = common/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		598A6CEB1D6636CA005BC5D9 /* Example01.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example01.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5993CC311D6B9031006105A9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = common/Base.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
@@ -654,6 +658,11 @@
 		5919959B1D63F00D003F62FF /* xclass */ = {
 			isa = PBXGroup;
 			children = (
+				597FDBA01E1A145800E449B0 /* xclasses.h */,
+				597FDB9A1E1A140400E449B0 /* xmavlink.cpp */,
+				597FDB9B1E1A140400E449B0 /* xmavlink.h */,
+				597FDB9C1E1A140400E449B0 /* xobject.cpp */,
+				597FDB9D1E1A140400E449B0 /* xobject.h */,
 				594FA8211DC6CCD60071DE06 /* socket.h */,
 				59B41FD21DB83C7000787183 /* xfifo.h */,
 				59DA3B991DB6987900767298 /* xassets.cpp */,
@@ -899,7 +908,6 @@
 				5919972E1D63F00D003F62FF /* xgllight.h */,
 				5919972F1D63F00D003F62FF /* xglmaterial.cpp */,
 				591997301D63F00D003F62FF /* xglmaterial.h */,
-				591997311D63F00D003F62FF /* xglobject.cpp */,
 				591997321D63F00D003F62FF /* xglobject.h */,
 				591997331D63F00D003F62FF /* xglprimitives.h */,
 				591997341D63F00D003F62FF /* xglprojector.cpp */,
@@ -1655,6 +1663,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				597FDBA31E1A1D7B00E449B0 /* xmavlink.cpp in Sources */,
+				597FDBA21E1A18E000E449B0 /* xobject.cpp in Sources */,
 				596F77A51E01FDFA0079D370 /* xglgui.cpp in Sources */,
 				594FA8271DC6CD3E0071DE06 /* xavenc.cpp in Sources */,
 				5912EC771DB84092006837B9 /* xav.cpp in Sources */,
@@ -1678,7 +1688,6 @@
 				591997561D63F261003F62FF /* xglfont.cpp in Sources */,
 				591997571D63F261003F62FF /* xgllight.cpp in Sources */,
 				591997581D63F261003F62FF /* xglmaterial.cpp in Sources */,
-				591997591D63F261003F62FF /* xglobject.cpp in Sources */,
 				5919975A1D63F261003F62FF /* xglprojector.cpp in Sources */,
 				5919975B1D63F261003F62FF /* xglshader.cpp in Sources */,
 				5919975C1D63F261003F62FF /* xglshapes.cpp in Sources */,
@@ -1692,13 +1701,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				596F77A41E01FD9C0079D370 /* xglgui.cpp in Sources */,
+				596DEB901DDE7EC2001D604C /* ExampleGUI.cpp in Sources */,
+				5956427B1DB6A640002A756F /* Example01.cpp in Sources */,
 				5962D3891D6B81D8006BCD52 /* main.m in Sources */,
 				599FCC601D6654EB00C57873 /* ExampleXGL.cpp in Sources */,
-				596DEB901DDE7EC2001D604C /* ExampleGUI.cpp in Sources */,
 				5962D3851D6B80AB006BCD52 /* OpenGLView.mm in Sources */,
 				59BEB3E31D6B7FBF00CD09FF /* AppDelegate.m in Sources */,
-				5956427B1DB6A640002A756F /* Example01.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1952,7 +1960,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = /usr/local/include;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/include,
+					"../xclass/3rdParty/mavlink/c_library_v1/**",
+				);
 				"LIBRARY_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/**";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -2001,7 +2012,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = /usr/local/include;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/include,
+					"../xclass/3rdParty/mavlink/c_library_v1/**",
+				);
 				"LIBRARY_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/**";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;

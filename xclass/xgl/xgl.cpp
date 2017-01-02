@@ -101,8 +101,8 @@ XGL::XGL() : clock(0.0f), pb(NULL), fb(NULL), renderGui(false), guiManager(nullp
 	// enabling this takes up GPU time,
 	// mostly because of glReadPixels().
 	// with the encoder in the loop, it's even worse
-	if (config.Find(L"SharedMemory")->AsBool())
-		fb = new XGLSharedFBO(this);
+	//if (config.Find(L"SharedMemory")->AsBool())
+		//fb = new XGLSharedFBO(this);
 }
 
 XGL::~XGL(){
