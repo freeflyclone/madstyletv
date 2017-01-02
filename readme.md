@@ -1,6 +1,6 @@
 ## MadStyle TV - Open source engine for non-gaming applications
 ### OpenGL, C++11, multi-threaded, and cross platform
-This project provides a cross-platform OpenGL / Multimedia framework, to serve as a guide for learning C++, OpenGL and multimedia technologies.
+This project provides a cross-platform OpenGL / Multimedia framework, to serve as examples for learning C++, OpenGL and multimedia technologies.
 
 OpenGL 3.2 core profile at a minimum is required, to be compatible with OSX.
 
@@ -12,5 +12,5 @@ Project build files for Visual Studio 2013 are provided, as that version is avai
 
 XCode project files for OSX users.  I don't claim to be an XCode wiz, there is probably a more elegant structure.
 
-OpenAL, OpenCV and MAVLINK libraries are provided as git submodules.  
+OpenAL, OpenCV and MAVLINK libraries are provided as git submodules.
 
