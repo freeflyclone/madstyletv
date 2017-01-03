@@ -4,24 +4,35 @@
 # which is fairly standard for Linux
 # --------------------------------------------------------
 include ../../topheader.mk
-include $(TOPDIR)/xclass/xclass.mk
 
-all: 
-	@echo making 'all' in 3rdParty
-	(cd openal-soft/build ; cmake .. ; make ; sudo make install)
+#set some variables to see if some 3rdParty library source was fetched
+OPENAL=$(shell ls openal-soft)
+OPENCV=$(shell ls opencv)
 
+all:
+ifeq ($(OPENCV),)
+	@echo opencv is not present.
+else
+	@echo opencv is present
 	# OpenCV is a bit of a monster, running cmake invokes 
 	# a lengthy download, so avoid it if it's not necessary
 	@(if [ ! -d opencv/build ] ;\
-	 then echo opencv/build NOT found ;\
+	then echo opencv/build NOT found ;\
 	 	mkdir opencv/build ; \
 	 	cd opencv/build ; \
 	 	cmake .. ; \
-	 else \
+	else \
 		cd opencv/build ; \
 		make -j 12; \
 		sudo make install ; \
-	 fi)
+	fi)
+endif
+ifeq ($(OPENAL),)
+	@echo openal-soft is not present.
+else
+	(cd openal-soft/build ; cmake .. ; make ; sudo make install) 
+endif
+
 
 clean:
 	@echo making 'clean' in 3rdParty
