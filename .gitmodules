@@ -3,7 +3,7 @@
 	url = https://github.com/mavlink/c_library_v1
 [submodule "xclass/3rdParty/openal-soft"]
 	path = xclass/3rdParty/openal-soft
-	url = git://github.com/kcat/openal-soft.git
+	url = https://github.com/kcat/openal-soft.git
 [submodule "xclass/3rdParty/opencv"]
 	path = xclass/3rdParty/opencv
 	url = https://github.com/opencv/opencv.git

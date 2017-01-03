@@ -6,13 +6,16 @@
     <LibDir Condition="'$(PlatformTarget)'=='x86'">Win32</LibDir>
   </PropertyGroup>
   <PropertyGroup>
-    <IncludePath>$(OPENAL_DIR)\include;$(OPENAL_DIR)\include\AL;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\xclass\3rdParty\openal-soft\include;$(SolutionDir)\xclass\3rdParty\openal-soft\include\AL;$(IncludePath)</IncludePath>
     <LibraryPath>$(OPENAL_DIR)\libs\$(LibDir);$(OPENAL_DIR)\libs\$(LibDir)\EFX-Util_MT;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
       <AdditionalDependencies>OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(SolutionDir)\xclass\3rdParty\openal-soft\bin\openal32.dll $(SolutionDir)\bin</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup />
 </Project>
