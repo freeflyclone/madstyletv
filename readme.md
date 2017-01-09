@@ -14,3 +14,5 @@ XCode project files for OSX users.  I don't claim to be an XCode wiz, there is p
 
 OpenAL, OpenCV and MAVLINK libraries are provided as git submodules.
 
+Short demo videos are available on [YouTube](https://www.youtube.com/user/freeflyclone).
+
