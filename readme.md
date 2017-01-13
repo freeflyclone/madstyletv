@@ -14,3 +14,10 @@ XCode project files for OSX users.  I don't claim to be an XCode wiz, there is p
 
 OpenAL, OpenCV and MAVLINK libraries are provided as git submodules.
 
+Short demo videos are available on [YouTube](https://www.youtube.com/user/freeflyclone):
+* [XGL Framework Demo](https://www.youtube.com/watch?v=pleL5WhYqtw)
+* [XGL : GPU Motion Estimation](https://www.youtube.com/watch?v=bW9WzMeHrvI)
+* [XGL : GoPro Footage Demo](https://www.youtube.com/watch?v=XIiSj0IpTiE)
+* [XGL : PhysX Integration](https://www.youtube.com/watch?v=FxgMU4fQaCU)
+* [XGL : Mavlink](https://www.youtube.com/watch?v=AA7rEu70190)
+
