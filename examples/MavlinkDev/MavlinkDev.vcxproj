@@ -58,24 +58,28 @@
     <Import Project="..\..\xclass\ffmpeg.props" />
     <Import Project="..\..\xclass\xclass.props" />
     <Import Project="..\..\xclass\mavlink.props" />
+    <Import Project="..\..\xclass\ftdi.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\xclass\ffmpeg.props" />
     <Import Project="..\..\xclass\xclass.props" />
     <Import Project="..\..\xclass\mavlink.props" />
+    <Import Project="..\..\xclass\ftdi.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\xclass\ffmpeg.props" />
     <Import Project="..\..\xclass\xclass.props" />
     <Import Project="..\..\xclass\mavlink.props" />
+    <Import Project="..\..\xclass\ftdi.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\xclass\ffmpeg.props" />
     <Import Project="..\..\xclass\xclass.props" />
     <Import Project="..\..\xclass\mavlink.props" />
+    <Import Project="..\..\xclass\ftdi.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -179,9 +183,11 @@
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
     <ClCompile Include="MavlinkDevBuildScene.cpp" />
+    <ClCompile Include="xftdi.cpp" />
     <ClCompile Include="xmavlink.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="xftdi.h" />
     <ClInclude Include="xmavlink.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
