@@ -304,5 +304,6 @@
     <None Include="mavlink.props" />
     <None Include="OpenAL.props" />
     <None Include="OpenCV.props" />
+    <None Include="ftdi.props" />
   </ItemGroup>
 </Project>

@@ -17,6 +17,25 @@ XFtdi *ftdi;
 
 XGLShape *shape;
 
+class GPIOThread : public XObject,  public XThread {
+public:
+	GPIOThread(XFtdi *x) : XThread("LickMe"), ftdi(x) { Start(); }
+	~GPIOThread() { Stop(); }
+	void Run() {
+		unsigned char bit = 0xFF;
+		while (IsRunning()) {
+			ftdi->WriteGPIO(bit, bit);
+			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(20));
+			ftdi->WriteGPIO(bit, 0x00);
+			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(20));
+		}
+	}
+
+	XFtdi *ftdi;
+};
+
+GPIOThread *gpioThread;
+
 void ExampleXGL::BuildScene() {
 
 	AddShape("shaders/specular", [&](){shape = new XGLSphere(1.0, 64); return shape; });

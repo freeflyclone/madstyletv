@@ -68,6 +68,9 @@ public:
 	void AddListener(uint8_t, Listener);
 	void AddListener(Listener);
 
+	void WriteGPIO(uint8_t dir, uint8_t value);
+	void ReadGPIO(uint8_t *value);
+
 private:
 	ReadThread *rThread;
 	WriteThread *wThread;

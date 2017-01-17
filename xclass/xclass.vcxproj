@@ -293,6 +293,7 @@
     <None Include="3rdParty\3rdPartyCopy.proj">
       <SubType>Designer</SubType>
     </None>
+    <None Include="ftdi.props" />
     <None Include="mavlink.props" />
     <None Include="OpenAL.props" />
     <None Include="OpenCV.props">

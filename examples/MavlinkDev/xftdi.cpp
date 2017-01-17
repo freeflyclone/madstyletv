@@ -32,7 +32,12 @@ XFtdi::WriteThread::~WriteThread() {
 
 void XFtdi::WriteThread::Run() {
 	while (IsRunning()) {
-		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(100));
+		uint32 nWritten;
+		uint8 buffer[] = { 0x0B, 0x48, 0x00, 0x25, 0x00, 0x04 };
+		FT_STATUS status;
+
+		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
+		status = SPI_Write(pFtdi.ftHandle, buffer, sizeof(buffer), &nWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
 	}
 }
 
@@ -68,6 +73,14 @@ XFtdi::XFtdi() : rThread(NULL), wThread(NULL), devList({ 0 }), channelConf({ 0 }
 	status = SPI_OpenChannel(CHANNEL_TO_OPEN, &ftHandle);
 	APP_CHECK_STATUS(status);
 	xprintf("handle: %0x%x\n", (unsigned int)ftHandle);
+
+	channelConf.ClockRate = 1000000;
+	channelConf.LatencyTimer = 255;
+	channelConf.configOptions = SPI_CONFIG_OPTION_MODE0 | SPI_CONFIG_OPTION_CS_DBUS3;
+	channelConf.Pin = 0x00000000;
+
+	status = SPI_InitChannel(ftHandle, &channelConf);
+	APP_CHECK_STATUS(status);
 }
 
 XFtdi::~XFtdi() {
@@ -89,4 +102,15 @@ void XFtdi::AddListener(uint8_t msgid, Listener fn) {
 // attach a Listener for ALL msgids
 void XFtdi::AddListener(Listener fn) {
 	listeners.push_back(fn);
+}
+
+void XFtdi::WriteGPIO(uint8_t dir, uint8_t value) {
+	status = FT_WriteGPIO(ftHandle, dir, value);
+	APP_CHECK_STATUS(status);
+	xprintf("WriteGPIO(%02X,%02X)\n", dir, value);
+}
+
+void XFtdi::ReadGPIO(uint8_t *value) {
+	status = FT_ReadGPIO(ftHandle, value);
+	APP_CHECK_STATUS(status);
 }
