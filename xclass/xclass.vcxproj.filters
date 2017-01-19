@@ -302,5 +302,7 @@
     <None Include="xclass-copy.proj" />
     <None Include="xclass.props" />
     <None Include="mavlink.props" />
+    <None Include="OpenAL.props" />
+    <None Include="OpenCV.props" />
   </ItemGroup>
 </Project>
