@@ -195,6 +195,12 @@
     <ClInclude Include="xobject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xuartascii.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xftdi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xgl\xglbuffer.cpp">
@@ -294,6 +300,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="xobject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xuartascii.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xftdi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

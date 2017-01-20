@@ -58,24 +58,28 @@
     <Import Project="ffmpeg.props" />
     <Import Project="xclass.props" />
     <Import Project="OpenAL.props" />
+    <Import Project="ftdi.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="ffmpeg.props" />
     <Import Project="xclass.props" />
     <Import Project="OpenAL.props" />
+    <Import Project="ftdi.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="ffmpeg.props" />
     <Import Project="xclass.props" />
     <Import Project="OpenAL.props" />
+    <Import Project="ftdi.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="ffmpeg.props" />
     <Import Project="xclass.props" />
     <Import Project="OpenAL.props" />
+    <Import Project="ftdi.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -226,6 +230,7 @@
     <ClInclude Include="xconfig.h" />
     <ClInclude Include="xcircularbuffer.h" />
     <ClInclude Include="xfifo.h" />
+    <ClInclude Include="xftdi.h" />
     <ClInclude Include="xgl\glew.h" />
     <ClInclude Include="xgl\glxew.h" />
     <ClInclude Include="xgl\wglew.h" />
@@ -252,6 +257,7 @@
     <ClInclude Include="xthread.h" />
     <ClInclude Include="xtimer.h" />
     <ClInclude Include="xuart.h" />
+    <ClInclude Include="xuartascii.h" />
     <ClInclude Include="xutils.h" />
   </ItemGroup>
   <ItemGroup>
@@ -268,6 +274,7 @@
     <ClCompile Include="xav\xavenc.cpp" />
     <ClCompile Include="xav\xavfile.cpp" />
     <ClCompile Include="xav\xavsrc.cpp" />
+    <ClCompile Include="xftdi.cpp" />
     <ClCompile Include="xgl\glew.c" />
     <ClCompile Include="xgl\xgl.cpp" />
     <ClCompile Include="xgl\xglbuffer.cpp" />
@@ -287,6 +294,7 @@
     <ClCompile Include="xobject.cpp" />
     <ClCompile Include="xshmem.cpp" />
     <ClCompile Include="xuart.cpp" />
+    <ClCompile Include="xuartascii.cpp" />
     <ClCompile Include="xutils.c" />
   </ItemGroup>
   <ItemGroup>

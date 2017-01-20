@@ -183,12 +183,6 @@
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
     <ClCompile Include="MavlinkDevBuildScene.cpp" />
-    <ClCompile Include="xftdi.cpp" />
-    <ClCompile Include="xmavlink.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="xftdi.h" />
-    <ClInclude Include="xmavlink.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

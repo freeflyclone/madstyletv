@@ -11,10 +11,10 @@
 #include "ExampleXGL.h"
 #include "xmavlink.h" 
 #include "xuartascii.h"
-//#include "xftdi.h"
+#include "xftdi.h"
 
 XMavlink *mavlink;
-//XFtdi *ftdi;
+XFtdi *ftdi;
 XUartAscii *ascii;
 
 XGLShape *shape;
