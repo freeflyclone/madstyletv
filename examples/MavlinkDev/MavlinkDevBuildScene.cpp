@@ -10,10 +10,12 @@
 **************************************************************/
 #include "ExampleXGL.h"
 #include "xmavlink.h" 
-#include "xftdi.h"
+#include "xuartascii.h"
+//#include "xftdi.h"
 
 XMavlink *mavlink;
-XFtdi *ftdi;
+//XFtdi *ftdi;
+XUartAscii *ascii;
 
 XGLShape *shape;
 
@@ -56,8 +58,8 @@ void ExampleXGL::BuildScene() {
         //mavlink = new XMavlink("\\\\.\\COM17");
         //mavlink = new XMavlink("/dev/ttyACM0");
 
-		ftdi = new XFtdi();
-		shape->AddChild(ftdi);
+		//ftdi = new XFtdi();
+		//shape->AddChild(ftdi);
 
 		// We're going to be adding an XMavlink::Listener for this shape, which is called
 		// in the XMavlink::ReceiveThread (ie: not this thread) context.  Depending on
@@ -86,6 +88,12 @@ void ExampleXGL::BuildScene() {
 			shape->model = rotate * scale;
 		});
 		*/
+
+        ascii = new XUartAscii("/dev/ttyACM0");
+        shape->AddChild(ascii);
+        ascii->AddListener([&](unsigned char *b) {
+            xprintf("Got a line: %s", b);
+        });
 	}
 	catch (std::runtime_error e) {
 		xprintf("Well that didn't work out: %s\n", e.what());

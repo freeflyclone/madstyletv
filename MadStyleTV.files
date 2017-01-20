@@ -20,8 +20,6 @@ examples/Example05/Example05BuildScene.cpp
 examples/GUIDev/GUIDevBuildScene.cpp
 examples/GUIDev/GUIDevGUI.cpp
 examples/MavlinkDev/MavlinkDevBuildScene.cpp
-examples/MavlinkDev/xmavlink.cpp
-examples/MavlinkDev/xmavlink.h
 examples/OpenALTest/OpenALTestBuildScene.cpp
 examples/OpenCVTest/OpenCVTestBuildScene.cpp
 examples/OpenCVWebcam/OpenCVWebcamBuildScene.cpp
@@ -638,3 +636,9 @@ examples/Makefile
 xclass/3rdParty/Makefile
 toplevel.mk
 examples/Example02/Makefile
+examples/PhysXTest/physx-main.cpp
+examples/PhysXTest/Makefile
+xclass/xmavlink.h
+xclass/xmavlink.cpp
+examples/MavlinkDev/xuartsensor.h
+examples/MavlinkDev/xuartsensor.cpp
