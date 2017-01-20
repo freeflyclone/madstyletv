@@ -22,6 +22,7 @@ CPPSOURCES=${XGLDIR}/xgl.cpp \
 	${XCLASSDIR}/xshmem.cpp \
 	${XCLASSDIR}/xobject.cpp \
 	${XCLASSDIR}/xuart.cpp \
+	${XCLASSDIR}/xuartascii.cpp \
 	${XCLASSDIR}/xmavlink.cpp \
 	${XAVDIR}/xavenc.cpp \
 # uncomment these to add multimedia playback within the framework.

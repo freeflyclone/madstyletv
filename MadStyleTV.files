@@ -640,3 +640,5 @@ examples/PhysXTest/physx-main.cpp
 examples/PhysXTest/Makefile
 xclass/xmavlink.h
 xclass/xmavlink.cpp
+examples/MavlinkDev/xuartsensor.h
+examples/MavlinkDev/xuartsensor.cpp
