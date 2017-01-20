@@ -66,7 +66,7 @@ XFtdi::XFtdi() : rThread(NULL), wThread(NULL), devList({ 0 }), channelConf({ 0 }
 		xprintf("        LocId=0x%x\n", devList.LocId);
 		xprintf("        SerialNumber=%s\n", devList.SerialNumber);
 		xprintf("        Description=%s\n", devList.Description);
-		xprintf("        ftHandle=0x%x\n", (unsigned int)devList.ftHandle);/*is 0 unless open*/
+		xprintf("        ftHandle=0x%x\n", (unsigned int)devList.ftHandle);
 	}
 	xprintf("Found %d channel%s\n", channels, (channels>1)?"s":"");
 
@@ -81,6 +81,68 @@ XFtdi::XFtdi() : rThread(NULL), wThread(NULL), devList({ 0 }), channelConf({ 0 }
 
 	status = SPI_InitChannel(ftHandle, &channelConf);
 	APP_CHECK_STATUS(status);
+
+	/*
+	if (FT_CreateDeviceInfoList(&numDevs) != FT_OK)
+		throw std::runtime_error("FT_CreateDeviceInfoList() failed");
+
+	if (numDevs < 1)
+		throw std::runtime_error("No FTDI devices found");
+
+	xprintf("Found %d devices\n", numDevs);
+
+	if (FT_Open(0, &ftHandle) != FT_OK)
+		throw std::runtime_error("Unable to open the first device");
+
+	status = FT_ResetDevice(ftHandle);
+	status |= FT_GetQueueStatus(ftHandle, &numBytesToRead);
+
+	if ((status == FT_OK) && (numBytesToRead > 0)) {
+		status |= FT_Read(ftHandle, inBuffer, numBytesToRead, &numBytesRead);
+	}
+
+	status |= FT_SetUSBParameters(ftHandle, 0x10000, 0xFFFF);
+	status |= FT_SetChars(ftHandle, false, 0, false, 0);
+	status |= FT_SetTimeouts(ftHandle, 0, 5000);
+	status |= FT_SetLatencyTimer(ftHandle, 1);
+	status |= FT_SetFlowControl(ftHandle, FT_FLOW_RTS_CTS, 0x00, 0x00);
+	status |= FT_SetBitMode(ftHandle, 0x00, 0x00);
+	status |= FT_SetBitMode(ftHandle, 0x00, 0x02);
+
+	if (status != FT_OK)
+		throw std::runtime_error("Setting up the FTDI for MPSSE didn't work");
+
+	// allow USB to settle
+	std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(50));
+
+	numBytesToSend = 0;
+	outBuffer[numBytesToSend++] = 0xAB;
+
+	status = FT_Write(ftHandle, outBuffer, numBytesToSend, &numBytesSent);
+	numBytesToSend = 0;
+
+	do {
+		status = FT_GetQueueStatus(ftHandle, &numBytesToRead);
+	} while ((numBytesToRead == 0) && (status == FT_OK));
+
+	bool bCommandEchod = false;
+	status = FT_Read(ftHandle, &inBuffer, numBytesToRead, &numBytesRead);
+	//Read out the data from input buffer
+	for (int dwCount = 0; dwCount < numBytesRead - 1; dwCount++)
+		//Check if Bad command and echo command are received
+	{
+		if ((inBuffer[dwCount] == 0xFA) && (inBuffer[dwCount + 1] == 0xAB))
+		{
+			bCommandEchod = true;
+			break;
+		}
+	}
+	if (bCommandEchod == false)
+	{
+		FT_Close(ftHandle);
+		throw std::runtime_error("Error synchronizing the MPSSE");
+	}
+	*/
 }
 
 XFtdi::~XFtdi() {

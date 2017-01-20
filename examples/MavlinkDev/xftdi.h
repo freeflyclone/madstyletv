@@ -81,7 +81,15 @@ private:
 	FT_DEVICE_LIST_INFO_NODE devList;
 	ChannelConfig channelConf;
 	FT_HANDLE ftHandle;
+	DWORD numDevs;
 	uint8 buffer[256];
+	uint8 inBuffer[8];
+	uint8 outBuffer[8];
+	DWORD numBytesToSend;
+	DWORD numBytesSent;
+	DWORD numBytesToRead;
+	DWORD numBytesRead;
+
 };
 
 

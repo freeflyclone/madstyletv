@@ -4,10 +4,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <IncludePath>$(XCLASS_DIR)\3rdParty\ftdi\include;$(XCLASS_DIR)\3rdParty\ftdi\include\windows;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\xclass\3rdParty\ftdi\lib\windows\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalDependencies>libMPSSE.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libMPSSE.lib;ftd2xx.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup />
