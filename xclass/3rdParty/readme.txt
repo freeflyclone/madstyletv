@@ -4,6 +4,7 @@ that utilize them will not be built.
 
 They are:
 	mavlink/c_library_v1
+	libMPSSE
 	openal-soft
 	opencv
 
@@ -14,5 +15,6 @@ Be advised: opencv is big and takes awhile to clone and build.
 The following commands will initialize them from GitHub:
 
 	git submodule init mavlink/c_library_v1 ; git submodule update
+	git submodule init libMPSSE ; git submodule update
 	git submodule init openal-soft ; git submodule update
 	git submodule init opencv ; git submodule update
