@@ -17,29 +17,30 @@ XUartAscii::ReadThread::~ReadThread() {
 // Call Listener functions with each line read.
 void XUartAscii::ReadThread::Run() {
 	while (IsRunning()) {
-		pAscii.Read(&cp,1);
-        //putchar(cp);
+		if (pAscii.Read(&cp,1)==0)
+			continue;
 
-        switch(state) {
-            case NotSynced:
-                if(cp == '\n') {
-                    state = Synced;
-                    puts("Synced");
-                }
-                break;
+		switch(state) {
+			case NotSynced:
+				if(cp == '\n') {
+					state = Synced;
+					puts("Synced");
+				}
+				break;
 
-            case Synced:
-                if ((insertPoint >= buffer) && (insertPoint <= buffer+sizeof(buffer)-1))
-                    *insertPoint++ = cp;
+			case Synced:
+				if ((insertPoint >= buffer) && (insertPoint <= (buffer+sizeof(buffer)-1)))
+					*insertPoint++ = cp;
 
-                if (cp == '\n') {
-                    *insertPoint++ = 0;
-                    for (auto fn : pAscii.listeners)
-                        fn(buffer);
-                    insertPoint = buffer;
-                }
-                break;
-        }
+					if (cp == '\n') {
+						*insertPoint++ = 0;
+						for (auto fn : pAscii.listeners)
+							fn(buffer);
+						insertPoint = buffer;
+						cp = 0;
+					}
+				break;
+		}
     }
 }
 

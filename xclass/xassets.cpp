@@ -50,6 +50,8 @@ JSONValue* XAssets::Find(std::wstring name) const {
 }
 
 std::string XAssets::WideToBytes(const std::wstring &wstr){
+	throw std::runtime_error("XAssets::WideToBytes is not implemented!");
+
 	// found this on Stack Overflow, but it doesn't work on gcc 4.9.1
 	//return std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t>().to_bytes(wstr);
 

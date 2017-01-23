@@ -95,6 +95,11 @@ void ExampleXGL::BuildScene() {
         ascii->AddListener([&](unsigned char *b) {
             xprintf("Got a line: %s", b);
         });
+        std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(2000));
+        unsigned char cmd = 's';
+        ascii->Write(&cmd, 1);
+        cmd = 'r';
+        ascii->Write(&cmd, 1);
 	}
 	catch (std::runtime_error e) {
 		xprintf("Well that didn't work out: %s\n", e.what());
