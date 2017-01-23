@@ -24,6 +24,8 @@ CXXFLAGS +=-std=c++14\
 	-I${THIRDPARTYDIR}/soil/src \
 	-I${THIRDPARTYDIR}/freetype/include/freetype2 \
 	-I${THIRDPARTYDIR}/mavlink/c_library_v1 \
+	-I${THIRDPARTYDIR}/ftdi/include \
+	-I${THIRDPARTYDIR}/ftdi/include/linux \
 	-I${XCLASSDIR} \
 	-I/usr/include/AL \
 	-I/usr/local/include/AL \

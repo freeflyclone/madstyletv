@@ -3,6 +3,7 @@
 
 #include <string>
 #include <sstream>
+#include <stdexcept>
 #include "xutils.h"
 
 #ifdef WIN32

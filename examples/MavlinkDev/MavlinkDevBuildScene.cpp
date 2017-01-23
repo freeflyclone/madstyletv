@@ -11,14 +11,15 @@
 #include "ExampleXGL.h"
 #include "xmavlink.h" 
 #include "xuartascii.h"
-#include "xftdi.h"
+//#include "xftdi.h"
 
 XMavlink *mavlink;
-XFtdi *ftdi;
+//XFtdi *ftdi;
 XUartAscii *ascii;
 
 XGLShape *shape;
 
+/*
 class GPIOThread : public XObject,  public XThread {
 public:
 	GPIOThread(XFtdi *x) : XThread("LickMe"), ftdi(x) { Start(); }
@@ -37,7 +38,7 @@ public:
 };
 
 GPIOThread *gpioThread;
-
+*/
 void ExampleXGL::BuildScene() {
 
 	AddShape("shaders/specular", [&](){shape = new XGLSphere(1.0, 64); return shape; });
