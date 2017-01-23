@@ -195,6 +195,12 @@
     <ClInclude Include="xobject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xuartascii.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xftdi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xgl\xglbuffer.cpp">
@@ -296,6 +302,12 @@
     <ClCompile Include="xobject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="xuartascii.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xftdi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="3rdParty\3rdPartyCopy.proj" />
@@ -304,5 +316,6 @@
     <None Include="mavlink.props" />
     <None Include="OpenAL.props" />
     <None Include="OpenCV.props" />
+    <None Include="ftdi.props" />
   </ItemGroup>
 </Project>
