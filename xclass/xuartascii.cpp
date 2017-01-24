@@ -65,14 +65,11 @@ void XUartAscii::WriteThread::Run() {
 // XUartAscii main class
 // ---------------------------
 XUartAscii::XUartAscii(std::string n) : XUart(n), rThread(NULL), wThread(NULL) {
-	xprintf("XUartAscii::XUartAscii()\n");
-
 	rThread = new ReadThread(*this);
 	wThread = new WriteThread(*this);
 }
 
 XUartAscii::~XUartAscii() {
-	xprintf("XUartAscii::~XUartAscii()\n");
 	if (rThread)
 		delete rThread;
 	if (wThread)
