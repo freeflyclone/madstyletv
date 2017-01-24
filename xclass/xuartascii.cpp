@@ -4,6 +4,7 @@
 // XUartAscii::ReadThread class
 // --------------------------
 XUartAscii::ReadThread::ReadThread(XUartAscii &ps) : XThread("XUartAscii::ReadThread"), pAscii(ps), state(NotSynced) {
+	memset(buffer, 0, sizeof(buffer));
     insertPoint = buffer;
 	Start();
 }
