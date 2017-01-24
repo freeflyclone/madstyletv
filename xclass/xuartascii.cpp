@@ -24,7 +24,6 @@ void XUartAscii::ReadThread::Run() {
 			case NotSynced:
 				if(cp == '\n') {
 					state = Synced;
-					puts("Synced");
 				}
 				break;
 
