@@ -22,6 +22,10 @@ static ExampleXGL *exgl = NULL;
 #define OPENGL_MINOR_VERSION 2
 #endif
 
+#ifndef GLFW_WINDOW_TITLE
+#define GLFW_WINDOW_TITLE "Mad Style TV Example"
+#endif
+
 #ifdef _WIN32
 void SetGlobalWorkingDirectoryName()
 {
@@ -135,7 +139,7 @@ int main(void) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, OPENGL_MINOR_VERSION);
 	glfwWindowHint(GLFW_SAMPLES, 8);
 
-	window = glfwCreateWindow(1280, 720, "Mad Style TV Example", NULL, NULL);
+	window = glfwCreateWindow(1280, 720, GLFW_WINDOW_TITLE, NULL, NULL);
 	if (!window) {
 		printf("glfwCreateWindow() failed\n");
 		glfwTerminate();
