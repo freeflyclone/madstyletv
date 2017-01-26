@@ -5,6 +5,10 @@
   <PropertyGroup>
     <IncludePath>$(ProjectDir);$(XCLASS_DIR)\..\examples\common;$(IncludePath)</IncludePath>
   </PropertyGroup>
-  <ItemDefinitionGroup />
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies>xclass.lib;freetype.lib;expat.lib;opengl32.lib;glu32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup />
 </Project>
