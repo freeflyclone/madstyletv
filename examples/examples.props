@@ -9,6 +9,9 @@
     <Link>
       <AdditionalDependencies>xclass.lib;freetype.lib;expat.lib;opengl32.lib;glu32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ClCompile>
+      <PreprocessorDefinitions>_USE_MATH_DEFINES;XML_STATIC;GLEW_STATIC;WIN32;TW_STATIC;_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />
 </Project>
