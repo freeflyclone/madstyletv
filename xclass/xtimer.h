@@ -8,6 +8,7 @@
 #include "xutils.h"
 
 #ifdef _WIN32
+#include <Windows.h>
 class XTimer {
 public:
 	XTimer() {
