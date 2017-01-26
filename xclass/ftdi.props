@@ -8,7 +8,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalDependencies>libMPSSE.lib;ftd2xx.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libMPSSE.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup />
