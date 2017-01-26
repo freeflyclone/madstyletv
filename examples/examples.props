@@ -3,7 +3,7 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <IncludePath>$(ProjectDir);$(SolutionDir)\examples\common;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);$(XCLASS_DIR)\..\examples\common;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup />
   <ItemGroup />
