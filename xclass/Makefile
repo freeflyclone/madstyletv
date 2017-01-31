@@ -52,6 +52,8 @@ LIB_OBJS += $(patsubst %.c,%.o,${CSOURCES})
 
 all: ${XCLASSBASELIB} ${XCLASSLIB}
 
+base: ${XCLASSBASELIB}
+
 ${XCLASSLIB}: ${LIB_OBJS}
 	${AR} rcs ${XCLASSLIB} $? 
 
