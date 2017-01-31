@@ -1,7 +1,23 @@
 include ../topheader.mk
 include $(TOPDIR)/xclass/xclass.mk
 
-CPPSOURCES=${XGLDIR}/xgl.cpp \
+XCLASS_BASE_CPPSOURCES=\
+	${XCLASSDIR}/xassets.cpp \
+	${XCLASSDIR}/xinput.cpp \
+	${XCLASSDIR}/JSON.cpp \
+	${XCLASSDIR}/JSONValue.cpp \
+	${XCLASSDIR}/xshmem.cpp \
+	${XCLASSDIR}/xobject.cpp \
+	${XCLASSDIR}/xuart.cpp \
+	${XCLASSDIR}/xuartascii.cpp \
+	${XCLASSDIR}/xmavlink.cpp
+
+XCLASS_BASE_CSOURCES=\
+	${XCLASSDIR}/xutils.c
+
+CPPSOURCES=\
+	${XCLASS_BASE_CPPSOURCES} \
+	${XGLDIR}/xgl.cpp \
 	${XGLDIR}/xglbuffer.cpp \
 	${XGLDIR}/xglcamera.cpp \
 	${XGLDIR}/xglfont.cpp \
@@ -15,15 +31,6 @@ CPPSOURCES=${XGLDIR}/xgl.cpp \
 	${XGLDIR}/xgluniform.cpp \
 	${XGLDIR}/xglworldcursor.cpp \
 	${XALDIR}/xal.cpp \
-	${XCLASSDIR}/xassets.cpp \
-	${XCLASSDIR}/xinput.cpp \
-	${XCLASSDIR}/JSON.cpp \
-	${XCLASSDIR}/JSONValue.cpp \
-	${XCLASSDIR}/xshmem.cpp \
-	${XCLASSDIR}/xobject.cpp \
-	${XCLASSDIR}/xuart.cpp \
-	${XCLASSDIR}/xuartascii.cpp \
-	${XCLASSDIR}/xmavlink.cpp \
 	${XAVDIR}/xavenc.cpp \
 # uncomment these to add multimedia playback within the framework.
 #	${XAVDIR}/xav.cpp \
@@ -31,22 +38,29 @@ CPPSOURCES=${XGLDIR}/xgl.cpp \
 
 
 CSOURCES=${XGLDIR}/glew.c \
-	${XCLASSDIR}/xutils.c \
+	${XCLASS_BASE_CSOURCES} \
 	${THIRDPARTYDIR}/soil/src/image_DXT.c \
 	${THIRDPARTYDIR}/soil/src/image_helper.c \
 	${THIRDPARTYDIR}/soil/src/SOIL.c \
 	${THIRDPARTYDIR}/soil/src/stb_image_aug.c \
 
+BASE_OBJS = $(patsubst %.cpp,%.o,${XCLASS_BASE_CPPSOURCES})
+BASE_OBJS += $(patsubst %.c,%.o,${XCLASS_BASE_CSOURCES})
 
 LIB_OBJS = $(patsubst %.cpp,%.o,${CPPSOURCES})
 LIB_OBJS += $(patsubst %.c,%.o,${CSOURCES})
 
-all: ${XCLASSLIB}
+all: ${XCLASSBASELIB} ${XCLASSLIB}
 
 ${XCLASSLIB}: ${LIB_OBJS}
 	${AR} rcs ${XCLASSLIB} $? 
 
+${XCLASSBASELIB}: ${BASE_OBJS}
+	${AR} rcs ${XCLASSBASELIB} $? 
+
 clean:
+	@-rm -rf ${BASE_OBJS}
 	@-rm -rf ${LIB_OBJS}
 	@-rm -rf ${XCLASSLIB}
+	@-rm -rf ${XCLASSBASELIB}
 

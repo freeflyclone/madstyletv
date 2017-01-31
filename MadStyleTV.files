@@ -642,3 +642,7 @@ xclass/xmavlink.h
 xclass/xmavlink.cpp
 examples/MavlinkDev/xuartsensor.h
 examples/MavlinkDev/xuartsensor.cpp
+xclass/xmavlink.h
+xclass/xmavlink.cpp
+xclass/xuartascii.h
+xclass/xuartascii.cpp

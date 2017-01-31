@@ -6,6 +6,7 @@
 #-----------------------------------------------
 export
 
+XCLASSBASELIB=libxclass_base.a
 XCLASSLIB=libxclass.a
 
 # map environment variables to internal variables
