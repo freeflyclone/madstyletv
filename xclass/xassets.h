@@ -21,6 +21,8 @@
 //#include <codecvt>
 #include <iostream>
 #include <sstream>
+#include <fstream>
+#include "xutils.h"
 
 class XAssets : public JSONValue {
 public:

@@ -25,3 +25,17 @@ PROGRAM_BUILD =$(CXX) -g -o $@ $^ $(LDFLAGS) $(LIBS) ; cp $@ $(TOPDIR)bin
 PROGRAM_OBJS = $(patsubst %.cpp,%.o,$(PROGRAM_SOURCES))
 
 ECHO_VARS = @echo PROGRAM_SOURCES: $(PROGRAM_SOURCES) PROGRAM_OBJS: $(PROGRAM_OBJS)
+
+# Change the tools to allow for cross compilation by setting CROSS_COMPILE
+# to a toolchain prefix
+CXX = $(CROSS_COMPILE)g++
+CC = $(CROSS_COMPILE)gcc
+AS = $(CROSS_COMPILE)as
+AR = $(CROSS_COMPILE)ar
+NM = $(CROSS_COMPILE)nm
+LD = $(CROSS_COMPILE)ld
+OBJDUMP = $(CROSS_COMPILE)objdump
+OBJCOPY = $(CROSS_COMPILE)objcopy
+RANLIB = $(CROSS_COMPILE)ranlib
+STRIP = $(CROSS_COMPILE)strip
+

@@ -1,4 +1,3 @@
-#include "xgl.h"
 #include "xassets.h"
 
 XAssets::XAssets(std::string file) {
