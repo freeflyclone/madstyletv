@@ -201,6 +201,9 @@
     <ClInclude Include="xftdi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xmavlink.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xgl\xglbuffer.cpp">
@@ -306,6 +309,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="xftdi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xmavlink.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
