@@ -19,26 +19,6 @@ XUartAscii *ascii;
 
 XGLShape *shape;
 
-/*
-class GPIOThread : public XObject,  public XThread {
-public:
-	GPIOThread(XFtdi *x) : XThread("LickMe"), ftdi(x) { Start(); }
-	~GPIOThread() { Stop(); }
-	void Run() {
-		unsigned char bit = 0xFF;
-		while (IsRunning()) {
-			ftdi->WriteGPIO(bit, bit);
-			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(20));
-			ftdi->WriteGPIO(bit, 0x00);
-			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(20));
-		}
-	}
-
-	XFtdi *ftdi;
-};
-
-GPIOThread *gpioThread;
-*/
 void ExampleXGL::BuildScene() {
 
 	AddShape("shaders/specular", [&](){shape = new XGLSphere(1.0, 64); return shape; });
@@ -57,10 +37,7 @@ void ExampleXGL::BuildScene() {
 		// of the serial port specifies which UART our MAVLINK device is connected to.
 		// This should come from the configuration file.
         //mavlink = new XMavlink("\\\\.\\COM17");
-        //mavlink = new XMavlink("/dev/ttyACM0");
-
-		//ftdi = new XFtdi();
-		//shape->AddChild(ftdi);
+        mavlink = new XMavlink("/dev/ttyACM0");
 
 		// We're going to be adding an XMavlink::Listener for this shape, which is called
 		// in the XMavlink::ReceiveThread (ie: not this thread) context.  Depending on
@@ -68,10 +45,9 @@ void ExampleXGL::BuildScene() {
 		// as the Listener is being called, and the Listener will crash.  By making
 		// "mavlink" an XObject child of "shape", it will get deleted first, thus preventing
 		// an invalid callback from occuring.
-		//shape->AddChild(mavlink);
+        shape->AddChild(mavlink);
 
 		// add a XMavlink::Listener function for ATTITUDE messages, that will move "shape" accordingly
-		/*
 		mavlink->AddListener(MAVLINK_MSG_ID_ATTITUDE, [&](mavlink_message_t msg){
 			mavlink_attitude_t attitude;
 			mavlink_msg_attitude_decode(&msg, &attitude);
@@ -88,18 +64,7 @@ void ExampleXGL::BuildScene() {
 			// apply combined rotation and scale to the shape's model matrix
 			shape->model = rotate * scale;
 		});
-		*/
 
-        ascii = new XUartAscii("/dev/ttyACM0");
-        shape->AddChild(ascii);
-        ascii->AddListener([&](unsigned char *b) {
-            xprintf("Got a line: %s", b);
-        });
-        std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(2000));
-        unsigned char cmd = 's';
-        ascii->Write(&cmd, 1);
-        cmd = 'r';
-        ascii->Write(&cmd, 1);
 	}
 	catch (std::runtime_error e) {
 		xprintf("Well that didn't work out: %s\n", e.what());
