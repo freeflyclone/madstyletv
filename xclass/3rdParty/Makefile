@@ -8,6 +8,7 @@ include ../../topheader.mk
 #set some variables to see if some 3rdParty library source was fetched
 OPENAL=$(shell ls openal-soft)
 OPENCV=$(shell ls opencv)
+MOSQUITTO=$(shell ls mosquitto)
 
 all:
 ifeq ($(OPENCV),)
@@ -33,9 +34,19 @@ else
 	(cd openal-soft/build ; cmake .. ; make ; sudo make install) 
 endif
 
-
 clean:
 	@echo making 'clean' in 3rdParty
 	@rm -rf openal-soft/build/*
-	@(if [ -d opencv/build ] ; then cd opencv/build ; make clean ; fi)
+	@-(cd mosquitto && make clean)
+	#@(if [ -d opencv/build ] ; then cd opencv/build ; make clean ; fi)
 
+mosquitto: mosquitto/src/mosquitto
+
+mosquitto/src/mosquitto:
+ifeq ($(MOSQUITTO),)
+	@echo mosquitto folder not found, cloning from github.com...
+	git clone https://github.com/eclipse/mosquitto.git
+else
+	@echo mosquitto found!
+endif
+	(cd mosquitto && make WITH_SRV=no WITH_UUID=no binary && sudo make install)
