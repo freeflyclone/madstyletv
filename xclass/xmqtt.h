@@ -51,6 +51,8 @@ public:
 	void AddMessageListener(MessageListener);
 	int AddMessageListener(std::string, MessageListener);
 
+	int Publish(std::string, int, void *, int);
+
 	std::string ConnectState(int c);
 
 private:

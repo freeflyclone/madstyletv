@@ -95,3 +95,8 @@ int XMqtt::AddMessageListener(std::string topic, MessageListener l) {
 std::string XMqtt::ConnectState(int s) {
 	return connectStates[s];
 }
+
+int XMqtt::Publish(std::string topic, int length, void *payload, int qos) {
+	return mosquitto_publish(mq, NULL, topic.c_str(), length, payload, qos, false);
+}
+
