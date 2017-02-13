@@ -4,6 +4,7 @@ SUBDIRS=Example02 \
 	OpenCVWebcam \
 	MavlinkDev \
 	MqttDev \
+	MqttMav \
 	PhysXTest \
 	ComputeShaderTest \
 	SDFTest \
