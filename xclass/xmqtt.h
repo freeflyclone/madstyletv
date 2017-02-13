@@ -15,8 +15,13 @@ public:
     typedef mosquitto *Mqtt;
     typedef const mosquitto_message *Message;
 
-	// define a MessageListener function so lambda's are easier to grok
+	// define Listener functions so lambda's are easier to grok
+	typedef std::function<void(Mqtt, XMqtt*, int)> ConnectListener;
+	typedef std::function<void(Mqtt, XMqtt*, int)> DisconnectListener;
 	typedef std::function<void(Message)> MessageListener;
+
+	typedef std::vector<ConnectListener> ConnectListeners;
+	typedef std::vector<DisconnectListener> DisconnectListeners;
 
 	// A list of MessageListener objects that get called regardless of topic
 	typedef std::vector<MessageListener> MessageListeners;
@@ -38,16 +43,24 @@ public:
 	~XMqtt();
 
     static void ConnectCallback(Mqtt, void *, int);
+    static void DisconnectCallback(Mqtt, void *, int);
     static void MessageCallback(Mqtt, void *, Message);
 
-	int AddMessageListener(std::string, MessageListener);
+	void AddConnectListener(ConnectListener);
+	void AddDisconnectListener(DisconnectListener);
 	void AddMessageListener(MessageListener);
+	int AddMessageListener(std::string, MessageListener);
+
+	std::string ConnectState(int c);
 
 private:
     std::string host;
     int port;
     Mqtt mq;
     LoopThread *loopThread;
+	
+	ConnectListeners connectListeners;
+	DisconnectListeners disconnectListeners;
 	TopicMessageListeners topicMessageListeners;
 	MessageListeners listeners;
 };

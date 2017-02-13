@@ -1,5 +1,15 @@
 #include "xmqtt.h"
 
+namespace {
+	typedef std::vector<std::string> ConnectStates;
+	ConnectStates connectStates = {
+		"Success",
+		"Connection refused: unacceptable protocol version",
+		"Connection refused: identifier rejected",
+		"Connection refused: broker unavailable",
+	};
+}
+
 XMqtt::LoopThread::LoopThread(XMqtt &pm) : XThread("XMqtt::LoopThread"), pMqtt(pm) {
     Start();
 }
@@ -23,6 +33,7 @@ XMqtt::XMqtt(std::string h, int p) : host(h), port(p), loopThread(NULL) {
         throw std::runtime_error("Failed creating a new mosquitto instance " + Name());
 
     mosquitto_connect_callback_set(mq, ConnectCallback);
+    mosquitto_disconnect_callback_set(mq, DisconnectCallback);
     mosquitto_message_callback_set(mq, MessageCallback);
 
     if (mosquitto_connect(mq, host.c_str(), port, 10) != MOSQ_ERR_SUCCESS)
@@ -42,8 +53,15 @@ XMqtt::~XMqtt() {
 void XMqtt::ConnectCallback(Mqtt mq, void *obj, int result) {
     XMqtt *p = (XMqtt *)obj;
 
-    xprintf("ConnectCallback(): %s, rc=%d\n", p->Name().c_str(), result);
-    // do a MessageListener callback here
+	for (auto fn : p->connectListeners)
+		fn(mq, p, result);
+}
+
+void XMqtt::DisconnectCallback(Mqtt mq, void *obj, int result) {
+    XMqtt *p = (XMqtt *)obj;
+
+	for (auto fn : p->disconnectListeners)
+		fn(mq, p, result);
 }
 
 void XMqtt::MessageCallback(Mqtt mq, void *obj, Message msg) {
@@ -55,6 +73,18 @@ void XMqtt::MessageCallback(Mqtt mq, void *obj, Message msg) {
 		fn(msg);
 }
 
+void XMqtt::AddConnectListener(ConnectListener l) {
+	connectListeners.push_back(l);
+}
+
+void XMqtt::AddDisconnectListener(DisconnectListener l) {
+	disconnectListeners.push_back(l);
+}
+
+void XMqtt::AddMessageListener(MessageListener l) {
+	listeners.push_back(l);
+}
+
 int XMqtt::AddMessageListener(std::string topic, MessageListener l) {
 	int retVal = mosquitto_subscribe(mq, NULL, topic.c_str(), 0);
 	if (retVal == MOSQ_ERR_SUCCESS)
@@ -62,6 +92,6 @@ int XMqtt::AddMessageListener(std::string topic, MessageListener l) {
 	return retVal;
 }
 
-void XMqtt::AddMessageListener(MessageListener l) {
-	listeners.push_back(l);
+std::string XMqtt::ConnectState(int s) {
+	return connectStates[s];
 }
