@@ -17,8 +17,6 @@ void ExampleXGL::BuildScene() {
 
 	try {
         mqtt = new XMqtt();
-
-        shape->AddChild(mqtt);
 	}
 	catch (std::runtime_error e) {
 		xprintf("Well that didn't work out: %s\n", e.what());

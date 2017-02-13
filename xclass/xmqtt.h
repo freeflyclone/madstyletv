@@ -5,9 +5,10 @@
 #include <sstream>
 #include <stdexcept>
 #include <mosquitto.h>
+#include "xobject.h"
 #include "xutils.h"
 
-class XMqtt {
+class XMqtt : public XObject {
 public: 
 	XMqtt();
 	~XMqtt();

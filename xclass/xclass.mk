@@ -48,12 +48,13 @@ CFLAGS +=-std=c11 \
 	-g
 
 LDFLAGS +=\
-        -L${XCLASSDIR} \
-        -L${THIRDPARTYDIR}/glfw/lib \
+	-L${XCLASSDIR} \
+	-L${THIRDPARTYDIR}/glfw/lib \
+	-L${THIRDPARTYDIR}/mosquitto/lib \
 	-L/usr/local/lib \
-        -L/usr/lib/x86_64-linux-gnu
+	-L/usr/lib/x86_64-linux-gnu
 
-LIBS =-lxclass -lglfw3 -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXinerama -lXcursor -lpthread -lexpat -lfreetype 
+LIBS =-lxclass -lglfw3 -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXinerama -lXcursor -lpthread -lexpat -lfreetype -lmosquitto
 
 #------------------------------------------------------------------------
 # if ffmpeg development libraries are installed, uncomment the following

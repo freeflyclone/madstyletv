@@ -1,6 +1,7 @@
 #include "xmqtt.h"
 
 XMqtt::XMqtt() {
+	mosquitto_lib_init();
 }
 
 XMqtt::~XMqtt() {
