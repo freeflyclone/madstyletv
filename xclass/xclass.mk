@@ -27,6 +27,7 @@ CXXFLAGS +=-std=c++14\
 	-I${THIRDPARTYDIR}/mavlink/c_library_v1 \
 	-I${THIRDPARTYDIR}/ftdi/include \
 	-I${THIRDPARTYDIR}/ftdi/include/linux \
+	-I${THIRDPARTYDIR}/mosquitto/lib \
 	-I${XCLASSDIR} \
 	-I/usr/include/AL \
 	-I/usr/local/include/AL \

@@ -10,7 +10,8 @@ XCLASS_BASE_CPPSOURCES=\
 	${XCLASSDIR}/xobject.cpp \
 	${XCLASSDIR}/xuart.cpp \
 	${XCLASSDIR}/xuartascii.cpp \
-	${XCLASSDIR}/xmavlink.cpp
+	${XCLASSDIR}/xmavlink.cpp \
+	${XCLASSDIR}/xmqtt.cpp
 
 XCLASS_BASE_CSOURCES=\
 	${XCLASSDIR}/xutils.c
