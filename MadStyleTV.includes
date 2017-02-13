@@ -34,3 +34,13 @@ xclass/xgl/GLFW
 .
 examples
 xclass/3rdParty
+examples/Example05
+examples/GUIDev
+examples/OpenALTest
+examples/MqttDev
+examples/ThreadsTest
+examples/ComputeShaderTest
+examples/Example04
+examples/OpenCVWebcam
+examples/XAVTest
+examples/OpenCVTest
