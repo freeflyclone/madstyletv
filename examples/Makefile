@@ -3,6 +3,7 @@ SUBDIRS=Example02 \
 	OpenCVTest \
 	OpenCVWebcam \
 	MavlinkDev \
+	MqttDev \
 	PhysXTest \
 	ComputeShaderTest \
 	SDFTest \
