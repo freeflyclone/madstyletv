@@ -11,8 +11,18 @@
 
 class XMqtt : public XObject {
 public: 
-    typedef mosquitto *Mosquitto;
+	// map Mosquitto types to more generic names
+    typedef mosquitto *Mqtt;
     typedef const mosquitto_message *Message;
+
+	// define a MessageListener function so lambda's are easier to grok
+	typedef std::function<void(Message)> MessageListener;
+
+	// A list of MessageListener objects that get called regardless of topic
+	typedef std::vector<MessageListener> MessageListeners;
+
+	// Topic-specific MessageListener objects
+	typedef std::map<std::string, MessageListeners> TopicMessageListeners;
 
     class LoopThread : public XThread {
     public:
@@ -27,17 +37,19 @@ public:
     XMqtt(std::string h="localhost", int p=1883);
 	~XMqtt();
 
-    static void ConnectCallback(Mosquitto, void *, int);
-    static void MessageCallback(Mosquitto, void *, Message);
+    static void ConnectCallback(Mqtt, void *, int);
+    static void MessageCallback(Mqtt, void *, Message);
 
-	int Read(unsigned char *b, int size);
-	int Write(unsigned char *b, int size);
+	int AddMessageListener(std::string, MessageListener);
+	void AddMessageListener(MessageListener);
 
 private:
     std::string host;
     int port;
-    Mosquitto mosq;
+    Mqtt mq;
     LoopThread *loopThread;
+	TopicMessageListeners topicMessageListeners;
+	MessageListeners listeners;
 };
 
 #endif // XMQTT_H

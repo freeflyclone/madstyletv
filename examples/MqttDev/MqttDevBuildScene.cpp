@@ -17,6 +17,12 @@ void ExampleXGL::BuildScene() {
 
 	try {
         mqtt = new XMqtt();
+
+		mqtt->AddMessageListener("test/topic", [](XMqtt::Message m) {
+			xprintf("TopicListener: '%.*s'\n", m->payloadlen, m->payload);
+		});
+
+		shape->AddChild(mqtt);
 	}
 	catch (std::runtime_error e) {
 		xprintf("Well that didn't work out: %s\n", e.what());
