@@ -33,9 +33,8 @@ CPPSOURCES=\
 	${XGLDIR}/xglworldcursor.cpp \
 	${XALDIR}/xal.cpp \
 	${XAVDIR}/xavenc.cpp \
-# uncomment these to add multimedia playback within the framework.
-#	${XAVDIR}/xav.cpp \
-#	${XAVDIR}/xavsrc.cpp \
+	${XAVDIR}/xav.cpp \
+	${XAVDIR}/xavsrc.cpp \
 
 
 CSOURCES=${XGLDIR}/glew.c \

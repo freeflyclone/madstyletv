@@ -8,7 +8,9 @@ SUBDIRS=Example02 \
 	PhysXTest \
 	ComputeShaderTest \
 	SDFTest \
-	GUIDev
+	GUIDev \
+	XAVTest
+
 
 .PHONY: clean all
 
