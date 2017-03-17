@@ -4,7 +4,7 @@
 #include <string>
 #include <sstream>
 #include <stdexcept>
-#include <mosquitto.h>
+#include "mosquitto.h"
 #include "xobject.h"
 #include "xthread.h"
 #include "xutils.h"
