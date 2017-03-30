@@ -44,3 +44,5 @@ examples/Example04
 examples/OpenCVWebcam
 examples/XAVTest
 examples/OpenCVTest
+examples/MqttMav
+examples/ImuDev

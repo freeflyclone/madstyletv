@@ -72,12 +72,10 @@ int XUart::Write(unsigned char *b, int size) {
 }
 #else
 XUart::XUart(std::string portName) : portFd(0) {
-    struct termios tty;
+    struct termios tty = {0};
 
     if( (portFd = open(portName.c_str(), O_RDWR | O_NOCTTY | O_SYNC)) < 0)
         throw std::runtime_error("failed to open serial port: "+portName);
-
-    memset (&tty, 0, sizeof tty);
 
     if (tcgetattr (portFd, &tty) != 0)
         throw std::runtime_error("tcgetattr() failed for port: "+portName);
@@ -86,7 +84,7 @@ XUart::XUart(std::string portName) : portFd(0) {
     cfsetispeed (&tty, B460800);
 
     tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;
-    tty.c_iflag &= ~IGNBRK;
+    tty.c_iflag &= ~(IGNBRK | ICRNL);
     tty.c_lflag = 0;
     tty.c_oflag = 0;
     tty.c_cc[VMIN]  = 1;
