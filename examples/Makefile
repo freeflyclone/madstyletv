@@ -9,6 +9,7 @@ SUBDIRS=Example02 \
 	ComputeShaderTest \
 	SDFTest \
 	GUIDev \
+	ImuDev \
 	XAVTest
 
 
