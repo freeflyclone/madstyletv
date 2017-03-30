@@ -82,8 +82,8 @@ XUart::XUart(std::string portName) : portFd(0) {
     if (tcgetattr (portFd, &tty) != 0)
         throw std::runtime_error("tcgetattr() failed for port: "+portName);
 
-    cfsetospeed (&tty, B115200);
-    cfsetispeed (&tty, B115200);
+    cfsetospeed (&tty, B460800);
+    cfsetispeed (&tty, B460800);
 
     tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;
     tty.c_iflag &= ~IGNBRK;
