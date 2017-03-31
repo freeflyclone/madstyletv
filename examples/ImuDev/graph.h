@@ -6,7 +6,10 @@ public:
 
     void Draw();
 
+	void NewValue(float);
+
 private:
+	std::mutex mutex;
 	std::vector<float> values;
 	int nValues;
 	int currentOffset;

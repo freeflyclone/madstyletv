@@ -8,7 +8,9 @@
 #include "graph.h"
 
 XGLShape *shape;
-XGLGraph *graph;
+XGLGraph *gyroXgraph;
+XGLGraph *gyroYgraph;
+XGLGraph *gyroZgraph;
 
 XUartAscii *xuart;
 
@@ -48,6 +50,8 @@ short HexToShort(unsigned char *hex) {
 }
 
 void ExampleXGL::BuildScene() {
+	glm::mat4 translate;
+
 	glm::vec3 cameraPosition(0, -0.01, 20);
 	glm::vec3 cameraDirection = glm::normalize(cameraPosition*-1.0f);
 	glm::vec3 cameraUp = { 0, 0, 1 };
@@ -57,28 +61,36 @@ void ExampleXGL::BuildScene() {
 	AddShape("shaders/diffuse", [&](){ shape = new XGLCube(); return shape; });
 	shape->SetName("IMU Plane", false);
 
-    CreateShape("shaders/000-simple", [&]() { graph = new XGLGraph(); return graph;});
-    graph->attributes.diffuseColor = XGLColors::green;
-    shape->AddChild(graph);
+    CreateShape("shaders/000-attributes", [&]() { gyroXgraph = new XGLGraph(); return gyroXgraph;});
+    gyroXgraph->attributes.diffuseColor = XGLColors::green;
+
+    CreateShape("shaders/000-attributes", [&]() { gyroYgraph = new XGLGraph(); return gyroYgraph;});
+    gyroYgraph->attributes.diffuseColor = XGLColors::red;
+    translate = glm::translate(glm::mat4(), glm::vec3(0.0, 5, 0));
+	gyroYgraph->model = translate;
+
+    CreateShape("shaders/000-attributes", [&]() { gyroZgraph = new XGLGraph(); return gyroZgraph;});
+    gyroZgraph->attributes.diffuseColor = XGLColors::blue;
+    translate = glm::translate(glm::mat4(), glm::vec3(0.0, -5, 0));
+	gyroZgraph->model = translate;
+
+    shape->AddChild(gyroXgraph);
+    shape->AddChild(gyroYgraph);
+    shape->AddChild(gyroZgraph);
 
 	try {
 		xuart = new XUartAscii("/dev/ttyUSB0");
-		xuart->AddListener([](unsigned char *line){
+		xuart->AddListener([&](unsigned char *line){
 			short imuData[9];
 			for (int i=0; i<9; i++)
 				imuData[i] = HexToShort(line+(i*5));
 			
-			for (int i=0; i<3; i++) {
+			for (int i=0; i<3; i++) 
 				gyro[i] = (float)imuData[i] / 32767.0f * 2000.0;
-			}
-/*
-			printf("%s", line);
 
-			printf("%6.3f,%6.3f,%6.3f,%d,%d,%d,%d,%d,%d\n", 
-				gyro[0], gyro[1], gyro[2],
-				imuData[3], imuData[4],imuData[5],
-				imuData[6], imuData[7],imuData[8]);
-*/
+			gyroXgraph->NewValue(gyro[0]/100.0f);
+			gyroYgraph->NewValue(gyro[1]/100.0f);
+			gyroZgraph->NewValue(gyro[2]/100.0f);
 		});
 	}
 	catch (std::runtime_error e) {

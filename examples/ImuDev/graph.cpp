@@ -18,7 +18,7 @@ XGLGraph::XGLGraph() {
 
 	for (int i=0; i<values.size(); i++) {
 		float x = xStart + (xStep*(float)i);
-		v.push_back({{x,values[i],5.0f},{},{}, XGLColors::green});
+		v.push_back({{x,values[i],5.0f},{},{0,0,1}, XGLColors::green});
 	}
 
 	for (int i=0; i<values.size()-1; i++) {
@@ -36,17 +36,25 @@ void XGLGraph::Draw() {
 	XGLVertexAttributes *vb = MapVertexBuffer();
 
 	// cycle throught the "values" buffer, oscilloscope style...
-	for (i=currentOffset, j=0; i<nValues; i++,j++)
-		vb[j].v.y = values[i];
+	{
+		std::unique_lock<std::mutex> lock(mutex);
+		for (i=currentOffset, j=0; i<nValues; i++,j++)
+			vb[j].v.y = values[i];
 
-	for (i=0; i<currentOffset; i++,j++)
-		vb[j].v.y = values[i];
+		for (i=0; i<currentOffset; i++,j++)
+			vb[j].v.y = values[i];
+	}
 
 	UnmapVertexBuffer();
-
-	currentOffset = (currentOffset + 1) % nValues;
 
 	glDrawElements(GL_LINES, (GLsizei)(idx.size()), XGLIndexType, 0);
 	GL_CHECK("glDrawElements() failed");
     return;
+}
+
+void XGLGraph::NewValue(float v) {
+	std::unique_lock<std::mutex> lock(mutex);
+
+	values[currentOffset] = v;
+	currentOffset = (currentOffset + 1) % nValues;
 }
