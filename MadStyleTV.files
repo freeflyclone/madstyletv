@@ -14,6 +14,8 @@ examples/GUIDev/GUIDevBuildScene.cpp
 examples/GUIDev/GUIDevGUI.cpp
 examples/ImuDev/ImuDev
 examples/ImuDev/ImuDevBuildScene.cpp
+examples/ImuDev/graph.cpp
+examples/ImuDev/graph.h
 examples/MavlinkDev/MavlinkDevBuildScene.cpp
 examples/MqttDev/MqttDevBuildScene.cpp
 examples/MqttMav/main.cpp
