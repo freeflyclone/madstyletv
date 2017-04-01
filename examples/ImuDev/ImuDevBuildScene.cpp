@@ -97,6 +97,7 @@ void ExampleXGL::BuildScene() {
 		xuart = new XUartAscii("/dev/ttyUSB0");
 		xuart->AddListener([&](unsigned char *line){
 			static long int count = 0;
+			const long int maxCount = 500;
 			short imuData[9];
 			float y,p,r;
 
@@ -117,20 +118,20 @@ void ExampleXGL::BuildScene() {
 			accelYgraph->NewValue(accel[1]);
 			accelZgraph->NewValue(accel[2]);
 
-			if (count < 5000) {
+			if (count < maxCount) {
 				for (int i=0; i<3; i++)
 					gyroCal[i] += gyro[i];
 			}
-			else if(count == 5000) {
+			else if(count == maxCount) {
 				for (int i=0; i<3; i++)
-					gyroCal[i] /= 5000.0f;
+					gyroCal[i] /= (float)maxCount;
 			}
 			else {
 				gyro[0] -= gyroCal[0];
 				gyro[1] -= gyroCal[1];
 				gyro[2] -= gyroCal[2];
 
-				MadgwickAHRSupdate(gyro[1], gyro[0], gyro[2], accel[0], accel[1], accel[2],mag[0], mag[1], mag[2]);
+				MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], mag[0], mag[1], mag[2]);
 
 				glm::quat myQuat = glm::quat((double)q0, (double)q1, (double)q2, (double)q3);
 				glm::mat4 rotate = glm::toMat4(myQuat);
