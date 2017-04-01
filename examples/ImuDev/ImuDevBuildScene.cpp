@@ -17,6 +17,7 @@ XGLShape *shape;
 XGLGraph *gyroXgraph, *gyroYgraph,*gyroZgraph;
 XGLGraph *accelXgraph, *accelYgraph,*accelZgraph;
 XGLGraph *magXgraph, *magYgraph,*magZgraph;
+XGLGraph *gyroRateGraph,*accelRateGraph;
 
 XUartAscii *xuart;
 
@@ -93,11 +94,21 @@ void ExampleXGL::BuildScene() {
     translate = glm::translate(glm::mat4(), glm::vec3(0.0, -15, 0));
 	accelZgraph->model = translate;
 
+    AddShape("shaders/000-attributes", [&]() { gyroRateGraph = new XGLGraph(); return gyroRateGraph;});
+    gyroRateGraph->attributes.diffuseColor = XGLColors::cyan;
+    translate = glm::translate(glm::mat4(), glm::vec3(0.0, -20, 0));
+	gyroRateGraph->model = translate;
+
+    AddShape("shaders/000-attributes", [&]() { accelRateGraph = new XGLGraph(); return accelRateGraph;});
+    accelRateGraph->attributes.diffuseColor = XGLColors::white;
+    translate = glm::translate(glm::mat4(), glm::vec3(0.0, -25, 0));
+	accelRateGraph->model = translate;
+
 	try {
 		xuart = new XUartAscii("/dev/ttyUSB0");
 		xuart->AddListener([&](unsigned char *line){
 			static long int count = 0;
-			const long int maxCount = 500;
+			const long int maxCount = 250;
 			short imuData[9];
 			float y,p,r;
 
@@ -118,6 +129,9 @@ void ExampleXGL::BuildScene() {
 			accelYgraph->NewValue(accel[1]);
 			accelZgraph->NewValue(accel[2]);
 
+			gyroRateGraph->NewValue(gyroRateChange/10.0f);
+			accelRateGraph->NewValue(accelRateChange);
+
 			if (count < maxCount) {
 				for (int i=0; i<3; i++)
 					gyroCal[i] += gyro[i];
@@ -131,7 +145,8 @@ void ExampleXGL::BuildScene() {
 				gyro[1] -= gyroCal[1];
 				gyro[2] -= gyroCal[2];
 
-				MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], mag[0], mag[1], mag[2]);
+				//MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], mag[0], mag[1], mag[2]);
+				MadgwickAHRSupdateIMU(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2]);
 
 				glm::quat myQuat = glm::quat((double)q0, (double)q1, (double)q2, (double)q3);
 				glm::mat4 rotate = glm::toMat4(myQuat);
