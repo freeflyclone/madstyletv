@@ -4,16 +4,12 @@ XGLGraph::XGLGraph() {
 	SetName("XGLGraph");
 
 	int numSamples = 1000;
-	float xStart = -10.0f;
-	float xStep = 20.0f / 1000.0f;
+	float xStart = -100.0f;
+	float xStep =(float)(xStart*-2) / (float)numSamples;
 
 	for (int i=0; i<numSamples; i++) {
 		float y = sin((float)i / 10.0f);
 		values.push_back(y);
-	}
-
-	for (int i=0; i<24; i++) {
-		values.push_back(0.0f);
 	}
 
 	for (int i=0; i<values.size(); i++) {

@@ -22,7 +22,7 @@ TOPDIR := $(dir $(lastword $(MAKEFILE_LIST)))
 # It also copies it to the project's "bin" folder
 PROGRAM_BUILD =$(CXX) -g -o $@ $^ $(LDFLAGS) $(LIBS) ; cp $@ $(TOPDIR)bin
 
-PROGRAM_OBJS = $(patsubst %.cpp,%.o,$(PROGRAM_SOURCES))
+PROGRAM_OBJS = $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(PROGRAM_SOURCES)))
 
 ECHO_VARS = @echo PROGRAM_SOURCES: $(PROGRAM_SOURCES) PROGRAM_OBJS: $(PROGRAM_OBJS)
 
