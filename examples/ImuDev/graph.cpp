@@ -4,7 +4,7 @@ XGLGraph::XGLGraph() {
 	SetName("XGLGraph");
 
 	int numSamples = 1000;
-	float xStart = -100.0f;
+	float xStart = -20.0f;
 	float xStep =(float)(xStart*-2) / (float)numSamples;
 
 	for (int i=0; i<numSamples; i++) {

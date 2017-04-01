@@ -20,20 +20,11 @@ XGLGraph *magXgraph, *magYgraph,*magZgraph;
 
 XUartAscii *xuart;
 
+float gyroCal[3] = {0.01811, -0.054863, -0.054863};
+
 float gyro[3];
 float accel[3];
 float mag[3];
-
-void QuatToEuler(float q1, float q2, float q3, float q4, float& pitch, float& yaw, float& roll) {
-	float w = q1;
-	float x = q2;
-	float y = q3;
-	float z = q4;
-
-	pitch = atan2(2*(y*z + w*x), w*w - x*x - y*y + z*z);
-	yaw = asin(-2*(x*z - w*y));
-	roll = atan2(2*(x*y + w*z), w*w + x*x - y*y + z*z);
-}
 
 // Ascii HexToShort(), a nibble at a time
 short HexToShort(unsigned char *hex) {
@@ -68,12 +59,6 @@ short HexToShort(unsigned char *hex) {
 
 void ExampleXGL::BuildScene() {
 	glm::mat4 translate;
-
-	glm::vec3 cameraPosition(0, -0.1, 40);
-	glm::vec3 cameraDirection = glm::normalize(cameraPosition*-1.0f);
-	glm::vec3 cameraUp = { 0, 0, 1 };
-	camera.Set(cameraPosition, cameraDirection,	cameraUp);
-
 
 	AddShape("shaders/diffuse", [&](){ shape = new XGLCube(); return shape; });
 	shape->SetName("IMU Plane", false);
@@ -119,32 +104,40 @@ void ExampleXGL::BuildScene() {
 				imuData[i] = HexToShort(line+(i*5));
 			
 			for (int i=0; i<3; i++) {
-				//gyro[i] = (float)imuData[i] / 32767.0f * 2000.0;
-				//accel[i] = (float)imuData[i+3] / 32767.0f * 32.0;
-				gyro[i] = (float)imuData[i] / 32767.0f * 36.0f;
-				accel[i] = (float)imuData[i+3] / 32767.0f;
+				gyro[i] = (((float)imuData[i] / 32767.0f * 2000.0f) / 180.f * M_PI);
+				accel[i] = (float)imuData[i+3] / 16384.0f * 4.0f;
+				mag[i] = (float)imuData[i+6] / 16384.0f;
 			}
 
-			gyroXgraph->NewValue(gyro[0]/100.0f);
-			gyroYgraph->NewValue(gyro[1]/100.0f);
-			gyroZgraph->NewValue(gyro[2]/100.0f);
-
+			gyroXgraph->NewValue(gyro[0]);
+			gyroYgraph->NewValue(gyro[1]);
+			gyroZgraph->NewValue(gyro[2]);
 
 			accelXgraph->NewValue(accel[0]);
 			accelYgraph->NewValue(accel[1]);
 			accelZgraph->NewValue(accel[2]);
 
-			MadgwickAHRSupdateIMU(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2]);
-			QuatToEuler(q0, q1, q2, q3, p, y, r);
+			if (count < 5000) {
+				for (int i=0; i<3; i++)
+					gyroCal[i] += gyro[i];
+			}
+			else if(count == 5000) {
+				for (int i=0; i<3; i++)
+					gyroCal[i] /= 5000.0f;
+			}
+			else {
+				gyro[0] -= gyroCal[0];
+				gyro[1] -= gyroCal[1];
+				gyro[2] -= gyroCal[2];
 
-            // build a rotation matrix out of yaw, pitch, and roll from attitude message
-            glm::mat4 yaw = glm::rotate(glm::mat4(), y, glm::vec3(0, 0, 1));
-            glm::mat4 pitch = glm::rotate(glm::mat4(), p, glm::vec3(0, 1, 0));
-            glm::mat4 roll = glm::rotate(glm::mat4(), r, glm::vec3(1, 0, 0));
-            glm::mat4 rotate = yaw * pitch * roll;
+				MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2],mag[0], mag[1], mag[2]);
 
+				glm::quat myQuat = glm::quat((double)q0, (double)q1, (double)q2, (double)q3);
+				glm::mat4 rotate = glm::toMat4(myQuat);
 
-			shape->model = yaw * pitch * roll;
+				shape->model = rotate;
+			}
+			count++;
 		});
 	}
 	catch (std::runtime_error e) {
