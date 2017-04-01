@@ -14,7 +14,7 @@ XGLGraph::XGLGraph() {
 
 	for (int i=0; i<values.size(); i++) {
 		float x = xStart + (xStep*(float)i);
-		v.push_back({{x,values[i],5.0f},{},{0,0,1}, XGLColors::green});
+		v.push_back({{x,values[i],0.05f},{},{0,0,1}, XGLColors::green});
 	}
 
 	for (int i=0; i<values.size()-1; i++) {

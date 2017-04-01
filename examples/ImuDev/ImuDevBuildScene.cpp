@@ -130,7 +130,7 @@ void ExampleXGL::BuildScene() {
 				gyro[1] -= gyroCal[1];
 				gyro[2] -= gyroCal[2];
 
-				MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2],mag[0], mag[1], mag[2]);
+				MadgwickAHRSupdate(gyro[1], gyro[0], gyro[2], accel[0], accel[1], accel[2],mag[0], mag[1], mag[2]);
 
 				glm::quat myQuat = glm::quat((double)q0, (double)q1, (double)q2, (double)q3);
 				glm::mat4 rotate = glm::toMat4(myQuat);
@@ -139,6 +139,8 @@ void ExampleXGL::BuildScene() {
 			}
 			count++;
 		});
+
+		shape->AddChild(xuart);
 	}
 	catch (std::runtime_error e) {
 		xprintf("Well that didn't work out: %s\n", e.what());
