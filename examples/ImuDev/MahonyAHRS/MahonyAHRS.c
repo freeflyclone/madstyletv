@@ -16,6 +16,7 @@
 
 #include "MahonyAHRS.h"
 #include <math.h>
+#include <stdint.h>
 
 //---------------------------------------------------------------------------------------------------
 // Definitions
@@ -220,7 +221,7 @@ void MahonyAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float
 float invSqrt(float x) {
 	float halfx = 0.5f * x;
 	float y = x;
-	long i = *(long*)&y;
+	int32_t i = *(int32_t*)&y;
 	i = 0x5f3759df - (i>>1);
 	y = *(float*)&i;
 	y = y * (1.5f - (halfx * y * y));

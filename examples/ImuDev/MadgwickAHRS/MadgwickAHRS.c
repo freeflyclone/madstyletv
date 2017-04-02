@@ -23,7 +23,7 @@
 // Definitions
 
 #define sampleFreq	1000.0f		// sample frequency in Hz
-#define betaDef		2.0f		// 2 * proportional gain
+#define betaDef		0.01f		// 2 * proportional gain
 
 //---------------------------------------------------------------------------------------------------
 // Variable definitions
@@ -31,8 +31,12 @@
 volatile float beta = betaDef;								// 2 * proportional gain (Kp)
 volatile float q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// quaternion of sensor frame relative to auxiliary frame
 
-volatile float gyroRateChange = 0.0f;
+
+// EJM added for adaptive beta gain
+volatile float gyroRateChange = 1.0f;
 volatile float accelRateChange = 0.0f;
+#define maxBeta		0.5f
+#define min(x,y) ((x<y)?(x):(y))
 
 //---------------------------------------------------------------------------------------------------
 // Function declarations
@@ -162,7 +166,16 @@ void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, flo
 	qDot3 = 0.5f * (q0 * gy - q1 * gz + q3 * gx);
 	qDot4 = 0.5f * (q0 * gz + q1 * gy - q2 * gx);
 
+	// EJM: Adaptive "beta" gain...
 	gyroRateChange = qDot1*qDot1 + qDot2*qDot2 + qDot3*qDot3 + qDot4*qDot4;
+	if (gyroRateChange > maxBeta)
+		beta = min(gyroRateChange, maxBeta);
+	else if (gyroRateChange > beta)
+		beta = gyroRateChange;
+	else if (beta > betaDef)
+		beta -= (maxBeta-betaDef) / sampleFreq;
+	else
+		beta = betaDef;
 
 	// Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
 	if(!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f))) {

@@ -106,6 +106,7 @@ void ExampleXGL::BuildScene() {
 
 	try {
 		xuart = new XUartAscii("/dev/ttyUSB0");
+		shape->AddChild(xuart);
 		xuart->AddListener([&](unsigned char *line){
 			static long int count = 0;
 			const long int maxCount = 250;
@@ -130,7 +131,7 @@ void ExampleXGL::BuildScene() {
 			accelZgraph->NewValue(accel[2]);
 
 			gyroRateGraph->NewValue(gyroRateChange/10.0f);
-			accelRateGraph->NewValue(accelRateChange);
+			accelRateGraph->NewValue(beta);
 
 			if (count < maxCount) {
 				for (int i=0; i<3; i++)
@@ -145,7 +146,6 @@ void ExampleXGL::BuildScene() {
 				gyro[1] -= gyroCal[1];
 				gyro[2] -= gyroCal[2];
 
-				//MadgwickAHRSupdate(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2], mag[0], mag[1], mag[2]);
 				MadgwickAHRSupdateIMU(gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2]);
 
 				glm::quat myQuat = glm::quat((double)q0, (double)q1, (double)q2, (double)q3);
@@ -155,8 +155,6 @@ void ExampleXGL::BuildScene() {
 			}
 			count++;
 		});
-
-		shape->AddChild(xuart);
 	}
 	catch (std::runtime_error e) {
 		xprintf("Well that didn't work out: %s\n", e.what());
