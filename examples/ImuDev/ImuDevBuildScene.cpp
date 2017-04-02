@@ -27,34 +27,25 @@ float gyro[3];
 float accel[3];
 float mag[3];
 
-// Ascii HexToShort(), a nibble at a time
-short HexToShort(unsigned char *hex) {
-	int idx;
+uint8_t AsciiToNibble(unsigned char c) {
+	uint8_t value;
+	if (c >= '0' && c <= '9')
+		value = c - '0';
+	else
+		value = c - 'A' + 10;
+
+	return value;
+}
+
+// AsciiHexToShort(), a nibble at a time
+short AsciiHexToShort(unsigned char *asciiHex) {
 	short total = 0;
 
-	// each variable is expressed as a signed short,
-	// LSB first.  So do MSB first.
-	for (int i=2; i<4; i++) {
-		if (hex[i] >= '0' && hex[i] <= '9')
-			idx = hex[i] - '0';
-		else
-			idx = hex[i] - 'A' + 10;
+	total += AsciiToNibble(asciiHex[2]) << 12;
+	total += AsciiToNibble(asciiHex[3]) << 8;
+	total += AsciiToNibble(asciiHex[0]) << 4;
+	total += AsciiToNibble(asciiHex[1]);
 
-		total += idx;
-		total <<= 4;
-	}
-	for (int i=0; i<2; i++) {
-		if (hex[i] >= '0' && hex[i] <= '9')
-			idx = hex[i] - '0';
-		else
-			idx = hex[i] - 'A' + 10;
-
-		total += idx;
-
-		// don't over-rotate the final nibble
-        if (i==0)
-            total <<= 4;
-	}
 	return total;
 }
 
@@ -109,12 +100,12 @@ void ExampleXGL::BuildScene() {
 		shape->AddChild(xuart);
 		xuart->AddListener([&](unsigned char *line){
 			static long int count = 0;
-			const long int maxCount = 250;
+			const long int maxCalibrationCount = 500;
 			short imuData[9];
 			float y,p,r;
 
 			for (int i=0; i<9; i++)
-				imuData[i] = HexToShort(line+(i*5));
+				imuData[i] = AsciiHexToShort(line+(i*5));
 			
 			for (int i=0; i<3; i++) {
 				gyro[i] = (((float)imuData[i] / 32767.0f * 2000.0f) / 180.f * M_PI);
@@ -133,13 +124,13 @@ void ExampleXGL::BuildScene() {
 			gyroRateGraph->NewValue(gyroRateChange/10.0f);
 			accelRateGraph->NewValue(beta);
 
-			if (count < maxCount) {
+			if (count < maxCalibrationCount) {
 				for (int i=0; i<3; i++)
 					gyroCal[i] += gyro[i];
 			}
-			else if(count == maxCount) {
+			else if(count == maxCalibrationCount) {
 				for (int i=0; i<3; i++)
-					gyroCal[i] /= (float)maxCount;
+					gyroCal[i] /= (float)maxCalibrationCount;
 			}
 			else {
 				gyro[0] -= gyroCal[0];
