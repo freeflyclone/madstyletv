@@ -105,7 +105,7 @@ void ExampleXGL::BuildScene() {
 			float y,p,r;
 
 			for (int i=0; i<9; i++)
-				imuData[i] = AsciiHexToShort(line+(i*5));
+				imuData[i] = AsciiHexToShort(line+(i*4));
 			
 			for (int i=0; i<3; i++) {
 				gyro[i] = (((float)imuData[i] / 32767.0f * 2000.0f) / 180.f * M_PI);

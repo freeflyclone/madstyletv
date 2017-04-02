@@ -22,8 +22,9 @@
 //---------------------------------------------------------------------------------------------------
 // Definitions
 
-#define sampleFreq	1000.0f		// sample frequency in Hz
-#define betaDef		0.01f		// 2 * proportional gain
+#define sampleFreq	420.0f		// sample frequency in Hz EJM: setting this lower than reality seems
+								// to aid in fixing the thing that adaptive "beta" gain was trying to fix.
+#define betaDef		0.025f		// 2 * proportional gain
 
 //---------------------------------------------------------------------------------------------------
 // Variable definitions
@@ -35,7 +36,7 @@ volatile float q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// quaternion of sens
 // EJM added for adaptive beta gain
 volatile float gyroRateChange = 1.0f;
 volatile float accelRateChange = 0.0f;
-#define maxBeta		0.5f
+#define maxBeta		0.10f
 #define min(x,y) ((x<y)?(x):(y))
 
 //---------------------------------------------------------------------------------------------------
