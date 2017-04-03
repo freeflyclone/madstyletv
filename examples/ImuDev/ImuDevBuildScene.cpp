@@ -100,7 +100,7 @@ void ExampleXGL::BuildScene() {
 		shape->AddChild(xuart);
 		xuart->AddListener([&](unsigned char *line){
 			static long int count = 0;
-			const long int maxCalibrationCount = 500;
+			const long int maxCalibrationCount = 125;
 			short imuData[9];
 			float y,p,r;
 

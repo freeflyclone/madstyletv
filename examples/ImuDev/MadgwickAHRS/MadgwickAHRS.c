@@ -22,7 +22,8 @@
 //---------------------------------------------------------------------------------------------------
 // Definitions
 
-#define sampleFreq	420.0f		// sample frequency in Hz EJM: setting this lower than reality seems
+#define sampleFreq	140.0f		// sample frequency in Hz EJM: setting this lower than reality seems
+
 								// to aid in fixing the thing that adaptive "beta" gain was trying to fix.
 #define betaDef		0.025f		// 2 * proportional gain
 
