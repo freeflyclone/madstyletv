@@ -24,5 +24,5 @@ Short demo videos are available on [YouTube](https://www.youtube.com/user/freefl
 This repo uses git submodules for some of the larger 3rdParty source code.  I don't much care for git submodules, but haven't figured out a viable alternative.  
 
 Anyway here's what you need to know:
-* [Cloning with submodules](http://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules)
-* [ThirdParty/Readme.md](https://github.com/freeflyclone/madstyletv/blob/master/xclass/3rdParty/readme.txt)
+* Background: [Cloning with submodules](http://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules)
+* Command Lines: [ThirdParty/Readme.md](https://github.com/freeflyclone/madstyletv/blob/master/xclass/3rdParty/readme.txt)
