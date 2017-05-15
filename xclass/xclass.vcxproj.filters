@@ -317,6 +317,9 @@
     <ClCompile Include="xmavlink.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="xmqtt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="3rdParty\3rdPartyCopy.proj" />

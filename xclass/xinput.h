@@ -20,7 +20,7 @@ using namespace std::placeholders;
 class XInput {
 public:
 	typedef std::function<void(int, int)> XInputKeyFunc;
-	typedef std::multimap<char, XInputKeyFunc> XInputKeyMap;
+	typedef std::multimap<int, XInputKeyFunc> XInputKeyMap;
 
 	typedef std::pair<int, int> XInputKeyRange;
 	typedef std::map<XInputKeyRange, XInputKeyFunc> XInputKeyRangeMap;

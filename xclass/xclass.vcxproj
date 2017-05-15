@@ -294,6 +294,7 @@
     <ClCompile Include="xgl\xglworldcursor.cpp" />
     <ClCompile Include="xinput.cpp" />
     <ClCompile Include="xmavlink.cpp" />
+    <ClCompile Include="xmqtt.cpp" />
     <ClCompile Include="xobject.cpp" />
     <ClCompile Include="xshmem.cpp" />
     <ClCompile Include="xuart.cpp" />
