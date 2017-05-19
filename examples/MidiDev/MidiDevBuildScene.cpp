@@ -19,7 +19,7 @@ public:
 	typedef std::map<std::wstring,MidiInDevice> MidiInDeviceList;
 	typedef MidiInDeviceList::iterator MidiInIterator;
 
-	MidiIn() {
+	MidiIn(std::wstring devName) : deviceName(devName) {
 		unsigned int numMidiIn = midiInGetNumDevs();
 		MIDIINCAPS caps;
 		xprintf("Found %d MIDI devices\n", numMidiIn);
@@ -36,7 +36,7 @@ public:
 	};
 	~MidiIn() {};
 
-	void Open(std::wstring deviceName) {
+	void Open() {
 		MidiInIterator i;
 	
 		xprintf("Looking for: '%S'\n", deviceName.c_str());
@@ -87,8 +87,7 @@ public:
 	}
 
 	void Run() {
-		// Reminder: be mindful of device name changes!
-		Open(L"2- Launchpad S");
+		Open();
 
 		midiInStart(hMidiIn);
 
@@ -100,33 +99,50 @@ public:
 private:
 	MidiInDeviceList mdl;
 	HMIDIIN	hMidiIn;
+	std::wstring deviceName;
 };
 
-MidiIn *pmi = NULL;
-XGLCube *cube;
+MidiIn *pKontrol25 = nullptr;
+XGLCube *kontrol25Cube;
+
+MidiIn *pLaunchpad = nullptr;
+XGLCube *launchpadCube;
+glm::vec3 launchpadTranslate = { 10.0f, 10.0f, 0.0f };
+
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
 	AddShape("shaders/000-simple", [&](){ shape = new XGLTriangle(); return shape; });
-	AddShape("shaders/specular", [&](){ cube = new XGLCube(); return cube; });
 
-	pmi = new MidiIn();
-
-	pmi->AddKeyFunc({ 0x9000, 0x9000 }, [this](int key, int flags) {
-	});
-	pmi->AddKeyFunc({ 0xB00e, 0xB06f }, [this](int key, int flags) {
-		xprintf("CCHit: %04X, %04X!\n", key & 0xFF, flags);
-	});
-	pmi->AddKeyFunc(0x9000, [&](int key, int flags) {
-		glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(1, 1, (flags > 0) ? 2 : 1));
-		cube->model = scale;
-	});
-
-	try {
-		pmi->Start();
+	if (true) {
+		AddShape("shaders/specular", [&](){ kontrol25Cube = new XGLCube(); return kontrol25Cube; });
+		pKontrol25 = new MidiIn(L"Komplete Kontrol - 1");
+		pKontrol25->AddKeyFunc(0xB00e, [this](int key, int flags) {
+			glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(1, 1, (flags / 12.8f)));
+			glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, (flags / 12.8)));
+			kontrol25Cube->model = translate * scale;
+		});
+		try {
+			pKontrol25->Start();
+		}
+		catch (std::runtime_error e) {
+			xprintf("Open failed: %s\n", e.what());
+		}
 	}
-	catch (std::runtime_error e) {
-		xprintf("Open failed: %s\n", e.what());
+
+	if (true) {
+		AddShape("shaders/specular", [&](){ launchpadCube = new XGLCube(); return launchpadCube; });
+		pLaunchpad = new MidiIn(L"2- Launchpad S");
+		pLaunchpad->AddKeyFunc(0x9000, [this](int key, int flags) {
+			glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(1, 1, (flags > 0) ? 2 : 1));
+			launchpadCube->model = glm::translate(glm::mat4(),launchpadTranslate) * scale;
+		});
+		try {
+			pLaunchpad->Start();
+		}
+		catch (std::runtime_error e) {
+			xprintf("Open failed: %s\n", e.what());
+		}
 	}
 
 }
