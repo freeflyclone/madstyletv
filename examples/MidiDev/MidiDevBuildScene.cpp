@@ -38,12 +38,20 @@ public:
 
 	void Open(std::wstring deviceName) {
 		MidiInIterator i;
-		
-		if ((i = mdl.find(deviceName)) == mdl.end())
-			throw std::runtime_error("no device with that name");
+	
+		xprintf("Looking for: '%S'\n", deviceName.c_str());
 
-		if (midiInOpen(&hMidiIn, i->second.first, (DWORD_PTR)MidiInProc, (DWORD_PTR)this, CALLBACK_FUNCTION) != MMSYSERR_NOERROR)
-			throw std::runtime_error("device open failed");
+		if ((i = mdl.find(deviceName)) == mdl.end()) {
+			xprintf("no device with that name\n");
+			return;
+		}
+
+		xprintf("Found it: ", i->second.second.szPname);
+
+		if (midiInOpen(&hMidiIn, i->second.first, (DWORD_PTR)MidiInProc, (DWORD_PTR)this, CALLBACK_FUNCTION) != MMSYSERR_NOERROR) {
+			xprintf("device open failed\n");
+			return;
+		}
 	}
 
 	static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2) {
@@ -79,7 +87,9 @@ public:
 	}
 
 	void Run() {
-		Open(L"Launchpad S");
+		// Reminder: be mindful of device name changes!
+		Open(L"2- Launchpad S");
+
 		midiInStart(hMidiIn);
 
 		while (IsRunning()) {
@@ -104,7 +114,7 @@ void ExampleXGL::BuildScene() {
 
 	pmi->AddKeyFunc({ 0x9000, 0x9000 }, [this](int key, int flags) {
 	});
-	pmi->AddKeyFunc({ 0xB068, 0xB06f }, [this](int key, int flags) {
+	pmi->AddKeyFunc({ 0xB00e, 0xB06f }, [this](int key, int flags) {
 		xprintf("CCHit: %04X, %04X!\n", key & 0xFF, flags);
 	});
 	pmi->AddKeyFunc(0x9000, [&](int key, int flags) {
