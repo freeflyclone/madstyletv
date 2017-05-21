@@ -49,4 +49,4 @@ ifeq ($(MOSQUITTO),)
 else
 	@echo mosquitto found!
 endif
-	(cd mosquitto && make WITH_SRV=no WITH_UUID=no binary && sudo make install)
+	(cd mosquitto && make WITH_SRV=no WITH_UUID=no binary && sudo make WITH_DOCS=no install)
