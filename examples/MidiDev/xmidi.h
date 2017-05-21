@@ -11,6 +11,8 @@
 	typedef std::pair<int, MIDIINCAPS> XMidiInDeviceProps;
 	typedef HMIDIIN XMIDIDEVHANDLE;
 #else
+	#include <alsa/asoundlib.h>
+	typedef std::pair<int, int> XMidiInDeviceProps;
 	typedef int XMIDIDEVHANDLE;
 #endif
 
