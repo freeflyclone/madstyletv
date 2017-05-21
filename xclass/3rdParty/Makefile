@@ -6,11 +6,30 @@
 include ../../topheader.mk
 
 #set some variables to see if some 3rdParty library source was fetched
-OPENAL=$(shell ls openal-soft)
-OPENCV=$(shell ls opencv)
-MOSQUITTO=$(shell ls mosquitto)
+OPENAL=$(shell ls openal-soft 2>/dev/null)
+OPENCV=$(shell ls opencv 2>/dev/null)
+MOSQUITTO=$(shell ls mosquitto 2>/dev/null)
 
-all:
+all: openal mosquitto opencv
+
+clean:
+	@echo making 'clean' in 3rdParty
+	@rm -rf openal-soft/build/*
+	@-(cd mosquitto && make clean)
+	#@(if [ -d opencv/build ] ; then cd opencv/build ; make clean ; fi)
+
+mosquitto: mosquitto/src/mosquitto
+
+mosquitto/src/mosquitto:
+ifeq ($(MOSQUITTO),)
+	@echo mosquitto folder not found, updating git submodule...
+	git submodule init mosquitto ; git submodule update
+else
+	@echo mosquitto found!
+endif
+	(cd mosquitto && make WITH_SRV=no WITH_UUID=no binary && sudo make WITH_DOCS=no install)
+
+opencv:
 ifeq ($(OPENCV),)
 	@echo opencv is not present.
 else
@@ -28,25 +47,12 @@ else
 		sudo make install ; \
 	fi)
 endif
+
+openal:
 ifeq ($(OPENAL),)
-	@echo openal-soft is not present.
-else
+	@echo openal-soft not found, updating git submodule...
+	git submodule init openal-soft ; git submodule update
+	@echo ...update done.
+endif
 	(cd openal-soft/build ; cmake .. ; make ; sudo make install) 
-endif
 
-clean:
-	@echo making 'clean' in 3rdParty
-	@rm -rf openal-soft/build/*
-	@-(cd mosquitto && make clean)
-	#@(if [ -d opencv/build ] ; then cd opencv/build ; make clean ; fi)
-
-mosquitto: mosquitto/src/mosquitto
-
-mosquitto/src/mosquitto:
-ifeq ($(MOSQUITTO),)
-	@echo mosquitto folder not found, cloning from github.com...
-	git clone https://github.com/eclipse/mosquitto.git
-else
-	@echo mosquitto found!
-endif
-	(cd mosquitto && make WITH_SRV=no WITH_UUID=no binary && sudo make install)
