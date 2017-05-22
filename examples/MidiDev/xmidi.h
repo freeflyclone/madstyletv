@@ -3,6 +3,9 @@
 
 #include "xinput.h"
 #include "xthread.h"
+#include <locale>
+#include <codecvt>
+#include <cstdint>
 
 #ifdef WIN32
 	#include <Windows.h>
@@ -12,8 +15,8 @@
 	typedef HMIDIIN XMIDIDEVHANDLE;
 #else
 	#include <alsa/asoundlib.h>
-	typedef std::pair<int, int> XMidiInDeviceProps;
-	typedef int XMIDIDEVHANDLE;
+	typedef std::pair<int, std::string> XMidiInDeviceProps;
+	typedef snd_rawmidi_t* XMIDIDEVHANDLE;
 #endif
 
 typedef std::map<std::wstring, XMidiInDeviceProps> XMidiInDeviceList;
@@ -31,9 +34,7 @@ protected:
 	std::wstring deviceName;
 	XMidiInDeviceList deviceList;
 
-#ifdef WIN32
 	XMIDIDEVHANDLE hMidiIn;
-#endif
 };
 
 #endif
