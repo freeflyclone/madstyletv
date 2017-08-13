@@ -9,6 +9,7 @@ include ../../topheader.mk
 OPENAL=$(shell ls openal-soft 2>/dev/null)
 OPENCV=$(shell ls opencv 2>/dev/null)
 MOSQUITTO=$(shell ls mosquitto 2>/dev/null)
+MAVLINK=$(shell ls mavlink/c_library_v1 2>/dev/null)
 
 all: openal mosquitto opencv
 
@@ -56,3 +57,9 @@ ifeq ($(OPENAL),)
 endif
 	(cd openal-soft/build ; cmake .. ; make ; sudo make install) 
 
+mavlink:
+ifeq ($(MAVLINK),)
+	@echo mavlink not found, updating git submodule...
+	git submodule init mavlink ; git submodule update
+	@echo ..update done.
+endif
