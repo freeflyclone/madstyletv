@@ -329,5 +329,6 @@
     <None Include="OpenAL.props" />
     <None Include="OpenCV.props" />
     <None Include="ftdi.props" />
+    <None Include="..\madstyletv.props" />
   </ItemGroup>
 </Project>

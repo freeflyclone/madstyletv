@@ -302,6 +302,7 @@
     <ClCompile Include="xutils.c" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\madstyletv.props" />
     <None Include="3rdParty\3rdPartyCopy.proj">
       <SubType>Designer</SubType>
     </None>
