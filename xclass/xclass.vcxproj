@@ -231,6 +231,7 @@
     <ClInclude Include="xcircularbuffer.h" />
     <ClInclude Include="xfifo.h" />
     <ClInclude Include="xftdi.h" />
+    <ClInclude Include="xglew.h" />
     <ClInclude Include="xgl\glew.h" />
     <ClInclude Include="xgl\glxew.h" />
     <ClInclude Include="xgl\wglew.h" />
