@@ -1,2 +1,3 @@
 *.[oa]
 *.obj
+/bin/*.dll
