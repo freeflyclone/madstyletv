@@ -248,6 +248,7 @@ void OvrLoop() {
 			OVR::Matrix4f view = OVR::Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
 			OVR::Matrix4f proj = ovrMatrix4f_Projection(hmdDesc.DefaultEyeFov[eye], 0.2f, 1000.0f, ovrProjection_None);
 
+			// XGL display - need to pass in view & proj somehow to the XGLCamera object
 			exgl->Display();
 
 			eyeRenderTexture[eye]->UnsetRenderSurface();
