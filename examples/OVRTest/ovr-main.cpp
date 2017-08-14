@@ -13,6 +13,7 @@
 #include <xgl.h>
 #include <ExampleXGL.h>
 
+
 static ExampleXGL *exgl = NULL;
 #ifndef OPENGL_MAJOR_VERSION
 #define OPENGL_MAJOR_VERSION 4
@@ -119,6 +120,165 @@ static void window_refresh_callback(GLFWwindow *window){
 		exgl->Display();
 }
 
+#if defined(_WIN32)
+#include <dxgi.h> // for GetDefaultAdapterLuid
+#pragma comment(lib, "dxgi.lib")
+#endif
+
+#include <OVR_CAPI.h>
+#include "OVR_Version.h"
+#include "OVR_ErrorCode.h"
+//#include "OVR_CAPI_Prototypes.h"
+#include <OVR_CAPI_GL.h>
+#include "GLAppUtil.h"
+
+static ovrGraphicsLuid GetDefaultAdapterLuid()
+{
+	ovrGraphicsLuid luid = ovrGraphicsLuid();
+
+#if defined(_WIN32)
+	IDXGIFactory* factory = nullptr;
+
+	if (SUCCEEDED(CreateDXGIFactory(IID_PPV_ARGS(&factory))))
+	{
+		IDXGIAdapter* adapter = nullptr;
+
+		if (SUCCEEDED(factory->EnumAdapters(0, &adapter)))
+		{
+			DXGI_ADAPTER_DESC desc;
+
+			adapter->GetDesc(&desc);
+			memcpy(&luid, &desc.AdapterLuid, sizeof(luid));
+			adapter->Release();
+		}
+
+		factory->Release();
+	}
+#endif
+
+	return luid;
+}
+
+
+static int Compare(const ovrGraphicsLuid& lhs, const ovrGraphicsLuid& rhs)
+{
+	return memcmp(&lhs, &rhs, sizeof(ovrGraphicsLuid));
+}
+
+bool shouldQuit = false;
+TextureBuffer * eyeRenderTexture[2] = { nullptr, nullptr };
+DepthBuffer   * eyeDepthBuffer[2] = { nullptr, nullptr };
+ovrResult result;
+ovrSession session;
+ovrGraphicsLuid luid;
+ovrHmdDesc hmdDesc;
+ovrSessionStatus sessionStatus;
+long long frameIndex = 0;
+
+bool InitOvr(bool retryCreate) {
+	result = ovr_Initialize(nullptr);
+	if (!OVR_SUCCESS(result))
+		throw std::runtime_error("Failed to initialize libOVR");
+
+	result = ovr_Create(&session, &luid);
+	if (!OVR_SUCCESS(result))
+		return retryCreate;
+
+	if (Compare(luid, GetDefaultAdapterLuid())) // If luid that the Rift is on is not the default adapter LUID...
+		throw std::runtime_error("OpenGL supports only the default graphics adapter.");
+
+	hmdDesc = ovr_GetHmdDesc(session);
+
+	// Make eye render buffers
+	for (int eye = 0; eye < 2; ++eye)
+	{
+		ovrSizei idealTextureSize = ovr_GetFovTextureSize(session, ovrEyeType(eye), hmdDesc.DefaultEyeFov[eye], 1);
+		eyeRenderTexture[eye] = new TextureBuffer(session, true, true, idealTextureSize, 1, NULL, 1);
+		eyeDepthBuffer[eye] = new DepthBuffer(eyeRenderTexture[eye]->GetSize(), 0);
+
+		if (!eyeRenderTexture[eye]->TextureChain)
+			throw std::runtime_error("TextureChain creation failed.");
+	}
+
+	// FloorLevel will give tracking poses where the floor height is 0
+	ovr_SetTrackingOriginType(session, ovrTrackingOrigin_FloorLevel);
+}
+
+void OvrLoop() {
+	static float Yaw(3.141592f);
+
+	ovr_GetSessionStatus(session, &sessionStatus);
+
+	if (sessionStatus.ShouldQuit) {
+		shouldQuit = true;
+		return;
+	}
+	if (sessionStatus.ShouldRecenter)
+		ovr_RecenterTrackingOrigin(session);
+
+	if (sessionStatus.IsVisible) {
+		// Call ovr_GetRenderDesc each frame to get the ovrEyeRenderDesc, as the returned values (e.g. HmdToEyePose) may change at runtime.
+		ovrEyeRenderDesc eyeRenderDesc[2];
+		eyeRenderDesc[0] = ovr_GetRenderDesc(session, ovrEye_Left, hmdDesc.DefaultEyeFov[0]);
+		eyeRenderDesc[1] = ovr_GetRenderDesc(session, ovrEye_Right, hmdDesc.DefaultEyeFov[1]);
+
+		// Get eye poses, feeding in correct IPD offset
+		ovrPosef EyeRenderPose[2];
+		ovrPosef HmdToEyePose[2] = { eyeRenderDesc[0].HmdToEyePose,
+			eyeRenderDesc[1].HmdToEyePose };
+
+		double sensorSampleTime;    // sensorSampleTime is fed into the layer later
+		ovr_GetEyePoses(session, frameIndex, ovrTrue, HmdToEyePose, EyeRenderPose, &sensorSampleTime);
+
+		static OVR::Vector3f Pos2(0.0f, 0.0f, -5.0f);
+
+		// Render Scene to Eye Buffers
+		for (int eye = 0; eye < 2; ++eye)
+		{
+			// Switch to eye render target
+			eyeRenderTexture[eye]->SetAndClearRenderSurface(eyeDepthBuffer[eye]);
+
+			// Get view and projection matrices
+			OVR::Matrix4f rollPitchYaw = OVR::Matrix4f::RotationY(Yaw);
+			OVR::Matrix4f finalRollPitchYaw = rollPitchYaw * OVR::Matrix4f(EyeRenderPose[eye].Orientation);
+			OVR::Vector3f finalUp = finalRollPitchYaw.Transform(OVR::Vector3f(0, 1, 0));
+			OVR::Vector3f finalForward = finalRollPitchYaw.Transform(OVR::Vector3f(0, 0, -1));
+			OVR::Vector3f shiftedEyePos = Pos2 + rollPitchYaw.Transform(EyeRenderPose[eye].Position);
+
+			OVR::Matrix4f view = OVR::Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
+			OVR::Matrix4f proj = ovrMatrix4f_Projection(hmdDesc.DefaultEyeFov[eye], 0.2f, 1000.0f, ovrProjection_None);
+
+			exgl->Display();
+
+			eyeRenderTexture[eye]->UnsetRenderSurface();
+
+			// Commit changes to the textures so they get picked up frame
+			eyeRenderTexture[eye]->Commit();
+		}
+		ovrLayerEyeFov ld;
+		ld.Header.Type = ovrLayerType_EyeFov;
+		ld.Header.Flags = ovrLayerFlag_TextureOriginAtBottomLeft;   // Because OpenGL.
+
+		for (int eye = 0; eye < 2; ++eye)
+		{
+			ld.ColorTexture[eye] = eyeRenderTexture[eye]->TextureChain;
+			ld.Viewport[eye] = OVR::Recti(eyeRenderTexture[eye]->GetSize());
+			ld.Fov[eye] = hmdDesc.DefaultEyeFov[eye];
+			ld.RenderPose[eye] = EyeRenderPose[eye];
+			ld.SensorSampleTime = sensorSampleTime;
+		}
+
+		ovrLayerHeader* layers = &ld.Header;
+		result = ovr_SubmitFrame(session, frameIndex, nullptr, &layers, 1);
+		// exit the rendering loop if submit returns an error, will retry on ovrError_DisplayLost
+
+		if (!OVR_SUCCESS(result))
+			shouldQuit = true;
+
+		frameIndex++;
+	}
+}
+
 int main(void) {
 	GLFWwindow *window;
 	int width, height;
@@ -170,6 +330,8 @@ int main(void) {
 	try {
 		exgl = new ExampleXGL();
 		exgl->Reshape(width, height);
+
+		InitOvr(false);
 	}
 	catch (std::runtime_error e) {
 		printf("Exception: %s\n", e.what());
@@ -181,7 +343,7 @@ int main(void) {
 
 			glfwSwapBuffers(window);
 
-			exgl->Display();
+			OvrLoop();
 		}
 	}
 	catch (std::runtime_error e) {
