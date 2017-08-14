@@ -5,7 +5,7 @@
     <XCLASS_DIR>$(SolutionDir)\xclass</XCLASS_DIR>
     <OPENAL_DIR>$(XCLASS_DIR)\3rdParty\openal-soft</OPENAL_DIR>
     <MAVLINK_DIR>$(XCLASS_DIR)\3rdParty\mavlink\c_library_v1</MAVLINK_DIR>
-    <LIBOVR_DIR>$(XCLASS_DIR)\3rdParty\mavlink\c_library_v1</LIBOVR_DIR>
+    <LIBOVR_DIR>$(XCLASS_DIR)\3rdParty\OculusSDK\LibOVR</LIBOVR_DIR>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup />

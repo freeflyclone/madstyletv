@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets">
-    <Import Project="..\madstyletv.props"/>
+    <Import Project="..\madstyletv.props" />
     <Import Project="mavlink.props" />
     <Import Project="mosquitto.props" />
   </ImportGroup>
@@ -12,7 +12,7 @@
     <LibOvrLibDir Condition="'$(PlatformTarget)'=='x86'">Win32</LibOvrLibDir>
   </PropertyGroup>
   <PropertyGroup>
-    <IncludePath>$(XCLASS_DIR);$(XCLASS_DIR)\xav;$(XCLASS_DIR)\xal;$(XCLASS_DIR)\xgl;$(XCLASS_DIR)\xgl\glm;$(XCLASS_DIR)\xgl\glm\gtc;$(XCLASS_DIR)\include;$(XCLASS_DIR)\include\freetype2;$(IncludePath)</IncludePath>
+    <IncludePath>$(XCLASS_DIR);$(XCLASS_DIR)\xav;$(XCLASS_DIR)\xal;$(XCLASS_DIR)\xgl;$(XCLASS_DIR)\xgl\glm;$(XCLASS_DIR)\xgl\glm\gtc;$(XCLASS_DIR)\include;$(XCLASS_DIR)\include\freetype2;$(LIBOVR_DIR)\..\LibOVRKernel\Src;$(IncludePath)</IncludePath>
     <LibraryPath>$(XCLASS_DIR)\lib\$(PlatformTarget);$(XCLASS_DIR)\lib\$(PlatformTarget)\$(Configuration);$(LibraryPath);$(FFMPEG_DIR)\lib</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>

@@ -20,9 +20,11 @@
 #define XGL_H
 
 #ifdef _WIN32
-	#include "glew.h"
-	#include "wglew.h"
+	//#include "glew.h"
+	//#include "wglew.h"
 	#include <windows.h>
+    #include <GL/CAPI_GLE.h>
+	#include <gl/glu.h>
 	// If we're compiling with Visual Studio 2015 (or greater)
 	// add in the "legacy_stdio_definitions.lib" to avoid 
 	// unresolved stdio externals.
