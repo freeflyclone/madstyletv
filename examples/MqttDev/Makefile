@@ -6,4 +6,6 @@ include $(TOPDIR)examples/examples.mk
 
 PROGRAM_SOURCES += $(PROGRAM)BuildScene.cpp
 
+LIBS += -lssl -lcrypto
+
 include $(TOPDIR)/topfooter.mk
