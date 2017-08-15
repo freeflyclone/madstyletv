@@ -224,13 +224,12 @@ void OvrLoop() {
 
 		// Get eye poses, feeding in correct IPD offset
 		ovrPosef EyeRenderPose[2];
-		ovrPosef HmdToEyePose[2] = { eyeRenderDesc[0].HmdToEyePose,
-			eyeRenderDesc[1].HmdToEyePose };
+		ovrPosef HmdToEyePose[2] = { eyeRenderDesc[0].HmdToEyePose,	eyeRenderDesc[1].HmdToEyePose };
 
 		double sensorSampleTime;    // sensorSampleTime is fed into the layer later
 		ovr_GetEyePoses(session, frameIndex, ovrTrue, HmdToEyePose, EyeRenderPose, &sensorSampleTime);
 
-		static OVR::Vector3f Pos2(0.0f, 0.0f, -5.0f);
+		static OVR::Vector3f Pos2(0.0f, 0.0f, -30.0f);
 
 		// Render Scene to Eye Buffers
 		for (int eye = 0; eye < 2; ++eye)
@@ -248,7 +247,12 @@ void OvrLoop() {
 			OVR::Matrix4f view = OVR::Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
 			OVR::Matrix4f proj = ovrMatrix4f_Projection(hmdDesc.DefaultEyeFov[eye], 0.2f, 1000.0f, ovrProjection_None);
 
+			glm::vec3 glmEyePos = { -shiftedEyePos.x, shiftedEyePos.z, shiftedEyePos.y };
+			glm::vec3 glmFinalForward = { -finalForward.x, finalForward.z, finalForward.y };
+			glm::vec3 glmFinalUp = { -finalUp.x, finalUp.z, finalUp.y };
+
 			// XGL display - need to pass in view & proj somehow to the XGLCamera object
+			exgl->camera.Set(glmEyePos, glmFinalForward, glmFinalUp);
 			exgl->Display();
 
 			eyeRenderTexture[eye]->UnsetRenderSurface();
@@ -314,7 +318,7 @@ int main(void) {
 	glfwSetWindowSizeCallback(window, window_size_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
-	glfwSwapInterval(1);
+	glfwSwapInterval(0);
 
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
@@ -339,12 +343,10 @@ int main(void) {
 	}
 
 	try {
-		while (!glfwWindowShouldClose(window)) {
+		while (!glfwWindowShouldClose(window) && !shouldQuit) {
 			glfwPollEvents();
-
-			glfwSwapBuffers(window);
-
 			OvrLoop();
+			glfwSwapBuffers(window);
 		}
 	}
 	catch (std::runtime_error e) {
