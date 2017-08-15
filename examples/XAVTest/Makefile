@@ -6,6 +6,6 @@ include $(TOPDIR)/examples/examples.mk
 
 PROGRAM_SOURCES += $(PROGRAM)BuildScene.cpp
 
-LIBS += -lopenal
+LIBS += -lopenal -lavcodec -lavutil -lavformat
 
 include $(TOPDIR)/topfooter.mk
