@@ -174,6 +174,7 @@ ovrGraphicsLuid luid;
 ovrHmdDesc hmdDesc;
 ovrSessionStatus sessionStatus;
 long long frameIndex = 0;
+Scene* roomScene = nullptr;
 
 bool InitOvr(bool retryCreate) {
 	result = ovr_Initialize(nullptr);
@@ -200,6 +201,9 @@ bool InitOvr(bool retryCreate) {
 			throw std::runtime_error("TextureChain creation failed.");
 	}
 
+	// Make scene - can simplify further if needed
+	roomScene = new Scene(false);
+
 	// FloorLevel will give tracking poses where the floor height is 0
 	ovr_SetTrackingOriginType(session, ovrTrackingOrigin_FloorLevel);
 }
@@ -217,6 +221,10 @@ void OvrLoop() {
 		ovr_RecenterTrackingOrigin(session);
 
 	if (sessionStatus.IsVisible) {
+		// Animate the cube
+		static float cubeClock = 0;
+		roomScene->Models[0]->Pos = Vector3f(9 * (float)sin(cubeClock), 3, 9 * (float)cos(cubeClock += 0.015f));
+
 		// Call ovr_GetRenderDesc each frame to get the ovrEyeRenderDesc, as the returned values (e.g. HmdToEyePose) may change at runtime.
 		ovrEyeRenderDesc eyeRenderDesc[2];
 		eyeRenderDesc[0] = ovr_GetRenderDesc(session, ovrEye_Left, hmdDesc.DefaultEyeFov[0]);
@@ -229,7 +237,7 @@ void OvrLoop() {
 		double sensorSampleTime;    // sensorSampleTime is fed into the layer later
 		ovr_GetEyePoses(session, frameIndex, ovrTrue, HmdToEyePose, EyeRenderPose, &sensorSampleTime);
 
-		static OVR::Vector3f Pos2(0.0f, 0.0f, -30.0f);
+		static OVR::Vector3f Pos2(0.0f, 0.0f, 0.0f);
 
 		// Render Scene to Eye Buffers
 		for (int eye = 0; eye < 2; ++eye)
@@ -238,22 +246,26 @@ void OvrLoop() {
 			eyeRenderTexture[eye]->SetAndClearRenderSurface(eyeDepthBuffer[eye]);
 
 			// Get view and projection matrices
-			OVR::Matrix4f rollPitchYaw = OVR::Matrix4f::RotationY(Yaw);
-			OVR::Matrix4f finalRollPitchYaw = rollPitchYaw * OVR::Matrix4f(EyeRenderPose[eye].Orientation);
-			OVR::Vector3f finalUp = finalRollPitchYaw.Transform(OVR::Vector3f(0, 1, 0));
-			OVR::Vector3f finalForward = finalRollPitchYaw.Transform(OVR::Vector3f(0, 0, -1));
-			OVR::Vector3f shiftedEyePos = Pos2 + rollPitchYaw.Transform(EyeRenderPose[eye].Position);
+			Matrix4f rollPitchYaw = Matrix4f::RotationY(Yaw);
+			Matrix4f finalRollPitchYaw = rollPitchYaw * Matrix4f(EyeRenderPose[eye].Orientation);
+			Vector3f finalUp = finalRollPitchYaw.Transform(Vector3f(0, 1, 0));
+			Vector3f finalForward = finalRollPitchYaw.Transform(Vector3f(0, 0, -1));
+			Vector3f shiftedEyePos = Pos2 + rollPitchYaw.Transform(EyeRenderPose[eye].Position);
 
-			OVR::Matrix4f view = OVR::Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
-			OVR::Matrix4f proj = ovrMatrix4f_Projection(hmdDesc.DefaultEyeFov[eye], 0.2f, 1000.0f, ovrProjection_None);
+			Matrix4f view = Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
+			Matrix4f proj = ovrMatrix4f_Projection(hmdDesc.DefaultEyeFov[eye], 0.2f, 1000.0f, ovrProjection_None);
 
-			glm::vec3 glmEyePos = { -shiftedEyePos.x, shiftedEyePos.z, shiftedEyePos.y };
-			glm::vec3 glmFinalForward = { -finalForward.x, finalForward.z, finalForward.y };
-			glm::vec3 glmFinalUp = { -finalUp.x, finalUp.z, finalUp.y };
+			// build XGL view and projection matrix
+			glm::mat4 glmView = glm::transpose(glm::make_mat4(&view.M[0][0]));
+			glm::mat4 glmProj = glm::transpose(glm::make_mat4(&proj.M[0][0]));
 
-			// XGL display - need to pass in view & proj somehow to the XGLCamera object
-			exgl->camera.Set(glmEyePos, glmFinalForward, glmFinalUp);
-			exgl->Display();
+			// set the projection,view,orthoProjection matrices in the matrix UBO
+			exgl->shaderMatrix.view = glmView;
+			exgl->shaderMatrix.projection = glmProj;
+			exgl->shaderMatrix.orthoProjection = exgl->projector.GetOrthoMatrix();
+
+			// render XGL scene
+			exgl->DisplayOVR();
 
 			eyeRenderTexture[eye]->UnsetRenderSurface();
 
@@ -304,7 +316,7 @@ int main(void) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, OPENGL_MINOR_VERSION);
 	glfwWindowHint(GLFW_SAMPLES, 8);
 
-	window = glfwCreateWindow(1280, 720, GLFW_WINDOW_TITLE, NULL, NULL);
+	window = glfwCreateWindow(540, 600, GLFW_WINDOW_TITLE, NULL, NULL);
 	if (!window) {
 		printf("glfwCreateWindow() failed\n");
 		glfwTerminate();
@@ -348,6 +360,9 @@ int main(void) {
 			OvrLoop();
 			glfwSwapBuffers(window);
 		}
+
+		if (roomScene)
+			delete roomScene;
 	}
 	catch (std::runtime_error e) {
 		printf("Exception: %s\n", e.what());

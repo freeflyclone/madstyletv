@@ -10,9 +10,9 @@
 // this needs to be file scope at least.  Local (to ::BuildScene) doesn't work
 XGLSphere *sphere;
 
-const float constSpeed1 = 60.0f;
-const float constSpeed2 = 45.0f;
-const float constSpeed3 = 30.0f;
+const float constSpeed1 = 60.0f * 4.0f;
+const float constSpeed2 = 45.0f * 4.0f;
+const float constSpeed3 = 30.0f * 4.0f;
 
 float speed1 = constSpeed1;
 float speed2 = constSpeed2;

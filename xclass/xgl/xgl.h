@@ -107,7 +107,9 @@ public:
 
 	void PreRender();
 	virtual void Display();
+	virtual void DisplayOVR();
 	virtual void RenderScene(XGLShapesMap *);
+	virtual void RenderSceneOVR(XGLShapesMap *);
 	virtual void Idle() {};
 
 	XGLShape* CreateShape(XGLShapesMap *s, std::string shaderName, XGLNewShapeLambda fn);

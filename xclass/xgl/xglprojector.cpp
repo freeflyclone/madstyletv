@@ -21,7 +21,7 @@ void XGLProjector::AddReshapeCallback(ReshapeFunc fn) {
 }
 
 glm::mat4 XGLProjector::GetProjectionMatrix() {
-	return glm::perspective(glm::radians(45.0f), float(width) / float(height), 0.1f, 1000.0f);
+	return glm::perspective(glm::radians(110.0f), float(width) / float(height), 0.1f, 1000.0f);
 }
 
 glm::mat4 XGLProjector::GetOrthoMatrix() {

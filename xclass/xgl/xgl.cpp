@@ -164,6 +164,27 @@ void XGL::RenderScene(XGLShapesMap *shapes) {
     }
 }
 
+void XGL::RenderSceneOVR(XGLShapesMap *shapes) {
+	camera.Animate();
+
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(shaderMatrix), (GLvoid *)&shaderMatrix, GL_DYNAMIC_DRAW);
+	GL_CHECK("glBufferData() failed");
+
+	for (auto const perShader : *shapes) {
+		const XGLShader *shader = shaderMap[perShader.first];
+
+		shader->Use();
+
+		glUniform3fv(glGetUniformLocation(shader->programId, "cameraPosition"), 1, (GLfloat*)glm::value_ptr(camera.pos));
+		GL_CHECK("glUniform3fv() failed");
+
+		for (auto const shape : *(perShader.second))
+			shape->Render(clock);
+
+		shader->UnUse();
+	}
+}
+
 void XGL::Display(){
 	PreRender();
 
@@ -175,6 +196,34 @@ void XGL::Display(){
 
 	// render the world
 	RenderScene(&shapes);
+
+	// render the GUI
+	if (renderGui) {
+		glDisable(GL_DEPTH_TEST);
+		RenderScene(&guiShapes);
+		glEnable(GL_DEPTH_TEST);
+	}
+
+	if (fb)
+		fb->Render(projector.width, projector.height);
+
+	if (pb)
+		pb->Render();
+
+	clock += 1.0f;
+}
+
+void XGL::DisplayOVR(){
+	PreRender();
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	GL_CHECK("glClear() failed");
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, matrixUbo);
+	GL_CHECK("glBindBuffer() failed");
+
+	// render the world
+	RenderSceneOVR(&shapes);
 
 	// render the GUI
 	if (renderGui) {
