@@ -31,6 +31,7 @@ CXXFLAGS +=-std=c++14\
 	-I${XCLASSDIR} \
 	-I/usr/include/AL \
 	-I/usr/local/include/AL \
+	-I${THIRDPARTYDIR}/openal-soft/include/AL \
 	-DNDEBUG \
 	-D_GNU_SOURCE=1 \
 	-DGLEW_STATIC \
