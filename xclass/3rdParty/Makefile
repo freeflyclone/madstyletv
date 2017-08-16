@@ -19,6 +19,7 @@ clean:
 	@-(cd mosquitto && make clean)
 	#@(if [ -d opencv/build ] ; then cd opencv/build ; make clean ; fi)
 
+.PHONY: mavlink
 mavlink:
 ifeq ($(MAVLINK),)
 	@echo mavlink not found, updating git submodule...
