@@ -38,16 +38,16 @@ endif
 openal:
 ifeq ($(OPENAL),)
 	@echo openal-soft not found, updating git submodule...
-	git submodule init openal-soft ; git submodule update
-	@echo ...update done.
+	git submodule init openal-soft ; git submodule update openal-soft
 endif
 	(cd openal-soft/build ; cmake .. ; make -j12 ; sudo make install) 
 
+.PHONY: opencv
 opencv:
 ifeq ($(OPENCV),)
-	@echo opencv is not present.
-else
-	@echo opencv is present
+	@echo opencv not found, updating git submodule...
+	git submodule init opencv ; git submodule update opencv
+endif
 	# OpenCV is a bit of a monster, running cmake invokes 
 	# a lengthy download, so avoid it if it's not necessary
 	@(if [ ! -d opencv/build ] ;\
@@ -55,6 +55,8 @@ else
 	 	mkdir opencv/build ; \
 	 	cd opencv/build ; \
 	 	cmake .. ; \
+		make -j 12; \
+		sudo make install ; \
 	else \
 		cd opencv/build ; \
 		make -j 12; \
