@@ -16,23 +16,26 @@
 
 class XGLHmd {
 public:
-	XGLHmd();
+	XGLHmd(XGL *);
 	~XGLHmd() {};
 
-	bool Loop(XGL*);
+	bool Loop();
 
 private:
+	void TrackInput();
+
 	static ovrGraphicsLuid GetDefaultAdapterLuid();
 	static int Compare(const ovrGraphicsLuid&, const ovrGraphicsLuid&);
 
 	TextureBuffer* eyeRenderTexture[2];
 	DepthBuffer* eyeDepthBuffer[2];
-	ovrResult result;
 	ovrSession session;
 	ovrGraphicsLuid luid;
 	ovrHmdDesc hmdDesc;
 	ovrSessionStatus sessionStatus;
 	long long frameIndex;
+
+	XGL *pXgl;
 };
 
 #endif

@@ -1,13 +1,12 @@
 #include "xglhmd.h"
 
-XGLHmd::XGLHmd() :
-frameIndex(0)
+XGLHmd::XGLHmd(XGL *p) :
+	pXgl(p),
+	frameIndex(0)
 {
-	//result = ovr_Initialize(nullptr);
 	if (!OVR_SUCCESS(ovr_Initialize(nullptr)))
 		throw std::runtime_error("Failed to initialize libOVR");
 
-	//result = ovr_Create(&session, &luid);
 	if (!OVR_SUCCESS(ovr_Create(&session, &luid)))
 		throw std::runtime_error("Failed to create OVR Session");
 
@@ -31,7 +30,27 @@ frameIndex(0)
 	ovr_SetTrackingOriginType(session, ovrTrackingOrigin_FloorLevel);
 }
 
-bool XGLHmd::Loop(XGL *pxgl) {
+void XGLHmd::TrackInput() {
+	double displayMidpointSeconds = ovr_GetPredictedDisplayTime(session, frameIndex);
+	ovrTrackingState trackState = ovr_GetTrackingState(session, displayMidpointSeconds, ovrTrue);
+	ovrPosef         handPoses[2];
+	ovrInputState    inputState;
+
+	// Grab hand poses useful for rendering hand or controller representation
+	handPoses[ovrHand_Left] = trackState.HandPoses[ovrHand_Left].ThePose;
+	handPoses[ovrHand_Right] = trackState.HandPoses[ovrHand_Right].ThePose;
+
+	if (OVR_SUCCESS(ovr_GetInputState(session, ovrControllerType_Touch, &inputState))) {
+		if (inputState.Buttons & ovrButton_A) {
+			// Handle A button being pressed
+		}
+		if (inputState.HandTrigger[ovrHand_Left] > 0.5f) {
+			// Handle hand grip...
+		}
+	}
+}
+
+bool XGLHmd::Loop() {
 	static float pi(3.141592f);
 
 	ovr_GetSessionStatus(session, &sessionStatus);
@@ -41,6 +60,8 @@ bool XGLHmd::Loop(XGL *pxgl) {
 
 	if (sessionStatus.ShouldRecenter)
 		ovr_RecenterTrackingOrigin(session);
+
+	TrackInput();
 
 	if (sessionStatus.IsVisible) {
 		// Call ovr_GetRenderDesc each frame to get the ovrEyeRenderDesc, as the returned values (e.g. HmdToEyePose) may change at runtime.
@@ -76,16 +97,14 @@ bool XGLHmd::Loop(XGL *pxgl) {
 			// "myView" converts to XGL world coordinates, where the ground plane is X,Y and "up" is the Z axis
 			//    from customary OpenGL RH coordinate system where X,Z are the ground plane and Y is up
 			Matrix4f myView = view * Matrix4f::RotationX(pi / 2) * Matrix4f::RotationZ(pi);
-			glm::mat4 glmView = glm::transpose(glm::make_mat4(&myView.M[0][0]));
-			glm::mat4 glmProj = glm::transpose(glm::make_mat4(&proj.M[0][0]));
 
 			// set the projection,view,orthoProjection matrices in the matrix UBO
-			pxgl->shaderMatrix.view = glmView;
-			pxgl->shaderMatrix.projection = glmProj;
-			pxgl->shaderMatrix.orthoProjection = pxgl->projector.GetOrthoMatrix();
+			pXgl->shaderMatrix.view = glm::transpose(glm::make_mat4(&myView.M[0][0]));;
+			pXgl->shaderMatrix.projection = glm::transpose(glm::make_mat4(&proj.M[0][0]));
+			pXgl->shaderMatrix.orthoProjection = pXgl->projector.GetOrthoMatrix();
 
 			// render XGL scene
-			pxgl->DisplayOVR();
+			pXgl->DisplayOVR();
 
 			eyeRenderTexture[eye]->UnsetRenderSurface();
 

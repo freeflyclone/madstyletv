@@ -172,9 +172,8 @@ int main(void) {
 
 	try {
 		exgl = new ExampleXGL();
-		hmd = new XGLHmd();
+		hmd = new XGLHmd(exgl);
 		exgl->Reshape(width, height);
-
 	}
 	catch (std::runtime_error e) {
 		printf("Exception: %s\n", e.what());
@@ -182,9 +181,9 @@ int main(void) {
 
 	try {
 		bool shouldQuit = false;
-		while (!glfwWindowShouldClose(window)) {
+		while (!glfwWindowShouldClose(window) && !shouldQuit) {
 			glfwPollEvents();
-			shouldQuit = hmd->Loop(exgl);
+			shouldQuit = hmd->Loop();
 			glfwSwapBuffers(window);
 		}
 	}
