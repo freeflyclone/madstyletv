@@ -27,9 +27,15 @@
     <ClCompile Include="ovr-main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="xglhmd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLAppUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xglhmd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

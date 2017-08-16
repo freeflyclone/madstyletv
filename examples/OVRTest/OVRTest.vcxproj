@@ -175,9 +175,11 @@
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="ovr-main.cpp" />
     <ClCompile Include="OVRTestBuildScene.cpp" />
+    <ClCompile Include="xglhmd.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLAppUtil.h" />
+    <ClInclude Include="xglhmd.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
