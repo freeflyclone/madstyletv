@@ -11,7 +11,6 @@
 #include <OVR_CAPI.h>
 #include "OVR_Version.h"
 #include "OVR_ErrorCode.h"
-//#include "OVR_CAPI_Prototypes.h"
 #include <OVR_CAPI_GL.h>
 #include "GLAppUtil.h"
 
@@ -23,7 +22,9 @@ public:
 	bool Loop(XGL*);
 
 private:
-	bool shouldQuit = false;
+	static ovrGraphicsLuid GetDefaultAdapterLuid();
+	static int Compare(const ovrGraphicsLuid&, const ovrGraphicsLuid&);
+
 	TextureBuffer* eyeRenderTexture[2];
 	DepthBuffer* eyeDepthBuffer[2];
 	ovrResult result;
@@ -31,7 +32,7 @@ private:
 	ovrGraphicsLuid luid;
 	ovrHmdDesc hmdDesc;
 	ovrSessionStatus sessionStatus;
-	long long frameIndex = 0;
+	long long frameIndex;
 };
 
 #endif

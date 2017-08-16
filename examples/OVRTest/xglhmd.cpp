@@ -1,45 +1,14 @@
 #include "xglhmd.h"
 
-static ovrGraphicsLuid GetDefaultAdapterLuid()
+XGLHmd::XGLHmd() :
+frameIndex(0)
 {
-	ovrGraphicsLuid luid = ovrGraphicsLuid();
-
-#if defined(_WIN32)
-	IDXGIFactory* factory = nullptr;
-
-	if (SUCCEEDED(CreateDXGIFactory(IID_PPV_ARGS(&factory))))
-	{
-		IDXGIAdapter* adapter = nullptr;
-
-		if (SUCCEEDED(factory->EnumAdapters(0, &adapter)))
-		{
-			DXGI_ADAPTER_DESC desc;
-
-			adapter->GetDesc(&desc);
-			memcpy(&luid, &desc.AdapterLuid, sizeof(luid));
-			adapter->Release();
-		}
-
-		factory->Release();
-	}
-#endif
-
-	return luid;
-}
-
-
-static int Compare(const ovrGraphicsLuid& lhs, const ovrGraphicsLuid& rhs)
-{
-	return memcmp(&lhs, &rhs, sizeof(ovrGraphicsLuid));
-}
-
-XGLHmd::XGLHmd() {
-	result = ovr_Initialize(nullptr);
-	if (!OVR_SUCCESS(result))
+	//result = ovr_Initialize(nullptr);
+	if (!OVR_SUCCESS(ovr_Initialize(nullptr)))
 		throw std::runtime_error("Failed to initialize libOVR");
 
-	result = ovr_Create(&session, &luid);
-	if (!OVR_SUCCESS(result))
+	//result = ovr_Create(&session, &luid);
+	if (!OVR_SUCCESS(ovr_Create(&session, &luid)))
 		throw std::runtime_error("Failed to create OVR Session");
 
 	if (Compare(luid, GetDefaultAdapterLuid())) // If luid that the Rift is on is not the default adapter LUID...
@@ -55,7 +24,7 @@ XGLHmd::XGLHmd() {
 		eyeDepthBuffer[eye] = new DepthBuffer(eyeRenderTexture[eye]->GetSize(), 0);
 
 		if (!eyeRenderTexture[eye]->TextureChain)
-			throw std::runtime_error("TextureChain creation failed.");
+			throw std::runtime_error("eyeRenderTexture creation failed.");
 	}
 
 	// FloorLevel will give tracking poses where the floor height is 0
@@ -89,8 +58,7 @@ bool XGLHmd::Loop(XGL *pxgl) {
 		static OVR::Vector3f Pos2(0.0f, 0.0f, 0.0f);
 
 		// Render Scene to Eye Buffers
-		for (int eye = 0; eye < 2; ++eye)
-		{
+		for (int eye = 0; eye < 2; ++eye) {
 			// Switch to eye render target
 			eyeRenderTexture[eye]->SetAndClearRenderSurface(eyeDepthBuffer[eye]);
 
@@ -128,8 +96,7 @@ bool XGLHmd::Loop(XGL *pxgl) {
 		ld.Header.Type = ovrLayerType_EyeFov;
 		ld.Header.Flags = ovrLayerFlag_TextureOriginAtBottomLeft;   // Because OpenGL.
 
-		for (int eye = 0; eye < 2; ++eye)
-		{
+		for (int eye = 0; eye < 2; ++eye) {
 			ld.ColorTexture[eye] = eyeRenderTexture[eye]->TextureChain;
 			ld.Viewport[eye] = OVR::Recti(eyeRenderTexture[eye]->GetSize());
 			ld.Fov[eye] = hmdDesc.DefaultEyeFov[eye];
@@ -138,14 +105,41 @@ bool XGLHmd::Loop(XGL *pxgl) {
 		}
 
 		ovrLayerHeader* layers = &ld.Header;
-		result = ovr_SubmitFrame(session, frameIndex, nullptr, &layers, 1);
-		// exit the rendering loop if submit returns an error, will retry on ovrError_DisplayLost
 
-		if (!OVR_SUCCESS(result))
-			shouldQuit = true;
+		// exit the rendering loop if submit returns an error, will retry on ovrError_DisplayLost
+		if (!OVR_SUCCESS(ovr_SubmitFrame(session, frameIndex, nullptr, &layers, 1)))
+			return true;
 
 		frameIndex++;
 	}
 
 	return false;
+}
+
+ovrGraphicsLuid XGLHmd::GetDefaultAdapterLuid() {
+	ovrGraphicsLuid luid = ovrGraphicsLuid();
+
+#if defined(_WIN32)
+	IDXGIFactory* factory = nullptr;
+
+	if (SUCCEEDED(CreateDXGIFactory(IID_PPV_ARGS(&factory)))) {
+		IDXGIAdapter* adapter = nullptr;
+
+		if (SUCCEEDED(factory->EnumAdapters(0, &adapter))) {
+			DXGI_ADAPTER_DESC desc;
+
+			adapter->GetDesc(&desc);
+			memcpy(&luid, &desc.AdapterLuid, sizeof(luid));
+			adapter->Release();
+		}
+
+		factory->Release();
+	}
+#endif
+
+	return luid;
+}
+
+int XGLHmd::Compare(const ovrGraphicsLuid& lhs, const ovrGraphicsLuid& rhs) {
+	return memcmp(&lhs, &rhs, sizeof(ovrGraphicsLuid));
 }
