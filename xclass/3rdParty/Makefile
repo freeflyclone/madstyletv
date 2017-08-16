@@ -44,7 +44,7 @@ ifeq ($(OPENAL),)
 	git submodule init openal-soft ; git submodule update
 	@echo ...update done.
 endif
-	(cd openal-soft/build ; cmake .. ; make ; sudo make install) 
+	(cd openal-soft/build ; cmake .. ; make -j12 ; sudo make install) 
 
 opencv:
 ifeq ($(OPENCV),)
