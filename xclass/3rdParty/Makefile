@@ -11,13 +11,20 @@ OPENCV=$(shell ls opencv 2>/dev/null)
 MOSQUITTO=$(shell ls mosquitto 2>/dev/null)
 MAVLINK=$(shell ls mavlink/c_library_v1 2>/dev/null)
 
-all: openal mosquitto opencv
+all: mavlink openal mosquitto opencv
 
 clean:
 	@echo making 'clean' in 3rdParty
 	@rm -rf openal-soft/build/*
 	@-(cd mosquitto && make clean)
 	#@(if [ -d opencv/build ] ; then cd opencv/build ; make clean ; fi)
+
+mavlink:
+ifeq ($(MAVLINK),)
+	@echo mavlink not found, updating git submodule...
+	git submodule init mavlink ; git submodule update
+	@echo ..update done.
+endif
 
 mosquitto: mosquitto/src/mosquitto
 
@@ -56,10 +63,3 @@ ifeq ($(OPENAL),)
 	@echo ...update done.
 endif
 	(cd openal-soft/build ; cmake .. ; make ; sudo make install) 
-
-mavlink:
-ifeq ($(MAVLINK),)
-	@echo mavlink not found, updating git submodule...
-	git submodule init mavlink ; git submodule update
-	@echo ..update done.
-endif
