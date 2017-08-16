@@ -174,7 +174,6 @@ ovrGraphicsLuid luid;
 ovrHmdDesc hmdDesc;
 ovrSessionStatus sessionStatus;
 long long frameIndex = 0;
-Scene* roomScene = nullptr;
 
 bool InitOvr(bool retryCreate) {
 	result = ovr_Initialize(nullptr);
@@ -201,15 +200,12 @@ bool InitOvr(bool retryCreate) {
 			throw std::runtime_error("TextureChain creation failed.");
 	}
 
-	// Make scene - can simplify further if needed
-	roomScene = new Scene(false);
-
 	// FloorLevel will give tracking poses where the floor height is 0
 	ovr_SetTrackingOriginType(session, ovrTrackingOrigin_FloorLevel);
 }
 
 void OvrLoop() {
-	static float Yaw(3.141592f);
+	static float pi(3.141592f);
 
 	ovr_GetSessionStatus(session, &sessionStatus);
 
@@ -221,10 +217,6 @@ void OvrLoop() {
 		ovr_RecenterTrackingOrigin(session);
 
 	if (sessionStatus.IsVisible) {
-		// Animate the cube
-		static float cubeClock = 0;
-		roomScene->Models[0]->Pos = Vector3f(9 * (float)sin(cubeClock), 3, 9 * (float)cos(cubeClock += 0.015f));
-
 		// Call ovr_GetRenderDesc each frame to get the ovrEyeRenderDesc, as the returned values (e.g. HmdToEyePose) may change at runtime.
 		ovrEyeRenderDesc eyeRenderDesc[2];
 		eyeRenderDesc[0] = ovr_GetRenderDesc(session, ovrEye_Left, hmdDesc.DefaultEyeFov[0]);
@@ -246,7 +238,7 @@ void OvrLoop() {
 			eyeRenderTexture[eye]->SetAndClearRenderSurface(eyeDepthBuffer[eye]);
 
 			// Get view and projection matrices
-			Matrix4f rollPitchYaw = Matrix4f::RotationY(Yaw);
+			Matrix4f rollPitchYaw = Matrix4f::RotationZ(pi);
 			Matrix4f finalRollPitchYaw = rollPitchYaw * Matrix4f(EyeRenderPose[eye].Orientation);
 			Vector3f finalUp = finalRollPitchYaw.Transform(Vector3f(0, 1, 0));
 			Vector3f finalForward = finalRollPitchYaw.Transform(Vector3f(0, 0, -1));
@@ -255,8 +247,11 @@ void OvrLoop() {
 			Matrix4f view = Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
 			Matrix4f proj = ovrMatrix4f_Projection(hmdDesc.DefaultEyeFov[eye], 0.2f, 1000.0f, ovrProjection_None);
 
-			// build XGL view and projection matrix
-			glm::mat4 glmView = glm::transpose(glm::make_mat4(&view.M[0][0]));
+			// build XGL view and projection matrix...
+			// "myView" converts to XGL world coordinates, where the ground plane is X,Y and "up" is the Z axis
+			//    from customary OpenGL RH coordinate system where X,Z are the ground plane and Y is up
+			Matrix4f myView = view * Matrix4f::RotationX(pi / 2) * Matrix4f::RotationZ(pi);
+			glm::mat4 glmView = glm::transpose(glm::make_mat4(&myView.M[0][0]));
 			glm::mat4 glmProj = glm::transpose(glm::make_mat4(&proj.M[0][0]));
 
 			// set the projection,view,orthoProjection matrices in the matrix UBO
@@ -360,9 +355,6 @@ int main(void) {
 			OvrLoop();
 			glfwSwapBuffers(window);
 		}
-
-		if (roomScene)
-			delete roomScene;
 	}
 	catch (std::runtime_error e) {
 		printf("Exception: %s\n", e.what());
