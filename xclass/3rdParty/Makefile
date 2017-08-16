@@ -27,14 +27,11 @@ ifeq ($(MAVLINK),)
 	@echo ..update done.
 endif
 
-mosquitto: mosquitto/src/mosquitto
-
-mosquitto/src/mosquitto:
+.PHONY: mosquitto
+mosquitto:
 ifeq ($(MOSQUITTO),)
 	@echo mosquitto folder not found, updating git submodule...
 	git submodule init mosquitto ; git submodule update mosquitto
-else
-	@echo mosquitto found!
 endif
 	(cd mosquitto && make WITH_SRV=no WITH_UUID=no binary && sudo make WITH_DOCS=no install)
 
