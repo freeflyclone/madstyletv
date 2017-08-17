@@ -30,15 +30,26 @@ XGLHmd::XGLHmd(XGL *p) :
 	ovr_SetTrackingOriginType(session, ovrTrackingOrigin_FloorLevel);
 }
 
+void XGLHmd::TransposeHand(ovrHandType which) {
+	char* handNames[2] = { "LeftHand0", "RightHand0" };
+
+	Matrix4f handTranslation = Matrix4f::Translation(handPoses[which].Position);
+	Matrix4f ht = Matrix4f::RotationX(pi / 2) * handTranslation;
+	glm::mat4 glmRightHandTranslation = glm::transpose(glm::make_mat4(&ht.M[0][0]));
+	XGLShape* hand = (XGLShape *)pXgl->FindObject(handNames[which]);
+	hand->model = glmRightHandTranslation;
+}
+
 void XGLHmd::TrackInput() {
-	double displayMidpointSeconds = ovr_GetPredictedDisplayTime(session, frameIndex);
-	ovrTrackingState trackState = ovr_GetTrackingState(session, displayMidpointSeconds, ovrTrue);
-	ovrPosef         handPoses[2];
-	ovrInputState    inputState;
+	displayMidpointSeconds = ovr_GetPredictedDisplayTime(session, frameIndex);
+	trackState = ovr_GetTrackingState(session, displayMidpointSeconds, ovrTrue);
 
 	// Grab hand poses useful for rendering hand or controller representation
 	handPoses[ovrHand_Left] = trackState.HandPoses[ovrHand_Left].ThePose;
 	handPoses[ovrHand_Right] = trackState.HandPoses[ovrHand_Right].ThePose;
+
+	TransposeHand(ovrHand_Left);
+	TransposeHand(ovrHand_Right);
 
 	if (OVR_SUCCESS(ovr_GetInputState(session, ovrControllerType_Touch, &inputState))) {
 		if (inputState.Buttons & ovrButton_A) {
@@ -51,8 +62,6 @@ void XGLHmd::TrackInput() {
 }
 
 bool XGLHmd::Loop() {
-	static float pi(3.141592f);
-
 	ovr_GetSessionStatus(session, &sessionStatus);
 
 	if (sessionStatus.ShouldQuit)

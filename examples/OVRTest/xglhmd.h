@@ -23,9 +23,14 @@ public:
 
 private:
 	void TrackInput();
+	void TransposeHand(ovrHandType);
 
 	static ovrGraphicsLuid GetDefaultAdapterLuid();
 	static int Compare(const ovrGraphicsLuid&, const ovrGraphicsLuid&);
+
+	XGL *pXgl;
+
+	const float pi = 3.141592f;
 
 	TextureBuffer* eyeRenderTexture[2];
 	DepthBuffer* eyeDepthBuffer[2];
@@ -35,7 +40,10 @@ private:
 	ovrSessionStatus sessionStatus;
 	long long frameIndex;
 
-	XGL *pXgl;
+	ovrTrackingState trackState;
+	ovrPosef         handPoses[2];
+	ovrInputState    inputState;
+	double displayMidpointSeconds;
 };
 
 #endif

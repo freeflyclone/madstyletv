@@ -90,6 +90,12 @@ void ExampleXGL::BuildScene() {
 
 	AddShape("shaders/specular", [&]() { sphere = new XGLSphere(0.25, 64); return sphere; });
 
+	AddShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 16); return shape; });
+	shape->SetName("LeftHand");
+
+	AddShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 16); return shape; });
+	shape->SetName("RightHand");
+
 	XInputMouseFunc worldCursorMouse = [&](int x, int y, int flags) {
 		if (mt.IsTrackingRightButton()) {
 			XGLWorldCoord *out = wc.Unproject(projector, x, y);

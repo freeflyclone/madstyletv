@@ -84,13 +84,11 @@ void XGLShape::Render(glm::mat4 modelChain, float clock) {
 	}
 }
 
-XYPlaneGrid::XYPlaneGrid() {
+XYPlaneGrid::XYPlaneGrid(float size, float step) {
 	SetName("XYPlaneGrid");
-	const float size = 100.0f;
-	const int gridIncrement = 10;
 	const XGLColor gridColor = { 0.5, 0, 0, 1 };
 
-	for (int i = 0; i <= 100; i += gridIncrement) {
+	for (float i = 0; i <= 100.0f; i += step) {
 		v.push_back({ { float(i), size, 0 }, {}, {}, gridColor });
 		v.push_back({ { float(i), -size, 0 }, {}, {}, gridColor });
 		v.push_back({ { -float(i), size, 0 }, {}, {}, gridColor });

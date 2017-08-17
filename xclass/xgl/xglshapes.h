@@ -46,7 +46,7 @@ typedef std::function<XGLShape *()> XGLNewShapeLambda;
 
 class XYPlaneGrid : public XGLShape {
 public:
-	XYPlaneGrid();
+	XYPlaneGrid(float size=100.0f, float step=10.0f);
 	void Draw();
 };
 
