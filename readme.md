@@ -8,7 +8,7 @@ C++11 is the version of choice. Prior to C++11, support for C++ threads couldn't
 
 Makefiles are provided for Linux building from the command line. The makefiles support the -j option, and the entire project builds in under a minute, including building dependent 3rdParty projects from source. A modern Linux distro with standard development tools installed is assumed, it's been developed on Ubuntu 16.04.  GCC version 5 or greater is required.
 
-Project build files for Visual Studio 2013 are provided, as that version is available for free as the Community Edition.  
+Project build files for Visual Studio 2013 are provided, as that version is available for free as the Community Edition.  It's also the first version of VC++ that adequately supports std::thread classes.
 
 XCode project files for OSX users.  I don't claim to be an XCode wiz, there is probably a more elegant structure.
 
