@@ -35,9 +35,10 @@ void XGLHmd::TransposeHand(ovrHandType which) {
 
 	Matrix4f handTranslation = Matrix4f::Translation(handPoses[which].Position);
 	Matrix4f ht = Matrix4f::RotationX(pi / 2) * handTranslation;
-	glm::mat4 glmRightHandTranslation = glm::transpose(glm::make_mat4(&ht.M[0][0]));
+	glm::mat4 glmHandTranslation = glm::transpose(glm::make_mat4(&ht.M[0][0]));
+
 	XGLShape* hand = (XGLShape *)pXgl->FindObject(handNames[which]);
-	hand->model = glmRightHandTranslation;
+	hand->model = glmHandTranslation;
 }
 
 void XGLHmd::TrackInput() {

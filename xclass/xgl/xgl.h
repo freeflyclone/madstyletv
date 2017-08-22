@@ -55,6 +55,7 @@
 #include <cmath>
 #include <type_traits>
 #include "glm.hpp"
+#include "glm/gtx/quaternion.hpp"
 #include "matrix_transform.hpp"
 #include "type_ptr.hpp"
 
