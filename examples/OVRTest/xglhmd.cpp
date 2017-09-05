@@ -4,6 +4,9 @@ XGLHmd::XGLHmd(XGL *p) :
 	pXgl(p),
 	frameIndex(0)
 {
+	handNames[0] = "LeftHand0";
+	handNames[1] = "RightHand0";
+
 	if (!OVR_SUCCESS(ovr_Initialize(nullptr)))
 		throw std::runtime_error("Failed to initialize libOVR");
 
@@ -31,14 +34,16 @@ XGLHmd::XGLHmd(XGL *p) :
 }
 
 void XGLHmd::TransposeHand(ovrHandType which) {
-	char* handNames[2] = { "LeftHand0", "RightHand0" };
+	// read hand orientation
+	ovrQuatf oq = handPoses[which].Orientation;
 
-	Matrix4f handTranslation = Matrix4f::Translation(handPoses[which].Position);
-	Matrix4f ht = Matrix4f::RotationX(pi / 2) * handTranslation;
-	glm::mat4 glmHandTranslation = glm::transpose(glm::make_mat4(&ht.M[0][0]));
+	// read hand position into tranlation matrix, rotate it by 90 degrees about X (+Y is forward now, +Z is up)
+	Matrix4f ht = Matrix4f::RotationX(pi / 2) * Matrix4f::Translation(handPoses[which].Position);
 
 	XGLShape* hand = (XGLShape *)pXgl->FindObject(handNames[which]);
-	hand->model = glmHandTranslation;
+
+	// transform hand by translation * orientation
+	hand->model = glm::transpose(glm::make_mat4(&ht.M[0][0])) * glm::toMat4(glm::quat(oq.w, oq.x, oq.y, oq.z));
 }
 
 void XGLHmd::TrackInput() {
@@ -49,9 +54,6 @@ void XGLHmd::TrackInput() {
 	handPoses[ovrHand_Left] = trackState.HandPoses[ovrHand_Left].ThePose;
 	handPoses[ovrHand_Right] = trackState.HandPoses[ovrHand_Right].ThePose;
 
-	TransposeHand(ovrHand_Left);
-	TransposeHand(ovrHand_Right);
-
 	if (OVR_SUCCESS(ovr_GetInputState(session, ovrControllerType_Touch, &inputState))) {
 		if (inputState.Buttons & ovrButton_A) {
 			// Handle A button being pressed
@@ -60,6 +62,9 @@ void XGLHmd::TrackInput() {
 			// Handle hand grip...
 		}
 	}
+
+	TransposeHand(ovrHand_Left);
+	TransposeHand(ovrHand_Right);
 }
 
 bool XGLHmd::Loop() {

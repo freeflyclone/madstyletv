@@ -44,6 +44,8 @@ private:
 	ovrPosef         handPoses[2];
 	ovrInputState    inputState;
 	double displayMidpointSeconds;
+
+	char* handNames[2];
 };
 
 #endif
