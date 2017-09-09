@@ -29,23 +29,23 @@ public:
 	typedef std::vector<XInputMouseFunc> XInputMouseFuncs;
 
 	typedef std::function<void(float)> XInputProportionalFunc;
-	typedef std::vector<XInputProportionalFunc> XInputProportionalFuncs;
+	typedef std::multimap<std::string, XInputProportionalFunc> XInputProportionalFuncs;
 
 	void AddMouseFunc(XInputMouseFunc);
 
 	void AddKeyFunc(int, XInputKeyFunc);
 	void AddKeyFunc(XInputKeyRange, XInputKeyFunc);
 
-	void AddProportionalFunc(XInputProportionalFunc);
+	void AddProportionalFunc(std::string, XInputProportionalFunc);
 
 	void MouseEvent(int, int, int) const;
 	void KeyEvent(int, int) const;
-	void ProportionalEvent(float) const;
+	void ProportionalEvent(std::string, float) const;
 
 private:
 	XInputKeyMap keyMap;
 	XInputKeyRangeMap keyRangeMap;
 	XInputMouseFuncs mouseFuncs;
-	XInputProportionalFuncs proportionalFuncs;
+	XInputProportionalFuncs proportionalMap;
 };
 #endif

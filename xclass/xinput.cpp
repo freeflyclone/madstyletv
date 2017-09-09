@@ -27,11 +27,12 @@ void XInput::AddMouseFunc(XInputMouseFunc f) {
 	mouseFuncs.push_back(f);
 }
 
-void XInput::ProportionalEvent(float v) const{
-	for (const auto perFunc : proportionalFuncs)
-		perFunc(v);
+void XInput::ProportionalEvent(std::string s, float v) const{
+	for (const auto perFunc : proportionalMap)
+		if (perFunc.first == s)
+			perFunc.second(v);
 }
 
-void XInput::AddProportionalFunc(XInputProportionalFunc f) {
-	proportionalFuncs.push_back(f);
+void XInput::AddProportionalFunc(std::string key, XInputProportionalFunc f) {
+	proportionalMap.emplace(key, f);
 }
