@@ -142,7 +142,7 @@ int main(void) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, OPENGL_MINOR_VERSION);
 	glfwWindowHint(GLFW_SAMPLES, 8);
 
-	window = glfwCreateWindow(540, 600, GLFW_WINDOW_TITLE, NULL, NULL);
+	window = glfwCreateWindow(1080, 600, GLFW_WINDOW_TITLE, NULL, NULL);
 	if (!window) {
 		printf("glfwCreateWindow() failed\n");
 		glfwTerminate();
@@ -172,7 +172,7 @@ int main(void) {
 
 	try {
 		exgl = new ExampleXGL();
-		hmd = new XGLHmd(exgl);
+		hmd = new XGLHmd(exgl, width, height);
 		exgl->Reshape(width, height);
 	}
 	catch (std::runtime_error e) {

@@ -1,8 +1,10 @@
 #include "xglhmd.h"
 
-XGLHmd::XGLHmd(XGL *p) :
+XGLHmd::XGLHmd(XGL *p, int w, int h) :
 	pXgl(p),
-	frameIndex(0)
+	frameIndex(0),
+	width(w),
+	height(h)
 {
 	handNames[0] = "LeftHand0";
 	handNames[1] = "RightHand0";
@@ -31,6 +33,25 @@ XGLHmd::XGLHmd(XGL *p) :
 
 	// FloorLevel will give tracking poses where the floor height is 0
 	ovr_SetTrackingOriginType(session, ovrTrackingOrigin_FloorLevel);
+
+	memset(&desc, 0, sizeof(desc));
+	desc.Width = width;
+	desc.Height = height;
+	desc.Format = OVR_FORMAT_R8G8B8A8_UNORM_SRGB;
+
+	// Create mirror texture and an FBO used to copy mirror texture to back buffer
+	if (!OVR_SUCCESS(ovr_CreateMirrorTextureGL(session, &desc, &mirrorTexture)))
+		throw std::runtime_error("Failed to create mirror texture.");
+
+	// Configure the mirror read buffer
+	GLuint texId;
+	ovr_GetMirrorTextureBufferGL(session, mirrorTexture, &texId);
+
+	glGenFramebuffers(1, &mirrorFBO);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, mirrorFBO);
+	glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texId, 0);
+	glFramebufferRenderbuffer(GL_READ_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 }
 
 void XGLHmd::TransposeHand(ovrHandType which) {
@@ -146,6 +167,17 @@ bool XGLHmd::Loop() {
 
 		frameIndex++;
 	}
+
+	// Blit mirror texture to back buffer
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, mirrorFBO);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	GLint w = width;
+	GLint h = height;
+	glBlitFramebuffer(0, h, w, 0,
+		0, 0, w, h,
+		GL_COLOR_BUFFER_BIT, GL_NEAREST);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+
 
 	return false;
 }

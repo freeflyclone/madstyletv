@@ -16,7 +16,7 @@
 
 class XGLHmd {
 public:
-	XGLHmd(XGL *);
+	XGLHmd(XGL *, int, int);
 	~XGLHmd() {};
 
 	bool Loop();
@@ -29,6 +29,7 @@ private:
 	static int Compare(const ovrGraphicsLuid&, const ovrGraphicsLuid&);
 
 	XGL *pXgl;
+	int width, height;
 
 	const float pi = 3.141592f;
 
@@ -39,6 +40,10 @@ private:
 	ovrHmdDesc hmdDesc;
 	ovrSessionStatus sessionStatus;
 	long long frameIndex;
+
+	ovrMirrorTextureDesc desc;
+	ovrMirrorTexture mirrorTexture;
+	GLuint mirrorFBO;
 
 	ovrTrackingState trackState;
 	ovrPosef         handPoses[2];
