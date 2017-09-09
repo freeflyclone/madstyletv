@@ -9,6 +9,11 @@ XGLHmd::XGLHmd(XGL *p, int w, int h) :
 	handNames[0] = "LeftHand0";
 	handNames[1] = "RightHand0";
 
+	whichHand[0] = "Left";
+	whichHand[1] = "Right";
+
+	memset(&previousState, 0, sizeof(previousState));
+
 	if (!OVR_SUCCESS(ovr_Initialize(nullptr)))
 		throw std::runtime_error("Failed to initialize libOVR");
 
@@ -54,6 +59,28 @@ XGLHmd::XGLHmd(XGL *p, int w, int h) :
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 }
 
+void XGLHmd::TrackTouchTriggers(ovrHandType which) {
+	if ((inputState.HandTrigger[which] > 0.0011f) && (inputState.HandTrigger[which] != previousState.HandTrigger[which])) {
+		xprintf("%s HandTrigger: %0.3f\n", whichHand[which], inputState.HandTrigger[which]);
+		previousState.HandTrigger[which] = inputState.HandTrigger[which];
+	}
+	if ((inputState.IndexTrigger[which] > 0.0011f) && (inputState.IndexTrigger[which] != previousState.IndexTrigger[which])) {
+		xprintf("%s IndexTrigger: %0.3f\n", whichHand[which], inputState.IndexTrigger[which]);
+		previousState.IndexTrigger[which] = inputState.IndexTrigger[which];
+	}
+}
+
+void XGLHmd::TrackTouchThumbStick(ovrHandType which) {
+	if ((fabs(inputState.Thumbstick[which].x) > 0.0011f) && (inputState.Thumbstick[which].x != previousState.Thumbstick[which].x)) {
+		xprintf("%s Thumbstick.x: %0.3f\n", whichHand[which], inputState.Thumbstick[which].x);
+		previousState.Thumbstick[which].x = inputState.Thumbstick[which].x;
+	}
+	if ((fabs(inputState.Thumbstick[which].y) > 0.0011f) && (inputState.Thumbstick[which].y != previousState.Thumbstick[which].y)) {
+		xprintf("%s Thumbstick.y: %0.3f\n", whichHand[which], inputState.Thumbstick[which].y);
+		previousState.Thumbstick[which].y = inputState.Thumbstick[which].y;
+	}
+}
+
 void XGLHmd::TransposeHand(ovrHandType which) {
 	// read hand orientation
 	ovrQuatf oq = handPoses[which].Orientation;
@@ -67,7 +94,7 @@ void XGLHmd::TransposeHand(ovrHandType which) {
 	hand->model = glm::transpose(glm::make_mat4(&ht.M[0][0])) * glm::toMat4(glm::quat(oq.w, oq.x, oq.y, oq.z));
 }
 
-void XGLHmd::TrackInput() {
+void XGLHmd::TrackTouchInput() {
 	displayMidpointSeconds = ovr_GetPredictedDisplayTime(session, frameIndex);
 	trackState = ovr_GetTrackingState(session, displayMidpointSeconds, ovrTrue);
 
@@ -79,9 +106,10 @@ void XGLHmd::TrackInput() {
 		if (inputState.Buttons & ovrButton_A) {
 			// Handle A button being pressed
 		}
-		if (inputState.HandTrigger[ovrHand_Left] > 0.5f) {
-			// Handle hand grip...
-		}
+		TrackTouchTriggers(ovrHand_Left);
+		TrackTouchTriggers(ovrHand_Right);
+		TrackTouchThumbStick(ovrHand_Left);
+		TrackTouchThumbStick(ovrHand_Right);
 	}
 
 	TransposeHand(ovrHand_Left);
@@ -97,7 +125,7 @@ bool XGLHmd::Loop() {
 	if (sessionStatus.ShouldRecenter)
 		ovr_RecenterTrackingOrigin(session);
 
-	TrackInput();
+	TrackTouchInput();
 
 	if (sessionStatus.IsVisible) {
 		// Call ovr_GetRenderDesc each frame to get the ovrEyeRenderDesc, as the returned values (e.g. HmdToEyePose) may change at runtime.

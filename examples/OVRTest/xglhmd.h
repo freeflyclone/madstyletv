@@ -22,7 +22,9 @@ public:
 	bool Loop();
 
 private:
-	void TrackInput();
+	void TrackTouchInput();
+	void TrackTouchTriggers(ovrHandType);
+	void TrackTouchThumbStick(ovrHandType);
 	void TransposeHand(ovrHandType);
 
 	static ovrGraphicsLuid GetDefaultAdapterLuid();
@@ -47,10 +49,11 @@ private:
 
 	ovrTrackingState trackState;
 	ovrPosef         handPoses[2];
-	ovrInputState    inputState;
+	ovrInputState    inputState,previousState;
 	double displayMidpointSeconds;
 
-	char* handNames[2];
+	const char* handNames[2];
+	const char *whichHand[2];
 };
 
 #endif
