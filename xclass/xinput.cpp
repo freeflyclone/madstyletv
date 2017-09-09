@@ -26,3 +26,12 @@ void XInput::MouseEvent(int x, int y, int flags) const{
 void XInput::AddMouseFunc(XInputMouseFunc f) {
 	mouseFuncs.push_back(f);
 }
+
+void XInput::ProportionalEvent(float v) const{
+	for (const auto perFunc : proportionalFuncs)
+		perFunc(v);
+}
+
+void XInput::AddProportionalFunc(XInputProportionalFunc f) {
+	proportionalFuncs.push_back(f);
+}

@@ -28,18 +28,24 @@ public:
 	typedef std::function<void(int, int, int)> XInputMouseFunc;
 	typedef std::vector<XInputMouseFunc> XInputMouseFuncs;
 
+	typedef std::function<void(float)> XInputProportionalFunc;
+	typedef std::vector<XInputProportionalFunc> XInputProportionalFuncs;
+
 	void AddMouseFunc(XInputMouseFunc);
 
 	void AddKeyFunc(int, XInputKeyFunc);
 	void AddKeyFunc(XInputKeyRange, XInputKeyFunc);
 
+	void AddProportionalFunc(XInputProportionalFunc);
 
 	void MouseEvent(int, int, int) const;
 	void KeyEvent(int, int) const;
+	void ProportionalEvent(float) const;
 
 private:
 	XInputKeyMap keyMap;
 	XInputKeyRangeMap keyRangeMap;
 	XInputMouseFuncs mouseFuncs;
+	XInputProportionalFuncs proportionalFuncs;
 };
 #endif
