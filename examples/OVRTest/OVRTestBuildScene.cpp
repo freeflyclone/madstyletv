@@ -9,6 +9,7 @@
 
 // this needs to be file scope at least.  Local (to ::BuildScene) doesn't work
 XGLSphere *sphere;
+glm::vec3 wcPos = { 0.0f, 0.0f, 0.0f };
 
 const float constSpeed1 = 60.0f * 4.0f;
 const float constSpeed2 = 45.0f * 4.0f;
@@ -96,6 +97,7 @@ void ExampleXGL::BuildScene() {
 	AddShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 16); return shape; });
 	shape->SetName("RightHand");
 
+	/*
 	XInputMouseFunc worldCursorMouse = [&](int x, int y, int flags) {
 		if (mt.IsTrackingRightButton()) {
 			XGLWorldCoord *out = wc.Unproject(projector, x, y);
@@ -114,15 +116,26 @@ void ExampleXGL::BuildScene() {
 		}
 	};
 	AddMouseFunc(worldCursorMouse);
+	*/
 
+	/*
 	AddProportionalFunc("RightHandTrigger", [](float v) { xprintf("RightHandTrigger: %0.3f\n", v); });
 	AddProportionalFunc("RightIndexTrigger", [](float v) { xprintf("RightIndexTrigger: %0.3f\n", v); });
 	AddProportionalFunc("RightThumbStick.x", [](float v) { xprintf("RightThumbStick.x: %0.3f\n", v); });
 	AddProportionalFunc("RightThumbStick.y", [](float v) { xprintf("RightThumbStick.y: %0.3f\n", v); });
 	AddProportionalFunc("LeftHandTrigger", [](float v) { xprintf("LeftHandTrigger: %0.3f\n", v); });
 	AddProportionalFunc("LeftIndexTrigger", [](float v) { xprintf("LeftIndexTrigger: %0.3f\n", v); });
-	AddProportionalFunc("LeftThumbStick.x", [](float v) { xprintf("LeftThumbStick.x: %0.3f\n", v); });
-	AddProportionalFunc("LeftThumbStick.y", [](float v) { xprintf("LeftThumbStick.y: %0.3f\n", v); });
+	*/
+	AddProportionalFunc("LeftThumbStick.x", [](float v) {
+		wcPos.x += v / 10.0f;
+		glm::mat4 translate = glm::translate(glm::mat4(), wcPos);
+		sphere->model = translate;
+	});
+	AddProportionalFunc("LeftThumbStick.y", [](float v) {
+		wcPos.y += v / 10.0f;
+		glm::mat4 translate = glm::translate(glm::mat4(), wcPos);
+		sphere->model = translate;
+	});
 
 	// now hook up the GUI sliders to the rotating torus thingy to control it's speeds.
 	XGLGuiSlider *hs;
