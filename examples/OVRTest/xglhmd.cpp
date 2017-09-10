@@ -13,6 +13,7 @@ XGLHmd::XGLHmd(XGL *p, int w, int h) :
 	whichHand[1] = "Right";
 
 	memset(&previousState, 0, sizeof(previousState));
+	headPosition = { 0.0f, -10.0f, 10.0f };
 
 	if (!OVR_SUCCESS(ovr_Initialize(nullptr)))
 		throw std::runtime_error("Failed to initialize libOVR");
@@ -85,9 +86,19 @@ void XGLHmd::TransposeHand(ovrHandType which) {
 	// read hand orientation
 	ovrQuatf oq = handPoses[which].Orientation;
 
-	// read hand position into tranlation matrix, rotate it by 90 degrees about X (+Y is forward now, +Z is up)
-	Matrix4f ht = Matrix4f::RotationX(pi / 2) * Matrix4f::Translation(handPoses[which].Position);
+	// get current position of HMD in world coordinates (base offset, before pose info added)
+	Vector3f headPos = { headPosition.x, -headPosition.y, headPosition.z };
 
+	// get current hand position (pose info)
+	Vector3f handPos = handPoses[which].Position;
+
+	// add virtual head position in world coordinates to hand position
+	handPos += headPos;
+
+	// apply rotation matrix to covert to XGL world coordinate scheme.
+	Matrix4f ht = Matrix4f::RotationX(pi / 2) * Matrix4f::Translation(handPos);
+
+	// Fetch the current XGLShape for the hand in question by name
 	XGLShape* hand = (XGLShape *)pXgl->FindObject(handNames[which]);
 
 	// transform hand by translation * orientation
@@ -125,8 +136,6 @@ bool XGLHmd::Loop() {
 	if (sessionStatus.ShouldRecenter)
 		ovr_RecenterTrackingOrigin(session);
 
-	TrackTouchInput();
-
 	if (sessionStatus.IsVisible) {
 		// Call ovr_GetRenderDesc each frame to get the ovrEyeRenderDesc, as the returned values (e.g. HmdToEyePose) may change at runtime.
 		ovrEyeRenderDesc eyeRenderDesc[2];
@@ -140,7 +149,6 @@ bool XGLHmd::Loop() {
 		double sensorSampleTime;    // sensorSampleTime is fed into the layer later
 		ovr_GetEyePoses(session, frameIndex, ovrTrue, HmdToEyePose, EyeRenderPose, &sensorSampleTime);
 
-		static OVR::Vector3f Pos2(0.0f, 0.0f, 0.0f);
 
 		// Render Scene to Eye Buffers
 		for (int eye = 0; eye < 2; ++eye) {
@@ -152,7 +160,7 @@ bool XGLHmd::Loop() {
 			Matrix4f finalRollPitchYaw = rollPitchYaw * Matrix4f(EyeRenderPose[eye].Orientation);
 			Vector3f finalUp = finalRollPitchYaw.Transform(Vector3f(0, 1, 0));
 			Vector3f finalForward = finalRollPitchYaw.Transform(Vector3f(0, 0, -1));
-			Vector3f shiftedEyePos = Pos2 + rollPitchYaw.Transform(EyeRenderPose[eye].Position);
+			Vector3f shiftedEyePos = headPosition + rollPitchYaw.Transform(EyeRenderPose[eye].Position);
 
 			Matrix4f view = Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
 			Matrix4f proj = ovrMatrix4f_Projection(hmdDesc.DefaultEyeFov[eye], 0.2f, 1000.0f, ovrProjection_None);
@@ -188,6 +196,8 @@ bool XGLHmd::Loop() {
 		}
 
 		ovrLayerHeader* layers = &ld.Header;
+
+		TrackTouchInput();
 
 		// exit the rendering loop if submit returns an error, will retry on ovrError_DisplayLost
 		if (!OVR_SUCCESS(ovr_SubmitFrame(session, frameIndex, nullptr, &layers, 1)))
