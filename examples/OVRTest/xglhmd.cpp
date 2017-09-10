@@ -72,11 +72,11 @@ void XGLHmd::TrackTouchTriggers(ovrHandType which) {
 }
 
 void XGLHmd::TrackTouchThumbStick(ovrHandType which) {
-	if ((fabs(inputState.Thumbstick[which].x) > 0.0011f) && (inputState.Thumbstick[which].x != previousState.Thumbstick[which].x)) {
+	if (fabs(inputState.Thumbstick[which].x) > 0.0011f) {
 		pXgl->ProportionalEvent(whichHand[which] + "ThumbStick.x", inputState.Thumbstick[which].x);
 		previousState.Thumbstick[which].x = inputState.Thumbstick[which].x;
 	}
-	if ((fabs(inputState.Thumbstick[which].y) > 0.0011f) && (inputState.Thumbstick[which].y != previousState.Thumbstick[which].y)) {
+	if (fabs(inputState.Thumbstick[which].y) > 0.0011f) {
 		pXgl->ProportionalEvent(whichHand[which] + "ThumbStick.y", inputState.Thumbstick[which].y);
 		previousState.Thumbstick[which].y = inputState.Thumbstick[which].y;
 	}
