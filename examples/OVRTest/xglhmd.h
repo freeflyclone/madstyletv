@@ -53,7 +53,7 @@ private:
 	double displayMidpointSeconds;
 
 	const char* handNames[2];
-	const char *whichHand[2];
+	std::string whichHand[2];
 };
 
 #endif

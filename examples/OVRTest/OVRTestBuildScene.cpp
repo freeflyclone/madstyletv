@@ -115,6 +115,15 @@ void ExampleXGL::BuildScene() {
 	};
 	AddMouseFunc(worldCursorMouse);
 
+	AddProportionalFunc("RightHandTrigger", [](float v) { xprintf("RightHandTrigger: %0.3f\n", v); });
+	AddProportionalFunc("RightIndexTrigger", [](float v) { xprintf("RightIndexTrigger: %0.3f\n", v); });
+	AddProportionalFunc("RightThumbStick.x", [](float v) { xprintf("RightThumbStick.x: %0.3f\n", v); });
+	AddProportionalFunc("RightThumbStick.y", [](float v) { xprintf("RightThumbStick.y: %0.3f\n", v); });
+	AddProportionalFunc("LeftHandTrigger", [](float v) { xprintf("LeftHandTrigger: %0.3f\n", v); });
+	AddProportionalFunc("LeftIndexTrigger", [](float v) { xprintf("LeftIndexTrigger: %0.3f\n", v); });
+	AddProportionalFunc("LeftThumbStick.x", [](float v) { xprintf("LeftThumbStick.x: %0.3f\n", v); });
+	AddProportionalFunc("LeftThumbStick.y", [](float v) { xprintf("LeftThumbStick.y: %0.3f\n", v); });
+
 	// now hook up the GUI sliders to the rotating torus thingy to control it's speeds.
 	XGLGuiSlider *hs;
 

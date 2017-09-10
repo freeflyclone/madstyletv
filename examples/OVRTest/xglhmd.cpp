@@ -61,22 +61,22 @@ XGLHmd::XGLHmd(XGL *p, int w, int h) :
 
 void XGLHmd::TrackTouchTriggers(ovrHandType which) {
 	if ((inputState.HandTrigger[which] > 0.0011f) && (inputState.HandTrigger[which] != previousState.HandTrigger[which])) {
-		xprintf("%s HandTrigger: %0.3f\n", whichHand[which], inputState.HandTrigger[which]);
+		pXgl->ProportionalEvent(whichHand[which] + "HandTrigger", inputState.HandTrigger[which]);
 		previousState.HandTrigger[which] = inputState.HandTrigger[which];
 	}
 	if ((inputState.IndexTrigger[which] > 0.0011f) && (inputState.IndexTrigger[which] != previousState.IndexTrigger[which])) {
-		xprintf("%s IndexTrigger: %0.3f\n", whichHand[which], inputState.IndexTrigger[which]);
+		pXgl->ProportionalEvent(whichHand[which] + "IndexTrigger", inputState.IndexTrigger[which]);
 		previousState.IndexTrigger[which] = inputState.IndexTrigger[which];
 	}
 }
 
 void XGLHmd::TrackTouchThumbStick(ovrHandType which) {
 	if ((fabs(inputState.Thumbstick[which].x) > 0.0011f) && (inputState.Thumbstick[which].x != previousState.Thumbstick[which].x)) {
-		xprintf("%s Thumbstick.x: %0.3f\n", whichHand[which], inputState.Thumbstick[which].x);
+		pXgl->ProportionalEvent(whichHand[which] + "ThumbStick.x", inputState.Thumbstick[which].x);
 		previousState.Thumbstick[which].x = inputState.Thumbstick[which].x;
 	}
 	if ((fabs(inputState.Thumbstick[which].y) > 0.0011f) && (inputState.Thumbstick[which].y != previousState.Thumbstick[which].y)) {
-		xprintf("%s Thumbstick.y: %0.3f\n", whichHand[which], inputState.Thumbstick[which].y);
+		pXgl->ProportionalEvent(whichHand[which] + "ThumbStick.y", inputState.Thumbstick[which].y);
 		previousState.Thumbstick[which].y = inputState.Thumbstick[which].y;
 	}
 }
