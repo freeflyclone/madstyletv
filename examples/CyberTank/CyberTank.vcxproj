@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{923B6414-5033-42E6-8639-C1DDAEB414E9}</ProjectGuid>
+    <ProjectGuid>{21B2639B-88EE-4224-AB2C-8A8B6DDEF2EF}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>OVRTest</RootNamespace>
   </PropertyGroup>
