@@ -23,7 +23,6 @@
 	#include "glew.h"
 	#include "wglew.h"
 	#include <windows.h>
-#include "xglew.h"
 	// If we're compiling with Visual Studio 2015 (or greater)
 	// add in the "legacy_stdio_definitions.lib" to avoid 
 	// unresolved stdio externals.
