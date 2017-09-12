@@ -9,6 +9,7 @@
 
 // this needs to be file scope at least.  Local (to ::BuildScene) doesn't work
 XGLSphere *sphere;
+XGLShape  *hmdSled;
 glm::vec3 wcPos = { 0.0f, 0.0f, 0.0f };
 
 const float constSpeed1 = 60.0f * 4.0f;
@@ -21,6 +22,7 @@ float speed3 = constSpeed3;
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape, *child1, *child2, *child3, *child4;
+	XGLShape *hmdChild;
 	glm::mat4 rotate, translate;
 	AddShape("shaders/specular", [&](){ shape = new XGLTorus(5.0f, 1.0f, 64, 32); return shape; });
 	shape->attributes.diffuseColor = { 0.005, 0.005, 0.005, 1 };
@@ -89,13 +91,19 @@ void ExampleXGL::BuildScene() {
 	AddKeyFunc('M', renderMod);
 	AddKeyFunc('m', renderMod);
 
-	AddShape("shaders/specular", [&]() { sphere = new XGLSphere(0.25, 64); return sphere; });
+	AddShape("shaders/000-simple", [&]() {hmdSled = new XGLTransformer(); return hmdSled; });
+	hmdSled->SetName("HmdSled");
+	CreateShape("shaders/specular", [&](){ hmdChild = new XGLSphere(0.1, 32); return hmdChild; });
+	hmdChild->attributes.diffuseColor = XGLColors::cyan;
+	hmdSled->AddChild(hmdChild);
 
-	AddShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 16); return shape; });
+	CreateShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 16); return shape; });
 	shape->SetName("LeftHand");
+	hmdSled->AddChild(shape);
 
-	AddShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 16); return shape; });
+	CreateShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 16); return shape; });
 	shape->SetName("RightHand");
+	hmdSled->AddChild(shape);
 
 	/*
 	XInputMouseFunc worldCursorMouse = [&](int x, int y, int flags) {
@@ -129,12 +137,22 @@ void ExampleXGL::BuildScene() {
 	AddProportionalFunc("LeftThumbStick.x", [](float v) {
 		wcPos.x += v / 10.0f;
 		glm::mat4 translate = glm::translate(glm::mat4(), wcPos);
-		sphere->model = translate;
+		hmdSled->model = translate;
 	});
 	AddProportionalFunc("LeftThumbStick.y", [](float v) {
 		wcPos.y += v / 10.0f;
 		glm::mat4 translate = glm::translate(glm::mat4(), wcPos);
-		sphere->model = translate;
+		hmdSled->model = translate;
+	});
+	AddProportionalFunc("LeftIndexTrigger", [](float v) {
+		wcPos.z += v / 10.0f;
+		glm::mat4 translate = glm::translate(glm::mat4(), wcPos);
+		hmdSled->model = translate;
+	});
+	AddProportionalFunc("LeftHandTrigger", [](float v) {
+		wcPos.z -= v / 10.0f;
+		glm::mat4 translate = glm::translate(glm::mat4(), wcPos);
+		hmdSled->model = translate;
 	});
 
 	// now hook up the GUI sliders to the rotating torus thingy to control it's speeds.

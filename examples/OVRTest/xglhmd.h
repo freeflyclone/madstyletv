@@ -34,7 +34,6 @@ private:
 	int width, height;
 
 	const float pi = 3.141592f;
-	Vector3f headPosition;
 	TextureBuffer* eyeRenderTexture[2];
 	DepthBuffer* eyeDepthBuffer[2];
 	ovrSession session;
@@ -54,6 +53,7 @@ private:
 
 	const char* handNames[2];
 	std::string whichHand[2];
+	XGLShape *hmdSled;
 };
 
 #endif

@@ -6,6 +6,12 @@ XGLHmd::XGLHmd(XGL *p, int w, int h) :
 	width(w),
 	height(h)
 {
+	// the hmdSled is an XGLShape that the HMD and Touch controllers are
+	// attached to.  XGLShape objects representing the Touch controllers
+	// are assumed to be attached as child XObjects, thus when the sled
+	// moves, the "hands" move with it.
+	hmdSled = (XGLShape *)pXgl->FindObject("HmdSled0");
+
 	handNames[0] = "LeftHand0";
 	handNames[1] = "RightHand0";
 
@@ -13,7 +19,6 @@ XGLHmd::XGLHmd(XGL *p, int w, int h) :
 	whichHand[1] = "Right";
 
 	memset(&previousState, 0, sizeof(previousState));
-	headPosition = { 0.0f, -10.0f, 10.0f };
 
 	if (!OVR_SUCCESS(ovr_Initialize(nullptr)))
 		throw std::runtime_error("Failed to initialize libOVR");
@@ -61,11 +66,11 @@ XGLHmd::XGLHmd(XGL *p, int w, int h) :
 }
 
 void XGLHmd::TrackTouchTriggers(ovrHandType which) {
-	if ((inputState.HandTrigger[which] > 0.0011f) && (inputState.HandTrigger[which] != previousState.HandTrigger[which])) {
+	if (inputState.HandTrigger[which] > 0.0011f) {
 		pXgl->ProportionalEvent(whichHand[which] + "HandTrigger", inputState.HandTrigger[which]);
 		previousState.HandTrigger[which] = inputState.HandTrigger[which];
 	}
-	if ((inputState.IndexTrigger[which] > 0.0011f) && (inputState.IndexTrigger[which] != previousState.IndexTrigger[which])) {
+	if (inputState.IndexTrigger[which] > 0.0011f) {
 		pXgl->ProportionalEvent(whichHand[which] + "IndexTrigger", inputState.IndexTrigger[which]);
 		previousState.IndexTrigger[which] = inputState.IndexTrigger[which];
 	}
@@ -86,14 +91,8 @@ void XGLHmd::TransposeHand(ovrHandType which) {
 	// read hand orientation
 	ovrQuatf oq = handPoses[which].Orientation;
 
-	// get current position of HMD in world coordinates (base offset, before pose info added)
-	Vector3f headPos = { headPosition.x, -headPosition.y, headPosition.z };
-
 	// get current hand position (pose info)
 	Vector3f handPos = handPoses[which].Position;
-
-	// add virtual head position in world coordinates to hand position
-	handPos += headPos;
 
 	// apply rotation matrix to covert to XGL world coordinate scheme.
 	Matrix4f ht = Matrix4f::RotationX(pi / 2) * Matrix4f::Translation(handPos);
@@ -149,6 +148,8 @@ bool XGLHmd::Loop() {
 		double sensorSampleTime;    // sensorSampleTime is fed into the layer later
 		ovr_GetEyePoses(session, frameIndex, ovrTrue, HmdToEyePose, EyeRenderPose, &sensorSampleTime);
 
+		// get head position from hmdSled
+		Vector3f headPosition = { -hmdSled->model[3][0], -hmdSled->model[3][2], -hmdSled->model[3][1] };
 
 		// Render Scene to Eye Buffers
 		for (int eye = 0; eye < 2; ++eye) {
