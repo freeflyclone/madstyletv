@@ -26,7 +26,7 @@ static XGLHmd *hmd = nullptr;
 #endif
 
 #ifndef GLFW_WINDOW_TITLE
-#define GLFW_WINDOW_TITLE "Mad Style TV Example"
+#define GLFW_WINDOW_TITLE "<<< CyberTank >>>"
 #endif
 
 #ifdef _WIN32
