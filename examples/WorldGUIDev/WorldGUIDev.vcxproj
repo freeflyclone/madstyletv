@@ -171,10 +171,10 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\common\ExampleGUI.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
     <ClCompile Include="WorldGUIDevBuildScene.cpp" />
+    <ClCompile Include="WorldGUIDevGUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\shaders\gui-tex.frag" />
