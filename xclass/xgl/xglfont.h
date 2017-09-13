@@ -12,7 +12,7 @@
 #include "xgl.h"
 
 #ifdef WIN32
-#define FONT_NAME "/windows/fonts/Arial.ttf"
+#define FONT_NAME "C:/windows/fonts/Arial.ttf"
 #elif __APPLE__
 #include "TargetConditionals.h"
 #if TARGET_OS_MAC
