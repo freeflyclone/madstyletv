@@ -154,32 +154,4 @@ void ExampleXGL::BuildScene() {
 		glm::mat4 translate = glm::translate(glm::mat4(), wcPos);
 		hmdSled->model = translate;
 	});
-
-	// now hook up the GUI sliders to the rotating torus thingy to control it's speeds.
-	XGLGuiSlider *hs;
-
-	XGLGuiCanvas *sliders = (XGLGuiCanvas *)(GetGuiManager()->FindObject("HorizontalSliderWindow"));
-	if (sliders != nullptr) {
-		if ((hs = (XGLGuiSlider *)sliders->FindObject("Horizontal Slider 1")) != nullptr) {
-			hs->AddMouseEventListener([hs](float x, float y, int flags) {
-				if (hs->HasMouse()) {
-					speed1 = constSpeed1 / (6.0f*hs->Position() + 1.0f);
-				}
-			});
-		}
-		if ((hs = (XGLGuiSlider *)sliders->FindObject("Horizontal Slider 2")) != nullptr) {
-			hs->AddMouseEventListener([hs](float x, float y, int flags) {
-				if (hs->HasMouse()) {
-					speed2 = constSpeed2 / (6.0f*hs->Position() + 1.0f);
-				}
-			});
-		}
-		if ((hs = (XGLGuiSlider *)sliders->FindObject("Horizontal Slider 3")) != nullptr) {
-			hs->AddMouseEventListener([hs](float x, float y, int flags) {
-				if (hs->HasMouse()) {
-					speed3 = constSpeed3 / (6.0f*hs->Position() + 1.0f);
-				}
-			});
-		}
-	}
 }
