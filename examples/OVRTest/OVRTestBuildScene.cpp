@@ -1,16 +1,19 @@
 /**************************************************************
 ** OVRTestBuildScene.cpp
 **
-** Just to demonstrate instantiation of a "ground"
-** plane and a single triangle, with default camera manipulation
-** via keyboard and mouse.
+** Build a scene with some stuff, and introduce a "sled" for
+** the HMD and touch controllers.
 **************************************************************/
 #include "ExampleXGL.h"
 
-// this needs to be file scope at least.  Local (to ::BuildScene) doesn't work
+// these needs to be file scope at least.  Local (to ::BuildScene) doesn't work
+// Reason: if you "capture by reference" in a lambda function, they need to
+// be valid.  If they're local variables, "capture by reference" doesn't work
+// if the lambda is being called outside the scope of the function that created
+// it.  Which is almost always the case the way lambda's get used herein.
 XGLSphere *sphere;
 XGLShape  *hmdSled;
-glm::vec3 wcPos = { 0.0f, 0.0f, 0.0f };
+XGLGuiCanvas *guiCanvas;
 
 const float constSpeed1 = 60.0f * 4.0f;
 const float constSpeed2 = 45.0f * 4.0f;
@@ -23,6 +26,7 @@ float speed3 = constSpeed3;
 void ExampleXGL::BuildScene() {
 	XGLShape *shape, *child1, *child2, *child3, *child4;
 	XGLShape *hmdChild;
+
 	glm::mat4 rotate, translate;
 	AddShape("shaders/specular", [&](){ shape = new XGLTorus(5.0f, 1.0f, 64, 32); return shape; });
 	shape->attributes.diffuseColor = { 0.005, 0.005, 0.005, 1 };
@@ -91,10 +95,15 @@ void ExampleXGL::BuildScene() {
 	AddKeyFunc('M', renderMod);
 	AddKeyFunc('m', renderMod);
 
+	// HMD "sled" provides a single anchor point in world space for the HMD and Touch controllers
+	// and anything else that needs to rendered as part of the user's "personal space".
+	//
+	// Could be a car interior, an aircraft/spacecraft cockpit, or what have you.
 	AddShape("shaders/000-simple", [&]() {hmdSled = new XGLTransformer(); return hmdSled; });
 	hmdSled->SetName("HmdSled");
-	CreateShape("shaders/specular", [&](){ hmdChild = new XGLSphere(0.1, 32); return hmdChild; });
-	hmdChild->attributes.diffuseColor = XGLColors::cyan;
+
+	CreateShape("shaders/specular", [&](){ hmdChild = new XGLSphere(0.1, 32); hmdChild->attributes.diffuseColor = XGLColors::cyan;  return hmdChild; });
+	//hmdChild->attributes.diffuseColor = XGLColors::cyan;
 	hmdSled->AddChild(hmdChild);
 
 	CreateShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 16); return shape; });
@@ -105,53 +114,104 @@ void ExampleXGL::BuildScene() {
 	shape->SetName("RightHand");
 	hmdSled->AddChild(shape);
 
-	/*
-	XInputMouseFunc worldCursorMouse = [&](int x, int y, int flags) {
-		if (mt.IsTrackingRightButton()) {
-			XGLWorldCoord *out = wc.Unproject(projector, x, y);
+	XGLGuiManager *gm;
+	XGLGuiCanvas *gc;
 
-			// project the worldCursor ray onto the X/Y (Z=0) plane
-			// TODO: Figure this out.  I found it on StackOverflow.
-			float f = out[0].z / (out[1].z - out[0].z);
-			float x2d = out[0].x - f * (out[1].x - out[0].x);
-			float y2d = out[0].y - f * (out[1].y - out[0].y);
-			float z2d = -0.002f;
+	// the XGLGuiManager() serves as the root of the GuiShape tree, and intercepts the '~' key
+	// for activation of the GUI (a la Id games).
+	CreateShape("shaders/ortho", [&]() { gm = new XGLGuiManager(this); return gm; });
 
-			if (sphere) {
-				glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(x2d, y2d, z2d));
-				sphere->model = translate;
-			}
-		}
-	};
-	AddMouseFunc(worldCursorMouse);
+	// XGLGuiCanvas is intended to be a textured quadrilateral that serves as an overlay for
+	// 2D GUI elements to be rendered on.  Think of it as the equivalent of a computer monitor,
+	// but in world space.
+	//
+	// The width & height arguments are the dimensions of the buffer that is used as a GL texture
+	// for 2D grapics operations, and they are ALSO the dimensions of the geometry of the quadrilateral.
+	// This leads to the unfortunate side-effect of being HUGE in world space by default.  This can be
+	// fixed by applying a scale factor to the model matrix.  Could do that in the constructor I suppose.
+	//
+	// The choice of 1920 x 1080 gives texture buffer dimensions equivalent to real world HDTV dimensions,
+	// With OVR, 1 unit in world space equals 1 meter in physical space, so that means this XGLGuiCanvas
+	// is nearly 2 kilometers wide, before scaling.  Scaling by 0.01 reduces it to 19.2 x 10.8 meters.
+	// Nice and big but not gianormous.
+	gm->AddChildShape("shaders/gui-tex", [&gc, this](){
+		gc = new XGLGuiCanvas(this, 1920, 1080);
+		return gc;
+	});
+	glm::mat4 scale;
+
+	// scale it to "reasonable" world dimensions.
+	scale = glm::scale(glm::mat4(), glm::vec3(0.01, 0.01, 0.01));
+
+	// flip it up so it's vertical
+	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+	// move it so the bottom edge is on the ground plane, and it's centered horizontally.
+	translate = glm::translate(glm::mat4(), glm::vec3(-9.6, 10.0, 10.8));
+
+	// applay all those to the modle matrix.
+	gc->model = translate * rotate * scale;
+
+	// XGLGuiCanvas supports "RenderText", using XGLFont to actually render text.  It does bit-blitting
+	// CPU side of individual glyphs from the FreeType representation.  It's not very sophisticated, possible
+	// problems include boundary checking issues.
+	// RenderText() has a default pixel size of 64, which makes for fairly large text.  It's a somewhat arbitrary
+	// choice, balancing size vs "fuzziness" caused by anti-aliasing by FreeType blitting.
+	//
+	// XGLGuiCanvas also supports a "pen", or cursor, which gets updated by RenderText(), so that consecutive
+	// RenderText() calls provide expected line-oriented behavior.  It is a 2D coordinate, in pixels. 
+	// For RenderText() it is the upper-left corner of the box of text that is rendered in each call.
+	// The dimensions of that box are set by the "pixelSize" argument, and the number of characters to be
+	// rendered.
+	//
+	// Linefeeds do what one expects.  The amount of vertical offset caused by a linefeed is dependent 
+	// on the "pixelSize" argument to the RenderText() call.
+	gc->RenderText("This is a test.\n");
+	gc->RenderText("Another line, 64 pixels (the default) tall");
+	gc->RenderText("\nThis is a smaller test", 16);
+
+	// The SetPenPosition() call allows one to set the current pen position.
+	// Linefeeds reset it to the left-margin, but still provide the same vertical offset behavior.
+	gc->SetPenPosition(960, 540);
+	gc->RenderText("Text in the middle\n", 32);
+	gc->RenderText("Another line after a line-feed", 32);
+
+	// "shaders/gui-tex" does appropriate world-space projections, just like "shaders/specular".  The fragment
+	// shader by default expects that the texture buffer is 8-bit gray-scale (for anti-aliasing).  The fragment
+	// shader uses attributes.diffuseColor as the "foreground" color, and attributes.ambientColor as the "background"
+	// color.  The alpha component allows for transparency, like one would expect.
+	gc->attributes.ambientColor = { 1.0, 0.0, 1.0, 0.1 };
+	gc->attributes.diffuseColor = { 1.0, 1.0, 1.0, 1.0 };
+
+	// attach the guiCanvas to the sled
+/*	if ((guiCanvas = (XGLGuiCanvas *)FindObject("XGLGuiCanvas1")) != nullptr) {
+		guiCanvas->SetAnimationFunction([&](float clock){
+			glm::mat4 scale;
+			glm::mat4 rotate;
+			glm::mat4 translate;
+			glm::mat4 model;
+
+			// scale it to "reasonable" world dimensions.
+			scale = glm::scale(glm::mat4(), glm::vec3(0.001, 0.001, 0.001));
+
+			// flip it up so it's vertical
+			rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+			// move it so the bottom edge is on the ground plane, and it's centered horizontally.
+			translate = glm::translate(glm::mat4(), glm::vec3(-0.96, 2.0, 1.08));
+
+			// applay all those to the modle matrix.
+			model = translate * rotate * scale;
+			guiCanvas->model = hmdSled->model * model;
+		});
+	}
 	*/
 
-	/*
-	AddProportionalFunc("RightHandTrigger", [](float v) { xprintf("RightHandTrigger: %0.3f\n", v); });
-	AddProportionalFunc("RightIndexTrigger", [](float v) { xprintf("RightIndexTrigger: %0.3f\n", v); });
-	AddProportionalFunc("RightThumbStick.x", [](float v) { xprintf("RightThumbStick.x: %0.3f\n", v); });
-	AddProportionalFunc("RightThumbStick.y", [](float v) { xprintf("RightThumbStick.y: %0.3f\n", v); });
-	AddProportionalFunc("LeftHandTrigger", [](float v) { xprintf("LeftHandTrigger: %0.3f\n", v); });
-	AddProportionalFunc("LeftIndexTrigger", [](float v) { xprintf("LeftIndexTrigger: %0.3f\n", v); });
-	*/
-	AddProportionalFunc("LeftThumbStick.x", [](float v) {
-		wcPos.x += v / 10.0f;
-		glm::mat4 translate = glm::translate(glm::mat4(), wcPos);
-		hmdSled->model = translate;
-	});
-	AddProportionalFunc("LeftThumbStick.y", [](float v) {
-		wcPos.y += v / 10.0f;
-		glm::mat4 translate = glm::translate(glm::mat4(), wcPos);
-		hmdSled->model = translate;
-	});
-	AddProportionalFunc("LeftIndexTrigger", [](float v) {
-		wcPos.z += v / 10.0f;
-		glm::mat4 translate = glm::translate(glm::mat4(), wcPos);
-		hmdSled->model = translate;
-	});
-	AddProportionalFunc("LeftHandTrigger", [](float v) {
-		wcPos.z -= v / 10.0f;
-		glm::mat4 translate = glm::translate(glm::mat4(), wcPos);
-		hmdSled->model = translate;
-	});
+	hmdSled->AddChild(gm);
+
+	// turns out that the "translation" portion of a 4x4 transformation matrix is the x,y,z of row 4
+	AddProportionalFunc("LeftThumbStick.x", [](float v) { hmdSled->model[3][0] += v / 10.0f; });
+	AddProportionalFunc("LeftThumbStick.y", [](float v) { hmdSled->model[3][1] += v / 10.0f; });
+	AddProportionalFunc("LeftIndexTrigger", [](float v) { hmdSled->model[3][2] += v / 10.0f; });
+	AddProportionalFunc("LeftHandTrigger",  [](float v) { hmdSled->model[3][2] -= v / 10.0f; });
 }

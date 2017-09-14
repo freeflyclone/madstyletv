@@ -1,12 +1,14 @@
 #include "ExampleXGL.h"
 
 void ExampleXGL::BuildGUI() {
+	return;
+
 	XGLGuiManager *gm;
 	XGLGuiCanvas *shape;
 
 	// the XGLGuiManager() serves as the root of the GuiShape tree, and intercepts the '~' key
 	// for activation of the GUI (a la Id games).
-	AddGuiShape("shaders/ortho", [&]() { gm = new XGLGuiManager(this); return gm; });
+	AddShape("shaders/ortho", [&]() { gm = new XGLGuiManager(this); return gm; });
 
 	// XGLGuiCanvas is intended to be a textured quadrilateral that serves as an overlay for
 	// 2D GUI elements to be rendered on.  Think of it as the equivalent of a computer monitor,
