@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{24EAE59C-1779-4D00-8819-415B4A41868E}"
 EndProject
@@ -109,6 +109,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3rdParty", "3rdParty", "{AEF119EB-E8D2-4FC8-87DF-A818B128D5E0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibOVR", "xclass\3rdParty\OculusSDK\LibOVR\Projects\Windows\VS2013\LibOVR.vcxproj", "{EA50E705-5113-49E5-B105-2512EDC8DDC6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WorldGUIDev", "examples\WorldGUIDev\WorldGUIDev.vcxproj", "{9D14F096-F141-42FD-88E8-267EC73777BA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AC4080D2-1C42-4812-943D-79CA13A1D86C} = {AC4080D2-1C42-4812-943D-79CA13A1D86C}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -270,6 +275,14 @@ Global
 		{EA50E705-5113-49E5-B105-2512EDC8DDC6}.Release|Win32.Build.0 = Release|Win32
 		{EA50E705-5113-49E5-B105-2512EDC8DDC6}.Release|x64.ActiveCfg = Release|x64
 		{EA50E705-5113-49E5-B105-2512EDC8DDC6}.Release|x64.Build.0 = Release|x64
+		{9D14F096-F141-42FD-88E8-267EC73777BA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9D14F096-F141-42FD-88E8-267EC73777BA}.Debug|Win32.Build.0 = Debug|Win32
+		{9D14F096-F141-42FD-88E8-267EC73777BA}.Debug|x64.ActiveCfg = Debug|x64
+		{9D14F096-F141-42FD-88E8-267EC73777BA}.Debug|x64.Build.0 = Debug|x64
+		{9D14F096-F141-42FD-88E8-267EC73777BA}.Release|Win32.ActiveCfg = Release|Win32
+		{9D14F096-F141-42FD-88E8-267EC73777BA}.Release|Win32.Build.0 = Release|Win32
+		{9D14F096-F141-42FD-88E8-267EC73777BA}.Release|x64.ActiveCfg = Release|x64
+		{9D14F096-F141-42FD-88E8-267EC73777BA}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -294,5 +307,6 @@ Global
 		{8A56AED7-0207-4FC5-8DEB-4A008AA9918B} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 		{923B6414-5033-42E6-8639-C1DDAEB414E9} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 		{EA50E705-5113-49E5-B105-2512EDC8DDC6} = {AEF119EB-E8D2-4FC8-87DF-A818B128D5E0}
+		{9D14F096-F141-42FD-88E8-267EC73777BA} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 	EndGlobalSection
 EndGlobal

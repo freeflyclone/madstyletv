@@ -5,6 +5,7 @@ uniform	mat4 model;
 layout (std140) uniform MatrixData {
 	mat4 projector;
 	mat4 view;
+	mat4 orthoProjection;
 };
 
 in  vec3 in_Position;
@@ -17,7 +18,7 @@ out vec2 UV;
 
 void main(void)
 {
-    gl_Position = model * vec4(in_Position.x, -in_Position.y, in_Position.z, 1.0);
+    gl_Position = projector * view * model * vec4(in_Position.x, -in_Position.y, in_Position.z, 1.0);
     ex_Color = in_Color;
     UV = in_TexCoord;
 }
