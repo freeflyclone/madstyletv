@@ -171,10 +171,10 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\common\ExampleGUI.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="ovr-main.cpp" />
     <ClCompile Include="OVRTestBuildScene.cpp" />
+    <ClCompile Include="OVRTestGUI.cpp" />
     <ClCompile Include="xglhmd.cpp" />
   </ItemGroup>
   <ItemGroup>

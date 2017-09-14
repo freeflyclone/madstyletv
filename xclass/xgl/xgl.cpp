@@ -228,7 +228,7 @@ void XGL::DisplayOVR(){
 	// render the GUI
 	if (renderGui) {
 		glDisable(GL_DEPTH_TEST);
-		RenderScene(&guiShapes);
+		RenderSceneOVR(&guiShapes);
 		glEnable(GL_DEPTH_TEST);
 	}
 
