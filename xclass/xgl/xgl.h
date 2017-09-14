@@ -89,7 +89,11 @@ typedef std::map<std::string, XGLShader *> XGLShaderMap;
 typedef std::vector<XGLShape *> XGLShapeList;
 typedef std::map<std::string, XGLShapeList *> XGLShapesMap;
 
-// write code to set these before creating XGL instance, for XGLException messages
+// layers of XGLShapesMap, for sorting of scene objects to achieve rendering effects
+// such as sky box, transparency, and others as yet unconceived.
+typedef std::vector<XGLShapesMap*> XGLShapeLayers;
+
+	// write code to set these before creating XGL instance, for XGLException messages
 // and to locate assets (ie: shaders) in the local filesystem
 extern std::string currentWorkingDir;
 extern std::string pathToAssets;
@@ -113,8 +117,8 @@ public:
 	virtual void Idle() {};
 
 	XGLShape* CreateShape(XGLShapesMap *s, std::string shaderName, XGLNewShapeLambda fn);
-	XGLShape* CreateShape(std::string shaderName, XGLNewShapeLambda fn);
-	void AddShape(std::string shaderName, XGLNewShapeLambda fn);
+	XGLShape* CreateShape(std::string shaderName, XGLNewShapeLambda fn, int layer = defaultLayer);
+	void AddShape(std::string shaderName, XGLNewShapeLambda fn, int layer = defaultLayer);
 	void AddGuiShape(std::string shaderName, XGLNewShapeLambda fn);
 	void IterateShapesMap();
 
@@ -136,8 +140,13 @@ public:
 	XConfig config;
 
 	// all the scene objects and GUI objects , mapped by XGLShader name
-    XGLShapesMap shapes;
+    //XGLShapesMap shapes;
 	XGLShapesMap guiShapes;
+
+	// Layers allow for sorting groups of object to achieve RenderScene() effects
+	// that require sorting, in particular transparency.
+	static const int defaultLayer = 1;
+	XGLShapeLayers shapeLayers;
 
     // encapsulate the camera and projection tranforms (view,perspectiv matrices)
     XGLCamera camera;

@@ -36,6 +36,11 @@ XGL::XGL() : clock(0.0f), pb(NULL), fb(NULL), renderGui(false), guiManager(nullp
 	xprintf("OpenGL version: %s\n", glGetString(GL_VERSION));
 	glGetError();
 
+	shapeLayers.push_back(new XGLShapesMap());
+	shapeLayers.push_back(new XGLShapesMap());
+	shapeLayers.push_back(new XGLShapesMap());
+	shapeLayers.push_back(new XGLShapesMap());
+
 	//QueryContext();
 
 	// for now, create one point light, for diffuse lighting shader development
@@ -125,17 +130,19 @@ XGL::~XGL(){
 		}
 	}
 	
-	for (perShader = shapes.begin(); perShader != shapes.end(); perShader++) {
-        std::string name = perShader->first;
-        shader = shaderMap[name];
+	for (auto shapes : shapeLayers) {
+		for (perShader = shapes->begin(); perShader != shapes->end(); perShader++) {
+			std::string name = perShader->first;
+			shader = shaderMap[name];
 
-        for (perShape = perShader->second->begin(); perShape != perShader->second->end(); perShape++) {
-            XGLShape *shape = *perShape;
-            delete shape;
-        }
-        delete perShader->second;
-        delete shader;
-    }
+			for (perShape = perShader->second->begin(); perShape != perShader->second->end(); perShape++) {
+				XGLShape *shape = *perShape;
+				delete shape;
+			}
+			delete perShader->second;
+			delete shader;
+		}
+	}
 }
 
 void XGL::RenderScene(XGLShapesMap *shapes) {
@@ -195,7 +202,8 @@ void XGL::Display(){
 	GL_CHECK("glBindBuffer() failed");
 
 	// render the world
-	RenderScene(&shapes);
+	for (auto shapes : shapeLayers)
+		RenderScene(shapes);
 
 	// render the GUI
 	if (renderGui) {
@@ -223,7 +231,8 @@ void XGL::DisplayOVR(){
 	GL_CHECK("glBindBuffer() failed");
 
 	// render the world
-	RenderSceneOVR(&shapes);
+	for (auto shapes : shapeLayers)
+		RenderSceneOVR(shapes);
 
 	// render the GUI
 	if (renderGui) {
@@ -242,16 +251,18 @@ void XGL::DisplayOVR(){
 }
 
 void XGL::PreRender() {
-	for (auto perShader : shapes) {
-		XGLShader *shader = shaderMap[perShader.first];
-		
-		shader->Use();
+	for (auto shapes : shapeLayers) {
+		for (auto perShader : *shapes) {
+			XGLShader *shader = shaderMap[perShader.first];
 
-		for (auto shape : *(perShader.second))
-			if (shape->preRenderFunction)
-				shape->preRenderFunction(clock);
+			shader->Use();
 
-		shader->UnUse();
+			for (auto shape : *(perShader.second))
+				if (shape->preRenderFunction)
+					shape->preRenderFunction(clock);
+
+			shader->UnUse();
+		}
 	}
 }
 
@@ -281,14 +292,14 @@ XGLShape* XGL::CreateShape(XGLShapesMap *shapes, std::string shName, XGLNewShape
 	return pShape;
 }
 
-XGLShape* XGL::CreateShape(std::string shName, XGLNewShapeLambda fn){
-	return CreateShape(&shapes, shName, fn);
+XGLShape* XGL::CreateShape(std::string shName, XGLNewShapeLambda fn, int layer){
+	return CreateShape(shapeLayers[layer], shName, fn);
 }
 
-void XGL::AddShape(std::string shName, XGLNewShapeLambda fn){
+void XGL::AddShape(std::string shName, XGLNewShapeLambda fn, int layer){
 	XGLShape *pShape = CreateShape(shName, fn);
 
-	shapes[pShape->shader->Name()]->push_back(pShape);
+	(*shapeLayers[layer])[pShape->shader->Name()]->push_back(pShape);
 
 	AddChild(pShape);
 }
@@ -307,13 +318,15 @@ void XGL::AddGuiShape(std::string shName, XGLNewShapeLambda fn){
 }
 
 void XGL::IterateShapesMap(){
-	for (auto perShader : shapes) {
-        XGLShader *shader = shaderMap[perShader.first];
-		xprintf("XGL::IterateShapesMap(): '%s', shader->shader: %d\n", Name().c_str(), shader->programId);
+	for (auto shapes : shapeLayers) {
+		for (auto perShader : *shapes) {
+			XGLShader *shader = shaderMap[perShader.first];
+			xprintf("XGL::IterateShapesMap(): '%s', shader->shader: %d\n", Name().c_str(), shader->programId);
 
-		for (auto shape : *(perShader.second))
-			xprintf("   shape->b: vao:%d, vbo:%d, program:%d\n", shape->vao, shape->vbo, shape->shader->programId);
-    }
+			for (auto shape : *(perShader.second))
+				xprintf("   shape->b: vao:%d, vbo:%d, program:%d\n", shape->vao, shape->vbo, shape->shader->programId);
+		}
+	}
 }
 
 bool XGL::GuiResolveMouseEvent(XGLShape *shape, int x, int y, int flags) {
