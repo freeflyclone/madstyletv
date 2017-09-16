@@ -140,9 +140,13 @@ XGL::~XGL(){
 				delete shape;
 			}
 			delete perShader->second;
-			delete shader;
 		}
 	}
+
+	// since we now have layers do NOT delete the shader above as was previously done,
+	// wait for all shapes layers to be deleted THEN delete all the shaders.
+	for (auto shaderMapEntry : shaderMap)
+		delete shaderMapEntry.second;
 }
 
 void XGL::RenderScene(XGLShapesMap *shapes) {
@@ -297,7 +301,7 @@ XGLShape* XGL::CreateShape(std::string shName, XGLNewShapeLambda fn, int layer){
 }
 
 void XGL::AddShape(std::string shName, XGLNewShapeLambda fn, int layer){
-	XGLShape *pShape = CreateShape(shName, fn);
+	XGLShape *pShape = CreateShape(shName, fn, layer);
 
 	(*shapeLayers[layer])[pShape->shader->Name()]->push_back(pShape);
 

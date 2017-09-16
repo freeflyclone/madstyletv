@@ -26,8 +26,11 @@ float speed3 = constSpeed3;
 void ExampleXGL::BuildScene() {
 	XGLShape *shape, *child1, *child2, *child3, *child4;
 	XGLShape *hmdChild;
-
 	glm::mat4 rotate, translate;
+
+	// add a shape to a different layer to test whether layers work.
+	AddShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 16); return shape; }, 2);
+
 	AddShape("shaders/specular", [&](){ shape = new XGLTorus(5.0f, 1.0f, 64, 32); return shape; });
 	shape->attributes.diffuseColor = { 0.005, 0.005, 0.005, 1 };
 	shape->SetAnimationFunction([shape](float clock) {
@@ -102,7 +105,7 @@ void ExampleXGL::BuildScene() {
 	AddShape("shaders/000-simple", [&]() {hmdSled = new XGLTransformer(); return hmdSled; });
 	hmdSled->SetName("HmdSled");
 
-	CreateShape("shaders/specular", [&](){ hmdChild = new XGLSphere(0.1, 32); hmdChild->attributes.diffuseColor = XGLColors::cyan;  return hmdChild; });
+	CreateShape("shaders/specular", [&](){ hmdChild = new XGLSphere(0.1f, 32); hmdChild->attributes.diffuseColor = XGLColors::cyan;  return hmdChild; });
 	//hmdChild->attributes.diffuseColor = XGLColors::cyan;
 	hmdSled->AddChild(hmdChild);
 
