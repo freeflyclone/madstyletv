@@ -108,7 +108,6 @@ public:
 
     virtual ~XGL();
 
-	void PreRender();
 	virtual void Display();
 	virtual void DisplayOVR();
 	virtual void RenderScene(XGLShapesMap *);

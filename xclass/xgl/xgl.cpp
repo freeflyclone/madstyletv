@@ -197,8 +197,6 @@ void XGL::RenderSceneOVR(XGLShapesMap *shapes) {
 }
 
 void XGL::Display(){
-	PreRender();
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	GL_CHECK("glClear() failed");
 
@@ -226,8 +224,6 @@ void XGL::Display(){
 }
 
 void XGL::DisplayOVR(){
-	PreRender();
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	GL_CHECK("glClear() failed");
 
@@ -252,22 +248,6 @@ void XGL::DisplayOVR(){
 		pb->Render();
 
 	clock += 1.0f;
-}
-
-void XGL::PreRender() {
-	for (auto shapes : shapeLayers) {
-		for (auto perShader : *shapes) {
-			XGLShader *shader = shaderMap[perShader.first];
-
-			shader->Use();
-
-			for (auto shape : *(perShader.second))
-				if (shape->preRenderFunction)
-					shape->preRenderFunction(clock);
-
-			shader->UnUse();
-		}
-	}
 }
 
 XGLShape* XGL::CreateShape(XGLShapesMap *shapes, std::string shName, XGLNewShapeLambda fn){

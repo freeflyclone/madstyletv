@@ -79,7 +79,13 @@ void XGLShape::Render(glm::mat4 modelChain, float clock) {
 	for (auto child : Children()) {
 		if (dynamic_cast<XGLShape *>(child)) {
 			XGLShape *childShape = (XGLShape *)child;
+			if (childShape->preRenderFunction)
+				childShape->preRenderFunction(clock);
+
 			childShape->Render(modelChain * childShape->model, clock);
+
+			if (childShape->postRenderFunction)
+				childShape->postRenderFunction(clock);
 		}
 	}
 }
