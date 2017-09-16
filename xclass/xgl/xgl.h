@@ -82,7 +82,6 @@
 #include "xglgui.h"
 
 // want to reference XGLShader by it's name, so use std::map for that
-typedef std::map<std::string, GLint> XGLTextureMap;
 typedef std::map<std::string, XGLShader *> XGLShaderMap;
 
 // define types for std::vector of shapes ptrs, and the std::map of shapes-lists-by-shader
