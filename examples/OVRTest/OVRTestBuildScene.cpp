@@ -14,6 +14,9 @@
 XGLSphere *sphere;
 XGLShape  *hmdSled;
 XGLGuiCanvas *guiCanvas;
+XGLGuiManager *gm;
+XGLGuiCanvas *gc;
+
 
 const float constSpeed1 = 60.0f * 4.0f;
 const float constSpeed2 = 45.0f * 4.0f;
@@ -27,9 +30,6 @@ void ExampleXGL::BuildScene() {
 	XGLShape *shape, *child1, *child2, *child3, *child4;
 	XGLShape *hmdChild;
 	glm::mat4 rotate, translate;
-
-	// add a shape to a different layer to test whether layers work.
-	AddShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 16); return shape; }, 2);
 
 	AddShape("shaders/specular", [&](){ shape = new XGLTorus(5.0f, 1.0f, 64, 32); return shape; });
 	shape->attributes.diffuseColor = { 0.005, 0.005, 0.005, 1 };
@@ -102,10 +102,14 @@ void ExampleXGL::BuildScene() {
 	// and anything else that needs to rendered as part of the user's "personal space".
 	//
 	// Could be a car interior, an aircraft/spacecraft cockpit, or what have you.
-	AddShape("shaders/000-simple", [&]() {hmdSled = new XGLTransformer(); return hmdSled; });
+	//
+	// NOTE: the way it works now, only "top-level" objects (created by AddShape()) will be
+	//       affected by the optional "layer" argument.  All child objects thereof will
+	//       rendered at that object's layer's time.
+	AddShape("shaders/000-simple", [&]() {hmdSled = new XGLTransformer(); return hmdSled; }, 2);
 	hmdSled->SetName("HmdSled");
 
-	CreateShape("shaders/specular", [&](){ hmdChild = new XGLSphere(0.1f, 32); hmdChild->attributes.diffuseColor = XGLColors::cyan;  return hmdChild; });
+	CreateShape("shaders/specular", [&](){ hmdChild = new XGLSphere(0.1f, 32); hmdChild->attributes.diffuseColor = XGLColors::cyan;  return hmdChild; }, 2);
 	//hmdChild->attributes.diffuseColor = XGLColors::cyan;
 	hmdSled->AddChild(hmdChild);
 
@@ -116,9 +120,6 @@ void ExampleXGL::BuildScene() {
 	CreateShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 16); return shape; });
 	shape->SetName("RightHand");
 	hmdSled->AddChild(shape);
-
-	XGLGuiManager *gm;
-	XGLGuiCanvas *gc;
 
 	// the XGLGuiManager() serves as the root of the GuiShape tree, and intercepts the '~' key
 	// for activation of the GUI (a la Id games).
@@ -137,20 +138,30 @@ void ExampleXGL::BuildScene() {
 	// With OVR, 1 unit in world space equals 1 meter in physical space, so that means this XGLGuiCanvas
 	// is nearly 2 kilometers wide, before scaling.  Scaling by 0.01 reduces it to 19.2 x 10.8 meters.
 	// Nice and big but not gianormous.
-	gm->AddChildShape("shaders/gui-tex", [&gc, this](){
+	CreateShape("shaders/gui-tex", [this](){
 		gc = new XGLGuiCanvas(this, 1920, 1080);
 		return gc;
-	});
+	}, 2);
+	gc->preRenderFunction = [](float clock) {
+		glDepthMask(GL_FALSE);
+		GL_CHECK("glDepthMask(GL_FALSE) failed");
+	};
+	gc->postRenderFunction = [](float clock) {
+		glDepthMask(GL_TRUE);
+		GL_CHECK("glDepthMask(GL_TRUE) failed");
+	};
+
+	gm->AddChild(gc);
 	glm::mat4 scale;
 
 	// scale it to "reasonable" world dimensions.
-	scale = glm::scale(glm::mat4(), glm::vec3(0.01, 0.01, 0.01));
+	scale = glm::scale(glm::mat4(), glm::vec3(0.001, 0.001, 0.001));
 
 	// flip it up so it's vertical
 	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
 	// move it so the bottom edge is on the ground plane, and it's centered horizontally.
-	translate = glm::translate(glm::mat4(), glm::vec3(-9.6, 10.0, 10.8));
+	translate = glm::translate(glm::mat4(), glm::vec3(-.96, 1.0, 1.08*1.5));
 
 	// applay all those to the modle matrix.
 	gc->model = translate * rotate * scale;
