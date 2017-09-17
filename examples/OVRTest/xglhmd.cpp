@@ -88,20 +88,23 @@ void XGLHmd::TrackTouchThumbStick(ovrHandType which) {
 }
 
 void XGLHmd::TransposeHand(ovrHandType which) {
-	// read hand orientation
+	// read hand orientation, position from OVR
 	ovrQuatf oq = handPoses[which].Orientation;
-
-	// get current hand position (pose info)
 	Vector3f handPos = handPoses[which].Position;
 
-	// apply rotation matrix to covert to XGL world coordinate scheme.
-	Matrix4f ht = Matrix4f::RotationX(pi / 2) * Matrix4f::Translation(handPos);
+	// convert OVR orientation & position to GLM form
+	glm::quat gq(oq.w, oq.x, -oq.z, oq.y);
+	glm::vec3 hp = glm::vec3(handPos.x, -handPos.z, handPos.y);
+
+	// multiply orientation quaternion by 90 degrees about X (pitch up by 90)
+	// (in quaternion domain, "adding" rotations is actually a multiply)
+	gq *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
 
 	// Fetch the current XGLShape for the hand in question by name
 	XGLShape* hand = (XGLShape *)pXgl->FindObject(handNames[which]);
 
 	// transform hand by translation * orientation
-	hand->model = glm::transpose(glm::make_mat4(&ht.M[0][0])) * glm::toMat4(glm::quat(oq.w, oq.x, oq.y, oq.z));
+	hand->model = glm::translate(glm::mat4(), hp) * glm::toMat4(gq);
 }
 
 void XGLHmd::TrackTouchInput() {
