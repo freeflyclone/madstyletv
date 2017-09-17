@@ -1,14 +1,18 @@
 #include "ExampleXGL.h"
 
+XGLGuiManager *appGuiManager;
+
 void ExampleXGL::BuildGUI() {
-	return;
+	glm::mat4 scale, rotate, translate;
+	XGLGuiCanvas *gc;
 
-	XGLGuiManager *gm;
-	XGLGuiCanvas *shape;
+	CreateShape("shaders/ortho", [&]() { appGuiManager = new XGLGuiManager(this); return appGuiManager; });
 
-	// the XGLGuiManager() serves as the root of the GuiShape tree, and intercepts the '~' key
-	// for activation of the GUI (a la Id games).
-	AddShape("shaders/ortho", [&]() { gm = new XGLGuiManager(this); return gm; });
+	scale = glm::scale(glm::mat4(), glm::vec3(0.001, 0.001, 0.001));
+	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	translate = glm::translate(glm::mat4(), glm::vec3(-.96, 1.0, 1.08*1.5));
+	appGuiManager->model = translate * rotate * scale;
+
 
 	// XGLGuiCanvas is intended to be a textured quadrilateral that serves as an overlay for
 	// 2D GUI elements to be rendered on.  Think of it as the equivalent of a computer monitor,
@@ -21,27 +25,20 @@ void ExampleXGL::BuildGUI() {
 	//
 	// The choice of 1920 x 1080 gives texture buffer dimensions equivalent to real world HDTV dimensions,
 	// With OVR, 1 unit in world space equals 1 meter in physical space, so that means this XGLGuiCanvas
-	// is nearly 2 kilometers wide, before scaling.  Scaling by 0.01 reduces it to 19.2 x 10.8 meters.
+	// is nearly 2 kilometers wide, before scaling.  Scaling by 0.001 reduces it to 1.92 x 1.08 meters.
 	// Nice and big but not gianormous.
-	gm->AddChildShape("shaders/gui-tex", [&shape, this](){
-		shape = new XGLGuiCanvas(this, 1920, 1080);
-		return shape;
-	});
-	glm::mat4 scale;
-	glm::mat4 rotate;
-	glm::mat4 translate;
+	CreateShape("shaders/gui-tex", [&, this](){	gc = new XGLGuiCanvas(this, 1920, 1080); return gc;	});
 
-	// scale it to "reasonable" world dimensions.
-	scale = glm::scale(glm::mat4(), glm::vec3(0.01, 0.01, 0.01));
-
-	// flip it up so it's vertical
-	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
-	// move it so the bottom edge is on the ground plane, and it's centered horizontally.
-	translate = glm::translate(glm::mat4(), glm::vec3(-9.6, 10.0, 10.8));
-
-	// applay all those to the modle matrix.
-	shape->model = translate * rotate * scale;
+	// disable depth buffer writing for the GUI canvas.  Thus it won't occlude things drawn after,
+	// like the objects representing the Touch controllers.
+	gc->preRenderFunction = [](float clock) {
+		glDepthMask(GL_FALSE);
+		GL_CHECK("glDepthMask(GL_FALSE) failed");
+	};
+	gc->postRenderFunction = [](float clock) {
+		glDepthMask(GL_TRUE);
+		GL_CHECK("glDepthMask(GL_TRUE) failed");
+	};
 
 	// XGLGuiCanvas supports "RenderText", using XGLFont to actually render text.  It does bit-blitting
 	// CPU side of individual glyphs from the FreeType representation.  It's not very sophisticated, possible
@@ -57,31 +54,27 @@ void ExampleXGL::BuildGUI() {
 	//
 	// Linefeeds do what one expects.  The amount of vertical offset caused by a linefeed is dependent 
 	// on the "pixelSize" argument to the RenderText() call.
-	shape->RenderText("This is a test.\n");
-	shape->RenderText("Another line, 64 pixels (the default) tall");
-	shape->RenderText("\nThis is a smaller test", 16);
+	//
+	// RenderText() checks to see if the next character will cross the right window boudary, and will
+	// truncate the text from that letter on.
+	gc->RenderText("This is a test.\n");
+	gc->RenderText("Another line, 64 pixels (the default) tall, that's got a bunch of text to see how I handle hitting the right margin.");
+	gc->RenderText("\nThis is a smaller test", 16);
 
 	// The SetPenPosition() call allows one to set the current pen position.
 	// Linefeeds reset it to the left-margin, but still provide the same vertical offset behavior.
-	shape->SetPenPosition(960, 540);
-	shape->RenderText("Text in the middle\n", 32);
-	shape->RenderText("Another line after a line-feed", 32);
+	gc->SetPenPosition(960, 540);
+	gc->RenderText("Text in the middle\n", 32);
+	gc->RenderText("Another line after a line-feed", 32);
 
 	// "shaders/gui-tex" does appropriate world-space projections, just like "shaders/specular".  The fragment
 	// shader by default expects that the texture buffer is 8-bit gray-scale (for anti-aliasing).  The fragment
 	// shader uses attributes.diffuseColor as the "foreground" color, and attributes.ambientColor as the "background"
-	// color.  The alpha component allows for transparency, like one would expect.
-	shape->attributes.ambientColor = { 1.0, 0.0, 1.0, 0.1 };
-	shape->attributes.diffuseColor = { 1.0, 1.0, 1.0, 1.0 };
+	// color.  The alpha component allows for transparency,	as one would expect.
+	gc->attributes.ambientColor = { 0.001, 0.001, 0.001, 0.5 };
+	gc->attributes.diffuseColor = { 1.0, 1.0, 1.0, 1.0 };
 
-	// The default for GUI interaction (when it's being used for monitor-based GUI interaction)
-	// is to redirect mouse events to a different handler that interacts with the GUI shapes
-	// instead of world-based interactions.  This adds mouse events back to the world even
-	// when the GUI is active, which is what we want for WorldGUI goodness.
-	AddMouseFunc([this](int x, int y, int flags){
-		if (GuiIsActive())
-			mt.Event(x, y, flags);
-	});
+	appGuiManager->AddChild(gc);
 
 	return;
 }
