@@ -22,6 +22,8 @@ public:
 	bool Loop();
 
 private:
+	void TransformEye(int);
+
 	void TrackTouchInput();
 	void TrackTouchTriggers(ovrHandType);
 	void TrackTouchThumbStick(ovrHandType);
@@ -35,6 +37,7 @@ private:
 
 	const float pi = 3.141592f;
 	TextureBuffer* eyeRenderTexture[2];
+	ovrPosef EyeRenderPose[2];
 	DepthBuffer* eyeDepthBuffer[2];
 	ovrSession session;
 	ovrGraphicsLuid luid;

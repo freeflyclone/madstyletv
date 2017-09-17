@@ -87,26 +87,6 @@ void XGLHmd::TrackTouchThumbStick(ovrHandType which) {
 	}
 }
 
-void XGLHmd::TransposeHand(ovrHandType which) {
-	// read hand orientation, position from OVR
-	ovrQuatf oq = handPoses[which].Orientation;
-	Vector3f handPos = handPoses[which].Position;
-
-	// convert OVR orientation & position to GLM form
-	glm::quat gq(oq.w, oq.x, -oq.z, oq.y);
-	glm::vec3 hp = glm::vec3(handPos.x, -handPos.z, handPos.y);
-
-	// multiply orientation quaternion by 90 degrees about X (pitch up by 90)
-	// (in quaternion domain, "adding" rotations is actually a multiply)
-	gq *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-
-	// Fetch the current XGLShape for the hand in question by name
-	XGLShape* hand = (XGLShape *)pXgl->FindObject(handNames[which]);
-
-	// transform hand by translation * orientation
-	hand->model = glm::translate(glm::mat4(), hp) * glm::toMat4(gq);
-}
-
 void XGLHmd::TrackTouchInput() {
 	displayMidpointSeconds = ovr_GetPredictedDisplayTime(session, frameIndex);
 	trackState = ovr_GetTrackingState(session, displayMidpointSeconds, ovrTrue);
@@ -129,6 +109,51 @@ void XGLHmd::TrackTouchInput() {
 	TransposeHand(ovrHand_Right);
 }
 
+void XGLHmd::TransposeHand(ovrHandType which) {
+	// read hand orientation, position from OVR
+	ovrQuatf oq = handPoses[which].Orientation;
+	Vector3f handPos = handPoses[which].Position;
+
+	// convert OVR orientation & position to GLM form
+	glm::quat gq(oq.w, oq.x, -oq.z, oq.y);
+	glm::vec3 hp = glm::vec3(handPos.x, -handPos.z, handPos.y);
+
+	// multiply orientation quaternion by 90 degrees about X (pitch up by 90)
+	// (in quaternion domain, "adding" rotations is actually a multiply)
+	gq *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+
+	// Fetch the current XGLShape for the hand in question by name
+	XGLShape* hand = (XGLShape *)pXgl->FindObject(handNames[which]);
+
+	// transform hand by translation * orientation
+	hand->model = glm::translate(glm::mat4(), hp) * glm::toMat4(gq);
+}
+
+void XGLHmd::TransformEye(int eye) {
+	// get head position from hmdSled (NOTE: this is an inverse translation, 'cuz it's the camera)
+	Vector3f headPosition = { -hmdSled->model[3][0], -hmdSled->model[3][2], -hmdSled->model[3][1] };
+
+	// Get view and projection matrices
+	Matrix4f rollPitchYaw = Matrix4f::RotationZ(pi);
+	Matrix4f finalRollPitchYaw = rollPitchYaw * Matrix4f(EyeRenderPose[eye].Orientation);
+	Vector3f finalUp = finalRollPitchYaw.Transform(Vector3f(0, 1, 0));
+	Vector3f finalForward = finalRollPitchYaw.Transform(Vector3f(0, 0, -1));
+	Vector3f shiftedEyePos = headPosition + rollPitchYaw.Transform(EyeRenderPose[eye].Position);
+
+	Matrix4f view = Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
+	Matrix4f proj = ovrMatrix4f_Projection(hmdDesc.DefaultEyeFov[eye], 0.2f, 1000.0f, ovrProjection_None);
+
+	// build XGL view and projection matrix...
+	// "myView" converts to XGL world coordinates, where the ground plane is X,Y and "up" is the Z axis
+	//    from customary OpenGL RH coordinate system where X,Z are the ground plane and Y is up
+	Matrix4f myView = view * Matrix4f::RotationX(pi / 2) * Matrix4f::RotationZ(pi);
+
+	// set the projection,view,orthoProjection matrices in the matrix UBO
+	pXgl->shaderMatrix.view = glm::transpose(glm::make_mat4(&myView.M[0][0]));;
+	pXgl->shaderMatrix.projection = glm::transpose(glm::make_mat4(&proj.M[0][0]));
+	pXgl->shaderMatrix.orthoProjection = pXgl->projector.GetOrthoMatrix();
+}
+
 bool XGLHmd::Loop() {
 	ovr_GetSessionStatus(session, &sessionStatus);
 
@@ -145,46 +170,26 @@ bool XGLHmd::Loop() {
 		eyeRenderDesc[1] = ovr_GetRenderDesc(session, ovrEye_Right, hmdDesc.DefaultEyeFov[1]);
 
 		// Get eye poses, feeding in correct IPD offset
-		ovrPosef EyeRenderPose[2];
 		ovrPosef HmdToEyePose[2] = { eyeRenderDesc[0].HmdToEyePose, eyeRenderDesc[1].HmdToEyePose };
 
 		double sensorSampleTime;    // sensorSampleTime is fed into the layer later
 		ovr_GetEyePoses(session, frameIndex, ovrTrue, HmdToEyePose, EyeRenderPose, &sensorSampleTime);
-
-		// get head position from hmdSled
-		Vector3f headPosition = { -hmdSled->model[3][0], -hmdSled->model[3][2], -hmdSled->model[3][1] };
 
 		// Render Scene to Eye Buffers
 		for (int eye = 0; eye < 2; ++eye) {
 			// Switch to eye render target
 			eyeRenderTexture[eye]->SetAndClearRenderSurface(eyeDepthBuffer[eye]);
 
-			// Get view and projection matrices
-			Matrix4f rollPitchYaw = Matrix4f::RotationZ(pi);
-			Matrix4f finalRollPitchYaw = rollPitchYaw * Matrix4f(EyeRenderPose[eye].Orientation);
-			Vector3f finalUp = finalRollPitchYaw.Transform(Vector3f(0, 1, 0));
-			Vector3f finalForward = finalRollPitchYaw.Transform(Vector3f(0, 0, -1));
-			Vector3f shiftedEyePos = headPosition + rollPitchYaw.Transform(EyeRenderPose[eye].Position);
-
-			Matrix4f view = Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
-			Matrix4f proj = ovrMatrix4f_Projection(hmdDesc.DefaultEyeFov[eye], 0.2f, 1000.0f, ovrProjection_None);
-
-			// build XGL view and projection matrix...
-			// "myView" converts to XGL world coordinates, where the ground plane is X,Y and "up" is the Z axis
-			//    from customary OpenGL RH coordinate system where X,Z are the ground plane and Y is up
-			Matrix4f myView = view * Matrix4f::RotationX(pi / 2) * Matrix4f::RotationZ(pi);
-
-			// set the projection,view,orthoProjection matrices in the matrix UBO
-			pXgl->shaderMatrix.view = glm::transpose(glm::make_mat4(&myView.M[0][0]));;
-			pXgl->shaderMatrix.projection = glm::transpose(glm::make_mat4(&proj.M[0][0]));
-			pXgl->shaderMatrix.orthoProjection = pXgl->projector.GetOrthoMatrix();
+			// Do mystical/magical OVR -> XGL fiddly bits for camera translation
+			// These were empirically derived from a LOT of experimentation.
+			TransformEye(eye);
 
 			// render XGL scene
 			pXgl->DisplayOVR();
 
 			eyeRenderTexture[eye]->UnsetRenderSurface();
 
-			// Commit changes to the textures so they get picked up frame
+			// Commit changes to the textures so they get picked up for this rendering frame
 			eyeRenderTexture[eye]->Commit();
 		}
 		ovrLayerEyeFov ld;
