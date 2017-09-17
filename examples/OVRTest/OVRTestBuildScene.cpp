@@ -12,7 +12,8 @@
 // if the lambda is being called outside the scope of the function that created
 // it.  Which is almost always the case the way lambda's get used herein.
 XGLSphere *sphere;
-XGLShape  *hmdSled;
+XGLShape *hmdSled;
+XGLShape *rightFinger, *rightThumb, *leftFinger, *leftThumb;
 
 const float constSpeed1 = 60.0f * 4.0f;
 const float constSpeed2 = 45.0f * 4.0f;
@@ -110,11 +111,35 @@ void ExampleXGL::BuildScene() {
 	CreateShape("shaders/specular", [&](){ shape = new XGLSphere(0.01f, 4); shape->SetName("SledOrigin");  return shape; }, 2);
 	hmdSled->AddChild(shape);
 
-	CreateShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 16); shape->SetName("LeftHand"); return shape; });
+	CreateShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 64); shape->SetName("LeftHand"); return shape; });
 	hmdSled->AddChild(shape);
 
-	CreateShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 16); shape->SetName("RightHand"); return shape; });
+	CreateShape("shaders/specular", [&]() { leftFinger = new XGLCapsule(0.01f, 0.1, 32); leftFinger->SetName("LeftFinger"); return leftFinger; });
+	translate = glm::translate(glm::mat4(), glm::vec3(0.0, 0.0, -0.1));
+	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+	leftFinger->model = translate * rotate;
+	shape->AddChild(leftFinger);
+
+	CreateShape("shaders/specular", [&]() { leftThumb = new XGLCapsule(0.01f, 0.075, 32); leftThumb->SetName("RightThumb"); return leftThumb; });
+	translate = glm::translate(glm::mat4(), glm::vec3(0.06, 0.0, -0.06));
+	rotate = glm::rotate(glm::mat4(), glm::radians(45.0f), glm::vec3(0.0, 1.0, 0.0));
+	leftThumb->model = translate * rotate;
+	shape->AddChild(leftThumb);
+
+	CreateShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 64); shape->SetName("RightHand"); return shape; });
 	hmdSled->AddChild(shape);
+
+	CreateShape("shaders/specular", [&]() { rightFinger = new XGLCapsule(0.01f, 0.1, 32); rightFinger->SetName("RightFinger"); return rightFinger; });
+	translate = glm::translate(glm::mat4(), glm::vec3(0.0, 0.0, -0.1));
+	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+	rightFinger->model = translate * rotate;
+	shape->AddChild(rightFinger);
+
+	CreateShape("shaders/specular", [&]() { rightThumb = new XGLCapsule(0.01f, 0.075, 32); rightThumb->SetName("RightThumb"); return rightThumb; });
+	translate = glm::translate(glm::mat4(), glm::vec3(-0.06, 0.0, -0.06));
+	rotate = glm::rotate(glm::mat4(), glm::radians(135.0f), glm::vec3(0.0, 1.0, 0.0));
+	rightThumb->model = translate * rotate;
+	shape->AddChild(rightThumb);
 
 	hmdSled->AddChild(appGuiManager);
 
