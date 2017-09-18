@@ -39,6 +39,9 @@ public:
 	AnimationFn postRenderFunction;
 
 	glm::mat4 model;
+
+	XGLVertex p;
+	XGLOrientation o;
 };
 
 // define a type for passing a lambda that creates an XGLShape as an argument

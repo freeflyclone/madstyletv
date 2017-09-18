@@ -107,6 +107,10 @@ void ExampleXGL::BuildScene() {
 	//       rendered at that object's layer's time.
 	AddShape("shaders/000-simple", [&]() {hmdSled = new XGLTransformer(); return hmdSled; }, 2);
 	hmdSled->SetName("HmdSled");
+	hmdSled->SetAnimationFunction([&](float clock) {
+		glm::mat4 t = glm::translate(glm::mat4(), hmdSled->p);
+		hmdSled->model = t;
+	});
 
 	CreateShape("shaders/specular", [&](){ shape = new XGLSphere(0.01f, 4); shape->SetName("SledOrigin");  return shape; }, 2);
 	hmdSled->AddChild(shape);
@@ -143,9 +147,8 @@ void ExampleXGL::BuildScene() {
 
 	hmdSled->AddChild(appGuiManager);
 
-	// turns out that the "translation" portion of a 4x4 transformation matrix is the x,y,z of row 4
-	AddProportionalFunc("LeftThumbStick.x", [](float v) { hmdSled->model[3][0] += v / 10.0f; });
-	AddProportionalFunc("LeftThumbStick.y", [](float v) { hmdSled->model[3][1] += v / 10.0f; });
-	AddProportionalFunc("LeftIndexTrigger", [](float v) { hmdSled->model[3][2] += v / 10.0f; });
-	AddProportionalFunc("LeftHandTrigger",  [](float v) { hmdSled->model[3][2] -= v / 10.0f; });
+	AddProportionalFunc("LeftThumbStick.x", [](float v) { hmdSled->p.x += v / 10.0f; });
+	AddProportionalFunc("LeftThumbStick.y", [](float v) { hmdSled->p.y += v / 10.0f; });
+	AddProportionalFunc("LeftIndexTrigger", [](float v) { hmdSled->p.z += v / 10.0f; });
+	AddProportionalFunc("LeftHandTrigger",  [](float v) { hmdSled->p.z -= v / 10.0f; });
 }
