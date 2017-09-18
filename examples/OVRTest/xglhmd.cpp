@@ -115,8 +115,8 @@ void XGLHmd::TransposeHand(ovrHandType which) {
 	Vector3f handPos = handPoses[which].Position;
 
 	// convert OVR orientation & position to GLM form
-	glm::quat gq(oq.w, oq.x, oq.y, oq.z);
-	glm::vec3 hp = glm::vec3(handPos.x, handPos.y, handPos.z);
+	glm::quat gq(oq.w, oq.x, -oq.z, oq.y);
+	glm::vec3 hp = glm::vec3(handPos.x, -handPos.z, handPos.y);
 
 	// multiply orientation quaternion by 90 degrees about X (pitch up by 90)
 	// (in quaternion domain, "adding" rotations is actually a multiply)
@@ -134,7 +134,6 @@ void XGLHmd::TransformEye(int eye) {
 	Vector3f headPosition = { -hmdSled->model[3][0], -hmdSled->model[3][2], -hmdSled->model[3][1] };
 
 	// Get view and projection matrices
-/*
 	Matrix4f rollPitchYaw = Matrix4f::RotationZ(pi);
 	Matrix4f finalRollPitchYaw = rollPitchYaw * Matrix4f(EyeRenderPose[eye].Orientation);
 	Vector3f finalUp = finalRollPitchYaw.Transform(Vector3f(0, 1, 0));
@@ -143,21 +142,11 @@ void XGLHmd::TransformEye(int eye) {
 
 	Matrix4f view = Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
 	Matrix4f proj = ovrMatrix4f_Projection(hmdDesc.DefaultEyeFov[eye], 0.2f, 1000.0f, ovrProjection_None);
-*/
-
-	Matrix4f rollPitchYaw;// = Matrix4f::RotationY(pi);
-	Matrix4f finalRollPitchYaw = rollPitchYaw * Matrix4f(EyeRenderPose[eye].Orientation);
-	Vector3f finalUp = finalRollPitchYaw.Transform(Vector3f(0, 1, 0));
-	Vector3f finalForward = finalRollPitchYaw.Transform(Vector3f(0, 0, -1));
-	Vector3f shiftedEyePos = rollPitchYaw.Transform(EyeRenderPose[eye].Position);
-
-	Matrix4f view = Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
-	Matrix4f proj = ovrMatrix4f_Projection(hmdDesc.DefaultEyeFov[eye], 0.2f, 1000.0f, ovrProjection_None);
 
 	// build XGL view and projection matrix...
 	// "myView" converts to XGL world coordinates, where the ground plane is X,Y and "up" is the Z axis
 	//    from customary OpenGL RH coordinate system where X,Z are the ground plane and Y is up
-	Matrix4f myView = view;// *Matrix4f::RotationX(pi / 2) * Matrix4f::RotationZ(pi);
+	Matrix4f myView = view *Matrix4f::RotationX(pi / 2) * Matrix4f::RotationZ(pi);
 
 	// set the projection,view,orthoProjection matrices in the matrix UBO
 	pXgl->shaderMatrix.view = glm::transpose(glm::make_mat4(&myView.M[0][0]));
