@@ -183,9 +183,8 @@ int main(void) {
 		bool shouldQuit = false;
 		while (!glfwWindowShouldClose(window) && !shouldQuit) {
 			glfwPollEvents();
-			exgl->Animate();
-			shouldQuit = hmd->Loop();
 			glfwSwapBuffers(window);
+			shouldQuit = hmd->Loop();
 		}
 	}
 	catch (std::runtime_error e) {

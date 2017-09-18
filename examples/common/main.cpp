@@ -176,6 +176,7 @@ int main(void) {
 
 			glfwSwapBuffers(window);
 
+			exgl->Animate();
 			exgl->Display();
 		}
 
