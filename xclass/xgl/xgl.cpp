@@ -150,8 +150,6 @@ XGL::~XGL(){
 }
 
 void XGL::RenderScene(XGLShapesMap *shapes) {
-	camera.Animate();
-
 	// set the projection,view,orthoProjection matrices in the matrix UBO
 	shaderMatrix.view = camera.GetViewMatrix();
 	shaderMatrix.projection = projector.GetProjectionMatrix();
@@ -169,15 +167,13 @@ void XGL::RenderScene(XGLShapesMap *shapes) {
 		GL_CHECK("glUniform3fv() failed");
 
 		for (auto const shape : *(perShader.second))
-			shape->Render(clock);
+			shape->Render();
 
         shader->UnUse();
     }
 }
 
 void XGL::RenderSceneOVR(XGLShapesMap *shapes) {
-	camera.Animate();
-
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(shaderMatrix), (GLvoid *)&shaderMatrix, GL_DYNAMIC_DRAW);
 	GL_CHECK("glBufferData() failed");
 
@@ -190,10 +186,23 @@ void XGL::RenderSceneOVR(XGLShapesMap *shapes) {
 		GL_CHECK("glUniform3fv() failed");
 
 		for (auto const shape : *(perShader.second))
-			shape->Render(clock);
+			shape->Render();
 
 		shader->UnUse();
 	}
+}
+
+void XGL::Animate() {
+	camera.Animate();
+
+	for (auto shapesMaps : shapeLayers)
+		for (auto shaders : *shapesMaps)
+			for (auto const perShader : *shapesMaps) {
+				const XGLShader *shader = shaderMap[perShader.first];
+				for (auto const shape : *(perShader.second))
+					shape->Animate(clock);
+			}
+	clock += 1.0f;
 }
 
 void XGL::Display(){
@@ -219,8 +228,6 @@ void XGL::Display(){
 
 	if (pb)
 		pb->Render();
-
-	clock += 1.0f;
 }
 
 void XGL::DisplayOVR(){
@@ -246,8 +253,6 @@ void XGL::DisplayOVR(){
 
 	if (pb)
 		pb->Render();
-
-	clock += 1.0f;
 }
 
 XGLShape* XGL::CreateShape(XGLShapesMap *shapes, std::string shName, XGLNewShapeLambda fn){

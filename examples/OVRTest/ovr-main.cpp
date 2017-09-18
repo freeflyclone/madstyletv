@@ -183,6 +183,7 @@ int main(void) {
 		bool shouldQuit = false;
 		while (!glfwWindowShouldClose(window) && !shouldQuit) {
 			glfwPollEvents();
+			exgl->Animate();
 			shouldQuit = hmd->Loop();
 			glfwSwapBuffers(window);
 		}

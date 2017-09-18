@@ -28,8 +28,8 @@ public:
     void Transform(glm::mat4 tm);
 	void SetColor(XGLColor c);
 
-	virtual void Render(float clock = 0.0f);
-	virtual void Render(glm::mat4 model, float clock);
+	virtual void Render();
+	virtual void Render(glm::mat4 model);
 
     XGLVertexList v;
     XGLIndexList idx;

@@ -108,6 +108,7 @@ public:
 
     virtual ~XGL();
 
+	virtual void Animate();
 	virtual void Display();
 	virtual void DisplayOVR();
 	virtual void RenderScene(XGLShapesMap *);

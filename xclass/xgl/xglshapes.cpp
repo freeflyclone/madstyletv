@@ -26,6 +26,13 @@ void XGLShape::SetAnimationFunction(XGLShape::AnimationFn fn){
 void XGLShape::Animate(float clock){
 	if (animationFunction)
 		animationFunction(clock);
+
+	for (auto child : Children()) {
+		if (dynamic_cast<XGLShape *>(child)) {
+			XGLShape *childShape = (XGLShape *)child;
+			childShape->Animate(clock);
+		}
+	}
 }
 
 void XGLShape::Transform(glm::mat4 tm){
@@ -39,11 +46,11 @@ void XGLShape::SetColor(XGLColor c) {
 	UnmapVertexBuffer();
 }
 
-void XGLShape::Render(float clock) {
-	Render(model, clock);
+void XGLShape::Render() {
+	Render(model);
 }
 
-void XGLShape::Render(glm::mat4 modelChain, float clock) {
+void XGLShape::Render(glm::mat4 modelChain) {
 	if (v.size() > 0) {
 		glProgramUniformMatrix4fv(shader->programId, shader->modelUniformLocation, 1, false, (GLfloat *)&modelChain);
 		GL_CHECK("glProgramUniformMatrix4fv() failed");
@@ -51,7 +58,6 @@ void XGLShape::Render(glm::mat4 modelChain, float clock) {
 		XGLBuffer::Bind();
 		XGLMaterial::Bind(shader->programId);
 	}
-	Animate(clock);
 	Draw();
 
 	if (v.size()>0)
@@ -63,7 +69,7 @@ void XGLShape::Render(glm::mat4 modelChain, float clock) {
 			if (childShape->preRenderFunction)
 				childShape->preRenderFunction(clock);
 
-			childShape->Render(modelChain * childShape->model, clock);
+			childShape->Render(modelChain * childShape->model);
 
 			if (childShape->postRenderFunction)
 				childShape->postRenderFunction(clock);

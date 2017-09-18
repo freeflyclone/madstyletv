@@ -154,6 +154,33 @@ void XGLHmd::TransformEye(int eye) {
 	pXgl->shaderMatrix.orthoProjection = pXgl->projector.GetOrthoMatrix();
 }
 
+void XGLHmd::TransformEye2(int eye) {
+	// get head position from hmdSled (NOTE: this is an inverse translation, 'cuz it's the camera)
+	Vector3f sp = { -hmdSled->p.x, -hmdSled->p.z, -hmdSled->p.y };
+	Vector3f p = EyeRenderPose[eye].Position;
+	ovrQuatf o = EyeRenderPose[eye].Orientation;
+
+	// Get view and projection matrices
+	Matrix4f rollPitchYaw = Matrix4f::RotationZ(pi);
+	Matrix4f finalRollPitchYaw = rollPitchYaw * Matrix4f(o);
+	Vector3f finalUp = finalRollPitchYaw.Transform(Vector3f(0, 1, 0));
+	Vector3f finalForward = finalRollPitchYaw.Transform(Vector3f(0, 0, -1));
+	Vector3f shiftedEyePos = rollPitchYaw.Transform(p) + sp;
+
+	Matrix4f view = Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
+	Matrix4f proj = ovrMatrix4f_Projection(hmdDesc.DefaultEyeFov[eye], 0.2f, 1000.0f, ovrProjection_None);
+
+	// build XGL view and projection matrix...
+	// "myView" converts to XGL world coordinates, where the ground plane is X,Y and "up" is the Z axis
+	//    from customary OpenGL RH coordinate system where X,Z are the ground plane and Y is up
+	Matrix4f myView = view * Matrix4f::RotationX(pi / 2) * Matrix4f::RotationZ(pi);
+
+	// set the projection,view,orthoProjection matrices in the matrix UBO
+	pXgl->shaderMatrix.view = glm::transpose(glm::make_mat4(&myView.M[0][0]));;
+	pXgl->shaderMatrix.projection = glm::transpose(glm::make_mat4(&proj.M[0][0]));
+	pXgl->shaderMatrix.orthoProjection = pXgl->projector.GetOrthoMatrix();
+}
+
 bool XGLHmd::Loop() {
 	ovr_GetSessionStatus(session, &sessionStatus);
 
@@ -182,7 +209,7 @@ bool XGLHmd::Loop() {
 
 			// Do mystical/magical OVR -> XGL fiddly bits for camera translation
 			// These were empirically derived from a LOT of experimentation.
-			TransformEye(eye);
+			TransformEye2(eye);
 
 			// render XGL scene
 			pXgl->DisplayOVR();
