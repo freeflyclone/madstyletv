@@ -111,9 +111,9 @@ public:
 		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit2"), 2);
 		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit3"), 3);
 
-		XGLShape::Render(0.0);
+		XGLShape::Render();
 		for (auto imgQuad : imgQuads)
-			imgQuad->Render(0.0);
+			imgQuad->Render();
 	}
 	
 	void MakeSubQuad(GLuint texId, glm::mat4 model) {
