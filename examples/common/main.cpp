@@ -119,6 +119,35 @@ static void window_refresh_callback(GLFWwindow *window){
 		exgl->Display();
 }
 
+static void enumerate_joysticks() {
+	int i;
+
+	for (i = 0; i < GLFW_JOYSTICK_LAST; i++) {
+		if (glfwJoystickPresent(i)) {
+			const char *name = glfwGetJoystickName(i);
+			XJoystick j;
+
+			strcpy(j.fullName, name);
+			char *tmpPtr = j.shortName;
+			
+			// strip whitespace from name (probably not really needed)
+			for (int j = 0; j < strlen(name); j++)
+				if (name[j] != ' ')
+					*tmpPtr++ = name[j];
+			*tmpPtr = 0;
+
+			// get the number of axes this joystick supports.
+			j.numAxes = 0;
+			j.pollFunc = [i](int* count) { 
+				return glfwGetJoystickAxes(i, count); 
+			};
+
+			glfwGetJoystickAxes(i, &j.numAxes);
+			exgl->AddJoystick(j);
+		}
+	}
+}
+
 int main(void) {
 	GLFWwindow *window;
 	int width, height;
@@ -169,12 +198,17 @@ int main(void) {
 
 	try {
 		exgl = new ExampleXGL();
+
+		enumerate_joysticks();
+
 		exgl->Reshape(width, height);
 
 		while (!glfwWindowShouldClose(window)) {
 			glfwPollEvents();
 
 			glfwSwapBuffers(window);
+
+			exgl->PollJoysticks();
 
 			exgl->Animate();
 			exgl->Display();

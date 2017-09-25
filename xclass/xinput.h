@@ -17,6 +17,21 @@
 
 using namespace std::placeholders;
 
+#ifndef MAX_PATH
+#define MAX_PATH 260
+#endif
+
+typedef std::function<const float*(int*)> XJoystickAxesPoll;
+
+struct XJoystick {
+	char fullName[MAX_PATH];
+	char shortName[MAX_PATH];
+	int numAxes;
+	float values[32]; // doubtful there'll be more than 32 axes on a joystick;
+	XJoystickAxesPoll pollFunc;
+};
+typedef std::vector<XJoystick> XJoysticks;
+
 class XInput {
 public:
 	typedef std::function<void(int, int)> XInputKeyFunc;
@@ -38,6 +53,9 @@ public:
 
 	void AddProportionalFunc(std::string, XInputProportionalFunc);
 
+	void AddJoystick(XJoystick&);
+	void PollJoysticks();
+
 	void MouseEvent(int, int, int) const;
 	void KeyEvent(int, int) const;
 	void ProportionalEvent(std::string, float) const;
@@ -47,5 +65,6 @@ private:
 	XInputKeyRangeMap keyRangeMap;
 	XInputMouseFuncs mouseFuncs;
 	XInputProportionalFuncs proportionalMap;
+	XJoysticks joysticks;
 };
 #endif
