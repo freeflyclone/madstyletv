@@ -9,10 +9,13 @@
 **************************************************************/
 #include "ExampleXGL.h"
 
-void ExampleXGL::BuildScene() {
-	XGLShape *shape;
+XGLShape *shape;
 
+void ExampleXGL::BuildScene() {
+	// Simplest of shapes.
 	AddShape("shaders/000-simple", [&](){ shape = new XGLTriangle(); return shape; });
 
-	AddProportionalFunc("Xbox360Controller0", [this](float v) { xprintf("Value: %0.4f\n", v); });
+	// if an Xbox 360 controller is attached, use the left joystick X & Y axes to move triangle
+	AddProportionalFunc("Xbox360Controller0", [this](float v) { shape->model[3][0] = v * 10.0f; });
+	AddProportionalFunc("Xbox360Controller1", [this](float v) { shape->model[3][1] = v * 10.0f; });
 }
