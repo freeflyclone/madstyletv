@@ -10,7 +10,7 @@
 
 class XGLSled : public XGLShape {
 public:
-	XGLSled() : yaw(0.0f), pitch(0.0f), pos(10.0f, 0.0f, 0.0f) { 
+	XGLSled() : yaw(0.0f), pitch(0.0f), pos(10.0f, 0.0f, 0.0f), upVector(0.0f, 0.0f, 1.0f), frontVector(0.0f, 1.0f, 0.0f) { 
 		SetName("XGLSled");
 
 		// 3 lines to represent X,Y,Z axes (orientation)
@@ -31,12 +31,14 @@ public:
 	}
 
 	glm::mat4 GetOrientation() {
-		glm::quat q;
+		glm::mat4 orientation;
 
-		q *= glm::angleAxis(glm::radians(-pitch), glm::vec3(1, 0, 0));
-		q *= glm::angleAxis(glm::radians(-yaw), glm::vec3(0, 0, 1));
+		rightVector = glm::cross(frontVector, upVector);
 
-		return glm::mat4_cast(q);
+		orientation *= glm::rotate(glm::mat4(), glm::radians(-yaw), upVector);
+		orientation *= glm::rotate(glm::mat4(), glm::radians(-pitch), rightVector);
+
+		return orientation;
 	}
 
 	void Twiddle(float deltaYaw, float deltaPitch) {
@@ -44,13 +46,16 @@ public:
 		pitch += deltaPitch;
 
 		glm::mat4 translate = glm::translate(glm::mat4(), pos);
+
 		model = translate * GetOrientation();
 	}
 
 private:
 	float yaw, pitch;
 	XGLVertex pos;
-	XGLAxis *xAxis, *yAxis, *zAxis;
+	XGLVertex upVector;
+	XGLVertex frontVector;
+	XGLVertex rightVector;
 };
 
 XGLShape *triangle, *cube;
