@@ -77,6 +77,18 @@ void XGLShape::Render(glm::mat4 modelChain) {
 	}
 }
 
+XGLAxis::XGLAxis(float length, XGLColor color, XGLVertex vertex) {
+	SetName("XGLAxis");
+
+	v.push_back({ glm::vec3(0), {}, {}, color });
+	v.push_back({ vertex * length, {}, {}, color });
+}
+
+void XGLAxis::Draw(){
+	glDrawArrays(GL_LINES, 0, GLsizei(v.size()));
+	GL_CHECK("glDrawArrays() failed");
+}
+
 XYPlaneGrid::XYPlaneGrid(float size, float step) {
 	SetName("XYPlaneGrid");
 	const XGLColor gridColor = { 0.5, 0, 0, 1 };

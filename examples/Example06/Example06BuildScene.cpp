@@ -9,7 +9,7 @@
 **************************************************************/
 #include "ExampleXGL.h"
 
-XGLShape *triangle, *cube;
+XGLShape *triangle, *cube, *xAxis,*yAxis,*zAxis;
 
 float yaw = 0.0f, pitch = 0.0f;
 float x = 10.0f;
@@ -32,15 +32,27 @@ glm::mat4 GetOrientation()
 void TwiddleCube() {
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(x, y, z));
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(1.0, 2.0, 0.01));
-	cube->model = translate * GetOrientation() * scale;
+	cube->model = translate * GetOrientation();// *scale;
 }
 
 void ExampleXGL::BuildScene() {
 	front = glm::normalize(pos * -1.0f);
 
-	// Simplest of shapes.
+	// Add new triangle and cube to the scene.
 	AddShape("shaders/000-simple", [&](){ triangle = new XGLTriangle(); return triangle; });
 	AddShape("shaders/diffuse", [&](){ cube = new XGLCube(); return cube; });
+
+	// A 3-axis set of lines, to help with orientation visualization
+	CreateShape("shaders/000-simple", [&](){ xAxis = new XGLAxis(5.0f, XGLColors::red, { 1.0, 0.0, 0.0 }); return xAxis; });
+	CreateShape("shaders/000-simple", [&](){ yAxis = new XGLAxis(5.0f, XGLColors::green, { 0.0, 1.0, 0.0 }); return yAxis; });
+	CreateShape("shaders/000-simple", [&](){ zAxis = new XGLAxis(5.0f, XGLColors::blue, { 0.0, 0.0, 1.0 }); return zAxis; });
+
+	// Add 'em to the cube
+	cube->AddChild(xAxis);
+	cube->AddChild(yAxis);
+	cube->AddChild(zAxis);
+
+	// move the cube away from the triangle
 	cube->model *= glm::translate(glm::mat4(), glm::vec3(0.0, 10.0, 0.0));
 
 	// if an Xbox 360 controller is attached, use the left joystick X & Y axes to move triangle
@@ -48,6 +60,6 @@ void ExampleXGL::BuildScene() {
 	AddProportionalFunc("Xbox360Controller1", [this](float v) { triangle->model[3][1] = v * 10.0f; });
 
 	// use the right stick to control orientation of the cube
-	AddProportionalFunc("Xbox360Controller2", [this](float v) { yaw = v; yawAngle += v; TwiddleCube(); });
-	AddProportionalFunc("Xbox360Controller3", [this](float v) { pitch = v; pitchAngle += v; TwiddleCube(); });
+	AddProportionalFunc("Xbox360Controller2", [this](float v) { yaw = v; yawAngle += v*2.0; TwiddleCube(); });
+	AddProportionalFunc("Xbox360Controller3", [this](float v) { pitch = v; pitchAngle += v*2.0; TwiddleCube(); });
 }

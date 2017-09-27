@@ -47,6 +47,12 @@ public:
 // define a type for passing a lambda that creates an XGLShape as an argument
 typedef std::function<XGLShape *()> XGLNewShapeLambda;
 
+class XGLAxis : public XGLShape {
+public:
+	XGLAxis(float length = 5.0f, XGLColor color = { 1.0, 0.0, 0.0, 1.0 }, XGLVertex vertex = { 1.0, 0.0, 0.0 });
+	void Draw();
+};
+
 class XYPlaneGrid : public XGLShape {
 public:
 	XYPlaneGrid(float size=100.0f, float step=10.0f);
