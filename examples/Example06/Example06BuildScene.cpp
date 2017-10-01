@@ -10,7 +10,7 @@
 
 class XGLSled : public XGLShape {
 public:
-	XGLSled() : yaw(0.0f), pitch(0.0f), pos(10.0f, 0.0f, 0.0f), upVector(0.0f, 0.0f, 1.0f), frontVector(0.0f, 1.0f, 0.0f) { 
+	XGLSled(bool sa = true) : showAxes(sa), position(0.0f, 0.0f, 5.0f) {
 		SetName("XGLSled");
 
 		// 3 lines to represent X,Y,Z axes (orientation)
@@ -26,56 +26,53 @@ public:
 	}
 
 	void Draw() {
-		glDrawArrays(GL_LINES, 0, GLsizei(v.size()));
-		GL_CHECK("glDrawArrays() failed");
+		if (showAxes) {
+			glDrawArrays(GL_LINES, 0, 6);
+			GL_CHECK("glDrawArrays() failed");
+		}
 	}
 
-	glm::mat4 GetOrientation() {
-		glm::mat4 orientation;
-
-		rightVector = glm::cross(frontVector, upVector);
-
-		orientation *= glm::rotate(glm::mat4(), glm::radians(-yaw), upVector);
-		orientation *= glm::rotate(glm::mat4(), glm::radians(-pitch), rightVector);
-
-		return orientation;
+	glm::mat4 GetFinalMatrix() {
+		// add the translation of the sled's position for the final model matrix
+		return glm::translate(glm::mat4(), position) * glm::toMat4(orientation);
 	}
 
-	void Twiddle(float deltaYaw, float deltaPitch) {
-		yaw += deltaYaw;
-		pitch += deltaPitch;
+	void SampleInput(float yaw, float pitch, float roll) {
+		glm::quat rotation;
 
-		glm::mat4 translate = glm::translate(glm::mat4(), pos);
+		// combine yaw,pitch & roll changes into incremental rotation quaternion
+		rotation = glm::angleAxis(glm::radians(yaw), glm::vec3(0.0, 0.0, 1.0));
+		rotation *= glm::angleAxis(glm::radians(pitch), glm::vec3(1.0, 0.0, 0.0));
+		rotation *= glm::angleAxis(glm::radians(roll), glm::vec3(0.0, 1.0, 0.0));
 
-		model = translate * GetOrientation();
+		// Add combined rotationChange to sled's "currentRotation" (orientation) quaternion
+		// This order is key to local-relative rotation or world-relative.  This is local-relative
+		// Swapping the operand order changes to world-relative order, which is what I had been doing.
+		//
+		// Can't believe how long it took to figure this out, because it's SO simple now that I know.
+		orientation = orientation * rotation;
+
+		model = GetFinalMatrix();
 	}
 
 private:
-	float yaw, pitch;
-	XGLVertex pos;
-	XGLVertex upVector;
-	XGLVertex frontVector;
-	XGLVertex rightVector;
+	bool showAxes;
+	XGLVertex position;
+	glm::quat orientation;
 };
 
-XGLShape *triangle, *cube;
 XGLSled *sled;
+XGLShape *cube;
 
 void ExampleXGL::BuildScene() {
-	// Add new triangle and sled to the scene.
-	AddShape("shaders/000-simple", [&](){ triangle = new XGLTriangle(); return triangle; });
+	// Add new sled to the scene.
 	AddShape("shaders/000-simple", [&](){ sled = new XGLSled(); return sled; });
 
-	// Add cube as child of sled, but shape it like a flat rectangle
-	CreateShape("shaders/diffuse", [&](){ cube = new XGLCube(); return cube; });
-	cube->model = glm::scale(glm::mat4(), glm::vec3(1.0, 2.0, 0.01));
+	// use the left stick to control yaw, right stick to control pitch & roll of the sled
+	AddProportionalFunc("Xbox360Controller0", [this](float v) { sled->SampleInput(-v, 0.0f, 0.0f); });
+	AddProportionalFunc("Xbox360Controller2", [this](float v) { sled->SampleInput(0.0f, 0.0f, v); });
+	AddProportionalFunc("Xbox360Controller3", [this](float v) { sled->SampleInput(0.0f, -v, 0.0f); });
+
+	CreateShape("shaders/diffuse", [&]() { cube = new XGLCube(); cube->model = glm::scale(glm::mat4(), glm::vec3(0.2, 1.0, 0.01)); return cube; });
 	sled->AddChild(cube);
-
-	// if an Xbox 360 controller is attached, use the left joystick X & Y axes to move triangle
-	AddProportionalFunc("Xbox360Controller0", [this](float v) { triangle->model[3][0] = v * 10.0f; });
-	AddProportionalFunc("Xbox360Controller1", [this](float v) { triangle->model[3][1] = v * 10.0f; });
-
-	// use the right stick to control orientation of the cube
-	AddProportionalFunc("Xbox360Controller2", [this](float v) { sled->Twiddle(v*2.0, 0.0f); });
-	AddProportionalFunc("Xbox360Controller3", [this](float v) { sled->Twiddle(0.0f, v*2.0f); });
 }
