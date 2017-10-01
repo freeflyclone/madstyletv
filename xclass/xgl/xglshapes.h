@@ -166,8 +166,6 @@ public:
 
 private:
 	bool showAxes;
-	XGLVertex position;
-	glm::quat orientation;
 };
 
 #endif // XGLSHAPES_H

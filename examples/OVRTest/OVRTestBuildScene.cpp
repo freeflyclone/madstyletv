@@ -12,7 +12,7 @@
 // if the lambda is being called outside the scope of the function that created
 // it.  Which is almost always the case the way lambda's get used herein.
 XGLSphere *sphere;
-XGLShape *hmdSled;
+XGLSled *hmdSled;
 XGLShape *rightFinger, *rightThumb, *leftFinger, *leftThumb;
 
 const float constSpeed1 = 60.0f * 4.0f;
@@ -105,12 +105,17 @@ void ExampleXGL::BuildScene() {
 	// NOTE: the way it works now, only "top-level" objects (created by AddShape()) will be
 	//       affected by the optional "layer" argument.  All child objects thereof will
 	//       rendered at that object's layer's time.
+	/*
 	AddShape("shaders/000-simple", [&]() {hmdSled = new XGLTransformer(); return hmdSled; }, 2);
 	hmdSled->SetName("HmdSled");
 	hmdSled->SetAnimationFunction([&](float clock) {
 		glm::mat4 t = glm::translate(glm::mat4(), hmdSled->p);
 		hmdSled->model = t;
 	});
+	*/
+
+	AddShape("shaders/000-simple", [&]() {hmdSled = new XGLSled(); return hmdSled; }, 2);
+	hmdSled->SetName("HmdSled");
 
 	CreateShape("shaders/specular", [&](){ shape = new XGLSphere(0.01f, 4); shape->SetName("SledOrigin");  return shape; }, 2);
 	hmdSled->AddChild(shape);
@@ -147,8 +152,11 @@ void ExampleXGL::BuildScene() {
 
 	hmdSled->AddChild(appGuiManager);
 
-	AddProportionalFunc("LeftThumbStick.x", [](float v) { hmdSled->p.x += v / 10.0f; });
-	AddProportionalFunc("LeftThumbStick.y", [](float v) { hmdSled->p.y += v / 10.0f; });
-	AddProportionalFunc("LeftIndexTrigger", [](float v) { hmdSled->p.z += v / 10.0f; });
-	AddProportionalFunc("LeftHandTrigger",  [](float v) { hmdSled->p.z -= v / 10.0f; });
+	AddProportionalFunc("LeftThumbStick.x", [](float v) { hmdSled->p.x += v / 10.0f; hmdSled->model = hmdSled->GetFinalMatrix(); });
+	AddProportionalFunc("LeftThumbStick.y", [](float v) { hmdSled->p.y += v / 10.0f; hmdSled->model = hmdSled->GetFinalMatrix(); });
+	AddProportionalFunc("LeftIndexTrigger", [](float v) { hmdSled->p.z += v / 10.0f; hmdSled->model = hmdSled->GetFinalMatrix(); });
+	AddProportionalFunc("LeftHandTrigger" , [](float v) { hmdSled->p.z -= v / 10.0f; hmdSled->model = hmdSled->GetFinalMatrix(); });
+
+	AddProportionalFunc("RightThumbStick.y", [](float v) { hmdSled->SampleInput(0.0f, -v, 0.0f); });
+	AddProportionalFunc("RightThumbStick.x", [](float v) { hmdSled->SampleInput(-v, 0.0f, 0.0f); });
 }

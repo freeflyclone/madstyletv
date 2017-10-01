@@ -733,7 +733,7 @@ XGLTransformer::XGLTransformer(){
 	SetName("XGLTransformer");
 };
 
-XGLSled::XGLSled(bool sa) : showAxes(sa), position(0.0f, 0.0f, 5.0f) {
+XGLSled::XGLSled(bool sa) : showAxes(sa) {
 	SetName("XGLSled");
 
 	// 3 lines to represent X,Y,Z axes (orientation)
@@ -757,7 +757,7 @@ void XGLSled::Draw() {
 
 glm::mat4 XGLSled::GetFinalMatrix() {
 	// add the translation of the sled's position for the final model matrix
-	return glm::translate(glm::mat4(), position) * glm::toMat4(orientation);
+	return glm::translate(glm::mat4(), p) * glm::toMat4(o);
 }
 
 void XGLSled::SampleInput(float yaw, float pitch, float roll) {
@@ -773,7 +773,7 @@ void XGLSled::SampleInput(float yaw, float pitch, float roll) {
 	// Swapping the operand order changes to world-relative order, which is what I had been doing.
 	//
 	// Can't believe how long it took to figure this out, because it's SO simple now that I know.
-	orientation = orientation * rotation;
+	o = o * rotation;
 
 	model = GetFinalMatrix();
 }
