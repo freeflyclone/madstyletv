@@ -155,4 +155,19 @@ class XGLTransformer : public XGLShape {
 public:
 	XGLTransformer();
 };
+
+class XGLSled : public XGLShape {
+public:
+	XGLSled(bool sa = false);
+
+	void Draw();
+	glm::mat4 GetFinalMatrix();
+	void SampleInput(float yaw, float pitch, float roll);
+
+private:
+	bool showAxes;
+	XGLVertex position;
+	glm::quat orientation;
+};
+
 #endif // XGLSHAPES_H

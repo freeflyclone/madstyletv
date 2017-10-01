@@ -733,3 +733,48 @@ XGLTransformer::XGLTransformer(){
 	SetName("XGLTransformer");
 };
 
+XGLSled::XGLSled(bool sa) : showAxes(sa), position(0.0f, 0.0f, 5.0f) {
+	SetName("XGLSled");
+
+	// 3 lines to represent X,Y,Z axes (orientation)
+	// X
+	v.push_back({ glm::vec3(0), {}, {}, XGLColors::red });
+	v.push_back({ glm::vec3(1.0, 0.0, 0.0) * 5.0f, {}, {}, XGLColors::red });
+	// Y
+	v.push_back({ glm::vec3(0), {}, {}, XGLColors::green });
+	v.push_back({ glm::vec3(0.0, 1.0, 0.0) * 5.0f, {}, {}, XGLColors::green });
+	// Z
+	v.push_back({ glm::vec3(0), {}, {}, XGLColors::blue });
+	v.push_back({ glm::vec3(0.0, 0.0, 1.0) * 5.0f, {}, {}, XGLColors::blue });
+}
+
+void XGLSled::Draw() {
+	if (showAxes) {
+		glDrawArrays(GL_LINES, 0, 6);
+		GL_CHECK("glDrawArrays() failed");
+	}
+}
+
+glm::mat4 XGLSled::GetFinalMatrix() {
+	// add the translation of the sled's position for the final model matrix
+	return glm::translate(glm::mat4(), position) * glm::toMat4(orientation);
+}
+
+void XGLSled::SampleInput(float yaw, float pitch, float roll) {
+	glm::quat rotation;
+
+	// combine yaw,pitch & roll changes into incremental rotation quaternion
+	rotation = glm::angleAxis(glm::radians(yaw), glm::vec3(0.0, 0.0, 1.0));
+	rotation *= glm::angleAxis(glm::radians(pitch), glm::vec3(1.0, 0.0, 0.0));
+	rotation *= glm::angleAxis(glm::radians(roll), glm::vec3(0.0, 1.0, 0.0));
+
+	// Add combined rotationChange to sled's "currentRotation" (orientation) quaternion
+	// This order is key to local-relative rotation or world-relative.  This is local-relative
+	// Swapping the operand order changes to world-relative order, which is what I had been doing.
+	//
+	// Can't believe how long it took to figure this out, because it's SO simple now that I know.
+	orientation = orientation * rotation;
+
+	model = GetFinalMatrix();
+}
+
