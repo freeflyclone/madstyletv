@@ -119,7 +119,7 @@ void ExampleXGL::BuildScene() {
 
 	CreateShape("shaders/specular", [&](){ shape = new XGLSphere(0.01f, 4); shape->SetName("SledOrigin");  return shape; }, 2);
 	hmdSled->AddChild(shape);
-
+/*
 	CreateShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 64); shape->SetName("LeftHand"); return shape; });
 	hmdSled->AddChild(shape);
 
@@ -151,7 +151,7 @@ void ExampleXGL::BuildScene() {
 	shape->AddChild(rightThumb);
 
 	hmdSled->AddChild(appGuiManager);
-
+*/
 	AddProportionalFunc("LeftThumbStick.x", [](float v) { hmdSled->p.x += v / 10.0f; hmdSled->model = hmdSled->GetFinalMatrix(); });
 	AddProportionalFunc("LeftThumbStick.y", [](float v) { hmdSled->p.y += v / 10.0f; hmdSled->model = hmdSled->GetFinalMatrix(); });
 	AddProportionalFunc("LeftIndexTrigger", [](float v) { hmdSled->p.z += v / 10.0f; hmdSled->model = hmdSled->GetFinalMatrix(); });

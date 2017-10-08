@@ -7,7 +7,7 @@ XGLHmd::XGLHmd(XGL *p, int w, int h) :
 	height(h)
 {
 	// the hmdSled is an XGLShape that the HMD and Touch controllers are
-	// attached to.  XGLShape objects representing the Touch controllers
+	// "attached" to.  XGLShape objects representing the Touch controllers
 	// are assumed to be attached as child XObjects, thus when the sled
 	// moves, the "hands" move with it.
 	hmdSled = (XGLShape *)pXgl->FindObject("HmdSled0");
@@ -17,6 +17,10 @@ XGLHmd::XGLHmd(XGL *p, int w, int h) :
 
 	whichHand[0] = "Left";
 	whichHand[1] = "Right";
+
+	// Fetch the current XGLShapes for the hands
+	hands[0] = (XGLShape *)pXgl->FindObject(handNames[0]);
+	hands[1] = (XGLShape *)pXgl->FindObject(handNames[1]);
 
 	memset(&previousState, 0, sizeof(previousState));
 
@@ -114,6 +118,9 @@ void XGLHmd::TransposeHand(ovrHandType which) {
 	ovrQuatf oq = handPoses[which].Orientation;
 	Vector3f handPos = handPoses[which].Position;
 
+	if (hands[which] == nullptr)
+		return;
+
 	// convert OVR orientation & position to GLM form
 	glm::quat gq(oq.w, oq.x, -oq.z, oq.y);
 	glm::vec3 hp = glm::vec3(handPos.x, -handPos.z, handPos.y);
@@ -122,8 +129,7 @@ void XGLHmd::TransposeHand(ovrHandType which) {
 	// (in quaternion domain, "adding" rotations is actually a multiply)
 	gq *= glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
 
-	// Fetch the current XGLShape for the hand in question by name
-	XGLShape* hand = (XGLShape *)pXgl->FindObject(handNames[which]);
+	XGLShape *hand = hands[which];
 
 	// transform hand by translation * orientation
 	hand->model = glm::translate(glm::mat4(), hp) * glm::toMat4(gq);
@@ -132,6 +138,10 @@ void XGLHmd::TransposeHand(ovrHandType which) {
 void XGLHmd::TransformEye(int eye) {
 	// get head position from hmdSled (NOTE: this is an inverse translation, 'cuz it's the camera)
 	Vector3f headPosition = { -hmdSled->model[3][0], -hmdSled->model[3][2], -hmdSled->model[3][1] };
+
+	// "tweakView" converts to XGL world coordinates, where the ground plane is X,Y and "up" is the Z axis
+	//    from customary OpenGL RH coordinate system where X,Z are the ground plane and Y is up
+	Matrix4f tweakView = Matrix4f::RotationX(pi / 2) * Matrix4f::RotationZ(pi);
 
 	// Get view and projection matrices
 	Matrix4f rollPitchYaw = Matrix4f::RotationZ(pi);
@@ -144,9 +154,7 @@ void XGLHmd::TransformEye(int eye) {
 	Matrix4f proj = ovrMatrix4f_Projection(hmdDesc.DefaultEyeFov[eye], 0.2f, 1000.0f, ovrProjection_None);
 
 	// build XGL view and projection matrix...
-	// "myView" converts to XGL world coordinates, where the ground plane is X,Y and "up" is the Z axis
-	//    from customary OpenGL RH coordinate system where X,Z are the ground plane and Y is up
-	Matrix4f myView = view *Matrix4f::RotationX(pi / 2) * Matrix4f::RotationZ(pi);
+	Matrix4f myView = view * tweakView;
 
 	// set the projection,view,orthoProjection matrices in the matrix UBO
 	pXgl->shaderMatrix.view = glm::transpose(glm::make_mat4(&myView.M[0][0]));
