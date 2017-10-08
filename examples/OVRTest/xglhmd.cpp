@@ -136,21 +136,20 @@ void XGLHmd::TransposeHand(ovrHandType which) {
 }
 
 void XGLHmd::TransformEye(int eye) {
-	// get head position from hmdSled (NOTE: this is an inverse translation, 'cuz it's the camera)
-	Vector3f headPosition = { -hmdSled->model[3][0], -hmdSled->model[3][2], -hmdSled->model[3][1] };
+	// get head position from hmdSled
+	Vector3f headPosition = { hmdSled->model[3][0], hmdSled->model[3][2], -hmdSled->model[3][1] };
 
 	// "tweakView" converts to XGL world coordinates, where the ground plane is X,Y and "up" is the Z axis
 	//    from customary OpenGL RH coordinate system where X,Z are the ground plane and Y is up
-	Matrix4f tweakView = Matrix4f::RotationX(pi / 2) * Matrix4f::RotationZ(pi);
+	Matrix4f tweakView = Matrix4f::RotationX(-pi / 2);
 
 	// Get view and projection matrices
-	Matrix4f rollPitchYaw = Matrix4f::RotationZ(pi);
-	Matrix4f finalRollPitchYaw = rollPitchYaw * Matrix4f(EyeRenderPose[eye].Orientation);
-	Vector3f finalUp = finalRollPitchYaw.Transform(Vector3f(0, 1, 0));
-	Vector3f finalForward = finalRollPitchYaw.Transform(Vector3f(0, 0, -1));
-	Vector3f shiftedEyePos = headPosition + rollPitchYaw.Transform(EyeRenderPose[eye].Position);
+	Matrix4f eyeOrientation = Matrix4f(EyeRenderPose[eye].Orientation);
+	Vector3f up = eyeOrientation.Transform(Vector3f(0, 1, 0));
+	Vector3f forward = eyeOrientation.Transform(Vector3f(0, 0, -1));
+	Vector3f shiftedEyePos = headPosition + EyeRenderPose[eye].Position;
 
-	Matrix4f view = Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
+	Matrix4f view = Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + forward, up);
 	Matrix4f proj = ovrMatrix4f_Projection(hmdDesc.DefaultEyeFov[eye], 0.2f, 1000.0f, ovrProjection_None);
 
 	// build XGL view and projection matrix...
