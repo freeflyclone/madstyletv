@@ -10,7 +10,7 @@ XGLHmd::XGLHmd(XGL *p, int w, int h) :
 	// "attached" to.  XGLShape objects representing the Touch controllers
 	// are assumed to be attached as child XObjects, thus when the sled
 	// moves, the "hands" move with it.
-	hmdSled = (XGLShape *)pXgl->FindObject("HmdSled0");
+	hmdSled = (XGLSled *)pXgl->FindObject("HmdSled0");
 
 	handNames[0] = "LeftHand0";
 	handNames[1] = "RightHand0";
@@ -172,8 +172,10 @@ void XGLHmd::TransformEye2(int eye) {
 
 	// add hmdSled position
 	position += glm::vec3(tweakView * glm::vec4(hmdSled->p, 1.0f));
+	// get hmdSled orientation
+	glm::fquat sledO = hmdSled->o;
 
-	glm::mat4 eyeO = glm::toMat4(orientation);
+	glm::mat4 eyeO = glm::toMat4(sledO * orientation);
 	glm::vec3 eyeU(eyeO * glm::vec4(0, 1, 0, 1));
 	glm::vec3 eyeF(eyeO * glm::vec4(0, 0, -1, 1));
 	glm::mat4 gView = glm::lookAt(position, position + eyeF, eyeU) * tweakView;

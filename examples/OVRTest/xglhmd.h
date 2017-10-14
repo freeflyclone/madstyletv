@@ -57,7 +57,7 @@ private:
 
 	const char* handNames[2];
 	std::string whichHand[2];
-	XGLShape *hmdSled;
+	XGLSled *hmdSled;
 	XGLShape *hands[2];
 };
 
