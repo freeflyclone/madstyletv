@@ -170,22 +170,9 @@ void XGLHmd::TransformEye2(int eye) {
 	//    from customary OpenGL RH coordinate system where X,Z are the ground plane and Y is up
 	glm::mat4 tweakView = glm::rotate(glm::mat4(), -pi / 2, glm::vec3(1.0, 0.0, 0.0));
 
-	// Get view and projection matrices
-	Matrix4f eyeOrientation = Matrix4f(EyeRenderPose[eye].Orientation);
-	Vector3f up = eyeOrientation.Transform(Vector3f(0, 1, 0));
-	Vector3f forward = eyeOrientation.Transform(Vector3f(0, 0, -1));
-	Vector3f shiftedEyePos = EyeRenderPose[eye].Position;
-	Matrix4f view = Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + forward, up);
-
-	// build XGL view and projection matrix...
-	glm::mat4 myView = glm::transpose(glm::make_mat4(&view.M[0][0])) * tweakView;
-
 	glm::mat4 eyeO = glm::toMat4(orientation);
-	glm::vec4 eye4U = eyeO * glm::vec4(0, 1, 0, 1);
-	glm::vec4 eye4F = eyeO * glm::vec4(0, 0, -1, 1);
-
-	glm::vec3 eyeU = { eye4U.x, eye4U.y, eye4U.z };
-	glm::vec3 eyeF = { eye4F.x, eye4F.y, eye4F.z };
+	glm::vec3 eyeU(eyeO * glm::vec4(0, 1, 0, 1));
+	glm::vec3 eyeF(eyeO * glm::vec4(0, 0, -1, 1));
 	glm::mat4 gView = glm::lookAtRH(position, position + eyeF, eyeU) * tweakView;
 
 	// set the projection,view,orthoProjection matrices in the matrix UBO
