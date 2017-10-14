@@ -170,10 +170,13 @@ void XGLHmd::TransformEye2(int eye) {
 	//    from customary OpenGL RH coordinate system where X,Z are the ground plane and Y is up
 	glm::mat4 tweakView = glm::rotate(glm::mat4(), -pi / 2, glm::vec3(1.0, 0.0, 0.0));
 
+	// add hmdSled position
+	position += glm::vec3(tweakView * glm::vec4(hmdSled->p, 1.0f));
+
 	glm::mat4 eyeO = glm::toMat4(orientation);
 	glm::vec3 eyeU(eyeO * glm::vec4(0, 1, 0, 1));
 	glm::vec3 eyeF(eyeO * glm::vec4(0, 0, -1, 1));
-	glm::mat4 gView = glm::lookAtRH(position, position + eyeF, eyeU) * tweakView;
+	glm::mat4 gView = glm::lookAt(position, position + eyeF, eyeU) * tweakView;
 
 	// set the projection,view,orthoProjection matrices in the matrix UBO
 	pXgl->shaderMatrix.view = gView;
