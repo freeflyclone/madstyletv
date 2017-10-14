@@ -23,6 +23,7 @@ public:
 
 private:
 	void TransformEye(int);
+	void TransformEye2(int);
 
 	void TrackTouchInput();
 	void TrackTouchTriggers(ovrHandType);
