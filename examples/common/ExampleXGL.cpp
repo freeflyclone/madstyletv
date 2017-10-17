@@ -95,7 +95,8 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	});
 
 	// add a default "ground" plane grid.
-	AddShape("shaders/000-simple", [&](){ shape = new XYPlaneGrid(); return shape; });
+	CreateShape("shaders/000-simple", [&](){ shape = new XYPlaneGrid(); return shape; });
+	rootShape->AddChild(shape);
 
 	// Features of the framework are incrementally introduced by enhancing this function
 	// on a per example basis.
