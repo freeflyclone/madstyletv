@@ -30,7 +30,7 @@ void ExampleXGL::BuildScene() {
 	XGLShape *shape, *child1, *child2, *child3, *child4;
 	glm::mat4 rotate, translate;
 
-	AddShape("shaders/specular", [&](){ shape = new XGLTorus(5.0f, 1.0f, 64, 32); return shape; });
+	CreateShape("shaders/specular", [&](){ shape = new XGLTorus(5.0f, 1.0f, 64, 32); return shape; });
 	shape->attributes.diffuseColor = { 0.005, 0.005, 0.005, 1 };
 	shape->SetAnimationFunction([shape](float clock) {
 		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / speed1, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -42,6 +42,7 @@ void ExampleXGL::BuildScene() {
 		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / speed2, glm::vec3(0.0f, 0.0f, 1.0f));
 		child3->model = rotate;
 	});
+	rootShape->AddChild(shape);
 	shape->AddChild(child3);
 
 	CreateShape("shaders/specular", [&](){ child4 = new XGLTorus(2.0f, 0.5f, 64, 32); return child4; });
@@ -66,21 +67,24 @@ void ExampleXGL::BuildScene() {
 	child1->AddChild(child2);
 	child4->AddChild(child1);
 	child3->AddChild(child4);
-
-	AddShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
+	
+	CreateShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
 	shape->attributes.diffuseColor = (XGLColors::blue);
 	shape->model = glm::translate(glm::mat4(), glm::vec3(20, 0, 0));
+	rootShape->AddChild(shape);
 
-	AddShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
+	CreateShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
 	shape->attributes.diffuseColor = (XGLColors::red);
 	shape->model = glm::translate(glm::mat4(), glm::vec3(-20, 0, 0))
 		* glm::scale(glm::mat4(), glm::vec3(2, 2, 2));
+	rootShape->AddChild(shape);
 
-	AddShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
+	CreateShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
 	shape->attributes.diffuseColor = (XGLColors::green);
 	shape->model = glm::translate(glm::mat4(), glm::vec3(30, 0, 0))
 		* glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(0, 1, 0))
 		* glm::scale(glm::mat4(), glm::vec3(2, 2, 2));
+	rootShape->AddChild(shape);
 
 	XInputKeyFunc renderMod = [&](int key, int flags) {
 		const bool isDown = (flags & 0x8000) == 0;
@@ -113,15 +117,16 @@ void ExampleXGL::BuildScene() {
 		hmdSled->model = t;
 	});
 	*/
-
+/*
 	AddShape("shaders/000-simple", [&]() {hmdSled = new XGLSled(); return hmdSled; }, 2);
 	hmdSled->SetName("HmdSled");
 
 	CreateShape("shaders/specular", [&](){ shape = new XGLSphere(0.01f, 4); shape->SetName("SledOrigin");  return shape; }, 2);
 	hmdSled->AddChild(shape);
-/*
-	CreateShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 64); shape->SetName("LeftHand"); return shape; });
-	hmdSled->AddChild(shape);
+	hmdSled->AddChild(appGuiManager);
+	*/
+
+	AddShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 64); shape->SetName("LeftHand"); return shape; });
 
 	CreateShape("shaders/specular", [&]() { leftFinger = new XGLCapsule(0.01f, 0.1, 32); leftFinger->SetName("LeftFinger"); return leftFinger; });
 	translate = glm::translate(glm::mat4(), glm::vec3(0.0, 0.0, -0.1));
@@ -135,8 +140,7 @@ void ExampleXGL::BuildScene() {
 	leftThumb->model = translate * rotate;
 	shape->AddChild(leftThumb);
 
-	CreateShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 64); shape->SetName("RightHand"); return shape; });
-	hmdSled->AddChild(shape);
+	AddShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 64); shape->SetName("RightHand"); return shape; });
 
 	CreateShape("shaders/specular", [&]() { rightFinger = new XGLCapsule(0.01f, 0.1, 32); rightFinger->SetName("RightFinger"); return rightFinger; });
 	translate = glm::translate(glm::mat4(), glm::vec3(0.0, 0.0, -0.1));
@@ -150,13 +154,14 @@ void ExampleXGL::BuildScene() {
 	rightThumb->model = translate * rotate;
 	shape->AddChild(rightThumb);
 
-	hmdSled->AddChild(appGuiManager);
-*/
-	AddProportionalFunc("LeftThumbStick.x", [](float v) { hmdSled->p.x += v / 10.0f; hmdSled->model = hmdSled->GetFinalMatrix(); });
-	AddProportionalFunc("LeftThumbStick.y", [](float v) { hmdSled->p.y += v / 10.0f; hmdSled->model = hmdSled->GetFinalMatrix(); });
-	AddProportionalFunc("LeftIndexTrigger", [](float v) { hmdSled->p.z += v / 10.0f; hmdSled->model = hmdSled->GetFinalMatrix(); });
-	AddProportionalFunc("LeftHandTrigger" , [](float v) { hmdSled->p.z -= v / 10.0f; hmdSled->model = hmdSled->GetFinalMatrix(); });
+	AddProportionalFunc("LeftThumbStick.x", [this](float v) { rootShape->p.x -= v / 10.0f; rootShape->model = rootShape->GetFinalMatrix(); });
+	AddProportionalFunc("LeftThumbStick.y", [this](float v) { rootShape->p.y -= v / 10.0f; rootShape->model = rootShape->GetFinalMatrix(); });
+	AddProportionalFunc("LeftHandTrigger", [this](float v) { rootShape->p.z += v / 10.0f; rootShape->model = rootShape->GetFinalMatrix(); });
+	AddProportionalFunc("RightHandTrigger",[this](float v) { rootShape->p.z -= v / 10.0f; rootShape->model = rootShape->GetFinalMatrix(); });
 
-	AddProportionalFunc("RightThumbStick.y", [](float v) { hmdSled->SampleInput(0.0f, -v, 0.0f); });
-	AddProportionalFunc("RightThumbStick.x", [](float v) { hmdSled->SampleInput(-v, 0.0f, 0.0f); });
+	AddProportionalFunc("RightThumbStick.y", [this](float v) { rootShape->SampleInput(0.0f, v, 0.0f); });
+	AddProportionalFunc("RightThumbStick.x", [this](float v) { rootShape->SampleInput(v, 0.0f, 0.0f); });
+
+	AddProportionalFunc("RightIndexTrigger", [this](float v) { rootShape->SampleInput(0.0f, 0.0f, -v); });
+	AddProportionalFunc("LeftIndexTrigger", [this](float v) { rootShape->SampleInput(0.0f, 0.0f, v); });
 }

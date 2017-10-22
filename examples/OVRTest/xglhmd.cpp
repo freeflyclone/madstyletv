@@ -6,12 +6,6 @@ XGLHmd::XGLHmd(XGL *p, int w, int h) :
 	width(w),
 	height(h)
 {
-	// the hmdSled is an XGLShape that the HMD and Touch controllers are
-	// "attached" to.  XGLShape objects representing the Touch controllers
-	// are assumed to be attached as child XObjects, thus when the sled
-	// moves, the "hands" move with it.
-	hmdSled = (XGLSled *)pXgl->FindObject("HmdSled0");
-
 	handNames[0] = "LeftHand0";
 	handNames[1] = "RightHand0";
 
@@ -47,7 +41,7 @@ XGLHmd::XGLHmd(XGL *p, int w, int h) :
 	}
 
 	// FloorLevel will give tracking poses where the floor height is 0
-	ovr_SetTrackingOriginType(session, ovrTrackingOrigin_FloorLevel);
+	ovr_SetTrackingOriginType(session, ovrTrackingOrigin_EyeLevel);
 
 	memset(&desc, 0, sizeof(desc));
 	desc.Width = width;
@@ -137,7 +131,7 @@ void XGLHmd::TransposeHand(ovrHandType which) {
 
 void XGLHmd::TransformEye(int eye) {
 	// get head position from hmdSled
-	Vector3f sledPosition = { hmdSled->model[3][0], hmdSled->model[3][2], -hmdSled->model[3][1] };
+	//Vector3f sledPosition = { hmdSled->model[3][0], hmdSled->model[3][2], -hmdSled->model[3][1] };
 
 	// "tweakView" converts to XGL world coordinates, where the ground plane is X,Y and "up" is the Z axis
 	//    from customary OpenGL RH coordinate system where X,Z are the ground plane and Y is up
@@ -147,7 +141,7 @@ void XGLHmd::TransformEye(int eye) {
 	Matrix4f eyeOrientation = Matrix4f(EyeRenderPose[eye].Orientation);
 	Vector3f up = eyeOrientation.Transform(Vector3f(0, 1, 0));
 	Vector3f forward = eyeOrientation.Transform(Vector3f(0, 0, -1));
-	Vector3f shiftedEyePos = sledPosition + EyeRenderPose[eye].Position;
+	Vector3f shiftedEyePos = EyeRenderPose[eye].Position;
 
 	Matrix4f view = Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + forward, up);
 	Matrix4f proj = ovrMatrix4f_Projection(hmdDesc.DefaultEyeFov[eye], 0.2f, 1000.0f, ovrProjection_None);
@@ -170,12 +164,7 @@ void XGLHmd::TransformEye2(int eye) {
 	//    from customary OpenGL RH coordinate system where X,Z are the ground plane and Y is up
 	glm::mat4 tweakView = glm::rotate(glm::mat4(), -pi / 2, glm::vec3(1.0, 0.0, 0.0));
 
-	// add hmdSled position
-	position += glm::vec3(tweakView * glm::vec4(hmdSled->p, 1.0f));
-	// get hmdSled orientation
-	glm::fquat sledO = hmdSled->o;
-
-	glm::mat4 eyeO = glm::toMat4(sledO * orientation);
+	glm::mat4 eyeO = glm::toMat4(orientation);
 	glm::vec3 eyeU(eyeO * glm::vec4(0, 1, 0, 1));
 	glm::vec3 eyeF(eyeO * glm::vec4(0, 0, -1, 1));
 	glm::mat4 gView = glm::lookAt(position, position + eyeF, eyeU) * tweakView;

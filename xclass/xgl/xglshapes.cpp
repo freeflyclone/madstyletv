@@ -757,7 +757,7 @@ void XGLSled::Draw() {
 
 glm::mat4 XGLSled::GetFinalMatrix() {
 	// add the translation of the sled's position for the final model matrix
-	return glm::translate(glm::mat4(), p) * glm::toMat4(o);
+	return glm::toMat4(o) * glm::translate(glm::mat4(), p);
 }
 
 void XGLSled::SampleInput(float yaw, float pitch, float roll) {
@@ -773,7 +773,7 @@ void XGLSled::SampleInput(float yaw, float pitch, float roll) {
 	// Swapping the operand order changes to world-relative order, which is what I had been doing.
 	//
 	// Can't believe how long it took to figure this out, because it's SO simple now that I know.
-	o = o * rotation;
+	o = rotation * o;
 
 	model = GetFinalMatrix();
 }
