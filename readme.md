@@ -26,5 +26,3 @@ This repo uses git submodules for some of the larger 3rdParty source code.  I do
 Anyway here's what you need to know:
 * Background: [Cloning with submodules](http://stackoverflow.com/questions/3796927/how-to-git-clone-including-submodules)
 * Command Lines: [ThirdParty/Readme.md](https://github.com/freeflyclone/madstyletv/blob/master/xclass/3rdParty/readme.txt)
-
-Testing for CRLF conversion fix...
