@@ -1,7 +1,7 @@
 #include "xgl.h"
 
 
-XGLShape::XGLShape() {
+XGLShape::XGLShape() : isVisible(true) {
 	//xprintf("XGLShape::XGLShape()\n");
 	SetName("XGLShape");
 }

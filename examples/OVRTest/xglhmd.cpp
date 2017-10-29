@@ -85,6 +85,33 @@ void XGLHmd::TrackTouchThumbStick(ovrHandType which) {
 	}
 }
 
+void XGLHmd::TrackTouchButtons() {
+	static bool enterState = false;
+
+	if (inputState.Buttons & ovrButton_A) {}
+	if (inputState.Buttons & ovrButton_B) {}
+	if (inputState.Buttons & ovrButton_X) {}
+	if (inputState.Buttons & ovrButton_Y) {}
+
+	// if the left controller button is down...
+	if (inputState.Buttons & ovrButton_Enter) {
+		// ... and it wasn't down last time
+		if (!enterState) {
+			// its just been pressed, so fire a key-press event
+			pXgl->KeyEvent('~', 0);
+			// mark button pressed
+			enterState = true;
+		}
+	}
+	// if it's not down now but was down last time...
+	else if (enterState) {
+		// it's just been released, so fire a key-release event
+		pXgl->KeyEvent('~', 0x8000);
+		// mark button released
+		enterState = false;
+	}
+}
+
 void XGLHmd::TrackTouchInput() {
 	displayMidpointSeconds = ovr_GetPredictedDisplayTime(session, frameIndex);
 	trackState = ovr_GetTrackingState(session, displayMidpointSeconds, ovrTrue);
@@ -94,9 +121,7 @@ void XGLHmd::TrackTouchInput() {
 	handPoses[ovrHand_Right] = trackState.HandPoses[ovrHand_Right].ThePose;
 
 	if (OVR_SUCCESS(ovr_GetInputState(session, ovrControllerType_Touch, &inputState))) {
-		if (inputState.Buttons & ovrButton_A) {
-			// Handle A button being pressed
-		}
+		TrackTouchButtons();
 		TrackTouchTriggers(ovrHand_Left);
 		TrackTouchTriggers(ovrHand_Right);
 		TrackTouchThumbStick(ovrHand_Left);

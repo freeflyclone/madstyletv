@@ -28,6 +28,7 @@ private:
 	void TrackTouchInput();
 	void TrackTouchTriggers(ovrHandType);
 	void TrackTouchThumbStick(ovrHandType);
+	void TrackTouchButtons();
 	void TransposeHand(ovrHandType);
 
 	static ovrGraphicsLuid GetDefaultAdapterLuid();
@@ -58,6 +59,8 @@ private:
 	const char* handNames[2];
 	std::string whichHand[2];
 	XGLShape *hands[2];
+
+	unsigned int nTrackers;
 };
 
 #endif

@@ -170,8 +170,9 @@ void XGL::RenderScene(XGLShapesMap *shapes) {
 		GL_CHECK("glUniform3fv() failed");
 
 		for (auto const shape : *(perShader.second))
-			shape->Render();
-
+			if (shape->isVisible)
+				shape->Render();
+		
         shader->UnUse();
     }
 }
@@ -189,7 +190,8 @@ void XGL::RenderSceneOVR(XGLShapesMap *shapes) {
 		GL_CHECK("glUniform3fv() failed");
 
 		for (auto const shape : *(perShader.second))
-			shape->Render();
+			if (shape->isVisible)
+				shape->Render();
 
 		shader->UnUse();
 	}

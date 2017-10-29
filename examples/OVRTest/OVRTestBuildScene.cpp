@@ -112,6 +112,18 @@ void ExampleXGL::BuildScene() {
 	AddKeyFunc('M', renderMod);
 	AddKeyFunc('m', renderMod);
 
+	XInputKeyFunc toggleHud = [&](int key, int flags) {
+		const bool isDown = (flags & 0x8000) == 0;
+		const bool isRepeat = (flags & 0x4000) != 0;
+		static bool isHudVisible = false;
+
+		if (isDown && !isRepeat){
+			isHudVisible = isHudVisible ? false : true;
+			appGuiManager->isVisible = isHudVisible;
+		}
+	};
+	AddKeyFunc('~', toggleHud);
+
 	// LeftHand, anchored to the viewpoint
 	AddShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 64); shape->SetName("LeftHand"); return shape; });
 

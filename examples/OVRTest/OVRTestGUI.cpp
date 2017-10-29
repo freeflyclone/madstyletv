@@ -6,7 +6,11 @@ void ExampleXGL::BuildGUI() {
 	glm::mat4 scale, rotate, translate;
 	XGLGuiCanvas *gc;
 
-	CreateShape("shaders/ortho", [&]() { appGuiManager = new XGLGuiManager(this); return appGuiManager; });
+	// Create a GUI manager, set it to not visible initially.
+	// Normally XGLGuiManager shapes are special and are added with AddGuiShape(), but for this app
+	// it's part of the virtual space and so we want to treat it as a normal shape.
+	AddShape("shaders/ortho", [&]() { appGuiManager = new XGLGuiManager(this); return appGuiManager; });
+	appGuiManager->isVisible = false;
 
 	scale = glm::scale(glm::mat4(), glm::vec3(0.001, 0.001, 0.001));
 	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));

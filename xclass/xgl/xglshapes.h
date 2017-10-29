@@ -42,6 +42,8 @@ public:
 
 	XGLVertex p;
 	XGLOrientation o;
+
+	bool isVisible;
 };
 
 // define a type for passing a lambda that creates an XGLShape as an argument
