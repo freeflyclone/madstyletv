@@ -182,10 +182,14 @@
     <ClInclude Include="xglhmd.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\shaders\diffuse.frag" />
+    <None Include="..\..\shaders\diffuse.vert" />
     <None Include="..\..\shaders\gui-tex.frag" />
     <None Include="..\..\shaders\gui-tex.vert" />
     <None Include="..\..\shaders\gui.frag" />
     <None Include="..\..\shaders\gui.vert" />
+    <None Include="..\..\shaders\specular.frag" />
+    <None Include="..\..\shaders\specular.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

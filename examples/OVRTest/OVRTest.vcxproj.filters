@@ -55,5 +55,17 @@
     <None Include="..\..\shaders\gui.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\shaders\diffuse.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\diffuse.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\specular.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\specular.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
