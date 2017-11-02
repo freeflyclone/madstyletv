@@ -187,6 +187,9 @@ void XGLHmd::TransformEye2(int eye) {
 	glm::vec3 position = { EyeRenderPose[eye].Position.x, EyeRenderPose[eye].Position.y, EyeRenderPose[eye].Position.z };
 	glm::fquat orientation = { EyeRenderPose[eye].Orientation.w, EyeRenderPose[eye].Orientation.x, EyeRenderPose[eye].Orientation.y, EyeRenderPose[eye].Orientation.z };
 
+	// This makes lighting work correctly!
+	pXgl->camera.pos = hmdSled->p + position;
+
 	// "tweakView" converts to XGL world coordinates, where the ground plane is X,Y and "up" is the Z axis
 	//    from customary OpenGL RH coordinate system where X,Z are the ground plane and Y is up
 	glm::mat4 tweakView = glm::rotate(glm::mat4(), -pi / 2, glm::vec3(1.0, 0.0, 0.0));
