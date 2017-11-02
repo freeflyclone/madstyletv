@@ -157,32 +157,6 @@ void XGLHmd::TransposeHand(ovrHandType which) {
 }
 
 void XGLHmd::TransformEye(int eye) {
-	// get head position from hmdSled
-	//Vector3f sledPosition = { hmdSled->model[3][0], hmdSled->model[3][2], -hmdSled->model[3][1] };
-
-	// "tweakView" converts to XGL world coordinates, where the ground plane is X,Y and "up" is the Z axis
-	//    from customary OpenGL RH coordinate system where X,Z are the ground plane and Y is up
-	glm::mat4 tweakView = glm::rotate(glm::mat4(), -pi / 2, glm::vec3(1.0, 0.0, 0.0));
-
-	// Get view and projection matrices
-	Matrix4f eyeOrientation = Matrix4f(EyeRenderPose[eye].Orientation);
-	Vector3f up = eyeOrientation.Transform(Vector3f(0, 1, 0));
-	Vector3f forward = eyeOrientation.Transform(Vector3f(0, 0, -1));
-	Vector3f shiftedEyePos = EyeRenderPose[eye].Position;
-
-	Matrix4f view = Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + forward, up);
-	Matrix4f proj = ovrMatrix4f_Projection(hmdDesc.DefaultEyeFov[eye], 0.2f, 1000.0f, ovrProjection_None);
-
-	// build XGL view and projection matrix...
-	glm::mat4 myView = glm::transpose(glm::make_mat4(&view.M[0][0])) * tweakView;
-
-	// set the projection,view,orthoProjection matrices in the matrix UBO
-	pXgl->shaderMatrix.view = myView;
-	pXgl->shaderMatrix.projection = glm::transpose(glm::make_mat4(&proj.M[0][0]));
-	pXgl->shaderMatrix.orthoProjection = pXgl->projector.GetOrthoMatrix();
-}
-
-void XGLHmd::TransformEye2(int eye) {
 	glm::mat4 projection = glm::transpose(glm::make_mat4(&ovrMatrix4f_Projection(hmdDesc.DefaultEyeFov[eye], 0.2f, 1000.0f, ovrProjection_None).M[0][0]));
 	glm::vec3 position = { EyeRenderPose[eye].Position.x, EyeRenderPose[eye].Position.y, EyeRenderPose[eye].Position.z };
 	glm::fquat orientation = { EyeRenderPose[eye].Orientation.w, EyeRenderPose[eye].Orientation.x, EyeRenderPose[eye].Orientation.y, EyeRenderPose[eye].Orientation.z };
@@ -235,7 +209,7 @@ bool XGLHmd::Loop() {
 
 			// Do mystical/magical OVR -> XGL fiddly bits for camera translation
 			// These were empirically derived from a LOT of experimentation.
-			TransformEye2(eye);
+			TransformEye(eye);
 
 			// render XGL scene
 			pXgl->DisplayOVR();
