@@ -32,10 +32,14 @@ void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 	glm::mat4 rotate, translate;
 
+	// Create a cockpit that can be flown in the world
+	AddShape("shaders/000-simple", [&]() { hmdSled = new XGLSled(); return hmdSled; });
+	hmdSled->SetName("HmdSled", false);
+
 	// create spinny torus thingy...
 	if (true) {
 		XGLShape *bigGrayTorus;
-		CreateShape("shaders/specular", [&](){ bigGrayTorus = new XGLTorus(5.0f, 1.0f, 64, 32); return bigGrayTorus; });
+		AddShape("shaders/specular", [&](){ bigGrayTorus = new XGLTorus(5.0f, 1.0f, 64, 32); return bigGrayTorus; });
 		bigGrayTorus->attributes.diffuseColor = gray;
 		bigGrayTorus->SetAnimationFunction([bigGrayTorus](float clock) {
 			glm::mat4 rotate = glm::rotate(glm::mat4(), clock / speed1, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -49,7 +53,6 @@ void ExampleXGL::BuildScene() {
 			glm::mat4 rotate = glm::rotate(glm::mat4(), clock / speed2, glm::vec3(0.0f, 0.0f, 1.0f));
 			bgtChildTransformer->model = rotate;
 		});
-		rootShape->AddChild(bigGrayTorus);
 		bigGrayTorus->AddChild(bgtChildTransformer);
 
 		XGLShape *bgtChildRedTorus;
@@ -78,22 +81,19 @@ void ExampleXGL::BuildScene() {
 		bgtCrtTransformer->AddChild(bgtGrandChildYellowTorus);
 	}
 
-	CreateShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
+	AddShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
 	shape->attributes.diffuseColor = XGLColors::blue;
 	shape->model = glm::translate(glm::mat4(), glm::vec3(20, 0, 0));
-	rootShape->AddChild(shape);
 
-	CreateShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
+	AddShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
 	shape->attributes.diffuseColor = XGLColors::red;
 	shape->model = glm::translate(glm::mat4(), glm::vec3(-20, 0, 0)) * glm::scale(glm::mat4(), glm::vec3(2, 2, 2));
-	rootShape->AddChild(shape);
 
-	CreateShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
+	AddShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
 	shape->attributes.diffuseColor = XGLColors::green;
 	shape->model = glm::translate(glm::mat4(), glm::vec3(30, 0, 0))
 		* glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(0, 1, 0))
 		* glm::scale(glm::mat4(), glm::vec3(2, 2, 2));
-	rootShape->AddChild(shape);
 
 	// function to toggle wire frame rendering
 	XInputKeyFunc renderMod = [&](int key, int flags) {
@@ -124,8 +124,9 @@ void ExampleXGL::BuildScene() {
 	};
 	AddKeyFunc('~', toggleHud);
 
-	// LeftHand, anchored to the viewpoint
-	AddShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 64); shape->SetName("LeftHand"); return shape; });
+	// LeftHand, anchored to the cockpit
+	CreateShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 64); shape->SetName("LeftHand"); return shape; });
+	hmdSled->AddChild(shape);
 
 	// Left Finger, child of LeftHand
 	CreateShape("shaders/specular", [&]() { leftFinger = new XGLCapsule(0.01f, 0.1f, 32); leftFinger->SetName("LeftFinger"); return leftFinger; });
@@ -142,8 +143,9 @@ void ExampleXGL::BuildScene() {
 	shape->AddChild(leftThumb);
 
 
-	// RightHand, anchored to the viewpoint
-	AddShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 64); shape->SetName("RightHand"); return shape; });
+	// RightHand, anchored to the cockpit
+	CreateShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 64); shape->SetName("RightHand"); return shape; });
+	hmdSled->AddChild(shape);
 
 	// RightFinger, child of RightHand
 	CreateShape("shaders/specular", [&]() { rightFinger = new XGLCapsule(0.01f, 0.1f, 32); rightFinger->SetName("RightFinger"); return rightFinger; });
@@ -159,28 +161,29 @@ void ExampleXGL::BuildScene() {
 	rightThumb->model = translate * rotate;
 	shape->AddChild(rightThumb);
 
-	// move forward
-	AddProportionalFunc("LeftIndexTrigger", [this](float v) { 
-		glm::vec4 forward = glm::vec4(0.0, -v / 10.0f, 0.0, 0.0) * glm::toMat4(rootShape->o);
-		rootShape->p += glm::vec3(forward);
+	// attach HUD to sled
+	hmdSled->AddChild(appGuiManager);
 
-		rootShape->model = rootShape->GetFinalMatrix(); 
+	// move forward
+	AddProportionalFunc("LeftIndexTrigger", [this](float v) {
+		glm::vec4 forward = glm::toMat4(hmdSled->o) * glm::vec4(0.0, v / 10.0f, 0.0, 0.0);
+		hmdSled->p += glm::vec3(forward);
+		hmdSled->model = hmdSled->GetFinalMatrix();
 	});
 
 	// move backward
 	AddProportionalFunc("LeftHandTrigger", [this](float v) {
-		glm::vec4 backward = glm::vec4(0.0, v / 10.0f, 0.0, 0.0) * glm::toMat4(rootShape->o);
-		rootShape->p += glm::vec3(backward);
-
-		rootShape->model = rootShape->GetFinalMatrix();
+		glm::vec4 backward = glm::toMat4(hmdSled->o) * glm::vec4(0.0, -v / 10.0f, 0.0, 0.0);
+		hmdSled->p += glm::vec3(backward);
+		hmdSled->model = hmdSled->GetFinalMatrix();
 	});
 
 	// yaw (rudder)
-	AddProportionalFunc("LeftThumbStick.x", [this](float v) { rootShape->SampleInput(v, 0.0f, 0.0f); });
+	AddProportionalFunc("LeftThumbStick.x", [this](float v) { hmdSled->SampleInput(-v, 0.0f, 0.0f); });
 
 	// pitch (elevator)
-	AddProportionalFunc("RightThumbStick.y", [this](float v) { rootShape->SampleInput(0.0f, v, 0.0f); });
+	AddProportionalFunc("RightThumbStick.y", [this](float v) { hmdSled->SampleInput(0.0f, -v, 0.0f); });
 
 	// roll (ailerons)
-	AddProportionalFunc("RightThumbStick.x", [this](float v) { rootShape->SampleInput(0.0f, 0.0f, -v); });
+	AddProportionalFunc("RightThumbStick.x", [this](float v) { hmdSled->SampleInput(0.0f, 0.0f, v); });
 }

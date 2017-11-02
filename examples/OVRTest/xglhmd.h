@@ -60,6 +60,7 @@ private:
 	std::string whichHand[2];
 	XGLShape *hands[2];
 
+	XGLSled *hmdSled;
 	unsigned int nTrackers;
 };
 

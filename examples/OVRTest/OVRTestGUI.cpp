@@ -9,12 +9,12 @@ void ExampleXGL::BuildGUI() {
 	// Create a GUI manager, set it to not visible initially.
 	// Normally XGLGuiManager shapes are special and are added with AddGuiShape(), but for this app
 	// it's part of the virtual space and so we want to treat it as a normal shape.
-	AddShape("shaders/ortho", [&]() { appGuiManager = new XGLGuiManager(this); return appGuiManager; });
+	CreateShape("shaders/ortho", [&]() { appGuiManager = new XGLGuiManager(this); return appGuiManager; }, 2);
 	appGuiManager->isVisible = false;
 
 	scale = glm::scale(glm::mat4(), glm::vec3(0.001, 0.001, 0.001));
 	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	translate = glm::translate(glm::mat4(), glm::vec3(-.96, 1.0, 1.08*1.5));
+	translate = glm::translate(glm::mat4(), glm::vec3(-.96, 1.0, 1.08*0.5));
 	appGuiManager->model = translate * rotate * scale;
 
 
@@ -25,12 +25,13 @@ void ExampleXGL::BuildGUI() {
 	// The width & height arguments are the dimensions of the buffer that is used as a GL texture
 	// for 2D grapics operations, and they are ALSO the dimensions of the geometry of the quadrilateral.
 	// This leads to the unfortunate side-effect of being HUGE in world space by default.  This can be
-	// fixed by applying a scale factor to the model matrix.  Could do that in the constructor I suppose.
+	// fixed by applying a scale factor to the model matrix of the parent XGLGuiManager shape.
+	/// Could do that in the constructor I suppose.
 	//
 	// The choice of 1920 x 1080 gives texture buffer dimensions equivalent to real world HDTV dimensions,
 	// With OVR, 1 unit in world space equals 1 meter in physical space, so that means this XGLGuiCanvas
-	// is nearly 2 kilometers wide, before scaling.  Scaling by 0.001 reduces it to 1.92 x 1.08 meters.
-	// Nice and big but not gianormous.
+	// is nearly 2 kilometers wide, before scaling.
+	// Scaling by 0.001 reduces it to 1.92 x 1.08 meters. Nice and big but not gianormous.
 	CreateShape("shaders/gui-tex", [&, this](){	gc = new XGLGuiCanvas(this, 1920, 1080); return gc;	});
 
 	// disable depth buffer writing for the GUI canvas.  Thus it won't occlude things drawn after,

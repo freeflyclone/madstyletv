@@ -102,9 +102,6 @@ XGL::XGL() : clock(0.0f), pb(NULL), fb(NULL), renderGui(false), guiManager(nullp
 	//glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	AddShape("shaders/000-simple", [this]() { rootShape = new XGLSled(); return rootShape; });
-	rootShape->SetName("RootShape", false);
-
 	// for copying to shared memory buffer
 	// enabling this takes up GPU time,
 	// mostly because of glReadPixels().

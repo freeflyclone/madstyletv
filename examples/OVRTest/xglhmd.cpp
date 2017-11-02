@@ -16,6 +16,8 @@ XGLHmd::XGLHmd(XGL *p, int w, int h) :
 	hands[0] = (XGLShape *)pXgl->FindObject(handNames[0]);
 	hands[1] = (XGLShape *)pXgl->FindObject(handNames[1]);
 
+	hmdSled = (XGLSled *)pXgl->FindObject("HmdSled");
+
 	memset(&previousState, 0, sizeof(previousState));
 
 	if (!OVR_SUCCESS(ovr_Initialize(nullptr)))
@@ -195,7 +197,7 @@ void XGLHmd::TransformEye2(int eye) {
 	glm::mat4 gView = glm::lookAt(position, position + eyeF, eyeU) * tweakView;
 
 	// set the projection,view,orthoProjection matrices in the matrix UBO
-	pXgl->shaderMatrix.view = gView;
+	pXgl->shaderMatrix.view = gView * glm::inverse(hmdSled->model);
 	pXgl->shaderMatrix.projection = projection;
 	pXgl->shaderMatrix.orthoProjection = pXgl->projector.GetOrthoMatrix();
 }
