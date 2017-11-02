@@ -100,7 +100,7 @@ void XGLHmd::TrackTouchButtons() {
 		// ... and it wasn't down last time
 		if (!enterState) {
 			// its just been pressed, so fire a key-press event
-			pXgl->KeyEvent('~', 0);
+			pXgl->KeyEvent('h', 0);
 			// mark button pressed
 			enterState = true;
 		}
@@ -108,7 +108,7 @@ void XGLHmd::TrackTouchButtons() {
 	// if it's not down now but was down last time...
 	else if (enterState) {
 		// it's just been released, so fire a key-release event
-		pXgl->KeyEvent('~', 0x8000);
+		pXgl->KeyEvent('h', 0x8000);
 		// mark button released
 		enterState = false;
 	}

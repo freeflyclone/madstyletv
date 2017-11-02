@@ -32,8 +32,9 @@ void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 	glm::mat4 rotate, translate;
 
-	// Create a cockpit that can be flown in the world
-	AddShape("shaders/000-simple", [&]() { hmdSled = new XGLSled(); return hmdSled; });
+	// Create a cockpit that can be flown in the world, put it in layer 2 to override world object rendering
+	// (Turns out the layers hack only works between top level shapes right now)
+	AddShape("shaders/000-simple", [&]() { hmdSled = new XGLSled(); return hmdSled; }, 2);
 	hmdSled->SetName("HmdSled", false);
 
 	// create spinny torus thingy...
@@ -122,7 +123,7 @@ void ExampleXGL::BuildScene() {
 			appGuiManager->isVisible = isHudVisible;
 		}
 	};
-	AddKeyFunc('~', toggleHud);
+	AddKeyFunc('h', toggleHud);
 
 	// LeftHand, anchored to the cockpit
 	CreateShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 64); shape->SetName("LeftHand"); return shape; });

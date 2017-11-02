@@ -66,13 +66,15 @@ void XGLShape::Render(glm::mat4 modelChain) {
 	for (auto child : Children()) {
 		if (dynamic_cast<XGLShape *>(child)) {
 			XGLShape *childShape = (XGLShape *)child;
-			if (childShape->preRenderFunction)
-				childShape->preRenderFunction(clock);
+			if (childShape->isVisible) {
+				if (childShape->preRenderFunction)
+					childShape->preRenderFunction(clock);
 
-			childShape->Render(modelChain * childShape->model);
+				childShape->Render(modelChain * childShape->model);
 
-			if (childShape->postRenderFunction)
-				childShape->postRenderFunction(clock);
+				if (childShape->postRenderFunction)
+					childShape->postRenderFunction(clock);
+			}
 		}
 	}
 }
