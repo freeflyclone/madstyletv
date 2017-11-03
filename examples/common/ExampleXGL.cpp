@@ -102,6 +102,8 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	BuildScene();
 }
 
+ExampleXGL::~ExampleXGL() {}
+
 void ExampleXGL::Reshape(int w, int h) {
 	try {
 		width = w;
