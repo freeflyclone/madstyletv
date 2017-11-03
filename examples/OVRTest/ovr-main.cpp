@@ -15,7 +15,7 @@
 #include "xglhmd.h"
 
 static ExampleXGL *exgl = NULL;
-static XGLHmd *hmd = nullptr;
+//static XGLHmd *hmd = nullptr;
 
 #ifndef OPENGL_MAJOR_VERSION
 #define OPENGL_MAJOR_VERSION 4
@@ -156,7 +156,7 @@ int main(void) {
 	glfwSetWindowSizeCallback(window, window_size_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
-	glfwSwapInterval(0);
+	//glfwSwapInterval(0);
 
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
@@ -172,7 +172,8 @@ int main(void) {
 
 	try {
 		exgl = new ExampleXGL();
-		hmd = new XGLHmd(exgl, width, height);
+		exgl->GetPreferredWindowSize(&width, &height);
+		//hmd = new XGLHmd(exgl, width, height);
 		exgl->Reshape(width, height);
 	}
 	catch (std::runtime_error e) {
@@ -183,8 +184,11 @@ int main(void) {
 		bool shouldQuit = false;
 		while (!glfwWindowShouldClose(window) && !shouldQuit) {
 			glfwPollEvents();
+			exgl->PollJoysticks();
+			exgl->Animate();
+			exgl->Display();
+
 			glfwSwapBuffers(window);
-			shouldQuit = hmd->Loop();
 		}
 	}
 	catch (std::runtime_error e) {

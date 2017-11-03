@@ -31,7 +31,12 @@ void CheckGlStatus(const char *file, int line) {
 	}
 }
 
-XGL::XGL() : clock(0.0f), pb(NULL), fb(NULL), renderGui(false), guiManager(nullptr), mouseCaptured(nullptr), keyboardFocused(nullptr) {
+XGL::XGL() : clock(0.0f), pb(NULL), fb(NULL), renderGui(false), guiManager(nullptr), mouseCaptured(nullptr), keyboardFocused(nullptr),
+preferredWidth(1280),
+preferredHeight(720),
+useHmd(false),
+preferredSwapInterval(1)
+{
 	SetName("XGL");
 	xprintf("OpenGL version: %s\n", glGetString(GL_VERSION));
 	glGetError();
@@ -379,6 +384,11 @@ bool XGL::GuiResolveMouseEvent(XGLShape *shape, int x, int y, int flags) {
 	}
 
 	return handledByChild;
+}
+
+void XGL::GetPreferredWindowSize(int *w, int *h) {
+	*w = preferredWidth;
+	*h = preferredHeight;
 }
 
 #define QUERY_GLCONTEXT( x, v ) { glGetIntegerv((x),&(v)); GL_CHECK("glGetIntegerv() failed"); xprintf("%s: %d\n", #x,(v)); }

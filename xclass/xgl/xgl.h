@@ -166,6 +166,13 @@ public:
 	XGLShape *mouseCaptured;
 	XGLShape *keyboardFocused;
 
+	void GetPreferredWindowSize(int *width, int *height);
+	bool UseHMD() { return useHmd; }
+	int PreferredSwapInterval() { return preferredSwapInterval; }
+	int preferredWidth, preferredHeight;
+	bool useHmd;
+	int preferredSwapInterval;
+
 private:
     // this is returned by GetShader().  Use of GetShader() feels funky, like my structure design blows chunks.
     XGLShader *currentShader;
