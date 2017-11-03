@@ -232,6 +232,7 @@
     <ClInclude Include="xfifo.h" />
     <ClInclude Include="xftdi.h" />
     <ClInclude Include="xglew.h" />
+    <ClInclude Include="xgl\GLAppUtil.h" />
     <ClInclude Include="xgl\glew.h" />
     <ClInclude Include="xgl\glxew.h" />
     <ClInclude Include="xgl\wglew.h" />
@@ -242,6 +243,7 @@
     <ClInclude Include="xgl\xglfont.h" />
     <ClInclude Include="xgl\xglframebuffer.h" />
     <ClInclude Include="xgl\xglgui.h" />
+    <ClInclude Include="xgl\xglhmd.h" />
     <ClInclude Include="xgl\xgllight.h" />
     <ClInclude Include="xgl\xglmaterial.h" />
     <ClInclude Include="xgl\xglobject.h" />
@@ -285,6 +287,7 @@
     <ClCompile Include="xgl\xglfont.cpp" />
     <ClCompile Include="xgl\xglframebuffer.cpp" />
     <ClCompile Include="xgl\xglgui.cpp" />
+    <ClCompile Include="xgl\xglhmd.cpp" />
     <ClCompile Include="xgl\xgllight.cpp" />
     <ClCompile Include="xgl\xglmaterial.cpp" />
     <ClCompile Include="xgl\xglpixelbuffer.cpp" />

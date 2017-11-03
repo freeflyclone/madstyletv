@@ -210,6 +210,12 @@
     <ClInclude Include="xglew.h">
       <Filter>xgl\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xgl\xglhmd.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xgl\GLAppUtil.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xgl\xglbuffer.cpp">
@@ -322,6 +328,9 @@
     </ClCompile>
     <ClCompile Include="xmqtt.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xgl\xglhmd.cpp">
+      <Filter>xgl\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

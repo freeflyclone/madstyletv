@@ -175,11 +175,6 @@
     <ClCompile Include="OVRTestBuildScene.cpp" />
     <ClCompile Include="OVRTestGUI.cpp" />
     <ClCompile Include="OVRTestXGL.cpp" />
-    <ClCompile Include="xglhmd.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="GLAppUtil.h" />
-    <ClInclude Include="xglhmd.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\shaders\diffuse.frag" />

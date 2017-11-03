@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 
 #include <xgl.h>
-#include <ExampleXGL.h>
+//#include <ExampleXGL.h>
 
 #include "OVR_CAPI_GL.h"
 #include "Extras/OVR_Math.h"
