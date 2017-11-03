@@ -26,6 +26,7 @@ public:
 
 	void BuildScene();
 	virtual void BuildGUI();
+	virtual void Display();
 
 	void Reshape(int w, int h);
 
