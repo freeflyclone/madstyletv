@@ -211,8 +211,8 @@ bool XGLHmd::Loop() {
 			// These were empirically derived from a LOT of experimentation.
 			TransformEye(eye);
 
-			// render XGL scene
-			pXgl->DisplayOVR();
+			// render XGL scene 
+			pXgl->XGL::Display();
 
 			eyeRenderTexture[eye]->UnsetRenderSurface();
 

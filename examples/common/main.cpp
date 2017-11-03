@@ -54,15 +54,15 @@ void SetGlobalWorkingDirectoryName()
 #else
 void SetGlobalWorkingDirectoryName() {
 	char buff[FILENAME_MAX];
-    char *xclass_dir = getenv("XCLASS_DIR");
+	char *xclass_dir = getenv("XCLASS_DIR");
 
-    if (xclass_dir) {
-        currentWorkingDir = std::string(xclass_dir);
-    }
-    else {
-        getcwd(buff, sizeof(buff));
-        currentWorkingDir = std::string(buff);
-    }
+	if (xclass_dir) {
+		currentWorkingDir = std::string(xclass_dir);
+	}
+	else {
+		getcwd(buff, sizeof(buff));
+		currentWorkingDir = std::string(buff);
+	}
 	xprintf("Cwd: %s\n", currentWorkingDir.c_str());
 }
 #endif
@@ -86,11 +86,11 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 
 static void cursor_position_callback(GLFWwindow *window, double x, double y) {
 	int state = 0;
-	
+
 	state |= glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
 	state |= glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) << 1;
 
-	if (exgl != NULL) 
+	if (exgl != NULL)
 		exgl->MouseEvent((int)x, (int)y, state);
 }
 
@@ -153,8 +153,8 @@ int main(void) {
 	int width, height;
 	/*
 	if (!FreeConsole()) {
-		printf("Freeing the console failed: %d\n", GetLastError());
-		exit(0);
+	printf("Freeing the console failed: %d\n", GetLastError());
+	exit(0);
 	}
 	*/
 	if (!glfwInit()) {
@@ -168,7 +168,7 @@ int main(void) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, OPENGL_MINOR_VERSION);
 	glfwWindowHint(GLFW_SAMPLES, 8);
 
-	window = glfwCreateWindow(1920, 1080, GLFW_WINDOW_TITLE, NULL, NULL);
+	window = glfwCreateWindow(1280, 720, GLFW_WINDOW_TITLE, NULL, NULL);
 	if (!window) {
 		printf("glfwCreateWindow() failed\n");
 		glfwTerminate();
@@ -182,15 +182,13 @@ int main(void) {
 	glfwSetWindowSizeCallback(window, window_size_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
-	glfwSwapInterval(1);
-
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 	if (GLEW_OK != err) {
 		printf("glewInit() failed: %s\n", glewGetErrorString(err));
 		exit(-1);
 	}
-	
+
 	glfwGetFramebufferSize(window, &width, &height);
 
 	SetGlobalWorkingDirectoryName();
@@ -198,24 +196,33 @@ int main(void) {
 
 	try {
 		exgl = new ExampleXGL();
-
-		enumerate_joysticks();
-
+		exgl->GetPreferredWindowSize(&width, &height);
+		glfwSetWindowSize(window, width, height);
+		glfwSwapInterval(exgl->GetPreferredSwapInterval());
 		exgl->Reshape(width, height);
+	}
+	catch (std::runtime_error e) {
+		printf("Exception: %s\n", e.what());
+	}
 
-		while (!glfwWindowShouldClose(window)) {
+	try {
+		bool shouldQuit = false;
+		while (!glfwWindowShouldClose(window) && !shouldQuit) {
 			glfwPollEvents();
+			exgl->PollJoysticks();
+			exgl->Animate();
+
+			shouldQuit = exgl->Display();
 
 			glfwSwapBuffers(window);
-
-			exgl->PollJoysticks();
-
-			exgl->Animate();
-			exgl->Display();
 		}
+	}
+	catch (std::runtime_error e) {
+		printf("Exception: %s\n", e.what());
+	}
 
+	try {
 		delete exgl;
-
 		glfwTerminate();
 	}
 	catch (std::runtime_error e) {

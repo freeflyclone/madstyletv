@@ -109,10 +109,8 @@ public:
     virtual ~XGL();
 
 	virtual void Animate();
-	virtual void Display();
-	virtual void DisplayOVR();
+	virtual bool Display();
 	virtual void RenderScene(XGLShapesMap *);
-	virtual void RenderSceneOVR(XGLShapesMap *);
 	virtual void Idle() {};
 
 	XGLShape* CreateShape(XGLShapesMap *s, std::string shaderName, XGLNewShapeLambda fn);
@@ -168,7 +166,7 @@ public:
 
 	void GetPreferredWindowSize(int *width, int *height);
 	bool UseHMD() { return useHmd; }
-	int PreferredSwapInterval() { return preferredSwapInterval; }
+	int GetPreferredSwapInterval() { return preferredSwapInterval; }
 	int preferredWidth, preferredHeight;
 	bool useHmd;
 	int preferredSwapInterval;

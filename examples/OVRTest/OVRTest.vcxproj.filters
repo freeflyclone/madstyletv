@@ -18,19 +18,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\common\ExampleXGL.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="OVRTestBuildScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ovr-main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="xglhmd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OVRTestGUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OVRTestXGL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

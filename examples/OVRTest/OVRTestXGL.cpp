@@ -1,9 +1,16 @@
 #include "ExampleXGL.h"
+#include "xglhmd.h"
+
+XGLHmd *pHmd = nullptr;
 
 // TODO:  I don't think I need to initialize "wc" this way if I'm using
 // lambda functions for the world cursor.  Will investigate.
 ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	XGLShape *shape;
+
+	// change the default configuration so the HMD will work.
+	preferredWidth = 1080;
+	preferredHeight = 600;
 
 	// add 2D shapes to the guiShapes list.
 	BuildGUI();
@@ -100,6 +107,12 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	// Features of the framework are incrementally introduced by enhancing this function
 	// on a per example basis.
 	BuildScene();
+
+	if (true) {
+		pHmd = new XGLHmd(this, preferredWidth, preferredHeight);
+		useHmd = true;
+		preferredSwapInterval = 0;
+	}
 }
 
 void ExampleXGL::Reshape(int w, int h) {
@@ -115,5 +128,12 @@ void ExampleXGL::Reshape(int w, int h) {
 }
 
 bool ExampleXGL::Display() {
-	return XGL::Display();
+	if (pHmd)
+		return pHmd->Loop();
+	else
+		return XGL::Display();
+}
+
+ExampleXGL::~ExampleXGL() {
+	delete pHmd;
 }

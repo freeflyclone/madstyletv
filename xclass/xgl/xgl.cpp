@@ -155,10 +155,12 @@ XGL::~XGL(){
 }
 
 void XGL::RenderScene(XGLShapesMap *shapes) {
-	// set the projection,view,orthoProjection matrices in the matrix UBO
-	shaderMatrix.view = camera.GetViewMatrix();
-	shaderMatrix.projection = projector.GetProjectionMatrix();
-	shaderMatrix.orthoProjection = projector.GetOrthoMatrix();
+	if (!useHmd) {
+		// set the projection,view,orthoProjection matrices in the matrix UBO
+		shaderMatrix.view = camera.GetViewMatrix();
+		shaderMatrix.projection = projector.GetProjectionMatrix();
+		shaderMatrix.orthoProjection = projector.GetOrthoMatrix();
+	}
 
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(shaderMatrix), (GLvoid *)&shaderMatrix, GL_DYNAMIC_DRAW);
 	GL_CHECK("glBufferData() failed");
@@ -179,26 +181,6 @@ void XGL::RenderScene(XGLShapesMap *shapes) {
     }
 }
 
-void XGL::RenderSceneOVR(XGLShapesMap *shapes) {
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(shaderMatrix), (GLvoid *)&shaderMatrix, GL_DYNAMIC_DRAW);
-	GL_CHECK("glBufferData() failed");
-
-	for (auto const perShader : *shapes) {
-		const XGLShader *shader = shaderMap[perShader.first];
-
-		shader->Use();
-
-		glUniform3fv(glGetUniformLocation(shader->programId, "cameraPosition"), 1, (GLfloat*)glm::value_ptr(camera.pos));
-		GL_CHECK("glUniform3fv() failed");
-
-		for (auto const shape : *(perShader.second))
-			if (shape->isVisible)
-				shape->Render();
-
-		shader->UnUse();
-	}
-}
-
 void XGL::Animate() {
 	camera.Animate();
 
@@ -212,7 +194,7 @@ void XGL::Animate() {
 	clock += 1.0f;
 }
 
-void XGL::Display(){
+bool XGL::Display(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	GL_CHECK("glClear() failed");
 
@@ -235,31 +217,9 @@ void XGL::Display(){
 
 	if (pb)
 		pb->Render();
-}
 
-void XGL::DisplayOVR(){
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	GL_CHECK("glClear() failed");
-
-	glBindBufferBase(GL_UNIFORM_BUFFER, 0, matrixUbo);
-	GL_CHECK("glBindBuffer() failed");
-
-	// render the world
-	for (auto shapes : shapeLayers)
-		RenderSceneOVR(shapes);
-
-	// render the GUI
-	if (renderGui) {
-		glDisable(GL_DEPTH_TEST);
-		RenderSceneOVR(&guiShapes);
-		glEnable(GL_DEPTH_TEST);
-	}
-
-	if (fb)
-		fb->Render(projector.width, projector.height);
-
-	if (pb)
-		pb->Render();
+	// always return shouldQuit = false
+	return false;
 }
 
 XGLShape* XGL::CreateShape(XGLShapesMap *shapes, std::string shName, XGLNewShapeLambda fn){
