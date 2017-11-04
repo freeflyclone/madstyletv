@@ -6,8 +6,14 @@
 #include "physx-xgl.h"
 
 XGLSphere *sphere;
+XGLSled *hmdSled;
 
-void ExampleXGL::BuildScene() {}
+void ExampleXGL::BuildScene() {
+	// Create a cockpit that can be flown in the world, put it in layer 2 to override world object rendering
+	// (Turns out the layers hack only works between top level shapes right now)
+	AddShape("shaders/000-simple", [&]() { hmdSled = new XGLSled(); return hmdSled; }, 2);
+	hmdSled->SetName("HmdSled", false);
+}
 
 void PhysXXGL::BuildScene() {
 
