@@ -121,6 +121,8 @@ public:
 	virtual void RenderScene(XGLShapesMap *);
 	virtual void Idle() {};
 
+	void InitHmd();
+
 	void AddPreRenderFunction(AnimationFn fn) { preRenderFunctions.push_back(fn); }
 	void AddPostRenderFunction(AnimationFn fn) { postRenderFunctions.push_back(fn); }
 
