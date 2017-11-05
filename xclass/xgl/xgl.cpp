@@ -194,7 +194,19 @@ void XGL::Animate() {
 	clock += 1.0f;
 }
 
+void XGL::PreRender() {
+	for (auto fn : preRenderFunctions)
+		fn(clock);
+}
+
+void XGL::PostRender() {
+	for (auto fn : postRenderFunctions)
+		fn(clock);
+}
+
 bool XGL::Display(){
+	PreRender();
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	GL_CHECK("glClear() failed");
 
@@ -217,6 +229,8 @@ bool XGL::Display(){
 
 	if (pb)
 		pb->Render();
+
+	PostRender();
 
 	// always return shouldQuit = false
 	return false;

@@ -92,7 +92,11 @@ typedef std::map<std::string, XGLShapeList *> XGLShapesMap;
 // such as sky box, transparency, and others as yet unconceived.
 typedef std::vector<XGLShapesMap*> XGLShapeLayers;
 
-	// write code to set these before creating XGL instance, for XGLException messages
+// Global definition of animate function, and vector thereof
+typedef std::function<void(float)> AnimationFn;
+typedef std::vector<AnimationFn> AnimationFunctions;
+
+// write code to set these before creating XGL instance, for XGLException messages
 // and to locate assets (ie: shaders) in the local filesystem
 extern std::string currentWorkingDir;
 extern std::string pathToAssets;
@@ -108,10 +112,16 @@ public:
 
     virtual ~XGL();
 
+	void PreRender();
+	void PostRender();
+
 	virtual void Animate();
 	virtual bool Display();
 	virtual void RenderScene(XGLShapesMap *);
 	virtual void Idle() {};
+
+	void AddPreRenderFunction(AnimationFn fn) { preRenderFunctions.push_back(fn); }
+	void AddPostRenderFunction(AnimationFn fn) { postRenderFunctions.push_back(fn); }
 
 	XGLShape* CreateShape(XGLShapesMap *s, std::string shaderName, XGLNewShapeLambda fn);
 	XGLShape* CreateShape(std::string shaderName, XGLNewShapeLambda fn, int layer = defaultLayer);
@@ -177,6 +187,8 @@ private:
 	GLuint matrixUbo, lightUbo;
 	bool renderGui;
 	XGLGuiManager *guiManager;
+	AnimationFunctions preRenderFunctions;
+	AnimationFunctions postRenderFunctions;
 };
 
 #endif // XGL_H
