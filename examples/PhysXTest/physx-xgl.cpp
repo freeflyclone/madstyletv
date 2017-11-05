@@ -1,30 +1,11 @@
 #include "physx-xgl.h"
-#include "xglhmd.h"
-XGLHmd *pHmd;
 
 PhysXXGL::PhysXXGL() : dynamicsSerialNumber(-1), activeActor(NULL), mouseSphere(NULL), mouseJoint(NULL) {
 	xprintf("PhysXXGL::PhysXXGL()\n");
 
 	initPhysics(true);
 
-	// change the default configuration so the HMD will work.
-	preferredWidth = 1080;
-	preferredHeight = 600;
-
 	BuildScene();
-
-	if (true) {
-		pHmd = new XGLHmd(this, preferredWidth, preferredHeight);
-		useHmd = true;
-		preferredSwapInterval = 0;
-	}
-}
-
-bool ExampleXGL::Display() {
-	if (pHmd)
-		return pHmd->Loop();
-	else
-		return XGL::Display();
 }
 
 void PhysXXGL::initPhysics(bool interactive)

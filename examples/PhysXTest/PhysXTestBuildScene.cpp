@@ -6,36 +6,8 @@
 #include "physx-xgl.h"
 
 XGLSphere *sphere;
-XGLSled *hmdSled;
 
 void ExampleXGL::BuildScene() {
-	// Create a cockpit that can be flown in the world, put it in layer 2 to override world object rendering
-	// (Turns out the layers hack only works between top level shapes right now)
-	AddShape("shaders/000-simple", [&]() { hmdSled = new XGLSled(); return hmdSled; }, 2);
-	hmdSled->SetName("HmdSled", false);
-
-	// move forward
-	AddProportionalFunc("LeftIndexTrigger", [this](float v) {
-		glm::vec4 forward = glm::toMat4(hmdSled->o) * glm::vec4(0.0, v / 10.0f, 0.0, 0.0);
-		hmdSled->p += glm::vec3(forward);
-		hmdSled->model = hmdSled->GetFinalMatrix();
-	});
-
-	// move backward
-	AddProportionalFunc("LeftHandTrigger", [this](float v) {
-		glm::vec4 backward = glm::toMat4(hmdSled->o) * glm::vec4(0.0, -v / 10.0f, 0.0, 0.0);
-		hmdSled->p += glm::vec3(backward);
-		hmdSled->model = hmdSled->GetFinalMatrix();
-	});
-
-	// yaw (rudder)
-	AddProportionalFunc("LeftThumbStick.x", [this](float v) { hmdSled->SampleInput(-v, 0.0f, 0.0f); });
-
-	// pitch (elevator)
-	AddProportionalFunc("RightThumbStick.y", [this](float v) { hmdSled->SampleInput(0.0f, -v, 0.0f); });
-
-	// roll (ailerons)
-	AddProportionalFunc("RightThumbStick.x", [this](float v) { hmdSled->SampleInput(0.0f, 0.0f, v); });
 }
 
 void PhysXXGL::BuildScene() {
