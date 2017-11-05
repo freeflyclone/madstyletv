@@ -1,4 +1,8 @@
 #include "ExampleXGL.h"
+#include "xglhmd.h"
+
+XGLHmd *pHmd = nullptr;
+XGLSled *hmdSled;
 
 // TODO:  I don't think I need to initialize "wc" this way if I'm using
 // lambda functions for the world cursor.  Will investigate.
@@ -100,9 +104,46 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	// Features of the framework are incrementally introduced by enhancing this function
 	// on a per example basis.
 	BuildScene();
-}
 
-ExampleXGL::~ExampleXGL() {}
+	// set the following to 'true' to enable Oculus Rift with cockpit flight controls on Touch Controllers.
+	if (false) {
+		// Create a cockpit that can be flown in the world, put it in layer 2 to override world object rendering
+		// (Turns out the layers hack only works between top level shapes right now)
+		AddShape("shaders/000-simple", [&]() { hmdSled = new XGLSled(); return hmdSled; }, 2);
+		hmdSled->SetName("HmdSled", false);
+
+		// move forward
+		AddProportionalFunc("LeftIndexTrigger", [this](float v) {
+			glm::vec4 forward = glm::toMat4(hmdSled->o) * glm::vec4(0.0, v / 10.0f, 0.0, 0.0);
+			hmdSled->p += glm::vec3(forward);
+			hmdSled->model = hmdSled->GetFinalMatrix();
+		});
+
+		// move backward
+		AddProportionalFunc("LeftHandTrigger", [this](float v) {
+			glm::vec4 backward = glm::toMat4(hmdSled->o) * glm::vec4(0.0, -v / 10.0f, 0.0, 0.0);
+			hmdSled->p += glm::vec3(backward);
+			hmdSled->model = hmdSled->GetFinalMatrix();
+		});
+
+		// yaw (rudder)
+		AddProportionalFunc("LeftThumbStick.x", [this](float v) { hmdSled->SampleInput(-v, 0.0f, 0.0f); });
+
+		// pitch (elevator)
+		AddProportionalFunc("RightThumbStick.y", [this](float v) { hmdSled->SampleInput(0.0f, -v, 0.0f); });
+
+		// roll (ailerons)
+		AddProportionalFunc("RightThumbStick.x", [this](float v) { hmdSled->SampleInput(0.0f, 0.0f, v); });
+
+		// change the default configuration so the HMD will work.
+		preferredWidth = 1080;
+		preferredHeight = 600;
+
+		pHmd = new XGLHmd(this, preferredWidth, preferredHeight);
+		useHmd = true;
+		preferredSwapInterval = 0;
+	}
+}
 
 void ExampleXGL::Reshape(int w, int h) {
 	try {
@@ -117,5 +158,13 @@ void ExampleXGL::Reshape(int w, int h) {
 }
 
 bool ExampleXGL::Display() {
-	return XGL::Display();
+	if (pHmd)
+		return pHmd->Loop();
+	else
+		return XGL::Display();
+}
+
+ExampleXGL::~ExampleXGL() {
+	if (pHmd)
+		delete pHmd;
 }

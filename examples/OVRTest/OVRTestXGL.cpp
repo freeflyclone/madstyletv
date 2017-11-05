@@ -8,10 +8,6 @@ XGLHmd *pHmd = nullptr;
 ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	XGLShape *shape;
 
-	// change the default configuration so the HMD will work.
-	preferredWidth = 1080;
-	preferredHeight = 600;
-
 	// add 2D shapes to the guiShapes list.
 	BuildGUI();
 
@@ -109,6 +105,10 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	BuildScene();
 
 	if (true) {
+		// change the default configuration so the HMD will work.
+		preferredWidth = 1080;
+		preferredHeight = 600;
+
 		pHmd = new XGLHmd(this, preferredWidth, preferredHeight);
 		useHmd = true;
 		preferredSwapInterval = 0;
