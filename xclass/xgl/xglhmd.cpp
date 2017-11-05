@@ -89,12 +89,55 @@ void XGLHmd::TrackTouchThumbStick(ovrHandType which) {
 }
 
 void XGLHmd::TrackTouchButtons() {
+	static bool aState = false;
+	static bool bState = false;
+	static bool xState = false;
+	static bool yState = false;
 	static bool enterState = false;
 
-	if (inputState.Buttons & ovrButton_A) {}
-	if (inputState.Buttons & ovrButton_B) {}
-	if (inputState.Buttons & ovrButton_X) {}
-	if (inputState.Buttons & ovrButton_Y) {}
+	if (inputState.Buttons & ovrButton_A) {
+		if (!aState) {
+			pXgl->KeyEvent(1, 0);
+			aState = true;
+		}
+	}
+	else if (aState){
+		pXgl->KeyEvent(1, 0x8000);
+		aState = false;
+	}
+
+	if (inputState.Buttons & ovrButton_B) {
+		if (!bState) {
+			pXgl->KeyEvent(2, 0);
+			bState = true;
+		}
+	}
+	else if (bState){
+		pXgl->KeyEvent(2, 0x8000);
+		bState = false;
+	}
+
+	if (inputState.Buttons & ovrButton_X) {
+		if (!xState) {
+			pXgl->KeyEvent(3, 0);
+			xState = true;
+		}
+	}
+	else if (xState){
+		pXgl->KeyEvent(3, 0x8000);
+		xState = false;
+	}
+
+	if (inputState.Buttons & ovrButton_Y) {
+		if (!yState) {
+			pXgl->KeyEvent(4, 0);
+			yState = true;
+		}
+	}
+	else if (yState) {
+		pXgl->KeyEvent(3, 0x8000);
+		yState = false;
+	}
 
 	// if the left controller button is down...
 	if (inputState.Buttons & ovrButton_Enter) {

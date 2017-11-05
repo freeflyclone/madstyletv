@@ -128,7 +128,11 @@ void PhysXXGL::createStack(const physx::PxTransform& t, physx::PxU32 size, physx
 
 void PhysXXGL::stepPhysics(bool interactive) {
 	PX_UNUSED(interactive);
-	mScene->simulate(1.0f / 60.0f);
+	if (useHmd)
+		mScene->simulate(1.0f / 90.0f);
+	else
+		mScene->simulate(1.0f / 60.0f);
+
 	mScene->fetchResults(true);
 }
 void PhysXXGL::RenderActors(physx::PxRigidActor** actors, const physx::PxU32 numActors, bool shadows, const physx::PxVec3 & color) {
