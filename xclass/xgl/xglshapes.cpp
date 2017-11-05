@@ -24,6 +24,8 @@ void XGLShape::SetAnimationFunction(XGLShape::AnimationFn fn){
 }
 
 void XGLShape::Animate(float clock){
+	XGLShape::clock = clock;
+
 	if (animationFunction)
 		animationFunction(clock);
 
@@ -58,7 +60,16 @@ void XGLShape::Render(glm::mat4 modelChain) {
 		XGLBuffer::Bind();
 		XGLMaterial::Bind(shader->programId);
 	}
+
+	if (isVisible)
+		if (preRenderFunction)
+			preRenderFunction(clock);
+
 	Draw();
+
+	if (isVisible)
+		if (postRenderFunction)
+			postRenderFunction(clock);
 
 	if (v.size()>0)
 		Unbind();
