@@ -80,6 +80,7 @@
 #include "xglpixelbuffer.h"
 #include "xglshapes.h"
 #include "xglgui.h"
+#include "xglhmd.h"
 
 // want to reference XGLShader by it's name, so use std::map for that
 typedef std::map<std::string, XGLShader *> XGLShaderMap;
@@ -180,6 +181,8 @@ public:
 	int preferredWidth, preferredHeight;
 	bool useHmd;
 	int preferredSwapInterval;
+	XGLSled *hmdSled;
+	XGLHmd *pHmd;
 
 private:
     // this is returned by GetShader().  Use of GetShader() feels funky, like my structure design blows chunks.

@@ -1,8 +1,6 @@
 #include "physx-xgl.h"
 
 PhysXXGL::PhysXXGL() : dynamicsSerialNumber(-1), activeActor(NULL), mouseSphere(NULL), mouseJoint(NULL) {
-	xprintf("PhysXXGL::PhysXXGL()\n");
-
 	initPhysics(true);
 
 	BuildScene();

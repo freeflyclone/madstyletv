@@ -1,8 +1,4 @@
 #include "ExampleXGL.h"
-#include "xglhmd.h"
-
-XGLHmd *pHmd = nullptr;
-XGLSled *hmdSled;
 
 // TODO:  I don't think I need to initialize "wc" this way if I'm using
 // lambda functions for the world cursor.  Will investigate.
@@ -122,6 +118,12 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 		// move backward
 		AddProportionalFunc("LeftHandTrigger", [this](float v) {
 			glm::vec4 backward = glm::toMat4(hmdSled->o) * glm::vec4(0.0, -v / 10.0f, 0.0, 0.0);
+			hmdSled->p += glm::vec3(backward);
+			hmdSled->model = hmdSled->GetFinalMatrix();
+		});
+
+		AddProportionalFunc("LeftThumbStick.y", [this](float v) {
+			glm::vec4 backward = glm::toMat4(hmdSled->o) * glm::vec4(0.0, v / 10.0f, 0.0, 0.0);
 			hmdSled->p += glm::vec3(backward);
 			hmdSled->model = hmdSled->GetFinalMatrix();
 		});

@@ -35,7 +35,9 @@ XGL::XGL() : clock(0.0f), pb(NULL), fb(NULL), renderGui(false), guiManager(nullp
 preferredWidth(1280),
 preferredHeight(720),
 useHmd(false),
-preferredSwapInterval(1)
+preferredSwapInterval(1),
+pHmd(nullptr),
+hmdSled(nullptr)
 {
 	SetName("XGL");
 	xprintf("OpenGL version: %s\n", glGetString(GL_VERSION));

@@ -1,3 +1,4 @@
+#include "xgl.h"
 #include "xglhmd.h"
 
 XGLHmd::XGLHmd(XGL *p, int w, int h) :
