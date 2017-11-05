@@ -70,12 +70,15 @@ void PhysXXGL::initPhysics(bool interactive)
 	std::string shaderName = "shaders/specular";
 	AddShape(shaderName, [&]() { renderer = new PhysxRenderer(this); return renderer; });
 	renderer->Init(GetShader(shaderName));
+	/* 
+	// Doing this here will result in this being called once for each eye if HMD, which we don't want 
 	renderer->SetAnimationFunction([this](float clock) {
 		if (clock > renderer->prevClock) {
 			stepPhysics(true);
 			renderer->prevClock = clock;
 		}
 	});
+	*/
 
 	//if(false)
 	for (int i = -20; i < 20; i += 5) {
