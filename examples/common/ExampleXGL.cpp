@@ -115,3 +115,7 @@ void ExampleXGL::Reshape(int w, int h) {
 		xprintf("Well that didn't work: %s\n", e.what());
 	}
 }
+
+bool ExampleXGL::Display() {
+	return XGL::Display();
+}

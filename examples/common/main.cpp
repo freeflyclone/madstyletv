@@ -196,6 +196,7 @@ int main(void) {
 
 	try {
 		exgl = new ExampleXGL();
+		enumerate_joysticks();
 		exgl->GetPreferredWindowSize(&width, &height);
 		glfwSetWindowSize(window, width, height);
 		glfwSwapInterval(exgl->GetPreferredSwapInterval());
