@@ -102,7 +102,7 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	BuildScene();
 
 	// set the following to 'true' to enable Oculus Rift with cockpit flight controls on Touch Controllers.
-	if (true)
+	if (false)
 		InitHmd();
 }
 
