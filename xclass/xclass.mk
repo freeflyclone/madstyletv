@@ -28,6 +28,7 @@ CXXFLAGS +=-std=c++14\
 	-I${THIRDPARTYDIR}/ftdi/include \
 	-I${THIRDPARTYDIR}/ftdi/include/linux \
 	-I${THIRDPARTYDIR}/mosquitto/lib \
+	-I${THIRDPARTYDIR}/OculusSDK/LibOVR/Include \
 	-I${XCLASSDIR} \
 	-I/usr/include/AL \
 	-I/usr/local/include/AL \
