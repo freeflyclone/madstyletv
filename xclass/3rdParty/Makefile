@@ -10,13 +10,16 @@ OPENAL=$(shell ls openal-soft 2>/dev/null)
 OPENCV=$(shell ls opencv 2>/dev/null)
 MOSQUITTO=$(shell ls mosquitto 2>/dev/null)
 MAVLINK=$(shell ls mavlink/c_library_v1 2>/dev/null)
+OPENCV=$(shell ls opencv 2>/dev/null)
+LIBOVR=$(shell ls OculusSDK 2>/dev/null)
 
-all: mavlink mosquitto openal opencv
+all: mavlink mosquitto openal opencv libovr
 
 clean:
 	@echo making 'clean' in 3rdParty
 	@rm -rf openal-soft/build/*
 	@-(cd mosquitto && make clean)
+	@-(cd OculusSDK/LibOVR/Projects/Linux && make clean)
 	#@(if [ -d opencv/build ] ; then cd opencv/build ; make clean ; fi)
 
 .PHONY: mavlink
@@ -62,3 +65,8 @@ endif
 		make -j 12; \
 		sudo make install ; \
 	fi)
+
+.PHONY: libovr
+libovr:
+	(cd OculusSDK/LibOVR/Projects/Linux ; make -j12)
+
