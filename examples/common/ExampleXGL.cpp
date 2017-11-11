@@ -1,5 +1,7 @@
 #include "ExampleXGL.h"
 
+const bool initHmd = false;
+
 // TODO:  I don't think I need to initialize "wc" this way if I'm using
 // lambda functions for the world cursor.  Will investigate.
 ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
@@ -102,7 +104,7 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	BuildScene();
 
 	// set the following to 'true' to enable Oculus Rift with cockpit flight controls on Touch Controllers.
-	if (true)
+	if (initHmd)
 		InitHmd();
 }
 

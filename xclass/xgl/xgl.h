@@ -49,6 +49,8 @@
 #include <sstream>
 #include <fstream>
 #include <stdexcept>
+#include <random>
+#include <iostream>
 #include <functional>
 #include <vector>
 #include <cmath>

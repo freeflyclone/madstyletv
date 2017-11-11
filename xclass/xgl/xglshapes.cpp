@@ -780,3 +780,23 @@ void XGLSled::SampleInput(float yaw, float pitch, float roll) {
 	model = GetFinalMatrix();
 }
 
+XGLPointCloud::XGLPointCloud(int nPoints, float radius, XGLColor color, XGLVertex center) {
+	SetName("XGLPointCloud");
+
+	std::random_device rd;  //Will be used to obtain a seed for the random number engine
+	std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+	std::uniform_real_distribution<> dis(0.0, radius);
+
+	for (int i = 0; i < nPoints; i++) {
+		XGLVertex vrtx;
+		vrtx.x = dis(gen);
+		vrtx.y = dis(gen);
+		vrtx.z = dis(gen);
+		v.push_back({ vrtx, {}, {}, color });
+	}
+}
+
+void XGLPointCloud::Draw(){
+	glDrawArrays(GL_POINTS, 0, GLsizei(v.size()));
+	GL_CHECK("glDrawPoints() failed");
+}
