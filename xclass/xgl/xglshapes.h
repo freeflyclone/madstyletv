@@ -16,6 +16,7 @@
 class XGLShape : public XGLObject , public XGLBuffer, public XGLMaterial {
 public:
     typedef std::function<void(float)> AnimationFn;
+	typedef std::function<void()> DrawFn;
 
     XGLShape();
     virtual ~XGLShape();
@@ -174,6 +175,7 @@ class XGLPointCloud : public XGLShape {
 public:
 	XGLPointCloud(int nPoints = 1024, float radius = 5.0f, XGLColor color = { 1.0, 1.0, 1.0, 1.0 }, XGLVertex center = { 0.0, 0.0, 0.0 });
 	void Draw();
+	DrawFn drawFn;
 };
 
 #endif // XGLSHAPES_H

@@ -780,7 +780,7 @@ void XGLSled::SampleInput(float yaw, float pitch, float roll) {
 	model = GetFinalMatrix();
 }
 
-XGLPointCloud::XGLPointCloud(int nPoints, float radius, XGLColor color, XGLVertex center) {
+XGLPointCloud::XGLPointCloud(int nPoints, float radius, XGLColor color, XGLVertex center) : drawFn(nullptr) {
 	SetName("XGLPointCloud");
 
 	std::random_device rd;  //Will be used to obtain a seed for the random number engine
@@ -797,6 +797,10 @@ XGLPointCloud::XGLPointCloud(int nPoints, float radius, XGLColor color, XGLVerte
 }
 
 void XGLPointCloud::Draw(){
-	glDrawArrays(GL_POINTS, 0, GLsizei(v.size()));
-	GL_CHECK("glDrawPoints() failed");
+	if (!drawFn) {
+		glDrawArrays(GL_POINTS, 0, GLsizei(v.size()));
+		GL_CHECK("glDrawPoints() failed");
+	}
+	else
+		drawFn();
 }

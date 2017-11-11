@@ -30,15 +30,20 @@
     <ClCompile Include="ComputeShaderGUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Particles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\shaders\uniforms.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Particles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\shaders\compute-shader">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\shaders\csdraw.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\shaders\csdraw.frag">
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\..\shaders\000-simple.frag">
@@ -47,49 +52,20 @@
     <None Include="..\..\shaders\000-simple.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\shaders\gui.frag">
+    <None Include="..\..\shaders\diffuse.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\shaders\gui.vert">
+    <None Include="..\..\shaders\diffuse.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\shaders\gui-tex.frag">
+    <None Include="..\..\shaders\particle-system">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\shaders\gui-tex.vert">
+    <None Include="..\..\shaders\000-simple2.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\shaders\ortho.frag">
+    <None Include="..\..\shaders\000-simple2.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\shaders\ortho.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\shaders\ortho-tex.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\shaders\ortho-tex.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\shaders\ortho-rgb.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\shaders\ortho-rgb.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\shaders\particles.comp">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\shaders\render-glsl.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\shaders\render-glsl.vert">
-      <Filter>Shaders</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\shaders\uniforms.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

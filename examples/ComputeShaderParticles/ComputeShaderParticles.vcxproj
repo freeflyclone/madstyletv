@@ -175,29 +175,21 @@
     <ClCompile Include="..\common\main.cpp" />
     <ClCompile Include="ComputeShaderGUI.cpp" />
     <ClCompile Include="ComputeShaderParticlesBuildScene.cpp" />
+    <ClCompile Include="Particles.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\shaders\uniforms.h" />
+    <ClInclude Include="Particles.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\shaders\000-simple.frag" />
     <None Include="..\..\shaders\000-simple.vert" />
+    <None Include="..\..\shaders\000-simple2.frag" />
+    <None Include="..\..\shaders\000-simple2.vert" />
     <None Include="..\..\shaders\compute-shader" />
-    <None Include="..\..\shaders\csdraw.frag" />
-    <None Include="..\..\shaders\csdraw.vert" />
-    <None Include="..\..\shaders\gui-tex.frag" />
-    <None Include="..\..\shaders\gui-tex.vert" />
-    <None Include="..\..\shaders\gui.frag" />
-    <None Include="..\..\shaders\gui.vert" />
-    <None Include="..\..\shaders\ortho-rgb.frag" />
-    <None Include="..\..\shaders\ortho-rgb.vert" />
-    <None Include="..\..\shaders\ortho-tex.frag" />
-    <None Include="..\..\shaders\ortho-tex.vert" />
-    <None Include="..\..\shaders\ortho.frag" />
-    <None Include="..\..\shaders\ortho.vert" />
-    <None Include="..\..\shaders\particles.comp" />
-    <None Include="..\..\shaders\render-glsl.frag" />
-    <None Include="..\..\shaders\render-glsl.vert" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\shaders\uniforms.h" />
+    <None Include="..\..\shaders\diffuse.frag" />
+    <None Include="..\..\shaders\diffuse.vert" />
+    <None Include="..\..\shaders\particle-system" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
