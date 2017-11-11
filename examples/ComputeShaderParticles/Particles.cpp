@@ -1,7 +1,102 @@
 #include "Particles.h"
 
-GLuint createNoiseTexture4f3D(int w = 16, int h = 16, int d = 16, GLint internalFormat = GL_RGBA8_SNORM)
-{
+XGLParticleSystem::XGLParticleSystem(int n) {
+	SetName("XGLParticleSystem");
+
+	std::random_device rd;  //Will be used to obtain a seed for the random number engine
+	std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+	std::uniform_real_distribution<> dis(0.0, 10.0);
+
+	for (int i = 0; i < n; i++) {
+		VertexAttributes vrtx;
+		vrtx.pos.x = dis(gen);
+		vrtx.pos.y = dis(gen);
+		vrtx.pos.z = dis(gen);
+		vrtx.pos.w = 1.0f;
+		vrtx.color = { 1.0, 1.0, 1.0, 1.0 };
+		verts.push_back(vrtx);
+	}
+
+	// v.size() must be non-zero else XGLShape::Render(glm::mat4) won't do all the things,
+	// specifically, it won't setup the model matrix, call XGLBuffer::Bind() or XGLMaterial::Bind()
+	// which are all necessary for rendering in the XGL framework.  So adding one point to
+	// the default XGLVertexAttributes buffer for this shape  gets us what we need.
+	// It ignored because we're about to override it with what comes next.
+	v.push_back({});
+
+	// Override the default XGLVertexAttributes list for this shape.
+
+	// Using a custom vertex array object allows for non-XGLVertexAttributes standard VBO layout
+	glGenVertexArrays(1, &vao);
+	GL_CHECK("glGenBuffers() failed");
+	glBindVertexArray(vao);
+	GL_CHECK("glBindVertexArray() failed");
+
+	// custom VBO for now - (possibly reuse XGLBuffer::vbo?)
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+	// define the VBO layout we're using for this object
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(VertexAttributes), 0);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexAttributes), (void *)16);
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(VertexAttributes), (void *)32);
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(VertexAttributes), (void *)48);
+
+	// custom VAO, so enable what we want enabled.
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
+
+	// 'size' (2nd) arg is in bytes!!
+	glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(VertexAttributes), verts.data(), GL_DYNAMIC_DRAW);
+
+	// unbind now that we're done. Perhaps (probably?) superfluous.
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	GL_CHECK("Oops, something bad happened");
+
+	// create a compute shader object for this XGLParticleSystem
+	computeShader = new XGLShader("shaders/particle-system");
+	computeShader->CompileCompute(pathToAssets + "/shaders/particle-system");
+
+	// Need to call AddPreRenderFunction() in XGL derived class (ExampleXGL::BuildScene) to add this lambda function to the its preRenderFunctions list
+	invokeComputeShader = [this](float clock) {
+		glUseProgram(computeShader->programId);
+
+		// This is the magic: nothing special about a VBO, it's just a buffer.
+		// So is a SSBO.  So just bind the VBO as an SSBO and now the compute shader
+		// can access it.  Of course the compute shader and vertex shader have to agree
+		// on the layout of the buffer, else mayhem ensues.
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, vbo);
+
+		// fire the compute shader
+		glDispatchCompute((GLuint)verts.size(), 1, 1);
+
+		// wait until the compute shader has completed before rendering it's results
+		glMemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
+		GL_CHECK("Dispatch compute shader");
+	};
+}
+
+void XGLParticleSystem::Draw() {
+	glPointSize(2.0f);
+
+	// have to bind our custom VAO here, else we get XGLBuffer::vao, which is NOT what we want
+	glBindVertexArray(vao);
+	GL_CHECK("glBindVertexArray() failed");
+
+	// need our custom VBO bound as well
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	GL_CHECK("glBindBuffer() failed");
+
+	// draw custom VBO per custom VAO layout
+	glDrawArrays(GL_POINTS, 0, (GLuint)verts.size());
+	GL_CHECK("glDrawArrays() failed");
+}
+
+GLuint createNoiseTexture4f3D(int w = 16, int h = 16, int d = 16, GLint internalFormat = GL_RGBA8_SNORM) {
 	uint8_t *data = new uint8_t[w*h*d * 4];
 	uint8_t *ptr = data;
 	for (int z = 0; z<d; z++) {
@@ -38,72 +133,4 @@ GLuint createNoiseTexture4f3D(int w = 16, int h = 16, int d = 16, GLint internal
 
 	delete[] data;
 	return tex;
-}
-
-XGLParticleSystem::XGLParticleSystem(int n) : XGLPointCloud(0) {
-	SetName("XGLParticleSystem");
-
-	std::random_device rd;  //Will be used to obtain a seed for the random number engine
-	std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-	std::uniform_real_distribution<> dis(0.0, 10.0);
-
-	VertexAttributes vrtx;
-	for (int i = 0; i < n; i++) {
-		vrtx.pos.x = dis(gen);
-		vrtx.pos.y = dis(gen);
-		vrtx.pos.z = dis(gen);
-		vrtx.pos.w = 1.0f;
-		vrtx.color = { 1.0, 1.0, 1.0, 1.0 };
-		verts.push_back(vrtx);
-	}
-
-	// v.size() must be non-zero else XGLShape::Render(glm::mat4) won't do all the things
-	v.push_back({});
-
-	// Using a custom vertex array object allows for non-XGLVertexAttributes standard VBO layout
-	glGenVertexArrays(1, &vao);
-	GL_CHECK("glGenBuffers() failed");
-	glBindVertexArray(vao);
-	GL_CHECK("glBindVertexArray() failed");
-
-	// custom VBO for now - (possibly reuse XGLBuffer::vbo?)
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-	// define the VBO layout we're using for this object
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(VertexAttributes), 0);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexAttributes), (void *)16);
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(VertexAttributes), (void *)32);
-	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(VertexAttributes), (void *)48);
-
-	// custom VAO, so enable what we want enabled.
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-	glEnableVertexAttribArray(3);
-
-	// 'size' (2nd) arg is in bytes!!
-	glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(VertexAttributes), verts.data(), GL_DYNAMIC_DRAW);
-
-	// unbind now that we're done.
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-	GL_CHECK("Oops, something bad happened");
-}
-
-void XGLParticleSystem::Draw() {
-	glPointSize(4.0f);
-
-	// have to bind our custom VAO here, else we get XGLBuffer::vao, which is NOT what we want
-	glBindVertexArray(vao);
-	GL_CHECK("glBindVertexArray() failed");
-
-	// need our custom VBO bound as well
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	GL_CHECK("glBindBuffer() failed");
-
-	// draw custom VBO per custom VAO layout
-	glDrawArrays(GL_POINTS, 0, (GLuint)verts.size());
-	GL_CHECK("glDrawArrays() failed");
 }
