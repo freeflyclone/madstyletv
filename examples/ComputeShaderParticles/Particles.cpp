@@ -55,6 +55,8 @@ XGLParticleSystem::XGLParticleSystem(int n) {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
+	CreateNoiseTexture4f3D();
+
 	GL_CHECK("Oops, something bad happened");
 
 	// create a compute shader object for this XGLParticleSystem
@@ -96,7 +98,7 @@ void XGLParticleSystem::Draw() {
 	GL_CHECK("glDrawArrays() failed");
 }
 
-GLuint createNoiseTexture4f3D(int w = 16, int h = 16, int d = 16, GLint internalFormat = GL_RGBA8_SNORM) {
+GLuint XGLParticleSystem::CreateNoiseTexture4f3D(int w, int h, int d, GLint internalFormat) {
 	uint8_t *data = new uint8_t[w*h*d * 4];
 	uint8_t *ptr = data;
 	for (int z = 0; z<d; z++) {
@@ -110,7 +112,6 @@ GLuint createNoiseTexture4f3D(int w = 16, int h = 16, int d = 16, GLint internal
 		}
 	}
 
-	GLuint tex;
 	glGenTextures(1, &tex);
 	GL_CHECK("glGenTextues() failed");
 	glBindTexture(GL_TEXTURE_3D, tex);

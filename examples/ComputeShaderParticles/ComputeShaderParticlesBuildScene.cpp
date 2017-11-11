@@ -14,6 +14,6 @@ XGLParticleSystem *pParticles;
 void ExampleXGL::BuildScene() {
 	AddShape("shaders/000-simple2", [&]() { pParticles = new XGLParticleSystem(numParticles); return pParticles; });
 
-	if (false)
+	if (true)
 		AddPreRenderFunction(pParticles->invokeComputeShader);
 }

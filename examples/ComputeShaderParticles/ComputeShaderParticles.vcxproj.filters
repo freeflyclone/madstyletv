@@ -67,5 +67,8 @@
     <None Include="..\..\shaders\000-simple2.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\shaders\particles.comp">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
