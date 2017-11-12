@@ -10,7 +10,7 @@ class XGLParticleSystem : public XGLShape {
 public:
 	struct VertexAttributes {
 		glm::vec4 pos;
-		glm::vec4 tex;
+		glm::vec4 vel;
 		glm::vec4 norm;
 		glm::vec4 color;
 	};
@@ -27,5 +27,9 @@ public:
 	GLuint vbo,vao;
 	GLuint tex;
 	XGLShader *computeShader;
+	int numParticles;
+	int maxInvocations;
+	int sx, sy, sz;
+	int cx, cy, cz;
 };
 

@@ -2,7 +2,7 @@
 
 struct VertexData {
   vec4 pos;
-  vec4 tex;
+  vec4 vel;
   vec4 norm;
   vec4 color;
 };
@@ -11,12 +11,35 @@ layout (std140, binding = 1) buffer VertexBuffer {
 	VertexData verts[];
 };
 
-layout (local_size_x = 1024, local_size_y = 1, local_size_z = 1) in;
+layout (local_size_x = 1000, local_size_y = 1, local_size_z = 1) in;
+
+vec3 attract(vec3 p, vec3 p2) {
+    const float softeningSquared = 0.01;
+    vec3 v = p2 - p;
+    float r2 = dot(v, v);
+    r2 += softeningSquared;
+    float invDist = 1.0f / sqrt(r2);
+    float invDistCubed = invDist*invDist*invDist;
+    return v * invDistCubed;
+}
 
 void main() {
 	uint idx = gl_GlobalInvocationID.x;
+	vec3 pos = verts[idx].pos.xyz;
+	vec3 vel = verts[idx].vel.xyz;
+	float foo = 0.00001;
+	vec4 attractor1 = vec4(-20.0, 0.0, 0.0, foo);
+	vec4 attractor2 = vec4(0.0, 20.0, 0.0, foo);
+	vec4 attractor3 = vec4(0.0, 0.0, 20.0, foo);
+	vec4 attractor4 = vec4(20.0, 0.0, 20.0, foo);
 
-	verts[idx].pos.x = 0;
-	verts[idx].pos.y = 0;
-	verts[idx].pos.z = 0;
+	vel += attract(pos, attractor1.xyz) * attractor1.w;
+	vel += attract(pos, attractor2.xyz) * attractor2.w;
+	vel += attract(pos, attractor3.xyz) * attractor3.w;
+	vel += attract(pos, attractor4.xyz) * attractor4.w;
+
+	pos += vel;
+
+	verts[idx].pos = vec4(pos, 1.0);
+	verts[idx].vel = vec4(vel, 1.0);
 }

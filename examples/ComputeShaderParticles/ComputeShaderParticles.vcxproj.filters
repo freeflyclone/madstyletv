@@ -70,5 +70,11 @@
     <None Include="..\..\shaders\particles.comp">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\shaders\tex.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\tex.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
