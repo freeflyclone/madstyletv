@@ -1,21 +1,42 @@
 /**************************************************************
-** Example03: demonstrate instantiation of a "ground"
-** plane and multiple toruses with a lighting shader,
-** transformations, animation functions, and child object
-** chains
+** ExampleSpring: Simple spring dynamics simulation
 **************************************************************/
 #include "ExampleXGL.h"
 
-// this needs to be file scope at least.  Local (to ::BuildScene) doesn't work
+class Spring {
+public:
+	Spring(XGLVertex p1, XGLVertex p2) : p1(p1), p2(p2) {};
 
-// resting length;
-float length{ 10.0f };
-float k{ 0.1f };
-float f{};
-float m{ 4 };
-float v{};
+	void Integrate() {
+		// get current displacement of ball2 from resting length of spring 
+		float d = p2.x - (p1.x + length);
 
-float initialLength{20.0f};
+		// calculate spring force: displacement * mass
+		f = k * d * m;
+
+		// add friction force (damping)
+		f -= v * 0.01;
+
+		// accumulate calculated force in velocity
+		v += f;
+
+		p2.x -= v * 0.01;
+	}
+
+	XGLVertex P2() { return p2; };
+
+private:
+	XGLVertex p1, p2;
+
+	// resting length;
+	float length { 10.0f };
+	float k{ 0.1f };
+	float f{};
+	float m{ 4 };
+	float v{};
+};
+
+Spring *spring;
 
 void ExampleXGL::BuildScene() {
 	XGLSphere *ball1, *ball2;
@@ -30,31 +51,10 @@ void ExampleXGL::BuildScene() {
 	ball2->model = glm::translate(glm::mat4(), glm::vec3(10, 0, 0));
 	ball2->p = { 10.0f, 0.0f, 0.0f };
 
-	ball2->SetAnimationFunction([ball1, ball2](float clock) {
-		static float oldClock = 0.0f;
-		// animation functions are being called twice per loop for unknown reasons. FIX IT!!
-		if (oldClock != clock) {
-			oldClock = clock;
+	spring = new Spring(ball1->p, ball2->p);
 
-			// ball1 doesn't move, ball2 does
-			{
-				// get current displacement of ball2 from resting length of spring 
-				float d = ball2->p.x - (ball1->p.x + length);
-
-				// calculate spring force: displacement * mass
-				f = k * d * m;
-
-				// add friction force (damping)
-				f -= v*0.01;
-
-				// accumulate calculated force in velocity
-				v += f;
-
-				// 
-				ball2->p.x -= v * 0.01;
-
-				ball2->model = glm::translate(glm::mat4(), ball2->p);
-			}
-		}
+	ball2->SetAnimationFunction([ball2](float clock) {
+		spring->Integrate();
+		ball2->model = glm::translate(glm::mat4(), spring->P2());
 	});
 }
