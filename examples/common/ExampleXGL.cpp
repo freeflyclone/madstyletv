@@ -122,9 +122,11 @@ void ExampleXGL::Reshape(int w, int h) {
 }
 
 bool ExampleXGL::Display() {
+#ifndef LINUX
 	if (pHmd)
 		return pHmd->Loop();
 	else
+#endif
 		return XGL::Display();
 }
 

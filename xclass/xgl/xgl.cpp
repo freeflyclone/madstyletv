@@ -156,6 +156,9 @@ XGL::~XGL(){
 		delete shaderMapEntry.second;
 }
 void XGL::InitHmd()	{
+#ifdef LINUX
+	return;
+#else
 	// Create a cockpit that can be flown in the world, put it in layer 2 to override world object rendering
 	// (Turns out the layers hack only works between top level shapes right now)
 	AddShape("shaders/000-simple", [&]() { hmdSled = new XGLSled(); return hmdSled; }, 2);
@@ -184,6 +187,7 @@ void XGL::InitHmd()	{
 	pHmd = new XGLHmd(this, preferredWidth, preferredHeight);
 	useHmd = true;
 	preferredSwapInterval = 0;
+#endif
 }
 
 

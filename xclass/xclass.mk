@@ -34,6 +34,7 @@ CXXFLAGS +=-std=c++14\
 	-I/usr/local/include/AL \
 	-I${THIRDPARTYDIR}/openal-soft/include/AL \
 	-DNDEBUG \
+	-DLINUX \
 	-D_GNU_SOURCE=1 \
 	-DGLEW_STATIC \
 	-Wno-deprecated-declarations \
@@ -45,6 +46,7 @@ CFLAGS +=-std=c11 \
 	-I${XGLDIR} \
 	-I${XGLDIR}/glm \
 	-I${XCLASSDIR} \
+	-DLINUX \
 	-D_GNU_SOURCE=1 \
 	-DGLEW_STATIC \
 	-g
@@ -57,7 +59,7 @@ LDFLAGS +=\
 	-L/usr/local/lib \
 	-L/usr/lib/x86_64-linux-gnu
 
-LIBS =-lxclass -llibovr -lglfw3 -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXinerama -lXcursor -lpthread -lexpat -lfreetype -lmosquitto
+LIBS =-lxclass -lglfw3 -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXinerama -lXcursor -lpthread -lexpat -lfreetype -lmosquitto
 
 #------------------------------------------------------------------------
 # if ffmpeg development libraries are installed, uncomment the following

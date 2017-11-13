@@ -24,7 +24,6 @@ CPPSOURCES=\
 	${XGLDIR}/xglfont.cpp \
 	${XGLDIR}/xglframebuffer.cpp \
 	${XGLDIR}/xglgui.cpp \
-	${XGLDIR}/xglhmd.cpp \
 	${XGLDIR}/xgllight.cpp \
 	${XGLDIR}/xglmaterial.cpp \
 	${XGLDIR}/xglprojector.cpp \

@@ -98,6 +98,14 @@ void ExampleXGL::BuildScene() {
 		if (isDown && !isRepeat)
 			ball1->p.x += bump;
 	});
+	AddKeyFunc('L', [&](int key, int flags) {
+		const bool isDown = (flags & 0x8000) == 0;
+		const bool isRepeat = (flags & 0x4000) != 0;
+		
+		if (isDown && !isRepeat)
+			ball1->p.x += bump;
+	});
+
 	AddKeyFunc(2, [&](int key, int flags) {
 		const bool isDown = (flags & 0x8000) == 0;
 		const bool isRepeat = (flags & 0x4000) != 0;
@@ -105,6 +113,14 @@ void ExampleXGL::BuildScene() {
 		if (isDown && !isRepeat)
 			ball1->p.x -= bump;
 	});
+	AddKeyFunc('H', [&](int key, int flags) {
+		const bool isDown = (flags & 0x8000) == 0;
+		const bool isRepeat = (flags & 0x4000) != 0;
+
+		if (isDown && !isRepeat)
+			ball1->p.x -= bump;
+	});
+
 	AddKeyFunc(3, [&](int key, int flags) {
 		const bool isDown = (flags & 0x8000) == 0;
 		const bool isRepeat = (flags & 0x4000) != 0;
@@ -112,7 +128,22 @@ void ExampleXGL::BuildScene() {
 		if (isDown && !isRepeat)
 			ball4->p.z += bump;
 	});
+	AddKeyFunc('K', [&](int key, int flags) {
+		const bool isDown = (flags & 0x8000) == 0;
+		const bool isRepeat = (flags & 0x4000) != 0;
+
+		if (isDown && !isRepeat)
+			ball4->p.z += bump;
+	});
+
 	AddKeyFunc(4, [&](int key, int flags) {
+		const bool isDown = (flags & 0x8000) == 0;
+		const bool isRepeat = (flags & 0x4000) != 0;
+
+		if (isDown && !isRepeat)
+			ball4->p.z -= bump;
+	});
+	AddKeyFunc('J', [&](int key, int flags) {
 		const bool isDown = (flags & 0x8000) == 0;
 		const bool isRepeat = (flags & 0x4000) != 0;
 
