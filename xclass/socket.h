@@ -23,7 +23,9 @@ extern "C" {
 //#include <arpa/net.h>
 #define SOCKET int
 #define SOCKADDR_IN struct sockaddr_in
+#ifndef MAX_PATH
 #define MAX_PATH 256
+#endif
 #endif
 
 int SocketsSetup();

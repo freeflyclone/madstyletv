@@ -16,6 +16,10 @@ using namespace OVR;
 #endif
 #define OVR_OFFSETOF(class_, member_) offsetof(class_, member_)
 
+#ifndef UNREFERENCED_PARAMETER
+#define UNREFERENCED_PARAMETER(x)
+#endif
+
 struct DepthBuffer
 {
 	GLuint        texId;
