@@ -1,6 +1,7 @@
 #include "ExampleXGL.h"
 
-const bool initHmd = false;
+// change to global from const, so it can be changed on a per-project basis
+bool initHmd = false;
 
 // TODO:  I don't think I need to initialize "wc" this way if I'm using
 // lambda functions for the world cursor.  Will investigate.
