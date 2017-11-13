@@ -1,5 +1,4 @@
 #include "ExampleXGL.h"
-#include <filesystem>
 
 void ExampleXGL::BuildGUI() {
 	XGLGuiManager *gm;
