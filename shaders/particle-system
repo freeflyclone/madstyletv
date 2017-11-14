@@ -15,11 +15,23 @@ layout (local_size_x = 1000, local_size_y = 1, local_size_z = 1) in;
 
 vec3 attract(vec3 p, vec3 p2) {
     const float softeningSquared = 0.01;
+
+	// get the displacement of the particle from the attractor
     vec3 v = p2 - p;
+
+	// square of the length
     float r2 = dot(v, v);
+
+	// "softened" just a bit
     r2 += softeningSquared;
+
+	// inverse of distance
     float invDist = 1.0f / sqrt(r2);
+
+	// inverse of distance cubed
     float invDistCubed = invDist*invDist*invDist;
+
+	// return the amount of change to the velocity
     return v * invDistCubed;
 }
 
