@@ -5,6 +5,8 @@
 
 class XPhyBody {
 public:
+	void SetMatrix();
+
 	XPhyMass m;
 	XPhyPoint p;
 	XPhyVelocity v;
