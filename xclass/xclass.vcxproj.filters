@@ -49,6 +49,15 @@
     <Filter Include="xal\Header Files">
       <UniqueIdentifier>{9033637e-c032-4bd4-b443-9f41f75082e7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="xphy">
+      <UniqueIdentifier>{98f13312-67ac-4e04-b9ce-7a051ee16315}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="xphy\Header Files">
+      <UniqueIdentifier>{1e4b55b8-b702-4636-8ae4-4cad96f34ee2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="xphy\Source Files">
+      <UniqueIdentifier>{b98d8333-ee70-4626-b6b2-85fa2392fab4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -216,6 +225,12 @@
     <ClInclude Include="xgl\GLAppUtil.h">
       <Filter>xgl\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xphy\xphybody.h">
+      <Filter>xphy\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xphy\xphy.h">
+      <Filter>xphy\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xgl\xglbuffer.cpp">
@@ -331,6 +346,9 @@
     </ClCompile>
     <ClCompile Include="xgl\xglhmd.cpp">
       <Filter>xgl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xphy\xphybody.cpp">
+      <Filter>xphy\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

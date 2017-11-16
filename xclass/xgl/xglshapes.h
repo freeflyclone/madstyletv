@@ -12,8 +12,9 @@
 #include "xglbuffer.h"
 #include "xglshader.h"
 #include "xglmaterial.h"
+#include "xphybody.h"
 
-class XGLShape : public XGLObject , public XGLBuffer, public XGLMaterial {
+class XGLShape : public XGLObject , public XGLBuffer, public XGLMaterial, public XPhyBody {
 public:
     typedef std::function<void(float)> AnimationFn;
 	typedef std::function<void()> DrawFn;
@@ -39,10 +40,7 @@ public:
 	AnimationFn preRenderFunction;
 	AnimationFn postRenderFunction;
 
-	glm::mat4 model;
-
-	XGLVertex p;
-	XGLOrientation o;
+	//glm::mat4 model;
 
 	bool isVisible;
 };

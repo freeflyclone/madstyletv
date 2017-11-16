@@ -258,6 +258,8 @@
     <ClInclude Include="xmavlink.h" />
     <ClInclude Include="xmqtt.h" />
     <ClInclude Include="xobject.h" />
+    <ClInclude Include="xphy\xphy.h" />
+    <ClInclude Include="xphy\xphybody.h" />
     <ClInclude Include="xshmem.h" />
     <ClInclude Include="xthread.h" />
     <ClInclude Include="xtimer.h" />
@@ -300,6 +302,7 @@
     <ClCompile Include="xmavlink.cpp" />
     <ClCompile Include="xmqtt.cpp" />
     <ClCompile Include="xobject.cpp" />
+    <ClCompile Include="xphy\xphybody.cpp" />
     <ClCompile Include="xshmem.cpp" />
     <ClCompile Include="xuart.cpp" />
     <ClCompile Include="xuartascii.cpp" />
