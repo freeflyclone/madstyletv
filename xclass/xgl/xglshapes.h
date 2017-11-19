@@ -76,9 +76,10 @@ public:
     XGLSphere(float r, int n);
     void Draw();
 
+	float radius; 
+
 private:
     int nSegments;
-    float radius;
 	bool visualizeNormals;
 };
 
@@ -88,9 +89,10 @@ public:
 	virtual ~XGLCapsule();
 	virtual void Draw();
 
+	float length, radius;
+
 private:
 	int nSegments;
-	float length, radius;
 };
 
 class XGLSphere2 : public XGLShape {
