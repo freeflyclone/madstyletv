@@ -234,6 +234,81 @@ void XGLSphere::Draw() {
 }
 
 
+XGLHemiSphere::XGLHemiSphere(float r, int n) : radius(r), nSegments(n - (n & 1)), visualizeNormals(false) {
+	SetName("XGLSphere");
+	int i, j;
+	float twoPi = (2 * (float)PI);
+	XGLVertexAttributes vrtx;
+	int halfSeg = nSegments >> 2;
+	int halfSegPlus = halfSeg + 1;
+	int loopSegments = nSegments;
+
+	for (j = 0; j <loopSegments; j++) {
+		for (i = 0; i < halfSegPlus; i++) {
+			float angle = (float)i * twoPi / (float)nSegments;
+			float angle2 = (float)j * twoPi / (float)nSegments;
+
+			float x = sin(angle)*cos(angle2) * radius;
+			float y = cos(angle) * radius;
+			float z = (sin(angle)*sin(angle2)) * radius;
+
+			vrtx.t = { 0.099*x+0.5f, 0.099*z+0.5f };
+			vrtx.v = { x, y, z };
+			vrtx.c = XGLColors::white;
+			vrtx.n = { x / radius, y / radius, z / radius };
+
+			v.push_back(vrtx);
+		}
+	}
+
+	int nVerts = (int)v.size();
+
+	if (true) {
+		j = 0;
+		int count = (loopSegments - 2);
+		for (j = 0; j < count; j++) {
+			for (int i = 0; i < halfSegPlus; i++) {
+				idx.push_back((j*halfSegPlus) + i);
+				idx.push_back(((j + 1)*halfSegPlus) + i);
+			}
+
+			for (int i = 1; i < halfSegPlus; i++) {
+				idx.push_back(((j + 2)*halfSegPlus) + halfSegPlus - i);
+				idx.push_back(((j + 1)*halfSegPlus) + halfSegPlus - i);
+			}
+		}
+		for (int i = 0; i < halfSegPlus; i++) {
+			idx.push_back(((j + 1)*halfSegPlus) + i);
+			idx.push_back(i);
+		}
+
+		if (visualizeNormals) {
+			for (i = 0; i < nVerts; i++) {
+				XGLVertexAttributes nVrtx = v[i];
+				vrtx = nVrtx;
+				vrtx.v /= radius;
+				vrtx.v *= 2;
+
+				nVrtx.v.x += vrtx.v.x;
+				nVrtx.v.y += vrtx.v.y;
+				nVrtx.v.z += vrtx.v.z;
+
+				v.push_back(nVrtx);
+			}
+			for (i = 0; i < nVerts; i++) {
+				idx.push_back(i%nVerts);
+				idx.push_back((i%nVerts) + nVerts);
+			}
+		}
+	}
+}
+
+void XGLHemiSphere::Draw() {
+	glDrawArrays(GL_POINTS, 0, GLsizei(v.size()));
+	glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
+	GL_CHECK("glDrawElements() failed");
+}
+
 // draw 2 hemispheres, joined by a cylinder, centered about the origin, along the X axis
 // (This is how PhysX likes it)
 XGLCapsule::XGLCapsule(float r, float l, int n) : radius(r), length(l), nSegments(n) {

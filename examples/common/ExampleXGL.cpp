@@ -97,6 +97,21 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 		}
 	});
 
+	XInputKeyFunc renderMod = [&](int key, int flags) {
+		const bool isDown = (flags & 0x8000) == 0;
+		const bool isRepeat = (flags & 0x4000) != 0;
+		static bool wireFrameMode = false;
+
+		if (isDown && !isRepeat){
+			wireFrameMode = wireFrameMode ? false : true;
+			glPolygonMode(GL_FRONT_AND_BACK, wireFrameMode ? GL_LINE : GL_FILL);
+			GL_CHECK("glPolygonMode() failed.");
+		}
+	};
+
+	AddKeyFunc('M', renderMod);
+	AddKeyFunc('m', renderMod);
+
 	// add a default "ground" plane grid.
 	AddShape("shaders/000-simple", [&](){ shape = new XYPlaneGrid(); return shape; });
 

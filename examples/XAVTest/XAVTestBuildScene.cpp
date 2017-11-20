@@ -13,8 +13,10 @@
 
 #include <iostream>
 
-#define VIDEO_WIDTH 3840
-#define VIDEO_HEIGHT 2160
+extern bool initHmd;
+
+#define VIDEO_WIDTH 2704
+#define VIDEO_HEIGHT 2624
 #define VIDEO_CHANNELS 3
 
 typedef struct {
@@ -72,11 +74,13 @@ public:
 				//			do {
 				//				sinceLast += timer.SinceLast();
 				//			} while (sinceLast < 0.016);
+				/*
 				xprintf("Video buffered: %d, %c frame,", stream->nFramesDecoded - stream->nFramesRead, "UIPB"[stream->pFrame->pict_type]);
 				if (stream->pFrame->pkt_pts != stream->pFrame->pkt_dts)
 					xprintf(" pts: %d, dts: %d\n", stream->pFrame->pkt_pts, stream->pFrame->pkt_dts);
 				else
 					xprintf("\n");
+				*/
 			}
 			xprintf("VideoStreamThread done.\n");
 		}
@@ -186,6 +190,13 @@ namespace {
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
+	initHmd = true;
+	// Initialize the Camera matrix
+	glm::vec3 cameraPosition(5, -20, 20);
+	glm::vec3 cameraDirection = glm::normalize(cameraPosition*-1.0f);
+	glm::vec3 cameraUp = { 0, 0, 1 };
+	camera.Set(cameraPosition, cameraDirection, cameraUp);
+
 	// build a full path including "pathToAssets", unless it's a url that starts with "http"
 	std::string videoUrl = config.WideToBytes(config.Find(L"VideoFile")->AsString());
 	std::string videoPath;
@@ -194,53 +205,57 @@ void ExampleXGL::BuildScene() {
 	else
 		videoPath = pathToAssets + "/" + videoUrl;
 
-	AddShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
-	shape->attributes.diffuseColor = { 0.025, 0.025, 0.025, 1 };
-	shape->SetAnimationFunction([shape](float clock) {
-		float translateFunction = sin(clock / 60.0f);
-		glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(translateFunction*4.0f, 0.0f, 0.0f));
-		glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 40.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-		shape->model = translate * rotate;
-	});
+	if (false){
+		AddShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
+		shape->attributes.diffuseColor = { 0.025, 0.025, 0.025, 1 };
+		shape->SetAnimationFunction([shape](float clock) {
+			float translateFunction = sin(clock / 60.0f);
+			glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(translateFunction*4.0f, 0.0f, 0.0f));
+			glm::mat4 rotate = glm::rotate(glm::mat4(), clock / 40.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+			shape->model = translate * rotate;
+		});
+	}
 
-	AddShape("shaders/yuv", [&](){ shape = new XGLTexQuad(VIDEO_WIDTH,VIDEO_HEIGHT,1); return shape; });
-	shape->AddTexture(VIDEO_WIDTH/2, VIDEO_HEIGHT/2, 1);
-	shape->AddTexture(VIDEO_WIDTH/2, VIDEO_HEIGHT/2, 1);
+	AddShape("shaders/yuv", [&](){ shape = new XGLHemiSphere(5.0f, 256); return shape; });
+	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0.0f, 5.0f, 0.0f));
+	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(180.f), glm::vec3(0.0f, 0.0f, 1.0f));
+	shape->model = translate * rotate;
 
-	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
-	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 4.0f, 5.625f));
-	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	shape->model = translate * rotate * scale;
+	bool doVideo = true;
+	if (doVideo) {
+		AddShape("shaders/yuv", [&](){ shape = new XGLTexQuad(VIDEO_WIDTH, VIDEO_HEIGHT, 1); return shape; });
+		shape->AddTexture(VIDEO_WIDTH / 2, VIDEO_HEIGHT / 2, 1);
+		shape->AddTexture(VIDEO_WIDTH / 2, VIDEO_HEIGHT / 2, 1);
 
-	shape->SetAnimationFunction([shape](float clock) {
-		if (pavp != NULL && pavp->IsRunning() && (ib.width != 0)) {
-			glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit0"), 0);
-			glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit1"), 1);
-			glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit2"), 2);
+		glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(0.00001f, 0.00001f, 0.00001f));
+		glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 2.624f));
+		glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		shape->model = translate * rotate * scale;
 
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, shape->texIds[0]);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.width, ib.height, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)ib.y);
-			GL_CHECK("glGetTexImage() didn't work");
+		shape->SetAnimationFunction([shape](float clock) {
+			if (pavp != NULL && pavp->IsRunning() && (ib.width != 0)) {
+				glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit0"), 0);
+				glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit1"), 1);
+				glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit2"), 2);
 
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, shape->texIds[1]);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.chromaWidth, ib.chromaHeight, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)ib.u);
-			GL_CHECK("glGetTexImage() didn't work");
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, shape->texIds[0]);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.width, ib.height, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)ib.y);
+				GL_CHECK("glGetTexImage() didn't work");
 
-			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, shape->texIds[2]);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.chromaWidth, ib.chromaHeight, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)ib.v);
-			GL_CHECK("glGetTexImage() didn't work");
-		}
-	});
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, shape->texIds[1]);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.chromaWidth, ib.chromaHeight, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)ib.u);
+				GL_CHECK("glGetTexImage() didn't work");
 
-	// Initialize the Camera matrix
-	glm::vec3 cameraPosition(5, -20, 20);
-	glm::vec3 cameraDirection = glm::normalize(cameraPosition*-1.0f);
-	glm::vec3 cameraUp = { 0, 0, 1 };
-	camera.Set(cameraPosition, cameraDirection, cameraUp);
+				glActiveTexture(GL_TEXTURE2);
+				glBindTexture(GL_TEXTURE_2D, shape->texIds[2]);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.chromaWidth, ib.chromaHeight, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)ib.v);
+				GL_CHECK("glGetTexImage() didn't work");
+			}
+		});
 
-	pavp = new AVPlayer(videoPath);
-	pavp->Start();
+		pavp = new AVPlayer(videoPath);
+		pavp->Start();
+	}
 }

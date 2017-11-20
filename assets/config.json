@@ -2,7 +2,7 @@
 	"AssetFolder" : "assets",
 	"ShaderFolder" : "shaders",
 	"SharedMemory" : false,
-	"VideoFile" : "assets/CulturalPhenomenon.mp4",
+	"VideoFile" : "assets/GuruFront.mp4",
 	"Encoder" : {
 		"enabled" : false,
 		"preset" : "faster",

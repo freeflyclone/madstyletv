@@ -83,6 +83,17 @@ private:
 	bool visualizeNormals;
 };
 
+class XGLHemiSphere : public XGLShape {
+public:
+	XGLHemiSphere(float r, int n);
+	void Draw();
+
+	float radius;
+
+private:
+	int nSegments;
+	bool visualizeNormals;
+};
 class XGLCapsule : public XGLShape {
 public:
 	XGLCapsule(float, float, int);

@@ -44,5 +44,8 @@
     <None Include="..\..\shaders\yuv.frag">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\assets\config.json">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
