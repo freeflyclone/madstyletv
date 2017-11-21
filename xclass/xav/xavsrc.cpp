@@ -4,47 +4,45 @@ XAVStream::XAVStream(AVCodecContext *ctx) : freeBuffs(numFrames), pStream(NULL),
 	pCodecCtx = ctx;
 
 	pCodec=avcodec_find_decoder(pCodecCtx->codec_id);
-	if(pCodec==NULL)
-		throwXAVException("codec not found");
+	if (pCodec) {
+		if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0)
+			throwXAVException("Failed to open codec");
 
-	if( avcodec_open2(pCodecCtx, pCodec,NULL) < 0 )
-		throwXAVException("Failed to open codec");
+		pFrame = av_frame_alloc();
+		if (!pFrame)
+			throwXAVException("error allocating getting AVFrame\n");
 
-	pFrame = av_frame_alloc();
-	if (!pFrame)
-		throwXAVException("error allocating getting AVFrame\n");
+		if (pCodecCtx->codec_type == AVMEDIA_TYPE_VIDEO) {
+			xprintf("Found AVMEDIA_TYPE_VIDEO\n");
+			xprintf("               width: %d\n", pCodecCtx->width);
+			xprintf("              height: %d\n", pCodecCtx->height);
+			numBytes = av_image_get_buffer_size(pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height, 8);
 
-	if (pCodecCtx->codec_type == AVMEDIA_TYPE_VIDEO) {
-		xprintf("Found AVMEDIA_TYPE_VIDEO\n");
-		xprintf("               width: %d\n", pCodecCtx->width);
-		xprintf("              height: %d\n", pCodecCtx->height);
-		numBytes = av_image_get_buffer_size(pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height,8);
+			AllocateBufferPool(numFrames, numBytes, 3);
+			width = pCodecCtx->width;
+			height = pCodecCtx->height;
 
-		AllocateBufferPool(numFrames, numBytes, 3);
-		width = pCodecCtx->width;
-		height = pCodecCtx->height;
+			// figure out the chroma sub-sampling of the pixel format
+			int pixelFormat = pCodecCtx->pix_fmt;
+			const AVPixFmtDescriptor *pixDesc = av_pix_fmt_desc_get((AVPixelFormat)pixelFormat);
 
-		// figure out the chroma sub-sampling of the pixel format
-		int pixelFormat = pCodecCtx->pix_fmt;
-		const AVPixFmtDescriptor *pixDesc = av_pix_fmt_desc_get((AVPixelFormat)pixelFormat);
+			// save it so our clients can know
+			chromaWidth = pCodecCtx->width / (1 << pixDesc->log2_chroma_w);
+			chromaHeight = pCodecCtx->height / (1 << pixDesc->log2_chroma_h);
+		}
+		else if (pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO) {
+			xprintf("Found AVMEDIA_TYPE_AUDIO\n");
+			xprintf("  Samples Per Second: %d\n", pCodecCtx->sample_rate);
+			xprintf("        SampleFormat: %d\n", pCodecCtx->sample_fmt);
+			xprintf("          BlockAlign: %d\n", pCodecCtx->block_align);
+			xprintf("            Channels: %d\n", pCodecCtx->channels);
 
-		// save it so our clients can know
-		chromaWidth = pCodecCtx->width / (1 << pixDesc->log2_chroma_w);
-		chromaHeight = pCodecCtx->height / (1 << pixDesc->log2_chroma_h);
-	}
-	else if (pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO) {
-		xprintf("Found AVMEDIA_TYPE_AUDIO\n");
-		xprintf("  Samples Per Second: %d\n", pCodecCtx->sample_rate);
-		xprintf("        SampleFormat: %d\n", pCodecCtx->sample_fmt);
-		xprintf("          BlockAlign: %d\n", pCodecCtx->block_align);
-		xprintf("            Channels: %d\n", pCodecCtx->channels);
+			channels = pCodecCtx->channels;
+			formatSize = 0;
+			isFloat = false;
+			sampleRate = pCodecCtx->sample_rate;
 
-		channels = pCodecCtx->channels;
-		formatSize = 0;
-		isFloat = false;
-		sampleRate = pCodecCtx->sample_rate;
-
-		switch (pCodecCtx->sample_fmt) {
+			switch (pCodecCtx->sample_fmt) {
 			case 8:
 				formatSize = 4;
 				isFloat = true;
@@ -52,14 +50,18 @@ XAVStream::XAVStream(AVCodecContext *ctx) : freeBuffs(numFrames), pStream(NULL),
 
 			default:
 				throwXAVException("unknown pCodecCtx->sampleFmt");
+			}
+			// defer AllocateBufferPool() until first audio frame is decoded
 		}
-		// defer AllocateBufferPool() until first audio frame is decoded
-	}
-	else
-		xprintf("Found unknown AVMEDIA_TYPE\n");
+		else
+			xprintf("Found unknown AVMEDIA_TYPE\n");
 
-	nFramesDecoded = 0;
-	nFramesRead = 0;
+		nFramesDecoded = 0;
+		nFramesRead = 0;
+	}
+	else {
+		xprintf("Cant find a codec for this ctx->codec_id: %d\n", ctx->codec_id);
+	}
 }
 
 void XAVStream::AllocateBufferPool(int number, int size, int channels) {
@@ -166,6 +168,9 @@ bool XAVStream::Decode(AVPacket *packet)
 			usedBuffs.notify();
 		}
 	}
+	else if (pCodecCtx->codec_type == AVMEDIA_TYPE_DATA) {
+		//xprintf("Data type\n");
+	}
 
 	return true;
 }
@@ -240,8 +245,16 @@ XAVSrc::XAVSrc(const std::string name, bool video=true, bool audio=true) :
 				}
 			}
 		}
-		else
-			xprintf("Unknown codec type: %d, id: %d\n", pFormatCtx->streams[i]->codec->codec_type, pFormatCtx->streams[i]->codec);
+		else {
+			AVCodecContext *ctx = pFormatCtx->streams[i]->codec;
+
+			std::shared_ptr<XAVStream> meta = std::make_shared<XAVStream>(ctx);
+			meta->pStream = pFormatCtx->streams[i];
+			meta->streamIdx = i;
+			mStreams.emplace_back(meta);
+			mUsedStreams++;
+			xprintf("Registered  codec type: %d, id: %X\n", pFormatCtx->streams[i]->codec->codec_type, pFormatCtx->streams[i]->id);
+		}
 	}
 	xprintf("XAVSrc::XAVSrc() complete, %s video, %s audio\n", (mVideoStream == NULL) ? "does not have" : "has", (mAudioStream == NULL) ? "does not have" : "has");
 }

@@ -252,7 +252,7 @@ XGLHemiSphere::XGLHemiSphere(float r, int n) : radius(r), nSegments(n - (n & 1))
 			float y = cos(angle) * radius;
 			float z = (sin(angle)*sin(angle2)) * radius;
 
-			vrtx.t = { 0.099*x+0.5f, 0.099*z+0.5f };
+			vrtx.t = { (0.5f * x+0.5f), (0.5f * z + 0.5f) };
 			vrtx.v = { x, y, z };
 			vrtx.c = XGLColors::white;
 			vrtx.n = { x / radius, y / radius, z / radius };

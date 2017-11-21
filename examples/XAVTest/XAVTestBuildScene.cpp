@@ -190,7 +190,8 @@ namespace {
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
-	initHmd = true;
+	//initHmd = true;
+
 	// Initialize the Camera matrix
 	glm::vec3 cameraPosition(5, -20, 20);
 	glm::vec3 cameraDirection = glm::normalize(cameraPosition*-1.0f);
@@ -216,10 +217,11 @@ void ExampleXGL::BuildScene() {
 		});
 	}
 
-	AddShape("shaders/yuv", [&](){ shape = new XGLHemiSphere(5.0f, 256); return shape; });
-	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0.0f, 5.0f, 0.0f));
+	AddShape("shaders/yuv", [&](){ shape = new XGLHemiSphere(1.0f, 256); return shape; });
+	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(180.f), glm::vec3(0.0f, 0.0f, 1.0f));
-	shape->model = translate * rotate;
+	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(20.0f, 20.0f, 20.0f));
+	shape->model = translate * scale * rotate;
 
 	bool doVideo = true;
 	if (doVideo) {

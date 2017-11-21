@@ -201,12 +201,7 @@ int main(void) {
 		glfwSetWindowSize(window, width, height);
 		glfwSwapInterval(exgl->GetPreferredSwapInterval());
 		exgl->Reshape(width, height);
-	}
-	catch (std::runtime_error e) {
-		printf("Exception: %s\n", e.what());
-	}
 
-	try {
 		bool shouldQuit = false;
 		while (!glfwWindowShouldClose(window) && !shouldQuit) {
 			glfwPollEvents();
