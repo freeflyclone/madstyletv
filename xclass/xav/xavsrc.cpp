@@ -1,6 +1,13 @@
 #include "xavsrc.h"
 
-XAVStream::XAVStream(AVCodecContext *ctx) : freeBuffs(numFrames), pStream(NULL), streamIdx(0), streamTime(0.0), totalBytes(0) {
+XAVStream::XAVStream(AVCodecContext *ctx) : 
+	freeBuffs(numFrames), 
+	pStream(NULL), 
+	streamIdx(0), 
+	streamTime(0.0), 
+	totalChunks(0),
+	totalBytes(0) 
+{
 	pCodecCtx = ctx;
 
 	if (pCodecCtx) {
@@ -171,8 +178,7 @@ bool XAVStream::Decode(AVPacket *packet)
 	}
 	else {
 		auto p = packet;
-		if (p->size != 16)
-			xprintf("stream: %d, %d bytes\n", p->stream_index, p->size);
+		InvokeDataFunctions(p->data, p->size, p->pts);
 	}
 
 	return true;
@@ -253,6 +259,13 @@ XAVSrc::XAVSrc(const std::string name, bool video=true, bool audio=true) :
 
 			meta->pStream = pFormatCtx->streams[i];
 			meta->streamIdx = i;
+			meta->AddDataFunction([&,meta](uint8_t *b, size_t l, uint64_t t){
+				if (meta->totalBytes > (meta->totalChunks * 0x8000)) {
+					xprintf("Stream lambda: %d, %ld\n", meta->streamIdx, meta->totalBytes);
+					meta->totalChunks++;
+				}
+			});
+
 			mStreams.emplace_back(meta);
 			mUsedStreams++;
 			xprintf("Registered data stream id: %X\n", pFormatCtx->streams[i]->id);

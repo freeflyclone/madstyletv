@@ -29,6 +29,14 @@ extern "C" {
 #include "xthread.h"
 #include "xavexcept.h"
 
+class XAVStream;
+
+typedef std::shared_ptr<XAVStream> XAVStreamHandle;
+typedef std::vector<XAVStreamHandle> XAVStreamSet;
+
+typedef std::function<void(uint8_t*, size_t, uint64_t)> XAVDataFunction;
+typedef std::vector<XAVDataFunction> XAVDataFunctions;
+
 // Multimedia sources possibly have more than one "stream" (audio/video for ex.)
 class XAVStream
 {
@@ -51,6 +59,15 @@ public:
 
 	void Acquire();
 	void Release();
+
+	void AddDataFunction(XAVDataFunction fn) { dataFunctions.emplace_back(fn); }
+
+	void InvokeDataFunctions(uint8_t *data, size_t size, uint64_t time) {
+		for (auto fn : dataFunctions) {
+			fn(data, size, time);
+		}
+		totalBytes += size;
+	}
 
 	int nFramesDecoded;
 	int nFramesRead;
@@ -87,7 +104,8 @@ public:
 	XSemaphore freeBuffs;
 	XSemaphore usedBuffs;
 
-	int64_t totalBytes;
+	int64_t totalBytes, totalChunks;
+	XAVDataFunctions dataFunctions;
 };
 
 class XAVSrc : public XThread
@@ -107,9 +125,9 @@ public:
 	int mNumStreams;
 	int mUsedStreams;
 	AVPacket packet;
-	std::vector<std::shared_ptr<XAVStream> >mStreams;
-	std::shared_ptr<XAVStream> mVideoStream;
-	std::shared_ptr<XAVStream> mAudioStream;
+	XAVStreamSet mStreams;
+	XAVStreamHandle mVideoStream;
+	XAVStreamHandle mAudioStream;
 	std::string name;
 
 	bool doVideo, doAudio;

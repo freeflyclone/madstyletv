@@ -29,6 +29,23 @@ typedef struct {
 
 ImageBuff ib;
 
+class DataStreamThread : public XThread {
+public:
+	DataStreamThread(std::shared_ptr<XAVStream> s) : XThread("DataStreamThread"), stream(s) {}
+
+	void Run() {
+		int size;
+
+		while (IsRunning()) {
+			xprintf("DataStream: %d\n", stream->streamIdx);
+		}
+		xprintf("DataStreamThread done.\n");
+	}
+
+
+	std::shared_ptr<XAVStream> stream;
+};
+
 class VideoStreamThread : public XThread {
 public:
 	VideoStreamThread(std::shared_ptr<XAVStream> s) : XThread("VideoStreamThread"), stream(s) {
