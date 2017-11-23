@@ -68,9 +68,6 @@ XAVStream::XAVStream(AVCodecContext *ctx) :
 			nFramesRead = 0;
 		}
 	}
-	else {
-		AllocateBufferPool(numFrames, 0x8000, 1);
-	}
 }
 
 void XAVStream::AllocateBufferPool(int number, int size, int channels) {
@@ -255,17 +252,10 @@ XAVSrc::XAVSrc(const std::string name, bool video=true, bool audio=true) :
 			}
 		}
 		else {
-			std::shared_ptr<XAVStream> meta = std::make_shared<XAVStream>(nullptr);
+			XAVStreamHandle meta = std::make_shared<XAVStream>(nullptr);
 
 			meta->pStream = pFormatCtx->streams[i];
 			meta->streamIdx = i;
-			meta->AddDataFunction([&,meta](uint8_t *b, size_t l, uint64_t t){
-				if (meta->totalBytes > (meta->totalChunks * 0x8000)) {
-					xprintf("Stream lambda: %d, %ld\n", meta->streamIdx, meta->totalBytes);
-					meta->totalChunks++;
-				}
-			});
-
 			mStreams.emplace_back(meta);
 			mUsedStreams++;
 			xprintf("Registered data stream id: %X\n", pFormatCtx->streams[i]->id);

@@ -31,19 +31,31 @@ ImageBuff ib;
 
 class DataStreamThread : public XThread {
 public:
-	DataStreamThread(std::shared_ptr<XAVStream> s) : XThread("DataStreamThread"), stream(s) {}
+	const static size_t bufferSize = 0x8000;
 
-	void Run() {
-		int size;
-
-		while (IsRunning()) {
-			xprintf("DataStream: %d\n", stream->streamIdx);
-		}
-		xprintf("DataStreamThread done.\n");
+	DataStreamThread(XAVStreamHandle s) : XThread("DataStreamThread"), stream(s) {
+		pcb = new XCircularBuffer(bufferSize);
+		stream->AddDataFunction([&](uint8_t *b, size_t s, uint64_t t){
+			pcb->Write(b, s);
+		});
 	}
 
+	void Run() {
+		xprintf("DataStreamThread::Run(%d) - start\n",stream->streamIdx);
+		while (IsRunning()) {
+			int nRead = pcb->Read(tmpBuff, pcb->Count());
 
-	std::shared_ptr<XAVStream> stream;
+			if (nRead)
+				xprintf("Stream: %d, %d bytes, %d\n", stream->streamIdx, nRead, pcb->Count());
+			else
+				std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
+		}
+		xprintf("DataStreamThread::Run(%d) - ending\n", stream->streamIdx);
+	}
+
+	XAVStreamHandle stream;
+	uint8_t tmpBuff[bufferSize];
+	XCircularBuffer *pcb;
 };
 
 class VideoStreamThread : public XThread {
@@ -167,6 +179,9 @@ public:
 
 		if (hasAudio)
 			ast = new AudioStreamThread(xavSrc->mAudioStream);
+		
+		for (size_t i = 2; i < xavSrc->mStreams.size(); i++)
+			dataStreamThreads.emplace_back(new DataStreamThread(xavSrc->mStreams[i]));
 
 		xav.Start();
 	}
@@ -178,6 +193,9 @@ public:
 		if (hasVideo)
 			vst->Start();
 
+		for (auto dst : dataStreamThreads)
+			dst->Start();
+
 		while ( xav.IsRunning() && IsRunning() ) {
 			if (hasVideo && !vst->IsRunning())
 				break;
@@ -185,6 +203,9 @@ public:
 				break;
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
 		}
+
+		for (auto dst : dataStreamThreads)
+			dst->Stop();
 
 		if (hasVideo)
 			vst->Stop();
@@ -196,6 +217,8 @@ public:
 	XAV xav;
 	VideoStreamThread *vst;
 	AudioStreamThread *ast;
+
+	std::vector<DataStreamThread *> dataStreamThreads;
 	std::shared_ptr<XAVSrc> xavSrc;
 	bool hasVideo, hasAudio;
 };

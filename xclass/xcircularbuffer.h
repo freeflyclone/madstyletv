@@ -22,8 +22,8 @@
 
 class XCircularBuffer {
 public:
-	XCircularBuffer(int s) : size(s), rIdx(0), wIdx(0), emptyCount(s) {
-		if ((buff = new unsigned char[size]) == NULL)
+	XCircularBuffer(size_t s) : size(s), rIdx(0), wIdx(0), emptyCount((int)s) {
+		if ((buff = new uint8_t[size]) == NULL)
 			throw std::runtime_error("Circular::Circular(): Unable to allocate circular buffer");
 	}
 
@@ -32,39 +32,40 @@ public:
 			delete buff;
 	}
 
-	int Write(unsigned char *b, unsigned int n) {
-		while (n) {
-			emptyCount.wait_for(100);
+	size_t Write(uint8_t *b, size_t n) {
+		std::lock_guard<std::mutex> lock(mutexLock);
+
+		for(size_t i=0; i<n; i++) {
 			buff[wIdx&(size - 1)] = *b++;
 			wIdx++;
-			n--;
-			fullCount.notify();
 		}
+
 		return n;
 	}
 
-	int Read(unsigned char *b, unsigned int n) {
-		while (n) {
-			fullCount.wait_for(100);
+	size_t Read(uint8_t *b, size_t n) {
+		std::lock_guard<std::mutex> lock(mutexLock);
+		if (Count() < n)
+			n = Count();
+		for (int i = 0; i<n; i++) {
 			*b++ = buff[rIdx&(size - 1)];
 			rIdx++;
-			n--;
-			emptyCount.notify();
 		}
 		return n;
 	}
 
-	int Count() {
+	uint64_t Count() {
 		return int(wIdx - rIdx);
 	}
 
 private:
-	const int size;
-	unsigned char *buff;
+	size_t size;
+	uint8_t *buff;
 	std::atomic<std::uint64_t> rIdx;
 	std::atomic<std::uint64_t> wIdx;
 	XSemaphore emptyCount;
 	XSemaphore fullCount;
+	std::mutex mutexLock;
 };
 
 
