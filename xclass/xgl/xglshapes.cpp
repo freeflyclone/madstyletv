@@ -277,7 +277,7 @@ XGLHemiSphere::XGLHemiSphere(float r, int n) : radius(r), nSegments(n - (n & 1))
 				idx.push_back(((j + 1)*halfSegPlus) + halfSegPlus - i);
 			}
 		}
-		for (int i = 0; i < halfSegPlus; i++) {
+		for (i = 0; i < halfSegPlus; i++) {
 			idx.push_back(((j + 1)*halfSegPlus) + i);
 			idx.push_back(i);
 		}
