@@ -86,6 +86,8 @@ public:
 	int frameFinished;
 	XSemaphore freeBuffs;
 	XSemaphore usedBuffs;
+
+	int64_t totalBytes;
 };
 
 class XAVSrc : public XThread

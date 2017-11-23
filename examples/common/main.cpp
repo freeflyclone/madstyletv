@@ -215,6 +215,7 @@ int main(void) {
 	}
 	catch (std::runtime_error e) {
 		printf("Exception: %s\n", e.what());
+		xprintf("Exception: %s\n", e.what());
 	}
 
 	try {
@@ -223,6 +224,7 @@ int main(void) {
 	}
 	catch (std::runtime_error e) {
 		printf("Exception: %s\n", e.what());
+		xprintf("Exception: %s\n", e.what());
 	}
 
 	return 0;
