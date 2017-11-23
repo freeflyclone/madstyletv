@@ -22,14 +22,13 @@
 
 class XCircularBuffer {
 public:
-	XCircularBuffer(size_t s) : size(s), rIdx(0), wIdx(0), emptyCount((int)s) {
+	XCircularBuffer(size_t s) : size(s), rIdx(0), wIdx(0) {
 		if ((buff = new uint8_t[size]) == NULL)
-			throw std::runtime_error("Circular::Circular(): Unable to allocate circular buffer");
+			throw std::runtime_error("XCircularBuffer::XCircularBuffer(): Unable to allocate circular buffer");
 	}
 
 	~XCircularBuffer() {
-		if (buff)
-			delete buff;
+		delete buff;
 	}
 
 	size_t Write(uint8_t *b, size_t n) {
@@ -63,8 +62,6 @@ private:
 	uint8_t *buff;
 	std::atomic<std::uint64_t> rIdx;
 	std::atomic<std::uint64_t> wIdx;
-	XSemaphore emptyCount;
-	XSemaphore fullCount;
 	std::mutex mutexLock;
 };
 

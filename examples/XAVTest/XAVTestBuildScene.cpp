@@ -28,34 +28,42 @@ typedef struct {
 } ImageBuff;
 
 ImageBuff ib;
+static int dataStreamId = 0;
 
 class DataStreamThread : public XThread {
 public:
 	const static size_t bufferSize = 0x8000;
 
-	DataStreamThread(XAVStreamHandle s) : XThread("DataStreamThread"), stream(s) {
+	DataStreamThread(XAVStreamHandle s) : XThread("DataStreamThread"+std::to_string(dataStreamId++)), stream(s) {
 		pcb = new XCircularBuffer(bufferSize);
 		stream->AddDataFunction([&](uint8_t *b, size_t s, uint64_t t){
 			pcb->Write(b, s);
 		});
+		try{
+			f = fopen(Name().c_str(), "wb");
+		}
+		catch (std::runtime_error e) {
+			xprintf("Failed to open file %s: reason: %s\n", Name().c_str(), e.what());
+		}
 	}
 
 	void Run() {
-		xprintf("DataStreamThread::Run(%d) - start\n",stream->streamIdx);
 		while (IsRunning()) {
 			int nRead = pcb->Read(tmpBuff, pcb->Count());
-
-			if (nRead)
+			if (nRead) {
 				xprintf("Stream: %d, %d bytes, %d\n", stream->streamIdx, nRead, pcb->Count());
+				fwrite(tmpBuff, 1, nRead, f);
+				fflush(f);
+			}
 			else
 				std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
 		}
-		xprintf("DataStreamThread::Run(%d) - ending\n", stream->streamIdx);
 	}
 
 	XAVStreamHandle stream;
 	uint8_t tmpBuff[bufferSize];
 	XCircularBuffer *pcb;
+	FILE *f;
 };
 
 class VideoStreamThread : public XThread {

@@ -63,6 +63,8 @@ public:
 			return false;
 	}
 
+	std::string Name() { return name; }
+
 private:
 	std::thread t;
 	std::string name;
