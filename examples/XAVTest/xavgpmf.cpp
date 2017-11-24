@@ -1,6 +1,6 @@
 #include "xavgpmf.h"
 
-XAVGpmfThread::XAVGpmfThread(XAVStreamHandle s) : XThread("XAVGpmf" + std::to_string(s->streamIdx)), stream(s), state(0) {
+XAVGpmfThread::XAVGpmfThread(XAVStreamHandle s) : XThread("XAVGpmf" + std::to_string(s->streamIdx)), stream(s) {
 	xprintf("Thread '%s' initializing\n", Name().c_str());
 	try{
 		pcb = stream->pcb;

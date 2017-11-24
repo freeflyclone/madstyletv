@@ -7,6 +7,13 @@
 
 #include "GPMF_parser.h"
 
+typedef struct GPMF_TypeSizeLength {
+	uint8_t type;
+	uint8_t size;
+	uint16_t length;
+};
+
+
 typedef std::function<void(XCircularBuffer *)> XAVGpmfParser;
 typedef std::vector<XAVGpmfParser> XAVGpmfParsers;
 
@@ -31,8 +38,6 @@ public:
 	uint8_t *pBuff;
 	XCircularBuffer *pcb;
 	XAVGpmfParsers parsers;
-
-	uint32_t state;
 };
 
 #endif
