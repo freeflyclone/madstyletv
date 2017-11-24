@@ -154,8 +154,15 @@ public:
 			ast = new AudioStreamThread(xavSrc->mAudioStream);
 		
 		// add additional streams as GoPro Meta streams.  (for now)
-		for (size_t i = 2; i < xavSrc->mStreams.size(); i++)
-			gpmfStreamThreads.emplace_back(new XAVGpmfThread(xavSrc->mStreams[i]));
+		for (size_t i = 2; i < xavSrc->mStreams.size(); i++) {
+			XAVGpmfThread *pThread = new XAVGpmfThread(xavSrc->mStreams[i]);
+
+			gpmfStreamThreads.emplace_back(pThread);
+
+			pThread->AddListener(STR2FOURCC("STNM"), [&](uint32_t key, GPMF_TypeSizeLength tsl, uint8_t* buff){
+				xprintf("Listener got: %c%c%c%c, '%c',%02X,%04X\n", PRINTF_4CC(key), tsl.type, tsl.size, tsl.length);
+			});
+		}
 
 		xav.Start();
 	}

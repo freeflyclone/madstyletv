@@ -1,14 +1,7 @@
 #include "xavgpmf.h"
 
 XAVGpmfThread::XAVGpmfThread(XAVStreamHandle s) : XThread("XAVGpmf" + std::to_string(s->streamIdx)), stream(s) {
-	xprintf("Thread '%s' initializing\n", Name().c_str());
-	try{
-		pcb = stream->pcb;
-		pBuff = new uint8_t[pcb->Size()];
-	}
-	catch (std::runtime_error e) {
-		xprintf("Failed to open file %s: reason: %s\n", Name().c_str(), e.what());
-	}
+	pcb = stream->pcb;
 }
 
 void XAVGpmfThread::Run() {
@@ -32,43 +25,45 @@ void XAVGpmfThread::Parse() {
 			pcb->Read((uint8_t*)&key, sizeof(key));
 			skipped += 4;
 		} while (key != STR2FOURCC("DEVC"));
-		xprintf("Stream(%d) - Skipped %d bytes\n", streamId, skipped);
 	}
 
 	if (GPMF_VALID_FOURCC(key)) {
-		pcb->Read(&tsl.type, 1);
-		pcb->Read(&tsl.size, 1);
-		pcb->Read((uint8_t*)&tsl.length, 2);
-		tsl.length = BYTESWAP16(tsl.length);
-
-		if (GPMF_TYPE_NEST == tsl.type) {
-			xprintf("Stream(%d): %c%c%c%c\n", streamId, PRINTF_4CC(key));
-			Broadcast(key, tsl, nullptr);
+		{ // uint32_t aligned, endian agnostic
+			uint8_t tmpH, tmpL;
+			pcb->Read(&tsl.type, 1);
+			pcb->Read(&tsl.size, 1);
+			pcb->Read(&tmpH, 1);
+			pcb->Read(&tmpL, 1);
+			tsl.length = (tmpH << 8) + tmpL;
 		}
-		else if (tsl.type != GPMF_TYPE_NEST) {
-			// always read 32-bit aligned length
-			uint32_t bytesToRead = (tsl.size*tsl.length + 3) & (~3);
 
-			// kludgey limit because 'GPRO' (streamId 4) ends badly, and I'm 
-			// not interested in this particular rabbit hole right now.
-			if (bytesToRead < 0x4000) {
-				xprintf("Stream(%d): %c%c%c%c, '%c',%02X,%04X\n", streamId, PRINTF_4CC(key), tsl.type, tsl.size, tsl.length);
+		if (tsl.type != GPMF_TYPE_NEST) {
+			// always read 32bit aligned length
+			uint32_t readCount = (tsl.size * tsl.length + 3) & (~3);
 
-				// tmp buff on stack to eliminate new/delete
-				uint8_t buff[0x4000];
-				uint64_t nRead = pcb->Read(buff, bytesToRead);
-				Broadcast(key, tsl, buff);
+			// early bail-out kludge for 'GPRO' key in stream 4, currently ungroked
+			if (readCount > 0x4000) {
+				uint32_t skipCount = (tsl.size*tsl.length + 3) & (~3);
+				uint64_t remaining = pcb->Skip(skipCount);
+				return;
 			}
+
+			// there's less than 16K data available, call all registered Listeners
+			uint8_t buff[0x4000];
+			uint32_t nRead = pcb->Read(buff, readCount);
+			Broadcast(key, tsl, buff);
 		}
+		else
+			Broadcast(key, tsl, nullptr);
 	}
 }
 
-void XAVGpmfThread::AddListener(XAVGpmfListener fn){
-	listeners.emplace_back(fn);
+void XAVGpmfThread::AddListener(uint32_t key, XAVGpmfListener fn){
+	listeners[key].push_back(fn);
 }
 
 void XAVGpmfThread::Broadcast(uint32_t key, GPMF_TypeSizeLength tsl, uint8_t* buff){
-	for (auto fn : listeners)
+	for (auto fn : listeners[key])
 		fn(key, tsl, buff);
 }
 

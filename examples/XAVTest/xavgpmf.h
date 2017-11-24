@@ -1,6 +1,7 @@
 #ifndef XAVGPMF_H
 #define XAVGPMF_H
 
+#include <map>
 #include <xav.h>
 #include <xavsrc.h>
 #include <xutils.h>
@@ -13,9 +14,9 @@ struct GPMF_TypeSizeLength {
 	uint16_t length;
 };
 
-
 typedef std::function<void(uint32_t, GPMF_TypeSizeLength, uint8_t*)> XAVGpmfListener;
 typedef std::vector<XAVGpmfListener> XAVGpmfListeners;
+typedef std::map<uint32_t, XAVGpmfListeners> XAVGpmfListenerList;
 
 class XAVGpmfThread : public XThread {
 public:
@@ -23,14 +24,13 @@ public:
 	void Run();
 	void Parse();
 
-	void AddListener(XAVGpmfListener fn);
+	void AddListener(uint32_t key, XAVGpmfListener fn);
 	void Broadcast(uint32_t, GPMF_TypeSizeLength, uint8_t*);
 
 private:
 	XAVStreamHandle stream;
-	uint8_t *pBuff;
 	XCircularBuffer *pcb;
-	XAVGpmfListeners listeners;
+	XAVGpmfListenerList listeners;
 };
 
 #endif
