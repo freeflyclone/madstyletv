@@ -138,7 +138,7 @@ typedef enum GPMFKey // TAG in all caps are GoPro preserved (are defined by GoPr
 
 
 // Prepare GPMF data 
-GPMF_ERR GPMF_Init(GPMF_stream *gs, uint32_t *buffer, int datasize);							//Initialize a GPMF_stream for parsing a particular buffer.
+GPMF_ERR GPMF_Init(GPMF_stream *gs, uint32_t *buffer, size_t datasize);							//Initialize a GPMF_stream for parsing a particular buffer.
 GPMF_ERR GPMF_ResetState(GPMF_stream *gs);														//Read from beginning of the buffer again
 GPMF_ERR GPMF_CopyState(GPMF_stream *src, GPMF_stream *dst);									//Copy state, 
 GPMF_ERR GPMF_Validate(GPMF_stream *gs, GPMF_LEVELS recurse);									//Is the nest structure valid GPMF? 

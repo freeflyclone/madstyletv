@@ -172,7 +172,7 @@ GPMF_ERR GPMF_ResetState(GPMF_stream *ms)
 }
 
 
-GPMF_ERR GPMF_Init(GPMF_stream *ms, uint32_t *buffer, int datasize)
+GPMF_ERR GPMF_Init(GPMF_stream *ms, uint32_t *buffer, size_t datasize)
 {
 	if(ms)
 	{
@@ -623,7 +623,7 @@ GPMF_ERR GPMF_DeviceName(GPMF_stream *ms, char *devicenamebuf, uint32_t devicena
 {
 	if (ms && devicenamebuf)
 	{
-		uint32_t len = strlen(ms->device_name);
+		size_t len = strlen(ms->device_name);
 		if (len >= devicename_buf_size)
 			return GPMF_ERROR_MEMORY;
 
@@ -774,7 +774,7 @@ GPMF_ERR GPMF_FormattedData(GPMF_stream *ms, void *buffer, uint32_t buffersize, 
 		uint32_t remaining_sample_size = GPMF_DATA_PACKEDSIZE(ms->buffer[ms->pos + 1]);
 		uint8_t type = GPMF_SAMPLE_TYPE(ms->buffer[ms->pos + 1]);
 		uint32_t typesize = 1;
-		uint32_t elements = 0;
+		size_t elements = 0;
 		uint32_t typestringlength = 1;
 		char complextype[64] = "L";
 
