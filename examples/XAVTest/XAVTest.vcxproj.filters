@@ -33,6 +33,9 @@
     <ClCompile Include="xavgpmf.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xclass\3rdParty\gpmf-parser\GPMF_parser.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\shaders\tex.frag">

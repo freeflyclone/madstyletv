@@ -43,24 +43,45 @@ public:
 	}
 
 	size_t Read(uint8_t *b, size_t n) {
+		while (Count() < n)
+			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
+
 		std::lock_guard<std::mutex> lock(mutexLock);
-		if (Count() < n)
-			n = Count();
 		for (int i = 0; i<n; i++) {
 			*b++ = buff[rIdx&(size - 1)];
 			rIdx++;
 		}
+
 		return n;
 	}
 
-	uint64_t Count() { return wIdx - rIdx; }
+	uint64_t Skip(uint64_t n) { 
+		//while (Count() < n)
+			//std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
+
+		std::lock_guard<std::mutex> lock(mutexLock);
+		if (rIdx + n < wIdx) {
+			rIdx += n;
+			n = 0;
+		}
+		else {
+			n -= wIdx - rIdx;
+			rIdx = wIdx;
+		}
+		return n;
+	}
+
+	uint64_t Count() { 
+		std::lock_guard<std::mutex> lock(mutexLock);
+		return wIdx - rIdx;
+	}
 	size_t Size() { return size; }
 
-private:
+//private:
 	size_t size;
 	uint8_t *buff;
-	std::atomic<std::uint64_t> rIdx;
-	std::atomic<std::uint64_t> wIdx;
+	uint64_t rIdx;
+	uint64_t wIdx;
 	std::mutex mutexLock;
 };
 

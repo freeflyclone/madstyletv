@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 				goto cleanup;
 
 #if 1		// Find all the available Streams and the data carrying FourCC
-			if (index == 0) // show first payload 
+			//if (index == 0) // show first payload 
 			{
 				while (GPMF_OK == GPMF_FindNext(ms, GPMF_KEY_STREAM, GPMF_RECURSE_LEVELS))
 				{
@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
 
 
 #if 1		// Find GPS values and return scaled doubles. 
-			if (index == 0) // show first payload 
+			//if (index == 0) // show first payload 
 			{
 				if (GPMF_OK == GPMF_FindNext(ms, STR2FOURCC("GPS5"), GPMF_RECURSE_LEVELS) || //GoPro Hero5 GPS
 					GPMF_OK == GPMF_FindNext(ms, STR2FOURCC("GPRI"), GPMF_RECURSE_LEVELS))   //GoPro Karma GPS

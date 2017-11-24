@@ -185,7 +185,7 @@ bool XAVStream::Decode(AVPacket *packet)
 }
 
 XAVStream::XAVBuffer XAVStream::GetBuffer() {
-	if (!usedBuffs.wait_for(1000)) {
+	if (!usedBuffs.wait_for(10000)) {
 		xprintf("XAVStream::GetBuffer() timed out\n");
 		return XAVBuffer{ { NULL, NULL, NULL }, 0, 0 };
 	}
