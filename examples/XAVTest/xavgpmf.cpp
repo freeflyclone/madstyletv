@@ -1,6 +1,7 @@
 #include "xavgpmf.h"
 
-XAVGpmfThread::XAVGpmfThread(XAVStreamHandle s) : XThread("XAVGpmf" + std::to_string(gpmfStreamId++)), stream(s) {
+XAVGpmfThread::XAVGpmfThread(XAVStreamHandle s) : XThread("XAVGpmf" + std::to_string(s->streamIdx)), stream(s), state(0) {
+	xprintf("Thread '%s' initializing\n", Name().c_str());
 	try{
 		pcb = stream->pcb;
 		pBuff = new uint8_t[pcb->Size()];
@@ -12,13 +13,10 @@ XAVGpmfThread::XAVGpmfThread(XAVStreamHandle s) : XThread("XAVGpmf" + std::to_st
 
 void XAVGpmfThread::Run() {
 	while (IsRunning()) {
-		size_t nRead = pcb->Read(pBuff, pcb->Count());
-		if (nRead) {
-			//xprintf("Stream: %d, %d bytes, %d\n", stream->streamIdx, nRead, pcb->Count());
-			InvokeParsers(pBuff, nRead);
-		}
+		if (pcb->Count())
+			InvokeParsers(pcb);
 		else
-			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
+			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
 	}
 }
 

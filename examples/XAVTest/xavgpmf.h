@@ -5,7 +5,9 @@
 #include <xavsrc.h>
 #include <xutils.h>
 
-typedef std::function<void(uint8_t *, size_t)> XAVGpmfParser;
+#include "GPMF_parser.h"
+
+typedef std::function<void(XCircularBuffer *)> XAVGpmfParser;
 typedef std::vector<XAVGpmfParser> XAVGpmfParsers;
 
 class XAVGpmfThread : public XThread {
@@ -17,20 +19,20 @@ public:
 		parsers.emplace_back(fn);
 	}
 
-	void InvokeParsers(uint8_t* b, size_t s) {
+	void InvokeParsers(XCircularBuffer *pcb) {
 		for (auto fn : parsers)
-			fn(b, s);
+			fn(pcb);
 	}
 
 	XAVStream* Stream() { return stream.get(); }
 
-private:
+//private:
 	XAVStreamHandle stream;
 	uint8_t *pBuff;
 	XCircularBuffer *pcb;
-	FILE *f;
 	XAVGpmfParsers parsers;
-	int gpmfStreamId = { 0 };
+
+	uint32_t state;
 };
 
 #endif
