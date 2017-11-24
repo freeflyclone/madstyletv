@@ -10,6 +10,3 @@
 [submodule "xclass/3rdParty/mosquitto"]
 	path = xclass/3rdParty/mosquitto
 	url = https://github.com/eclipse/mosquitto.git
-[submodule "xclass/3rdParty/gpmf-parser"]
-	path = xclass/3rdParty/gpmf-parser
-	url = https://github.com/gopro/gpmf-parser.git
