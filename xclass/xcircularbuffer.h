@@ -22,7 +22,7 @@
 
 class XCircularBuffer {
 public:
-	XCircularBuffer(size_t s) : size(s), rIdx(0), wIdx(0) {
+	XCircularBuffer(size_t s = 0x8000) : size(s), rIdx(0), wIdx(0) {
 		if ((buff = new uint8_t[size]) == NULL)
 			throw std::runtime_error("XCircularBuffer::XCircularBuffer(): Unable to allocate circular buffer");
 	}
@@ -53,9 +53,8 @@ public:
 		return n;
 	}
 
-	uint64_t Count() {
-		return int(wIdx - rIdx);
-	}
+	uint64_t Count() { return wIdx - rIdx; }
+	size_t Size() { return size; }
 
 private:
 	size_t size;

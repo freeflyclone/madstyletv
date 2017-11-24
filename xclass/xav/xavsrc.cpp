@@ -4,9 +4,7 @@ XAVStream::XAVStream(AVCodecContext *ctx) :
 	freeBuffs(numFrames), 
 	pStream(NULL), 
 	streamIdx(0), 
-	streamTime(0.0), 
-	totalChunks(0),
-	totalBytes(0) 
+	streamTime(0.0)
 {
 	pCodecCtx = ctx;
 
@@ -67,6 +65,10 @@ XAVStream::XAVStream(AVCodecContext *ctx) :
 			nFramesDecoded = 0;
 			nFramesRead = 0;
 		}
+	}
+	else {
+		xprintf("Found data stream.  Allocating XCircularBuffer.\n");
+		pcb = new XCircularBuffer();
 	}
 }
 
@@ -174,8 +176,9 @@ bool XAVStream::Decode(AVPacket *packet)
 		}
 	}
 	else {
+		// else this is a data stream, write to its circular buffer
 		auto p = packet;
-		InvokeDataFunctions(p->data, p->size, p->pts);
+		pcb->Write(p->data, p->size);
 	}
 
 	return true;

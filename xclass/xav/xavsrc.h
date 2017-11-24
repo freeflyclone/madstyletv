@@ -27,6 +27,7 @@ extern "C" {
 };
 
 #include "xthread.h"
+#include "xcircularbuffer.h"
 #include "xavexcept.h"
 
 class XAVStream;
@@ -60,6 +61,7 @@ public:
 	void Acquire();
 	void Release();
 
+	/*
 	void AddDataFunction(XAVDataFunction fn) { dataFunctions.emplace_back(fn); }
 
 	void InvokeDataFunctions(uint8_t *data, size_t size, uint64_t time) {
@@ -68,6 +70,7 @@ public:
 		}
 		totalBytes += size;
 	}
+	*/
 
 	int nFramesDecoded;
 	int nFramesRead;
@@ -104,8 +107,10 @@ public:
 	XSemaphore freeBuffs;
 	XSemaphore usedBuffs;
 
-	int64_t totalBytes, totalChunks;
-	XAVDataFunctions dataFunctions;
+	//int64_t totalBytes, totalChunks;
+	//XAVDataFunctions dataFunctions;
+
+	XCircularBuffer *pcb;
 };
 
 class XAVSrc : public XThread

@@ -180,6 +180,7 @@
     <ClCompile Include="..\common\ExampleGUI.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
+    <ClCompile Include="xavgpmf.cpp" />
     <ClCompile Include="XAVTestBuildScene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -188,6 +189,9 @@
     <None Include="..\..\shaders\tex.vert" />
     <None Include="..\..\shaders\yuv.frag" />
     <None Include="..\..\shaders\yuv.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="xavgpmf.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

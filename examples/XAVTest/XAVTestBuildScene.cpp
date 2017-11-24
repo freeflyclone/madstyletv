@@ -8,6 +8,7 @@
 #include <xavfile.h>
 #include <xfifo.h>
 #include <xal.h>
+#include "xavgpmf.h"
 
 //#include <xtimer.h>
 
@@ -29,42 +30,6 @@ typedef struct {
 
 ImageBuff ib;
 static int dataStreamId = 0;
-
-class DataStreamThread : public XThread {
-public:
-	const static size_t bufferSize = 0x8000;
-
-	DataStreamThread(XAVStreamHandle s) : XThread("DataStreamThread"+std::to_string(dataStreamId++)), stream(s) {
-		pcb = new XCircularBuffer(bufferSize);
-		stream->AddDataFunction([&](uint8_t *b, size_t s, uint64_t t){
-			pcb->Write(b, s);
-		});
-		try{
-			f = fopen(Name().c_str(), "wb");
-		}
-		catch (std::runtime_error e) {
-			xprintf("Failed to open file %s: reason: %s\n", Name().c_str(), e.what());
-		}
-	}
-
-	void Run() {
-		while (IsRunning()) {
-			int nRead = pcb->Read(tmpBuff, pcb->Count());
-			if (nRead) {
-				xprintf("Stream: %d, %d bytes, %d\n", stream->streamIdx, nRead, pcb->Count());
-				fwrite(tmpBuff, 1, nRead, f);
-				fflush(f);
-			}
-			else
-				std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
-		}
-	}
-
-	XAVStreamHandle stream;
-	uint8_t tmpBuff[bufferSize];
-	XCircularBuffer *pcb;
-	FILE *f;
-};
 
 class VideoStreamThread : public XThread {
 public:
@@ -188,8 +153,13 @@ public:
 		if (hasAudio)
 			ast = new AudioStreamThread(xavSrc->mAudioStream);
 		
-		for (size_t i = 2; i < xavSrc->mStreams.size(); i++)
-			dataStreamThreads.emplace_back(new DataStreamThread(xavSrc->mStreams[i]));
+		for (size_t i = 2; i < xavSrc->mStreams.size(); i++) {
+			XAVGpmfThread *gThread = new XAVGpmfThread(xavSrc->mStreams[i]);
+			gThread->AddParser([gThread](uint8_t *b, size_t s){
+				xprintf("Parser(%d): %d bytes\n", gThread->Stream()->streamIdx, s);
+			});
+			gpmfStreamThreads.emplace_back(gThread);
+		}
 
 		xav.Start();
 	}
@@ -201,7 +171,7 @@ public:
 		if (hasVideo)
 			vst->Start();
 
-		for (auto dst : dataStreamThreads)
+		for (auto dst : gpmfStreamThreads)
 			dst->Start();
 
 		while ( xav.IsRunning() && IsRunning() ) {
@@ -212,7 +182,7 @@ public:
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
 		}
 
-		for (auto dst : dataStreamThreads)
+		for (auto dst : gpmfStreamThreads)
 			dst->Stop();
 
 		if (hasVideo)
@@ -226,7 +196,7 @@ public:
 	VideoStreamThread *vst;
 	AudioStreamThread *ast;
 
-	std::vector<DataStreamThread *> dataStreamThreads;
+	std::vector<XAVGpmfThread *> gpmfStreamThreads;
 	std::shared_ptr<XAVSrc> xavSrc;
 	bool hasVideo, hasAudio;
 };
