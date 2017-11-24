@@ -7,37 +7,30 @@
 
 #include "GPMF_parser.h"
 
-typedef struct GPMF_TypeSizeLength {
+struct GPMF_TypeSizeLength {
 	uint8_t type;
 	uint8_t size;
 	uint16_t length;
 };
 
 
-typedef std::function<void(XCircularBuffer *)> XAVGpmfParser;
-typedef std::vector<XAVGpmfParser> XAVGpmfParsers;
+typedef std::function<void(uint32_t, GPMF_TypeSizeLength, uint8_t*)> XAVGpmfListener;
+typedef std::vector<XAVGpmfListener> XAVGpmfListeners;
 
 class XAVGpmfThread : public XThread {
 public:
 	XAVGpmfThread(XAVStreamHandle);
 	void Run();
+	void Parse();
 
-	void AddParser(XAVGpmfParser fn) {
-		parsers.emplace_back(fn);
-	}
+	void AddListener(XAVGpmfListener fn);
+	void Broadcast(uint32_t, GPMF_TypeSizeLength, uint8_t*);
 
-	void InvokeParsers(XCircularBuffer *pcb) {
-		for (auto fn : parsers)
-			fn(pcb);
-	}
-
-	XAVStream* Stream() { return stream.get(); }
-
-//private:
+private:
 	XAVStreamHandle stream;
 	uint8_t *pBuff;
 	XCircularBuffer *pcb;
-	XAVGpmfParsers parsers;
+	XAVGpmfListeners listeners;
 };
 
 #endif

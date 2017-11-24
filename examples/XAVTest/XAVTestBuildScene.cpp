@@ -153,51 +153,9 @@ public:
 		if (hasAudio)
 			ast = new AudioStreamThread(xavSrc->mAudioStream);
 		
-		for (size_t i = 2; i < xavSrc->mStreams.size(); i++) {
-			XAVGpmfThread *gThread = new XAVGpmfThread(xavSrc->mStreams[i]);
-
-			// GPMF data stream parsing done in this lambda
-			XAVGpmfParser p = [gThread](XCircularBuffer *pcb) -> void {
-				uint32_t streamId = gThread->Stream()->streamIdx;
-				uint32_t key;
-				GPMF_TypeSizeLength tsl;
-
-				pcb->Read((uint8_t*)&key, sizeof(key));
-				if (key == STR2FOURCC("GPRO")) {
-					int skipped = 0;
-					do {
-						pcb->Read((uint8_t*)&key, sizeof(key));
-						skipped += 4;
-					} while (key != STR2FOURCC("DEVC"));
-					xprintf("Stream(%d) - Skipped %d bytes\n", streamId, skipped);
-				}
-
-				if (GPMF_VALID_FOURCC(key)) {
-					pcb->Read(&tsl.type, 1);
-					pcb->Read(&tsl.size, 1);
-					pcb->Read((uint8_t*)&tsl.length, 2);
-					tsl.length = BYTESWAP16(tsl.length);
-
-					if (GPMF_TYPE_NEST == tsl.type)
-						xprintf("Stream(%d): %c%c%c%c\n", streamId, PRINTF_4CC(key));
-					else
-						xprintf("Stream(%d): %c%c%c%c, '%c',%02X,%04X\n", streamId, PRINTF_4CC(key), tsl.type, tsl.size, tsl.length);
-
-					if (tsl.type != GPMF_TYPE_NEST) {
-						uint32_t skipCount = (tsl.size*tsl.length + 3) & (~3);
-						xprintf("Stream(%d) Skipping %d bytes, bytes remaining in buff: %d\n", streamId, skipCount, pcb->Count());
-
-						uint64_t remaining = pcb->Skip(skipCount);
-						if (remaining)
-							xprintf("Stream(%d) Doh!\n", streamId);
-					}
-				}
-			};
-
-			gThread->AddParser(p);
-
-			gpmfStreamThreads.emplace_back(gThread);
-		}
+		// add additional streams as GoPro Meta streams.  (for now)
+		for (size_t i = 2; i < xavSrc->mStreams.size(); i++)
+			gpmfStreamThreads.emplace_back(new XAVGpmfThread(xavSrc->mStreams[i]));
 
 		xav.Start();
 	}
