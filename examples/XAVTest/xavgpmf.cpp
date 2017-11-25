@@ -39,7 +39,7 @@ void XAVGpmfThread::Parse() {
 
 		if (tsl.type != GPMF_TYPE_NEST) {
 			// always read 32bit aligned length
-			uint32_t readCount = (tsl.size * tsl.length + 3) & (~3);
+			size_t readCount = (tsl.size * tsl.length + 3) & (~3);
 
 			// early bail-out kludge for 'GPRO' key in stream 4, currently ungroked
 			if (readCount > 0x4000) {
@@ -50,7 +50,7 @@ void XAVGpmfThread::Parse() {
 
 			// there's less than 16K data available, call all registered Listeners
 			uint8_t buff[0x4000];
-			uint32_t nRead = pcb->Read(buff, readCount);
+			size_t nRead = pcb->Read(buff, readCount);
 			Broadcast(key, tsl, buff);
 		}
 		else
@@ -62,8 +62,28 @@ void XAVGpmfThread::AddListener(uint32_t key, XAVGpmfListener fn){
 	listeners[key].push_back(fn);
 }
 
+void XAVGpmfThread::AddGenericListener(XAVGpmfListener fn){
+	genericListeners.push_back(fn);
+}
+
 void XAVGpmfThread::Broadcast(uint32_t key, GPMF_TypeSizeLength tsl, uint8_t* buff){
 	for (auto fn : listeners[key])
 		fn(key, tsl, buff);
+
+	for (auto fn : genericListeners)
+		fn(key, tsl, buff);
 }
 
+XAVGpmfTelemetry::XAVGpmfTelemetry() {
+	xprintf("XAVGpmfTelemetry::XAVGpmfTelemetry()\n");
+}
+
+void XAVGpmfTelemetry::InitListeners(XAVGpmfThreads streams) {
+	if (streams.size() < 3)
+		throw std::runtime_error("XAVGpmfTelemetry::InitListeners(): not enough streams available");
+
+	listener = [this](uint32_t key, GPMF_TypeSizeLength tsl, uint8_t* buff){
+		xprintf("Listener got: %c%c%c%c, %s\n", PRINTF_4CC(key), buff);
+	};
+	streams[1]->AddListener(STR2FOURCC("STNM"), listener);
+}

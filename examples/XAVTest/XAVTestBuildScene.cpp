@@ -4,15 +4,13 @@
 **************************************************************/
 #include "ExampleXGL.h"
 
+#include <iostream>
+
 #include <xav.h>
 #include <xavfile.h>
 #include <xfifo.h>
 #include <xal.h>
 #include "xavgpmf.h"
-
-//#include <xtimer.h>
-
-#include <iostream>
 
 extern bool initHmd;
 
@@ -29,7 +27,6 @@ typedef struct {
 } ImageBuff;
 
 ImageBuff ib;
-static int dataStreamId = 0;
 
 class VideoStreamThread : public XThread {
 public:
@@ -70,19 +67,6 @@ public:
 				ib.height = stream->height;
 				ib.chromaWidth = stream->chromaWidth;
 				ib.chromaHeight = stream->chromaHeight;
-
-				//			std::this_thread::sleep_for(std::chrono::duration<int, std::micro>(10000));
-				//			double sinceLast = 0.0;
-				//			do {
-				//				sinceLast += timer.SinceLast();
-				//			} while (sinceLast < 0.016);
-				/*
-				xprintf("Video buffered: %d, %c frame,", stream->nFramesDecoded - stream->nFramesRead, "UIPB"[stream->pFrame->pict_type]);
-				if (stream->pFrame->pkt_pts != stream->pFrame->pkt_dts)
-					xprintf(" pts: %d, dts: %d\n", stream->pFrame->pkt_pts, stream->pFrame->pkt_dts);
-				else
-					xprintf("\n");
-				*/
 			}
 			xprintf("VideoStreamThread done.\n");
 		}
@@ -98,14 +82,11 @@ public:
 	std::shared_ptr<XAVStream> stream;
 	int penX;
 	int penY;
-	//XTimer timer;
 };
 
 class AudioStreamThread : public XThread {
 public:
-	AudioStreamThread(std::shared_ptr<XAVStream> s) : 
-		XThread("AudioStreamThread"), stream(s), xal(NULL, s->sampleRate, XAL::defaultFormat, XAVStream::numFrames)
-	{
+	AudioStreamThread(std::shared_ptr<XAVStream> s) : XThread("AudioStreamThread"), stream(s), xal(NULL, s->sampleRate, XAL::defaultFormat, XAVStream::numFrames) {
 		xal.AddBuffers(XAVStream::numFrames);
 		xal.QueueBuffers();
 		xal.Play();
@@ -126,7 +107,6 @@ public:
 			xal.Convert((float *)audio.buffers[0], (float *)audio.buffers[1]);
 			xal.Buffer();
 			xal.Restart();
-			//xprintf("Audio buffered: %d, Time: %0.8f\n", stream->nFramesDecoded - stream->nFramesRead, stream->streamTime);
 		}
 		xprintf("AudioStreamThread done.\n");
 	}
@@ -154,14 +134,14 @@ public:
 			ast = new AudioStreamThread(xavSrc->mAudioStream);
 		
 		// add additional streams as GoPro Meta streams.  (for now)
-		for (size_t i = 2; i < xavSrc->mStreams.size(); i++) {
-			XAVGpmfThread *pThread = new XAVGpmfThread(xavSrc->mStreams[i]);
+		for (size_t i = 2; i < xavSrc->mStreams.size(); i++)
+			gpmfStreamThreads.emplace_back(new XAVGpmfThread(xavSrc->mStreams[i]));
 
-			gpmfStreamThreads.emplace_back(pThread);
-
-			pThread->AddListener(STR2FOURCC("STNM"), [&](uint32_t key, GPMF_TypeSizeLength tsl, uint8_t* buff){
-				xprintf("Listener got: %c%c%c%c, '%c',%02X,%04X\n", PRINTF_4CC(key), tsl.type, tsl.size, tsl.length);
-			});
+		try {
+			telemetry.InitListeners(gpmfStreamThreads);
+		}
+		catch (std::runtime_error e) {
+			xprintf("Oops, telemetry data mishap: %s\n", e.what());
 		}
 
 		xav.Start();
@@ -199,9 +179,12 @@ public:
 	VideoStreamThread *vst;
 	AudioStreamThread *ast;
 
-	std::vector<XAVGpmfThread *> gpmfStreamThreads;
 	std::shared_ptr<XAVSrc> xavSrc;
 	bool hasVideo, hasAudio;
+	
+	// GoPro camera telemetry user data streams
+	XAVGpmfThreads gpmfStreamThreads;
+	XAVGpmfTelemetry telemetry;
 };
 
 namespace {

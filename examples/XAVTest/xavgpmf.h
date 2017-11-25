@@ -18,6 +18,9 @@ typedef std::function<void(uint32_t, GPMF_TypeSizeLength, uint8_t*)> XAVGpmfList
 typedef std::vector<XAVGpmfListener> XAVGpmfListeners;
 typedef std::map<uint32_t, XAVGpmfListeners> XAVGpmfListenerList;
 
+class XAVGpmfThread;
+typedef std::vector<XAVGpmfThread *> XAVGpmfThreads;
+
 class XAVGpmfThread : public XThread {
 public:
 	XAVGpmfThread(XAVStreamHandle);
@@ -25,12 +28,26 @@ public:
 	void Parse();
 
 	void AddListener(uint32_t key, XAVGpmfListener fn);
+	void AddGenericListener(XAVGpmfListener fn);
 	void Broadcast(uint32_t, GPMF_TypeSizeLength, uint8_t*);
 
 private:
 	XAVStreamHandle stream;
 	XCircularBuffer *pcb;
 	XAVGpmfListenerList listeners;
+	XAVGpmfListeners genericListeners;
+};
+
+class XAVGpmfTelemetry {
+public:
+	XAVGpmfTelemetry();
+
+	void InitListeners(XAVGpmfThreads);
+
+	XAVGpmfListener listener;
+	XAVGpmfListener acclListener, gyroListener, gpsListener, gainListener, exposureListener;
+
+	double accelX, accelY, accelZ;
 };
 
 #endif
