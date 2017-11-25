@@ -48,9 +48,16 @@ public:
 	XAVGpmfTelemetry();
 
 	void InitListeners(XAVGpmfThreads);
+	void PrintGPMF(uint32_t key, GPMF_TypeSizeLength tsl);
 
+	// generic listener
 	XAVGpmfListener listener;
-	XAVGpmfListener acclListener, gyroListener, magnListener, gpsListener, gainListener, exposureListener;
+
+	// key specific listeners
+	XAVGpmfListener stnmListener, acclListener;
+	XAVGpmfListener gyroListener, magnListener;
+	XAVGpmfListener gpsListener, gainListener;
+	XAVGpmfListener exposureListener;
 
 	double accelX, accelY, accelZ;
 };
