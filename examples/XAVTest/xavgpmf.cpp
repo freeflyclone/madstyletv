@@ -2,6 +2,12 @@
 
 XAVGpmfThread::XAVGpmfThread(XAVStreamHandle s) : XThread("XAVGpmf" + std::to_string(s->streamIdx)), stream(s) {
 	pcb = stream->pcb;
+	if ((pBuff = new uint8_t[pcb->Size()]) == nullptr)
+		throw std::runtime_error(Name() + ": Unable to able to allocate pBuff");
+}
+
+XAVGpmfThread::~XAVGpmfThread() {
+	delete pBuff;
 }
 
 void XAVGpmfThread::Run() {
@@ -34,24 +40,23 @@ void XAVGpmfThread::Parse() {
 			pcb->Read(&tsl.size, 1);
 			pcb->Read(&tmpH, 1);
 			pcb->Read(&tmpL, 1);
-			tsl.length = (tmpH << 8) + tmpL;
+			tsl.count = (tmpH << 8) + tmpL;
 		}
 
 		if (tsl.type != GPMF_TYPE_NEST) {
 			// always read 32bit aligned length
-			size_t readCount = (tsl.size * tsl.length + 3) & (~3);
+			size_t readCount = (tsl.size * tsl.count + 3) & (~3);
 
 			// early bail-out kludge for 'GPRO' key in stream 4, currently ungroked
-			if (readCount > 0x4000) {
-				uint32_t skipCount = (tsl.size*tsl.length + 3) & (~3);
-				uint64_t remaining = pcb->Skip(skipCount);
+			if (readCount >= pcb->Count()) {
+				uint32_t skipCount = (tsl.size*tsl.count + 3) & (~3);
+				pcb->Skip(skipCount);
 				return;
 			}
 
-			// there's less than 16K data available, call all registered Listeners
-			uint8_t buff[0x4000];
-			size_t nRead = pcb->Read(buff, readCount);
-			Broadcast(key, tsl, buff);
+			// there's less than XCircularBufferDefaultSize  data available, call all registered Listeners
+			size_t nRead = pcb->Read(pBuff, readCount);
+			Broadcast(key, tsl, pBuff);
 		}
 		else
 			Broadcast(key, tsl, nullptr);
@@ -67,10 +72,10 @@ void XAVGpmfThread::AddGenericListener(XAVGpmfListener fn){
 }
 
 void XAVGpmfThread::Broadcast(uint32_t key, GPMF_TypeSizeLength tsl, uint8_t* buff){
-	for (auto fn : listeners[key])
+	for (auto fn : genericListeners)
 		fn(key, tsl, buff);
 
-	for (auto fn : genericListeners)
+	for (auto fn : listeners[key])
 		fn(key, tsl, buff);
 }
 
@@ -83,7 +88,34 @@ void XAVGpmfTelemetry::InitListeners(XAVGpmfThreads streams) {
 		throw std::runtime_error("XAVGpmfTelemetry::InitListeners(): not enough streams available");
 
 	listener = [this](uint32_t key, GPMF_TypeSizeLength tsl, uint8_t* buff){
-		xprintf("Listener got: %c%c%c%c, %s\n", PRINTF_4CC(key), buff);
+		if (STR2FOURCC("STNM") == key) {
+			xprintf("%c%c%c%c, %s\n", PRINTF_4CC(key), buff);
+		}
+		else if (STR2FOURCC("ACCL") == key) {
+			xprintf("ACCL: type '%c', size: %02X, count: %d\n", tsl.type, tsl.size, tsl.count);
+		}
+		else if (STR2FOURCC("GYRO") == key) {
+			xprintf("GYRO: type '%c', size: %02X, count: %d\n", tsl.type, tsl.size, tsl.count);
+		}
+		else if (STR2FOURCC("MAGN") == key) {
+			xprintf("MAGN: type '%c', size: %02X, count: %d\n", tsl.type, tsl.size, tsl.count);
+		}
+		else if (STR2FOURCC("TSMP") == key) {
+			if (false) {
+				uint32_t nSamples{ 0 };
+				memcpy((uint8_t*)&nSamples, buff, 4);
+				nSamples = BYTESWAP32(nSamples);
+				xprintf("%c%c%c%c, '%c', size: %02X, count: %d\n", PRINTF_4CC(key), tsl.type, tsl.size, tsl.count, nSamples);
+			}
+		}
+		else {
+			if (tsl.type == 0)
+				;//xprintf("%c%c%c%c %d, %d, %d\n", PRINTF_4CC(key), tsl.type, tsl.size, tsl.count);
+			else
+				;//xprintf("%c%c%c%c, '%c' %02X, %04X\n", PRINTF_4CC(key), tsl.type, tsl.size, tsl.count);
+		}
 	};
-	streams[1]->AddListener(STR2FOURCC("STNM"), listener);
+	streams[0]->AddGenericListener(listener);
+	streams[1]->AddGenericListener(listener);
+	streams[2]->AddGenericListener(listener);
 }
