@@ -52,14 +52,6 @@ public:
 
 	// generic listener
 	XAVGpmfListener listener;
-
-	// key specific listeners
-	XAVGpmfListener stnmListener, acclListener;
-	XAVGpmfListener gyroListener, magnListener;
-	XAVGpmfListener gpsListener, gainListener;
-	XAVGpmfListener exposureListener;
-
-	double accelX, accelY, accelZ;
 };
 
 #endif
