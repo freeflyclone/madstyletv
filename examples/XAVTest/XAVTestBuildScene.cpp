@@ -10,7 +10,7 @@
 #include <xavfile.h>
 #include <xfifo.h>
 #include <xal.h>
-#include "xavgpmf.h"
+#include "xavdata.h"
 
 extern bool initHmd;
 
@@ -133,16 +133,9 @@ public:
 		if (hasAudio)
 			ast = new AudioStreamThread(xavSrc->mAudioStream);
 		
-		// add additional streams as GoPro Meta streams.  (for now)
+		// add additional streams as generic data streams
 		for (size_t i = 2; i < xavSrc->mStreams.size(); i++)
-			gpmfStreamThreads.emplace_back(new XAVGpmfThread(xavSrc->mStreams[i]));
-
-		try {
-			telemetry.InitListeners(gpmfStreamThreads);
-		}
-		catch (std::runtime_error e) {
-			xprintf("Oops, telemetry data mishap: %s\n", e.what());
-		}
+			dataStreamThreads.emplace_back(new XAVDataThread(xavSrc->mStreams[i]));
 
 		xav.Start();
 	}
@@ -154,7 +147,7 @@ public:
 		if (hasVideo)
 			vst->Start();
 
-		for (auto dst : gpmfStreamThreads)
+		for (auto dst : dataStreamThreads)
 			dst->Start();
 
 		while ( xav.IsRunning() && IsRunning() ) {
@@ -165,7 +158,7 @@ public:
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
 		}
 
-		for (auto dst : gpmfStreamThreads)
+		for (auto dst : dataStreamThreads)
 			dst->Stop();
 
 		if (hasVideo)
@@ -182,9 +175,7 @@ public:
 	std::shared_ptr<XAVSrc> xavSrc;
 	bool hasVideo, hasAudio;
 	
-	// GoPro camera telemetry user data streams
-	XAVGpmfThreads gpmfStreamThreads;
-	XAVGpmfTelemetry telemetry;
+	XAVDataThreads dataStreamThreads;
 };
 
 namespace {

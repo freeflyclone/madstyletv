@@ -181,6 +181,7 @@
     <ClCompile Include="..\common\ExampleGUI.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
+    <ClCompile Include="xavdata.cpp" />
     <ClCompile Include="xavgpmf.cpp" />
     <ClCompile Include="XAVTestBuildScene.cpp" />
   </ItemGroup>
@@ -192,6 +193,7 @@
     <None Include="..\..\shaders\yuv.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="xavdata.h" />
     <ClInclude Include="xavgpmf.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
