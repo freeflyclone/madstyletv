@@ -2,26 +2,15 @@
 
 
 XGLShape::XGLShape() : isVisible(true), parent(nullptr) {
-	//xprintf("XGLShape::XGLShape()\n");
 	SetName("XGLShape");
 }
 
 XGLShape::~XGLShape(){
-    //xprintf("XGLShape::~XGLShape(%s) %s children\n", Name().c_str(), Children().size()?"has":"does not have");
-	if (Children().size()) {
-		XObjectChildren children = Children();
-		XObjectChildren::iterator ci;
-		for (ci = children.begin(); ci < children.end(); ci++) {
-			XGLShape *child = (XGLShape *)*ci;
-			delete child;
-		}
-		children.clear();
-	}
 }
 
 void XGLShape::AddChild(XGLShape *s) {
 	s->parent = this;
-	XGLObject::AddChild(s);
+	XGLObject::AddChild(XGLObjectPtr(s));
 }
 
 void XGLShape::SetAnimationFunction(XGLShape::AnimationFn fn){
@@ -33,8 +22,8 @@ void XGLShape::Animate(float clock){
 		animationFunction(clock);
 
 	for (auto child : Children()) {
-		if (dynamic_cast<XGLShape *>(child)) {
-			XGLShape *childShape = (XGLShape *)child;
+		if (dynamic_cast<XGLShape *>(child.get())) {
+			XGLShape *childShape = (XGLShape *)child.get();
 			//childShape->Animate(clock);
 		}
 	}
@@ -69,8 +58,8 @@ void XGLShape::Render(glm::mat4 modelChain) {
 		Unbind();
 
 	for (auto child : Children()) {
-		if (dynamic_cast<XGLShape *>(child)) {
-			XGLShape *childShape = (XGLShape *)child;
+		if (dynamic_cast<XGLShape *>(child.get())) {
+			XGLShape *childShape = (XGLShape *)child.get();
 			if (childShape->isVisible) {
 				if (childShape->preRenderFunction)
 					childShape->preRenderFunction(clock);

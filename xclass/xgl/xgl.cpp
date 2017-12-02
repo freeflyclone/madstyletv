@@ -118,6 +118,11 @@ hmdSled(nullptr)
 }
 
 XGL::~XGL(){
+	guiShapes.clear();
+	shapeLayers.clear();
+	shaderMap.clear();
+
+	/*
     // iterate through all of the shapes, according to which shader they use
     XGLShapesMap::iterator perShader;
 
@@ -154,6 +159,7 @@ XGL::~XGL(){
 	// wait for all shapes layers to be deleted THEN delete all the shaders.
 	for (auto shaderMapEntry : shaderMap)
 		delete shaderMapEntry.second;
+	*/
 }
 void XGL::InitHmd()	{
 #ifdef LINUX
@@ -308,7 +314,7 @@ void XGL::AddShape(std::string shName, XGLNewShapeLambda fn, int layer){
 
 	(*shapeLayers[layer])[pShape->shader->Name()]->push_back(pShape);
 
-	AddChild(pShape);
+	AddChild(XObjectPtr(pShape));
 }
 
 void XGL::AddGuiShape(std::string shName, XGLNewShapeLambda fn){
@@ -316,7 +322,7 @@ void XGL::AddGuiShape(std::string shName, XGLNewShapeLambda fn){
 
 	guiShapes[pShape->shader->Name()]->push_back(pShape);
 
-	AddChild(pShape);
+	AddChild(XObjectPtr(pShape));
 
 	if (guiManager == NULL)
 		guiManager = (XGLGuiManager *)pShape;
@@ -365,7 +371,7 @@ bool XGL::GuiResolveMouseEvent(XGLShape *shape, int x, int y, int flags) {
 		// what order we iterate in, ie: going backward does what's desired
 		// with no negative consequences.
 		for (rit = guiChildren.rbegin(); rit != guiChildren.rend(); rit++) {
-			XGLShape *shape = (XGLShape *)*rit;
+			XGLShape *shape = (XGLShape *)rit->get();
 
 			if (dynamic_cast<XGLGuiCanvas *>(shape)) {
 				XGLGuiCanvas *gc = (XGLGuiCanvas *)shape;

@@ -21,7 +21,7 @@
 
 class XObject;
 
-typedef XObject* XObjectPtr;
+typedef std::shared_ptr<XObject> XObjectPtr;
 typedef std::vector<XObjectPtr> XObjectChildren;
 
 class XObject {
@@ -30,18 +30,16 @@ public:
 	virtual ~XObject();
 
 	void SetName(std::string n, bool makeUnique = true);
-	void AddChild(XObject *o);
+	void AddChild(XObjectPtr o);
 
 	XObjectChildren Children() { return *uchildren; }
 	void DumpChildren();
 	XObjectPtr FindObject(std::string n);
 
-	//XObjectPtr Parent() { return parent; }
 	std::string Name() { return name; }
 
 private:
 	std::unique_ptr<XObjectChildren> uchildren;
 	std::string name;
-	//XObjectPtr parent;
 };
 

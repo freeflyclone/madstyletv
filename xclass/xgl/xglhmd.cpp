@@ -14,10 +14,10 @@ XGLHmd::XGLHmd(XGL *p, int w, int h) :
 	whichHand[1] = "Right";
 
 	// Fetch the current XGLShapes for the hands
-	hands[0] = (XGLShape *)pXgl->FindObject(handNames[0]);
-	hands[1] = (XGLShape *)pXgl->FindObject(handNames[1]);
+	hands[0] = (XGLShape *)pXgl->FindObject(handNames[0]).get();
+	hands[1] = (XGLShape *)pXgl->FindObject(handNames[1]).get();
 
-	hmdSled = (XGLSled *)pXgl->FindObject("HmdSled");
+	hmdSled = (XGLSled *)pXgl->FindObject("HmdSled").get();
 
 	memset(&previousState, 0, sizeof(previousState));
 
