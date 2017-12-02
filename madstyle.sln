@@ -142,6 +142,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Gravity", "examples\Gravity
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GPMFConsoleSample", "examples\GPMFConsoleSample\GPMFConsoleSample.vcxproj", "{9A82A334-6943-4431-BC1D-67B37D4A9580}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SmartList", "examples\SmartList\SmartList.vcxproj", "{DE80430D-EFFC-48EA-847F-F8D05570E8B8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AC4080D2-1C42-4812-943D-79CA13A1D86C} = {AC4080D2-1C42-4812-943D-79CA13A1D86C}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -464,6 +469,18 @@ Global
 		{9A82A334-6943-4431-BC1D-67B37D4A9580}.Release|Win32.Build.0 = Release|Win32
 		{9A82A334-6943-4431-BC1D-67B37D4A9580}.Release|x64.ActiveCfg = Release|x64
 		{9A82A334-6943-4431-BC1D-67B37D4A9580}.Release|x64.Build.0 = Release|x64
+		{DE80430D-EFFC-48EA-847F-F8D05570E8B8}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{DE80430D-EFFC-48EA-847F-F8D05570E8B8}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{DE80430D-EFFC-48EA-847F-F8D05570E8B8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DE80430D-EFFC-48EA-847F-F8D05570E8B8}.Debug|Win32.Build.0 = Debug|Win32
+		{DE80430D-EFFC-48EA-847F-F8D05570E8B8}.Debug|x64.ActiveCfg = Debug|x64
+		{DE80430D-EFFC-48EA-847F-F8D05570E8B8}.Debug|x64.Build.0 = Debug|x64
+		{DE80430D-EFFC-48EA-847F-F8D05570E8B8}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{DE80430D-EFFC-48EA-847F-F8D05570E8B8}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{DE80430D-EFFC-48EA-847F-F8D05570E8B8}.Release|Win32.ActiveCfg = Release|Win32
+		{DE80430D-EFFC-48EA-847F-F8D05570E8B8}.Release|Win32.Build.0 = Release|Win32
+		{DE80430D-EFFC-48EA-847F-F8D05570E8B8}.Release|x64.ActiveCfg = Release|x64
+		{DE80430D-EFFC-48EA-847F-F8D05570E8B8}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -495,5 +512,6 @@ Global
 		{7F461C7B-7A52-4D53-9CC2-2A41D68C7DAF} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 		{99482630-24E1-49DB-8309-BB90C509E4DD} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 		{9A82A334-6943-4431-BC1D-67B37D4A9580} = {24EAE59C-1779-4D00-8819-415B4A41868E}
+		{DE80430D-EFFC-48EA-847F-F8D05570E8B8} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 	EndGlobalSection
 EndGlobal
