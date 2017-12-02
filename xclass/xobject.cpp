@@ -10,6 +10,7 @@ XObject::XObject(std::string n) : parent(NULL) {
 }
 
 XObject::~XObject() {
+	xprintf("XObject::~XObject() - dtor: %s\n", name.c_str());
 }
 
 void XObject::SetName(std::string n, bool makeUnique) {

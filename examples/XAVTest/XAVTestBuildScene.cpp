@@ -30,7 +30,7 @@ ImageBuff ib;
 
 class VideoStreamThread : public XThread {
 public:
-	VideoStreamThread(std::shared_ptr<XAVStream> s) : XThread("VideoStreamThread"), stream(s) {
+	VideoStreamThread(XGL* pXgl, std::shared_ptr<XAVStream> s) : pXgl(pXgl), XThread("VideoStreamThread"), stream(s), textWindow(nullptr) {
 		memset(ib.y, 0, sizeof(ib.y));
 		memset(ib.u, 127, sizeof(ib.u));
 		memset(ib.v, 127, sizeof(ib.v));
@@ -40,6 +40,12 @@ public:
 		ib.chromaHeight = VIDEO_HEIGHT / 2;
 		penX = 0;
 		penY = 34;
+
+		// Video can twiddle the HUD/GUI "TextWindow" object
+		// (remember to consider thread safety!)
+		if ((textWindow = (XGLGuiWindow*)pXgl->FindObject("TextWindow"))) {
+			xprintf("Found 'TextWindow'\n");
+		}
 	}
 
 	void Run() {
@@ -67,6 +73,10 @@ public:
 				ib.height = stream->height;
 				ib.chromaWidth = stream->chromaWidth;
 				ib.chromaHeight = stream->chromaHeight;
+
+				if (IsRunning() && textWindow) {
+					//textWindow->Clear();
+				}
 			}
 			xprintf("VideoStreamThread done.\n");
 		}
@@ -82,11 +92,13 @@ public:
 	std::shared_ptr<XAVStream> stream;
 	int penX;
 	int penY;
+	XGL *pXgl;
+	XGLGuiWindow *textWindow;
 };
 
 class AudioStreamThread : public XThread {
 public:
-	AudioStreamThread(std::shared_ptr<XAVStream> s) : XThread("AudioStreamThread"), stream(s), xal(NULL, s->sampleRate, XAL::defaultFormat, XAVStream::numFrames) {
+	AudioStreamThread(XGL* pXgl, std::shared_ptr<XAVStream> s) : pXgl(pXgl), XThread("AudioStreamThread"), stream(s), xal(NULL, s->sampleRate, XAL::defaultFormat, XAVStream::numFrames) {
 		xal.AddBuffers(XAVStream::numFrames);
 		xal.QueueBuffers();
 		xal.Play();
@@ -113,11 +125,12 @@ public:
 
 	XAL xal;
 	std::shared_ptr<XAVStream> stream;
+	XGL *pXgl;
 };
 
 class AVPlayer : public XGLObject, public XThread {
 public:
-	AVPlayer(std::string url) : XGLObject("AVPlayer"), XThread("AVPlayerThread") {
+	AVPlayer(XGL *pXgl, std::string url) : pXgl(pXgl), XGLObject("AVPlayer"), XThread("AVPlayerThread") {
 		// once XAVSrc is constructed, it has parsed the stream looking for video & audio
 		// (or else it threw an exception)
 		xavSrc = std::make_shared<XAVSrc>(url, true, true);
@@ -128,16 +141,21 @@ public:
 		xav.AddSrc(xavSrc);
 
 		if (hasVideo)
-			vst = new VideoStreamThread(xavSrc->mVideoStream);
+			vst = new VideoStreamThread(pXgl, xavSrc->mVideoStream);
 
 		if (hasAudio)
-			ast = new AudioStreamThread(xavSrc->mAudioStream);
+			ast = new AudioStreamThread(pXgl, xavSrc->mAudioStream);
 		
 		// add additional streams as generic data streams
 		for (size_t i = 2; i < xavSrc->mStreams.size(); i++)
 			dataStreamThreads.emplace_back(new XAVDataThread(xavSrc->mStreams[i]));
 
 		xav.Start();
+	}
+
+	~AVPlayer() {
+		xprintf("AVPlayer::~AVPlayer() \n");
+		Stop();
 	}
 
 	void Run() {
@@ -168,6 +186,7 @@ public:
 			ast->Stop();
 	}
 
+	XGL* pXgl;
 	XAV xav;
 	VideoStreamThread *vst;
 	AudioStreamThread *ast;
@@ -252,7 +271,12 @@ void ExampleXGL::BuildScene() {
 			}
 		});
 
-		pavp = new AVPlayer(videoPath);
+		pavp = new AVPlayer(this, videoPath);
+		pavp->SetName("AVPlayer");
+		AddChild(pavp);
+
+		DumpChildren();
+
 		pavp->Start();
 	}
 }

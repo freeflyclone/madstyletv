@@ -178,12 +178,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xclass\3rdParty\gpmf-parser\GPMF_parser.c" />
-    <ClCompile Include="..\common\ExampleGUI.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
     <ClCompile Include="xavdata.cpp" />
     <ClCompile Include="xavgpmf.cpp" />
     <ClCompile Include="XAVTestBuildScene.cpp" />
+    <ClCompile Include="XAVTestGUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\config.json" />
