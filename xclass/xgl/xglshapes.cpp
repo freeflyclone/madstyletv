@@ -1,7 +1,7 @@
 #include "xgl.h"
 
 
-XGLShape::XGLShape() : isVisible(true) {
+XGLShape::XGLShape() : isVisible(true), parent(nullptr) {
 	//xprintf("XGLShape::XGLShape()\n");
 	SetName("XGLShape");
 }
@@ -17,6 +17,11 @@ XGLShape::~XGLShape(){
 		}
 		children.clear();
 	}
+}
+
+void XGLShape::AddChild(XGLShape *s) {
+	s->parent = this;
+	XGLObject::AddChild(s);
 }
 
 void XGLShape::SetAnimationFunction(XGLShape::AnimationFn fn){

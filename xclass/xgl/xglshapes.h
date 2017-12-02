@@ -33,6 +33,9 @@ public:
 	virtual void Render();
 	virtual void Render(glm::mat4 model);
 
+	void AddChild(XGLShape *s);
+
+	XGLShape *Parent() { return parent; }
     XGLVertexList v;
     XGLIndexList idx;
 
@@ -43,6 +46,7 @@ public:
 	//glm::mat4 model;
 
 	bool isVisible;
+	XGLShape* parent;
 };
 
 // define a type for passing a lambda that creates an XGLShape as an argument
