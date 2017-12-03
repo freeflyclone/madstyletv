@@ -30,7 +30,7 @@ ImageBuff ib;
 
 class VideoStreamThread : public XThread {
 public:
-	VideoStreamThread(XGL* pXgl, std::shared_ptr<XAVStream> s) : pXgl(pXgl), XThread("VideoStreamThread"), stream(s), textWindow(nullptr) {
+	VideoStreamThread(XGL* pXgl, std::shared_ptr<XAVStream> s) : pXgl(pXgl), XThread("VideoStreamThread"), stream(s) {
 		memset(ib.y, 0, sizeof(ib.y));
 		memset(ib.u, 127, sizeof(ib.u));
 		memset(ib.v, 127, sizeof(ib.v));
@@ -41,11 +41,6 @@ public:
 		penX = 0;
 		penY = 34;
 
-		// Video can twiddle the HUD/GUI "TextWindow" object
-		// (remember to consider thread safety!)
-		if ((textWindow = (XGLGuiWindow*)pXgl->FindObject("TextWindow"))) {
-			xprintf("Found 'TextWindow'\n");
-		}
 	}
 
 	void Run() {
@@ -73,10 +68,6 @@ public:
 				ib.height = stream->height;
 				ib.chromaWidth = stream->chromaWidth;
 				ib.chromaHeight = stream->chromaHeight;
-
-				if (IsRunning() && textWindow) {
-					textWindow->Clear();
-				}
 			}
 			xprintf("VideoStreamThread done.\n");
 		}
@@ -93,7 +84,6 @@ public:
 	int penX;
 	int penY;
 	XGL *pXgl;
-	XGLGuiWindow *textWindow;
 };
 
 class AudioStreamThread : public XThread {
@@ -130,7 +120,13 @@ public:
 
 class AVPlayer : public XObject, public XThread {
 public:
-	AVPlayer(XGL *pXgl, std::string url) : pXgl(pXgl), XObject("AVPlayer"), XThread("AVPlayerThread") {
+	AVPlayer(XGL *pXgl, std::string url) : pXgl(pXgl), XObject("AVPlayer"), XThread("AVPlayerThread"), textWindow(nullptr) {
+		// Video can twiddle the HUD/GUI "TextWindow" object
+		// (remember to consider thread safety!)
+		if ((textWindow = (XGLGuiWindow*)pXgl->FindObject("GuiTextWindow"))) {
+			xprintf("Found 'GuiTextWindow'\n");
+		}
+
 		// once XAVSrc is constructed, it has parsed the stream looking for video & audio
 		// (or else it threw an exception)
 		xavSrc = std::make_shared<XAVSrc>(url, true, true);
@@ -195,6 +191,7 @@ public:
 	bool hasVideo, hasAudio;
 	
 	XAVDataThreads dataStreamThreads;
+	XGLGuiWindow *textWindow;
 };
 
 namespace {
@@ -250,6 +247,11 @@ void ExampleXGL::BuildScene() {
 
 		shape->SetAnimationFunction([shape](float clock) {
 			if (pavp != NULL && pavp->IsRunning() && (ib.width != 0)) {
+				if (pavp->textWindow) {
+					pavp->textWindow->Clear();
+					pavp->textWindow->RenderText("This is a test\n",24);
+				}
+
 				glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit0"), 0);
 				glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit1"), 1);
 				glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit2"), 2);
@@ -273,9 +275,6 @@ void ExampleXGL::BuildScene() {
 
 		pavp = new AVPlayer(this, videoPath);
 		pavp->SetName("AVPlayer");
-		AddChild(pavp);
-
-		DumpChildren();
 
 		pavp->Start();
 	}
