@@ -150,6 +150,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SmartList", "examples\Smart
 		{AC4080D2-1C42-4812-943D-79CA13A1D86C} = {AC4080D2-1C42-4812-943D-79CA13A1D86C}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SmartThreads", "examples\SmartThreads\SmartThreads.vcxproj", "{5E5C0FAD-40CF-4245-97BF-016B6BDA1F22}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AC4080D2-1C42-4812-943D-79CA13A1D86C} = {AC4080D2-1C42-4812-943D-79CA13A1D86C}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -484,6 +489,18 @@ Global
 		{DE80430D-EFFC-48EA-847F-F8D05570E8B8}.Release|Win32.Build.0 = Release|Win32
 		{DE80430D-EFFC-48EA-847F-F8D05570E8B8}.Release|x64.ActiveCfg = Release|x64
 		{DE80430D-EFFC-48EA-847F-F8D05570E8B8}.Release|x64.Build.0 = Release|x64
+		{5E5C0FAD-40CF-4245-97BF-016B6BDA1F22}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{5E5C0FAD-40CF-4245-97BF-016B6BDA1F22}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{5E5C0FAD-40CF-4245-97BF-016B6BDA1F22}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5E5C0FAD-40CF-4245-97BF-016B6BDA1F22}.Debug|Win32.Build.0 = Debug|Win32
+		{5E5C0FAD-40CF-4245-97BF-016B6BDA1F22}.Debug|x64.ActiveCfg = Debug|x64
+		{5E5C0FAD-40CF-4245-97BF-016B6BDA1F22}.Debug|x64.Build.0 = Debug|x64
+		{5E5C0FAD-40CF-4245-97BF-016B6BDA1F22}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{5E5C0FAD-40CF-4245-97BF-016B6BDA1F22}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{5E5C0FAD-40CF-4245-97BF-016B6BDA1F22}.Release|Win32.ActiveCfg = Release|Win32
+		{5E5C0FAD-40CF-4245-97BF-016B6BDA1F22}.Release|Win32.Build.0 = Release|Win32
+		{5E5C0FAD-40CF-4245-97BF-016B6BDA1F22}.Release|x64.ActiveCfg = Release|x64
+		{5E5C0FAD-40CF-4245-97BF-016B6BDA1F22}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -516,5 +533,6 @@ Global
 		{99482630-24E1-49DB-8309-BB90C509E4DD} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 		{9A82A334-6943-4431-BC1D-67B37D4A9580} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 		{DE80430D-EFFC-48EA-847F-F8D05570E8B8} = {24EAE59C-1779-4D00-8819-415B4A41868E}
+		{5E5C0FAD-40CF-4245-97BF-016B6BDA1F22} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 	EndGlobalSection
 EndGlobal

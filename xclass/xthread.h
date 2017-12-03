@@ -24,6 +24,7 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include <memory>
 
 class XThread {
 public:
@@ -70,6 +71,14 @@ private:
 	std::string name;
 	bool isRunning;
 };
+
+typedef std::shared_ptr<XThread> XThreadHandle;
+typedef std::vector<XThreadHandle> XThreadPool;
+
+template <typename T>
+XThreadHandle XThreadCreate(std::string n) {
+	return std::make_shared<T>(n);
+}
 
 class XSemaphore {
 public:

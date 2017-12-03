@@ -118,6 +118,8 @@ hmdSled(nullptr)
 }
 
 XGL::~XGL(){
+	threadPool.clear();
+
     // iterate through all of the shapes, according to which shader they use
     XGLShapesMap::iterator perShader;
 
@@ -413,4 +415,8 @@ void XGL::QueryContext() {
 //	QUERY_GLCONTEXT(GL_MAX_FRAGMENT_UNIFORM_BLOCKS, value);
 //	QUERY_GLCONTEXT(GL_MAX_GEOMETRY_UNIFORM_BLOCKS, value);
 //	QUERY_GLCONTEXT(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, value);
+}
+
+void  XGL::AddThread(std::shared_ptr<XThread> t) {
+	threadPool.push_back(t);
 }

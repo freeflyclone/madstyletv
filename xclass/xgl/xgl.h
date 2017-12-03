@@ -136,6 +136,8 @@ public:
 	// query the OpenGL context for various implementation limits, and dump output
 	void QueryContext();
 
+	void AddThread(std::shared_ptr<XThread>);
+
 	// some of these might be dynamic, but that'll be later
 	XGLLights lights;
 
@@ -195,6 +197,8 @@ private:
 	XGLGuiManager *guiManager;
 	AnimationFunctions preRenderFunctions;
 	AnimationFunctions postRenderFunctions;
+
+	std::vector<std::shared_ptr<XThread>> threadPool;
 };
 
 #endif // XGL_H
