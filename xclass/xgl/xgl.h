@@ -65,7 +65,6 @@
 #include FT_FREETYPE_H
 
 #include "xclasses.h"
-#include "xglobject.h"
 #include "xconfig.h"
 #include "xglexcept.h"
 #include "xpath.h"
@@ -107,7 +106,7 @@ extern std::string pathToAssets;
 extern XGLFont font;
 
 // Manage a GL context, platform independently
-class XGL : public XGLObject, public XInput
+class XGL : public XObject, public XInput
 {
 public:
     // this one is for Windows (wgl)

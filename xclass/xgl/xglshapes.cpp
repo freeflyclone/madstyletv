@@ -21,7 +21,7 @@ XGLShape::~XGLShape(){
 
 void XGLShape::AddChild(XGLShape *s) {
 	s->parent = this;
-	XGLObject::AddChild(s);
+	XObject::AddChild(s);
 }
 
 void XGLShape::SetAnimationFunction(XGLShape::AnimationFn fn){

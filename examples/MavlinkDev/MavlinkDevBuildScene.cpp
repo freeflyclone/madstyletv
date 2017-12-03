@@ -45,7 +45,7 @@ void ExampleXGL::BuildScene() {
 		// as the Listener is being called, and the Listener will crash.  By making
 		// "mavlink" an XObject child of "shape", it will get deleted first, thus preventing
 		// an invalid callback from occuring.
-        shape->AddChild(mavlink);
+        shape->AddChild((XGLShape *)mavlink);
 
 		// add a XMavlink::Listener function for ATTITUDE messages, that will move "shape" accordingly
 		mavlink->AddListener(MAVLINK_MSG_ID_ATTITUDE, [&](mavlink_message_t msg){

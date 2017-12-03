@@ -7,14 +7,13 @@
 #ifndef XGLSHAPES_H
 #define XGLSHAPES_H
 
-#include "xglobject.h"
 #include "xglprimitives.h"
 #include "xglbuffer.h"
 #include "xglshader.h"
 #include "xglmaterial.h"
 #include "xphybody.h"
 
-class XGLShape : public XGLObject , public XGLBuffer, public XGLMaterial, public XPhyBody {
+class XGLShape : public XObject , public XGLBuffer, public XGLMaterial, public XPhyBody {
 public:
     typedef std::function<void(float)> AnimationFn;
 	typedef std::function<void()> DrawFn;

@@ -75,7 +75,7 @@ public:
 				ib.chromaHeight = stream->chromaHeight;
 
 				if (IsRunning() && textWindow) {
-					//textWindow->Clear();
+					textWindow->Clear();
 				}
 			}
 			xprintf("VideoStreamThread done.\n");
@@ -128,9 +128,9 @@ public:
 	XGL *pXgl;
 };
 
-class AVPlayer : public XGLObject, public XThread {
+class AVPlayer : public XObject, public XThread {
 public:
-	AVPlayer(XGL *pXgl, std::string url) : pXgl(pXgl), XGLObject("AVPlayer"), XThread("AVPlayerThread") {
+	AVPlayer(XGL *pXgl, std::string url) : pXgl(pXgl), XObject("AVPlayer"), XThread("AVPlayerThread") {
 		// once XAVSrc is constructed, it has parsed the stream looking for video & audio
 		// (or else it threw an exception)
 		xavSrc = std::make_shared<XAVSrc>(url, true, true);

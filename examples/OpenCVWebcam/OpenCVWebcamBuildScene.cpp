@@ -134,9 +134,9 @@ public:
 	int *windowWidth, *windowHeight;
 };
 
-class CameraThread : public XGLObject, public XThread {
+class CameraThread : public XObject, public XThread {
 public:
-	CameraThread(std::string n, int w, int h, int c) : XGLObject(n), XThread(n), width(w), height(h), channels(c), frameNumber(0) {
+	CameraThread(std::string n, int w, int h, int c) : XObject(n), XThread(n), width(w), height(h), channels(c), frameNumber(0) {
 		SetName(n);
 	};
 

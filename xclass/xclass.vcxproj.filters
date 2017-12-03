@@ -102,9 +102,6 @@
     <ClInclude Include="xgl\xglmaterial.h">
       <Filter>xgl\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="xgl\xglobject.h">
-      <Filter>xgl\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="xgl\xglprimitives.h">
       <Filter>xgl\Header Files</Filter>
     </ClInclude>
