@@ -1,6 +1,16 @@
 /**************************************************************
 ** XAVTestBuildScene.cpp
 **
+** XAV testing scene.
+**
+** NOTE: The preferred way to fetch from data streams (not audio/video)
+** is to have GUI functions pull from data resources that are
+** managed by the DataStreamThread objects, rather than have
+** the DataStreamThread objects try and "push" their data to
+** a GUI element.  Threads are not shut down cleanly at the
+** moment, and are still running when the XGL object is being
+** destroyed.  So the data threads can't be referencing GUI
+** stuff, because it won't be there during program shutdown.
 **************************************************************/
 #include "ExampleXGL.h"
 
@@ -11,6 +21,7 @@
 #include <xfifo.h>
 #include <xal.h>
 #include "xavdata.h"
+#include "xavgpmf.h"
 
 extern bool initHmd;
 
@@ -40,7 +51,6 @@ public:
 		ib.chromaHeight = VIDEO_HEIGHT / 2;
 		penX = 0;
 		penY = 34;
-
 	}
 
 	void Run() {
@@ -198,6 +208,9 @@ namespace {
 	AVPlayer *pavp;
 };
 
+XGLGuiWindow* textWindow = nullptr;
+GPMF_stream gpmf;
+
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
@@ -247,11 +260,6 @@ void ExampleXGL::BuildScene() {
 
 		shape->SetAnimationFunction([shape](float clock) {
 			if (pavp != NULL && pavp->IsRunning() && (ib.width != 0)) {
-				if (pavp->textWindow) {
-					pavp->textWindow->Clear();
-					pavp->textWindow->RenderText("This is a test\n",24);
-				}
-
 				glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit0"), 0);
 				glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit1"), 1);
 				glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit2"), 2);
@@ -276,6 +284,66 @@ void ExampleXGL::BuildScene() {
 		pavp = new AVPlayer(this, videoPath);
 		pavp->SetName("AVPlayer");
 
+		// setup data callback
+		// Assume GoPro stream for now.
+		if (pavp->dataStreamThreads.size() >= 2) {
+			// Get the GPMF user data stream
+			XAVDataThread *pdt = pavp->dataStreamThreads[1];
+
+			XAVDataListener gpmfParser = [&](void *ctx, XCircularBuffer *pcb) {
+				XAVDataThread *pdt = (XAVDataThread *)ctx;
+				int count = pcb->Count() >> 2; // this is what GPMF_Init() uses
+				uint32_t *buff = new uint32_t[count];
+				pcb->Read((uint8_t*)buff, count<<2);
+
+				GPMF_Init(&gpmf, buff, count);
+
+				pdt->UpdateStatus("");
+
+				do {
+					uint32_t key = GPMF_Key(&gpmf);
+					char *pdata = (char*)GPMF_RawData(&gpmf);
+					switch (key) {
+						case GPMF_KEY_DEVICE:
+							pdt->UpdateStatus("DEVC\n");
+							break;
+						case GPMF_KEY_STREAM:
+							pdt->UpdateStatus("   STRM\n");
+							break;
+						case GPMF_KEY_STREAM_NAME:
+							pdt->UpdateStatus("   STNM\n");
+							if (pdata) {
+								pdt->UpdateStatus("       ");
+								pdt->UpdateStatus(pdata);
+								pdt->UpdateStatus("\n");
+							}
+							break;
+						default:
+							pdt->UpdateStatus("unknown\n");
+							break;
+					}
+				} while (GPMF_Next(&gpmf, GPMF_RECURSE_LEVELS) == GPMF_OK);
+
+				pcb->Skip(pcb->Count());
+				delete buff;
+			};
+
+			pdt->AddListener(gpmfParser);
+
+			AddShape("shaders/000-simple", [&](){ shape = new XGLTransformer(); return shape; });
+			shape->SetAnimationFunction([this](float clock){
+				if (pavp->textWindow) {
+					XAVDataThread *pdt = pavp->dataStreamThreads[1];
+					std::string s = pdt->Status();
+					if (s.size()) {
+						pavp->textWindow->Clear();
+						pavp->textWindow->SetPenPosition(10, 16);
+						pavp->textWindow->RenderText(s, 16);
+						pdt->UpdateStatus("");
+					}
+				}
+			});
+		}
 		pavp->Start();
 	}
 }

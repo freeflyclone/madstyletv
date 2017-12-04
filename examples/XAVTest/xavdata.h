@@ -23,10 +23,16 @@ public:
 
 	void AddListener(XAVDataListener fn);
 
+	// thread-safe status retrieval & update
+	std::string Status();
+	void UpdateStatus(std::string);		// accumulate into 'status', empty input empties 'status'
+
 private:
 	XAVStreamHandle stream;				// XAV wrapper around various FFMpeg things
 	XCircularBuffer *pcb;				// points to the one in 'stream'
 	XAVDataListeners listeners;			// callback functions for further parsing
+	std::string status;
+	std::mutex mutex;
 };
 
 #endif
