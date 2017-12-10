@@ -193,6 +193,7 @@
     <None Include="..\..\shaders\yuv.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\xclass\3rdParty\gpmf-parser\GPMF_parser.h" />
     <ClInclude Include="xavdata.h" />
     <ClInclude Include="xavgpmf.h" />
   </ItemGroup>

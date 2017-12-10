@@ -209,7 +209,6 @@ namespace {
 };
 
 XGLGuiWindow* textWindow = nullptr;
-GPMF_stream gpmf;
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
@@ -294,44 +293,38 @@ void ExampleXGL::BuildScene() {
 				XAVDataThread *pdt = (XAVDataThread *)ctx;
 				int count = pcb->Count() >> 2; // this is what GPMF_Init() uses
 				uint32_t *buff = new uint32_t[count];
+				uint32_t *pBuff = buff;
 				pcb->Read((uint8_t*)buff, count<<2);
 
-				GPMF_Init(&gpmf, buff, count);
-
 				pdt->UpdateStatus("");
+				pdt->UpdateStatus(" ");
 
-				do {
-					uint32_t key = GPMF_Key(&gpmf);
-					char *pdata = (char*)GPMF_RawData(&gpmf);
-					switch (key) {
-						case GPMF_KEY_DEVICE:
-							pdt->UpdateStatus("DEVC\n");
-							break;
-						case GPMF_KEY_STREAM:
-							pdt->UpdateStatus("   STRM\n");
-							break;
-						case GPMF_KEY_STREAM_NAME:
-							pdt->UpdateStatus("   STNM\n");
-							if (pdata) {
-								pdt->UpdateStatus("       ");
-								pdt->UpdateStatus(pdata);
-								pdt->UpdateStatus("\n");
-							}
-							break;
-						default:
-							pdt->UpdateStatus("unknown\n");
-							break;
-					}
-				} while (GPMF_Next(&gpmf, GPMF_RECURSE_LEVELS) == GPMF_OK);
+				// skip to first DEVC key, (probably a no-op, but just to be safe)
+				for (; *pBuff != MAKEID('D', 'E', 'V', 'C') && pBuff < (buff + count); pBuff++);
 
-				pcb->Skip(pcb->Count());
+				for (; pBuff < (buff + count); pBuff++) {
+					uint32_t key = *pBuff;
+					uint8_t *p8Buff = (uint8_t*)(pBuff + 1);
+					GPMF_TypeSizeLength kvl;
+
+					kvl.type = *(p8Buff++);
+					kvl.size = *(p8Buff++);
+					kvl.count = *(p8Buff++) << 8;
+					kvl.count += *(p8Buff++);
+					pBuff++;
+
+					xprintf("%c%c%c%c - '%c', %d, %d\n", PRINTF_4CC(key), kvl.type?kvl.type:'0', kvl.size, kvl.count);
+					pBuff += (kvl.count + 3) >> 2;
+				}
+
 				delete buff;
 			};
 
 			pdt->AddListener(gpmfParser);
 
 			AddShape("shaders/000-simple", [&](){ shape = new XGLTransformer(); return shape; });
-			shape->SetAnimationFunction([this](float clock){
+
+			XGLShape::AnimationFn fn = [this](float clock) {
 				if (pavp->textWindow) {
 					XAVDataThread *pdt = pavp->dataStreamThreads[1];
 					std::string s = pdt->Status();
@@ -342,7 +335,9 @@ void ExampleXGL::BuildScene() {
 						pdt->UpdateStatus("");
 					}
 				}
-			});
+			};
+
+			shape->SetAnimationFunction(fn);
 		}
 		pavp->Start();
 	}

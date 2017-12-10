@@ -64,5 +64,8 @@
     <ClInclude Include="xavdata.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\xclass\3rdParty\gpmf-parser\GPMF_parser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
