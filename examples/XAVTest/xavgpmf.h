@@ -49,9 +49,6 @@ public:
 
 	void InitListeners(XAVGpmfThreads);
 	void PrintGPMF(uint32_t key, GPMF_TypeSizeLength tsl);
-
-	// generic listener
-	XAVGpmfListener listener;
 };
 
 #endif

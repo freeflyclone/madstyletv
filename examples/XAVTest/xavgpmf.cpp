@@ -68,7 +68,10 @@ void XAVGpmfThread::AddListener(uint32_t key, XAVGpmfListener fn){
 }
 
 void XAVGpmfThread::AddGenericListener(XAVGpmfListener fn){
-	genericListeners.push_back(fn);
+	if (fn == nullptr)
+		genericListeners.clear();
+	else
+		genericListeners.push_back(fn);
 }
 
 void XAVGpmfThread::Broadcast(uint32_t key, GPMF_TypeSizeLength tsl, uint8_t* buff){
@@ -87,14 +90,13 @@ void XAVGpmfTelemetry::InitListeners(XAVGpmfThreads streams) {
 	if (streams.size() < 3)
 		throw std::runtime_error("XAVGpmfTelemetry::InitListeners(): not enough streams available");
 
-	listener = [this](uint32_t key, GPMF_TypeSizeLength tsl, uint8_t* buff){ PrintGPMF(key, tsl); };
-
-	streams[1]->AddGenericListener(listener);
+	XAVGpmfListener fn = [this](uint32_t key, GPMF_TypeSizeLength tsl, uint8_t* buff){ PrintGPMF(key, tsl); };
+	streams[1]->AddGenericListener(fn);
 }
 
 void XAVGpmfTelemetry::PrintGPMF(uint32_t key, GPMF_TypeSizeLength tsl) {
 	if (tsl.type == GPMF_TYPE_NEST)
-		xprintf("%c%c%c%c: type '%c', size: %02X, count: %d\n", PRINTF_4CC(key), tsl.type, tsl.size, tsl.count);
-	else
 		xprintf("%c%c%c%c: type %d, size: %02X, count: %d\n", PRINTF_4CC(key), tsl.type, tsl.size, tsl.count);
+	else
+		xprintf("%c%c%c%c: type '%c', size: %02X, count: %d\n", PRINTF_4CC(key), tsl.type, tsl.size, tsl.count);
 }

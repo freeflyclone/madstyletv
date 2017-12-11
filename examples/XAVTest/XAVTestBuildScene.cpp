@@ -154,7 +154,7 @@ public:
 		
 		// add additional streams as generic data streams
 		for (size_t i = 2; i < xavSrc->mStreams.size(); i++)
-			dataStreamThreads.emplace_back(new XAVDataThread(xavSrc->mStreams[i]));
+			dataStreamThreads.emplace_back(new XAVGpmfThread(xavSrc->mStreams[i]));
 
 		xav.Start();
 	}
@@ -200,12 +200,13 @@ public:
 	std::shared_ptr<XAVSrc> xavSrc;
 	bool hasVideo, hasAudio;
 	
-	XAVDataThreads dataStreamThreads;
+	XAVGpmfThreads dataStreamThreads;
 	XGLGuiWindow *textWindow;
 };
 
 namespace {
 	AVPlayer *pavp;
+	XAVGpmfTelemetry telemetry;
 };
 
 XGLGuiWindow* textWindow = nullptr;
@@ -286,58 +287,21 @@ void ExampleXGL::BuildScene() {
 		// setup data callback
 		// Assume GoPro stream for now.
 		if (pavp->dataStreamThreads.size() >= 2) {
-			// Get the GPMF user data stream
-			XAVDataThread *pdt = pavp->dataStreamThreads[1];
+			telemetry.InitListeners(pavp->dataStreamThreads);
 
-			XAVDataListener gpmfParser = [&](void *ctx, XCircularBuffer *pcb) {
-				XAVDataThread *pdt = (XAVDataThread *)ctx;
-				int count = pcb->Count() >> 2; // this is what GPMF_Init() uses
-				uint32_t *buff = new uint32_t[count];
-				uint32_t *pBuff = buff;
-				pcb->Read((uint8_t*)buff, count<<2);
+			// clear default generic listener
+			pavp->dataStreamThreads[1]->AddGenericListener(nullptr);
 
-				pdt->UpdateStatus("");
-				pdt->UpdateStatus(" ");
-
-				// skip to first DEVC key, (probably a no-op, but just to be safe)
-				for (; *pBuff != MAKEID('D', 'E', 'V', 'C') && pBuff < (buff + count); pBuff++);
-
-				for (; pBuff < (buff + count); pBuff++) {
-					uint32_t key = *pBuff;
-					uint8_t *p8Buff = (uint8_t*)(pBuff + 1);
-					GPMF_TypeSizeLength kvl;
-
-					kvl.type = *(p8Buff++);
-					kvl.size = *(p8Buff++);
-					kvl.count = *(p8Buff++) << 8;
-					kvl.count += *(p8Buff++);
-					pBuff++;
-
-					xprintf("%c%c%c%c - '%c', %d, %d\n", PRINTF_4CC(key), kvl.type?kvl.type:'0', kvl.size, kvl.count);
-					pBuff += (kvl.count + 3) >> 2;
-				}
-
-				delete buff;
+			// add DEVC listener
+			XAVGpmfListener fn = [this](uint32_t key, GPMF_TypeSizeLength tsl, uint8_t* buff) {
+				telemetry.PrintGPMF(key, tsl); 
 			};
+			pavp->dataStreamThreads[1]->AddListener(MAKEID('D','E','V','C'), fn);
 
-			pdt->AddListener(gpmfParser);
-
+			// add invisible XGLTransformer to attach a top-level XGLShape that we can add a callback
+			// to for querying the GPMF telemetry module per video frame time, ie: pull data rather
+			// than have engine threads pushing data to GUI elements.
 			AddShape("shaders/000-simple", [&](){ shape = new XGLTransformer(); return shape; });
-
-			XGLShape::AnimationFn fn = [this](float clock) {
-				if (pavp->textWindow) {
-					XAVDataThread *pdt = pavp->dataStreamThreads[1];
-					std::string s = pdt->Status();
-					if (s.size()) {
-						pavp->textWindow->Clear();
-						pavp->textWindow->SetPenPosition(10, 16);
-						pavp->textWindow->RenderText(s, 16);
-						pdt->UpdateStatus("");
-					}
-				}
-			};
-
-			shape->SetAnimationFunction(fn);
 		}
 		pavp->Start();
 	}
