@@ -2,7 +2,7 @@
 	"AssetFolder" : "assets",
 	"ShaderFolder" : "shaders",
 	"SharedMemory" : false,
-	"VideoFile" : "assets/GuruFront.mp4",
+	"VideoFile" : "assets/GH010025.mp4",
 	"Encoder" : {
 		"enabled" : false,
 		"preset" : "faster",

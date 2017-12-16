@@ -38,6 +38,7 @@ typedef struct {
 } ImageBuff;
 
 ImageBuff ib;
+typedef std::deque<ImageBuff> ImageBuffs;
 
 class VideoStreamThread : public XThread {
 public:
@@ -153,8 +154,8 @@ public:
 			ast = new AudioStreamThread(pXgl, xavSrc->mAudioStream);
 		
 		// add additional streams as generic data streams
-		for (size_t i = 2; i < xavSrc->mStreams.size(); i++)
-			dataStreamThreads.emplace_back(new XAVGpmfThread(xavSrc->mStreams[i]));
+		//for (size_t i = 2; i < xavSrc->mStreams.size(); i++)
+			//dataStreamThreads.emplace_back(new XAVGpmfThread(xavSrc->mStreams[i]));
 
 		xav.Start();
 	}
@@ -171,8 +172,10 @@ public:
 		if (hasVideo)
 			vst->Start();
 
-		for (auto dst : dataStreamThreads)
-			dst->Start();
+		if (dataStreamThreads.size() > 0) {
+			for (auto dst : dataStreamThreads)
+				dst->Start();
+		}
 
 		while ( xav.IsRunning() && IsRunning() ) {
 			if (hasVideo && !vst->IsRunning())
@@ -182,8 +185,10 @@ public:
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
 		}
 
-		for (auto dst : dataStreamThreads)
-			dst->Stop();
+		if (dataStreamThreads.size() > 0) {
+			for (auto dst : dataStreamThreads)
+				dst->Stop();
+		}
 
 		if (hasVideo)
 			vst->Stop();
@@ -230,6 +235,8 @@ void ExampleXGL::BuildScene() {
 	else
 		videoPath = pathToAssets + "/" + videoUrl;
 
+	preferredSwapInterval = 0;
+
 	if (false){
 		AddShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
 		shape->attributes.diffuseColor = { 0.025, 0.025, 0.025, 1 };
@@ -241,11 +248,11 @@ void ExampleXGL::BuildScene() {
 		});
 	}
 
-	AddShape("shaders/yuv", [&](){ shape = new XGLHemiSphere(1.0f, 256); return shape; });
-	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(180.f), glm::vec3(0.0f, 0.0f, 1.0f));
-	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(20.0f, 20.0f, 20.0f));
-	shape->model = translate * scale * rotate;
+	//AddShape("shaders/yuv", [&](){ shape = new XGLHemiSphere(1.0f, 256); return shape; });
+	//glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0.0f, 1.0f, 0.0f));
+	//glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(180.f), glm::vec3(0.0f, 0.0f, 1.0f));
+	//glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(20.0f, 20.0f, 20.0f));
+	//shape->model = translate * scale * rotate;
 
 	bool doVideo = true;
 	if (doVideo) {
@@ -253,10 +260,11 @@ void ExampleXGL::BuildScene() {
 		shape->AddTexture(VIDEO_WIDTH / 2, VIDEO_HEIGHT / 2, 1);
 		shape->AddTexture(VIDEO_WIDTH / 2, VIDEO_HEIGHT / 2, 1);
 
-		glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(0.00001f, 0.00001f, 0.00001f));
-		glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 2.624f));
+		//glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(0.00001f, 0.00001f, 0.00001f));
+		glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(16.0f, 9.0f, 1.0f));
+		glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 8.0f));
 		glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		shape->model = translate * rotate * scale;
+		shape->model = translate * rotate *scale;
 
 		shape->SetAnimationFunction([shape](float clock) {
 			if (pavp != NULL && pavp->IsRunning() && (ib.width != 0)) {
@@ -293,15 +301,39 @@ void ExampleXGL::BuildScene() {
 			pavp->dataStreamThreads[1]->AddGenericListener(nullptr);
 
 			// add DEVC listener
-			XAVGpmfListener fn = [this](uint32_t key, GPMF_TypeSizeLength tsl, uint8_t* buff) {
+			XAVGpmfListener fn = [this](uint32_t key, GPMF_TypeSizeLength tsl, uint8_t* buff) { 
+				telemetry.UpdateStatus("DEVC\n");
 				telemetry.PrintGPMF(key, tsl); 
 			};
 			pavp->dataStreamThreads[1]->AddListener(MAKEID('D','E','V','C'), fn);
+
+			fn = [this](uint32_t key, GPMF_TypeSizeLength tsl, uint8_t* buff) { 
+				telemetry.UpdateStatus("Stream: ");
+				telemetry.UpdateStatus((char *)buff);
+				telemetry.UpdateStatus("\n");
+				xprintf("Stream: %s\n", buff);
+			};
+			pavp->dataStreamThreads[1]->AddListener(MAKEID('S', 'T', 'N', 'M'), fn);
 
 			// add invisible XGLTransformer to attach a top-level XGLShape that we can add a callback
 			// to for querying the GPMF telemetry module per video frame time, ie: pull data rather
 			// than have engine threads pushing data to GUI elements.
 			AddShape("shaders/000-simple", [&](){ shape = new XGLTransformer(); return shape; });
+
+			XGLShape::AnimationFn afn = [this](float clock) {
+				if (pavp->textWindow) {
+					XAVGpmfThread *pgmf = pavp->dataStreamThreads[1];
+					std::string s = telemetry.status;
+					if (s.size()) {
+						pavp->textWindow->Clear();
+						pavp->textWindow->SetPenPosition(10, 16);
+						pavp->textWindow->RenderText(s, 16);
+						telemetry.UpdateStatus("");
+					}
+				}
+			};
+
+			shape->SetAnimationFunction(afn);
 		}
 		pavp->Start();
 	}

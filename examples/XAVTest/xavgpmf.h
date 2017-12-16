@@ -49,6 +49,11 @@ public:
 
 	void InitListeners(XAVGpmfThreads);
 	void PrintGPMF(uint32_t key, GPMF_TypeSizeLength tsl);
+
+	std::string Status();
+	void UpdateStatus(std::string);
+	std::string status;
+	std::mutex mutex;
 };
 
 #endif

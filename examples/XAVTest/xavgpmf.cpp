@@ -100,3 +100,16 @@ void XAVGpmfTelemetry::PrintGPMF(uint32_t key, GPMF_TypeSizeLength tsl) {
 	else
 		xprintf("%c%c%c%c: type '%c', size: %02X, count: %d\n", PRINTF_4CC(key), tsl.type, tsl.size, tsl.count);
 }
+
+std::string XAVGpmfTelemetry::Status() { 
+	std::lock_guard<std::mutex> lock(mutex);
+	return status; 
+}
+
+void XAVGpmfTelemetry::UpdateStatus(std::string s) { 
+	std::lock_guard<std::mutex> lock(mutex);
+	if (s.size())
+		status += s; 
+	else 
+		status = ""; 
+}
