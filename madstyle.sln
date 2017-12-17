@@ -155,6 +155,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SmartThreads", "examples\Sm
 		{AC4080D2-1C42-4812-943D-79CA13A1D86C} = {AC4080D2-1C42-4812-943D-79CA13A1D86C}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SemaphoreTest", "examples\SemaphoreTest\SemaphoreTest.vcxproj", "{70A25750-7EAB-41EE-864C-49C9BC63F7AA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AC4080D2-1C42-4812-943D-79CA13A1D86C} = {AC4080D2-1C42-4812-943D-79CA13A1D86C}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -501,6 +506,18 @@ Global
 		{5E5C0FAD-40CF-4245-97BF-016B6BDA1F22}.Release|Win32.Build.0 = Release|Win32
 		{5E5C0FAD-40CF-4245-97BF-016B6BDA1F22}.Release|x64.ActiveCfg = Release|x64
 		{5E5C0FAD-40CF-4245-97BF-016B6BDA1F22}.Release|x64.Build.0 = Release|x64
+		{70A25750-7EAB-41EE-864C-49C9BC63F7AA}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{70A25750-7EAB-41EE-864C-49C9BC63F7AA}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{70A25750-7EAB-41EE-864C-49C9BC63F7AA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{70A25750-7EAB-41EE-864C-49C9BC63F7AA}.Debug|Win32.Build.0 = Debug|Win32
+		{70A25750-7EAB-41EE-864C-49C9BC63F7AA}.Debug|x64.ActiveCfg = Debug|x64
+		{70A25750-7EAB-41EE-864C-49C9BC63F7AA}.Debug|x64.Build.0 = Debug|x64
+		{70A25750-7EAB-41EE-864C-49C9BC63F7AA}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{70A25750-7EAB-41EE-864C-49C9BC63F7AA}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{70A25750-7EAB-41EE-864C-49C9BC63F7AA}.Release|Win32.ActiveCfg = Release|Win32
+		{70A25750-7EAB-41EE-864C-49C9BC63F7AA}.Release|Win32.Build.0 = Release|Win32
+		{70A25750-7EAB-41EE-864C-49C9BC63F7AA}.Release|x64.ActiveCfg = Release|x64
+		{70A25750-7EAB-41EE-864C-49C9BC63F7AA}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -534,5 +551,6 @@ Global
 		{9A82A334-6943-4431-BC1D-67B37D4A9580} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 		{DE80430D-EFFC-48EA-847F-F8D05570E8B8} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 		{5E5C0FAD-40CF-4245-97BF-016B6BDA1F22} = {24EAE59C-1779-4D00-8819-415B4A41868E}
+		{70A25750-7EAB-41EE-864C-49C9BC63F7AA} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 	EndGlobalSection
 EndGlobal

@@ -278,9 +278,6 @@
     <ClCompile Include="xinput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="xav\xavsrc.cpp">
-      <Filter>xav\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="xav\xavfile.cpp">
       <Filter>xav\Source Files</Filter>
     </ClCompile>
@@ -346,6 +343,9 @@
     </ClCompile>
     <ClCompile Include="xphy\xphybody.cpp">
       <Filter>xphy\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="xav\xavsrc.cpp">
+      <Filter>xav\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
