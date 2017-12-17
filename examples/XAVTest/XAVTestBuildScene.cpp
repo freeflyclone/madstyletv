@@ -44,7 +44,7 @@ typedef std::deque<ImageBuff> ImageBuffs;
 
 class VideoStreamThread : public XThread {
 public:
-	VideoStreamThread(XGL* pXgl, std::shared_ptr<XAVStream> s) : pXgl(pXgl), XThread("VideoStreamThread"), stream(s), freeBuffs(1) {
+	VideoStreamThread(XGL* pXgl, std::shared_ptr<XAVStream> s) : pXgl(pXgl), XThread("VideoStreamThread"), stream(s), freeBuffs(2), usedBuffs(1) {
 		memset(ib.y, 0, sizeof(ib.y));
 		memset(ib.u, 127, sizeof(ib.u));
 		memset(ib.v, 127, sizeof(ib.v));
@@ -116,17 +116,15 @@ public:
 			//xal.WaitForProcessedBuffer();
 
 			XAVStream::XAVBuffer audio = stream->GetBuffer();
-			/*
 			if (audio.buffers[0] == NULL) {
 				xal.Stop();
 				Stop();
 				break;
 			}
 
-			xal.Convert((float *)audio.buffers[0], (float *)audio.buffers[1]);
-			xal.Buffer();
-			xal.Restart();
-			*/
+			//xal.Convert((float *)audio.buffers[0], (float *)audio.buffers[1]);
+			//xal.Buffer();
+			//xal.Restart();
 		}
 		xprintf("AudioStreamThread done.\n");
 	}
