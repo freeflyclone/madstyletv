@@ -216,7 +216,11 @@ public:
 
 namespace {
 	AVPlayer *pavp;
+
+#define DATA_STREAMS_ENGAGE
+#ifdef DATA_STREAMS_ENGAGE
 	XAVGpmfTelemetry telemetry;
+#endif
 };
 
 XGLGuiWindow* textWindow = nullptr;
@@ -241,6 +245,8 @@ void ExampleXGL::BuildScene() {
 		videoPath = videoUrl;
 	else
 		videoPath = pathToAssets + "/" + videoUrl;
+
+	videoPath = videoUrl;
 
 	if (false){
 		AddShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });
@@ -308,6 +314,8 @@ void ExampleXGL::BuildScene() {
 		pavp = new AVPlayer(this, videoPath);
 		pavp->SetName("AVPlayer");
 
+#define DATA_STREAMS_ENGAGE
+#ifdef DATA_STREAMS_ENGAGE
 		// setup data callback
 		// Assume GoPro stream for now.
 		if (pavp->dataStreamThreads.size() >= 2) {
@@ -351,6 +359,8 @@ void ExampleXGL::BuildScene() {
 
 			shape->SetAnimationFunction(afn);
 		}
+#endif // DATA_STREAMS_ENGAGE
+	
 		pavp->Start();
 	}
 }

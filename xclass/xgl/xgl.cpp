@@ -113,8 +113,8 @@ hmdSled(nullptr)
 	// enabling this takes up GPU time,
 	// mostly because of glReadPixels().
 	// with the encoder in the loop, it's even worse
-	//if (config.Find(L"SharedMemory")->AsBool())
-		//fb = new XGLSharedFBO(this);
+	if (config.Find(L"SharedMemory")->AsBool())
+		fb = new XGLSharedFBO(this);
 }
 
 XGL::~XGL(){

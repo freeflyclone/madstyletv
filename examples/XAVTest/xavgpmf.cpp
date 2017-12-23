@@ -87,7 +87,7 @@ XAVGpmfTelemetry::XAVGpmfTelemetry() {
 }
 
 void XAVGpmfTelemetry::InitListeners(XAVGpmfThreads streams) {
-	if (streams.size() < 3)
+	if (streams.size() < 2)
 		throw std::runtime_error("XAVGpmfTelemetry::InitListeners(): not enough streams available");
 
 	XAVGpmfListener fn = [this](uint32_t key, GPMF_TypeSizeLength tsl, uint8_t* buff){ PrintGPMF(key, tsl); };

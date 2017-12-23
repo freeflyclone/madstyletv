@@ -52,7 +52,7 @@ XGLSphere *ball1, *ball2, *ball3, *ball4;
 const float bump{ 2.0 };
 
 void ExampleXGL::BuildScene() {
-	initHmd = true;
+	//initHmd = true;
 
 	AddShape("shaders/specular", [&](){ ball1 = new XGLSphere(1.0f, 32); return ball1; });
 	ball1->SetName("Ball");

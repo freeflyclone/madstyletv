@@ -7,6 +7,7 @@ std::map<std::wstring, AVPixelFormat> pixelFormats = {
 	{ L"AV_PIX_FMT_YUV444P", AV_PIX_FMT_YUV444P }
 };
 
+#define HAS_FFMPEG
 #ifdef HAS_FFMPEG
 XAVEncoder::XAVEncoder(XConfig *cfg, unsigned char *y, unsigned char *u, unsigned char *v) : config(cfg), yBuffer(y), uBuffer(u), vBuffer(v), frameNumber(0), output(NULL), udpSocket(0) {
 	avcodec_register_all();
