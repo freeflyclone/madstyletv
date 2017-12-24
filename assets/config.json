@@ -2,7 +2,7 @@
 	"AssetFolder" : "assets",
 	"ShaderFolder" : "shaders",
 	"SharedMemory" : false,
-	"VideoFile" : "H:/Hero6/GH010033.mp4",
+	"VideoFile" : "H:/Hero6/GH010027.mp4",
 	"Encoder" : {
 		"enabled" : false,
 		"preset" : "faster",

@@ -113,7 +113,7 @@ public:
 
 	void Run() {
 		while (IsRunning()) {
-			//xal.WaitForProcessedBuffer();
+			xal.WaitForProcessedBuffer();
 
 			XAVStream::XAVBuffer audio = stream->GetBuffer();
 			if (audio.buffers[0] == NULL) {
@@ -122,9 +122,9 @@ public:
 				break;
 			}
 
-			//xal.Convert((float *)audio.buffers[0], (float *)audio.buffers[1]);
-			//xal.Buffer();
-			//xal.Restart();
+			xal.Convert((float *)audio.buffers[0], (float *)audio.buffers[1]);
+			xal.Buffer();
+			xal.Restart();
 		}
 		xprintf("AudioStreamThread done.\n");
 	}
@@ -241,12 +241,12 @@ void ExampleXGL::BuildScene() {
 	// build a full path including "pathToAssets", unless it's a url that starts with "http"
 	std::string videoUrl = config.WideToBytes(config.Find(L"VideoFile")->AsString());
 	std::string videoPath;
-	if (videoUrl.find("http") != std::string::npos)
+	if (videoUrl.find("http") != videoUrl.npos)
+		videoPath = videoUrl;
+	else if (videoUrl.find(":", 1) != videoUrl.npos)
 		videoPath = videoUrl;
 	else
 		videoPath = pathToAssets + "/" + videoUrl;
-
-	videoPath = videoUrl;
 
 	if (false){
 		AddShape("shaders/specular", [&](){ shape = new XGLTorus(3.0f, 0.5f, 64, 32); return shape; });

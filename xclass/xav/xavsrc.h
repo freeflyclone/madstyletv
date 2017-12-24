@@ -42,7 +42,7 @@ typedef std::vector<XAVDataFunction> XAVDataFunctions;
 class XAVStream
 {
 public:
-	static const int numFrames = 4;
+	static const int numFrames = 8;
 	static const int maxChannels = 8;
 
 	typedef struct {
