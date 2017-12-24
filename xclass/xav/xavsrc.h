@@ -35,9 +35,6 @@ class XAVStream;
 typedef std::shared_ptr<XAVStream> XAVStreamHandle;
 typedef std::vector<XAVStreamHandle> XAVStreamSet;
 
-typedef std::function<void(uint8_t*, size_t, uint64_t)> XAVDataFunction;
-typedef std::vector<XAVDataFunction> XAVDataFunctions;
-
 // Multimedia sources possibly have more than one "stream" (audio/video for ex.)
 class XAVStream
 {
@@ -50,6 +47,7 @@ public:
 		int nChannels;
 		int size;
 		int count;
+		int64_t pts; // in tics (this stream's framerate)
 	} XAVBuffer;
 
 	XAVStream(AVCodecContext *context);
@@ -60,17 +58,6 @@ public:
 
 	void Acquire();
 	void Release();
-
-	/*
-	void AddDataFunction(XAVDataFunction fn) { dataFunctions.emplace_back(fn); }
-
-	void InvokeDataFunctions(uint8_t *data, size_t size, uint64_t time) {
-		for (auto fn : dataFunctions) {
-			fn(data, size, time);
-		}
-		totalBytes += size;
-	}
-	*/
 
 	int nFramesDecoded;
 	int nFramesRead;
@@ -107,10 +94,13 @@ public:
 	XSemaphore freeBuffs;
 	XSemaphore usedBuffs;
 
-	//int64_t totalBytes, totalChunks;
-	//XAVDataFunctions dataFunctions;
-
 	XCircularBuffer *pcb;
+
+	int framerateNum;
+	int framerateDen;
+	int timebaseNum;
+	int timebaseDen;
+	int ticksPerFrame;
 };
 
 class XAVSrc : public XThread

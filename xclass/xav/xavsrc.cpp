@@ -35,6 +35,12 @@ XAVStream::XAVStream(AVCodecContext *ctx) :
 				// save it so our clients can know
 				chromaWidth = pCodecCtx->width / (1 << pixDesc->log2_chroma_w);
 				chromaHeight = pCodecCtx->height / (1 << pixDesc->log2_chroma_h);
+
+				framerateNum = pCodecCtx->framerate.num;
+				framerateDen = pCodecCtx->framerate.den;
+				timebaseNum = pCodecCtx->time_base.num;
+				timebaseDen = pCodecCtx->time_base.den;
+				ticksPerFrame = pCodecCtx->ticks_per_frame;
 			}
 			else if (pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO) {
 				xprintf("Found AVMEDIA_TYPE_AUDIO\n");
@@ -47,6 +53,12 @@ XAVStream::XAVStream(AVCodecContext *ctx) :
 				formatSize = 0;
 				isFloat = false;
 				sampleRate = pCodecCtx->sample_rate;
+
+				framerateNum = pCodecCtx->framerate.num;
+				framerateDen = pCodecCtx->framerate.den;
+				timebaseNum = pCodecCtx->time_base.num;
+				timebaseDen = pCodecCtx->time_base.den;
+				ticksPerFrame = pCodecCtx->ticks_per_frame;
 
 				switch (pCodecCtx->sample_fmt) {
 				case 8:
