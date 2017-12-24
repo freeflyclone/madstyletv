@@ -36,6 +36,7 @@ XAVStream::XAVStream(AVCodecContext *ctx) :
 				chromaWidth = pCodecCtx->width / (1 << pixDesc->log2_chroma_w);
 				chromaHeight = pCodecCtx->height / (1 << pixDesc->log2_chroma_h);
 
+				// need to pass timing info downstream to client(s)
 				framerateNum = pCodecCtx->framerate.num;
 				framerateDen = pCodecCtx->framerate.den;
 				timebaseNum = pCodecCtx->time_base.num;
@@ -114,7 +115,8 @@ bool XAVStream::Decode(AVPacket *packet)
 				freeBuffs.wait_for(200);
 				int frameIdx = (nFramesDecoded - 1) & (numFrames - 1);
 
-				XAVBuffer xb = frames[frameIdx];
+				XAVBuffer& xb = frames[frameIdx]; // get reference, else 'xb' is a copy (undesirable)
+				xb.pts = packet->pts;
 
 				// if linesize[x] == width, we can copy the frame with a single memcpy()
 				if (pFrame->linesize[0] == width) {
@@ -174,7 +176,8 @@ bool XAVStream::Decode(AVPacket *packet)
 
 				// replace all of this mumbo with an XFifo
 				int frameIdx = (nFramesDecoded - 1) & (numFrames - 1);
-				XAVBuffer xb = frames[frameIdx];
+				XAVBuffer& xb = frames[frameIdx];
+				xb.pts = packet->pts;
 
 				xb.nChannels = channels;
 

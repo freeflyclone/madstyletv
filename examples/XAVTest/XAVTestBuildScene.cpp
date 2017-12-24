@@ -67,6 +67,8 @@ public:
 					break;
 				}
 
+				xprintf("video pts: %ld\n", image.pts);
+
 				freeBuffs.wait();
 				size = stream->width * stream->height;
 				if (size > (VIDEO_WIDTH*VIDEO_HEIGHT))
