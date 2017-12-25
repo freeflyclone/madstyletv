@@ -35,12 +35,11 @@ typedef struct {
 	unsigned char v[VIDEO_WIDTH * VIDEO_HEIGHT];
 	int width, height;
 	int chromaWidth, chromaHeight;
+	float pts;
 } ImageBuff;
 
 ImageBuff ib;
 typedef std::deque<ImageBuff> ImageBuffs;
-
-//size_t vReadCount = 0;
 
 class VideoStreamThread : public XThread {
 public:
@@ -67,7 +66,9 @@ public:
 					break;
 				}
 
-				xprintf("video pts: %ld\n", image.pts);
+				framePeriod = (float)stream->framerateNum / (float)stream->framerateDen;
+				pts = ((float)image.pts / framePeriod) / (float)stream->framerateDen;
+				//xprintf("video pts: %0.3f\n", pts);
 
 				freeBuffs.wait();
 				size = stream->width * stream->height;
@@ -84,6 +85,7 @@ public:
 				ib.height = stream->height;
 				ib.chromaWidth = stream->chromaWidth;
 				ib.chromaHeight = stream->chromaHeight;
+				ib.pts = pts;
 				usedBuffs.notify();
 			}
 			xprintf("VideoStreamThread done.\n");
@@ -101,32 +103,36 @@ public:
 	int penX;
 	int penY;
 	XGL *pXgl;
+	float pts;
+	float framePeriod;
 
 	XSemaphore freeBuffs, usedBuffs;
 };
 
 class AudioStreamThread : public XThread {
 public:
-	AudioStreamThread(XGL* pXgl, std::shared_ptr<XAVStream> s) : pXgl(pXgl), XThread("AudioStreamThread"), stream(s), xal(NULL, s->sampleRate, XAL::defaultFormat, XAVStream::numFrames) {
-		xal.AddBuffers(XAVStream::numFrames);
+	AudioStreamThread(XGL* pXgl, std::shared_ptr<XAVStream> s) : pXgl(pXgl), XThread("AudioStreamThread"), stream(s), xal(NULL, s->sampleRate, XAL::defaultFormat, XAL::maxBuffers) {
+		xal.AddBuffers(XAL::maxBuffers);
 		xal.QueueBuffers();
 		xal.Play();
+
+		float delta = (float)XAL::audioSamples / stream->sampleRate;
+		deltaPts = delta;
 	}
 
 	void Run() {
+		float channelBuff[XAVStream::maxChannels][XAL::audioSamples];
+
 		while (IsRunning()) {
 			xal.WaitForProcessedBuffer();
 
-			XAVStream::XAVBuffer audio = stream->GetBuffer();
-			if (audio.buffers[0] == NULL) {
-				xal.Stop();
-				Stop();
-				break;
-			}
+			for (int i = 0; i < stream->channels; i++)
+				stream->cbSet[i].get()->Read((uint8_t *)&channelBuff[i], XAL::audioSamples * stream->formatSize);
 
-			xal.Convert((float *)audio.buffers[0], (float *)audio.buffers[1]);
+			xal.Convert(channelBuff[0], channelBuff[1]);
 			xal.Buffer();
 			xal.Restart();
+			pts += deltaPts;
 		}
 		xprintf("AudioStreamThread done.\n");
 	}
@@ -134,6 +140,8 @@ public:
 	XAL xal;
 	std::shared_ptr<XAVStream> stream;
 	XGL *pXgl;
+	float pts{ 0.0f };
+	float deltaPts;
 };
 
 class AVPlayer : public XObject, public XThread {
@@ -233,7 +241,6 @@ void ExampleXGL::BuildScene() {
 	initHmd = false;
 	preferredSwapInterval = 1;
 
-
 	// Initialize the Camera matrix
 	glm::vec3 cameraPosition(5, -20, 20);
 	glm::vec3 cameraDirection = glm::normalize(cameraPosition*-1.0f);
@@ -287,8 +294,12 @@ void ExampleXGL::BuildScene() {
 			static float oldClock = 0.0f;
 			if (clock > oldClock) {
 				VideoStreamThread* pVst = pavp->vst;
+				AudioStreamThread* pAst = pavp->ast;
+
 				if (pavp != NULL && pVst->IsRunning() && (ib.width != 0)) {
 					pVst->usedBuffs.wait();
+					xprintf("%0.5f, %0.5f\n", pVst->pts, pAst->pts);
+
 					glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit0"), 0);
 					glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit1"), 1);
 					glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit2"), 2);
@@ -316,7 +327,7 @@ void ExampleXGL::BuildScene() {
 		pavp = new AVPlayer(this, videoPath);
 		pavp->SetName("AVPlayer");
 
-#define DATA_STREAMS_ENGAGE
+//#define DATA_STREAMS_ENGAGE
 #ifdef DATA_STREAMS_ENGAGE
 		// setup data callback
 		// Assume GoPro stream for now.

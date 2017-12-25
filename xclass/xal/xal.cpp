@@ -93,7 +93,7 @@ ALuint XAL::WaitForProcessedBuffer() {
 
 	do {
 		alGetSourcei(alSourceId, AL_BUFFERS_PROCESSED, &val);
-		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
+		//std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
 	} while (val == 0);
 
 	alSourceUnqueueBuffers(alSourceId, 1, &bufferId);

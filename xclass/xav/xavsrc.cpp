@@ -4,7 +4,8 @@ XAVStream::XAVStream(AVCodecContext *ctx) :
 	freeBuffs(numFrames), 
 	pStream(NULL), 
 	streamIdx(0), 
-	streamTime(0.0)
+	streamTime(0.0),
+	pcb(nullptr)
 {
 	pCodecCtx = ctx;
 
@@ -27,6 +28,10 @@ XAVStream::XAVStream(AVCodecContext *ctx) :
 				AllocateBufferPool(numFrames, numBytes, 3);
 				width = pCodecCtx->width;
 				height = pCodecCtx->height;
+
+				channels = pCodecCtx->channels;
+				sampleRate = pCodecCtx->sample_rate;
+				formatSize = 0;
 
 				// figure out the chroma sub-sampling of the pixel format
 				int pixelFormat = pCodecCtx->pix_fmt;
@@ -61,6 +66,10 @@ XAVStream::XAVStream(AVCodecContext *ctx) :
 				timebaseDen = pCodecCtx->time_base.den;
 				ticksPerFrame = pCodecCtx->ticks_per_frame;
 
+				// make XCircularBuffer for each channel
+				for (int i = 0; i < pCodecCtx->channels; i++)
+					cbSet.emplace_back(std::make_shared<XCircularBuffer>(0x40000));
+
 				switch (pCodecCtx->sample_fmt) {
 				case 8:
 					formatSize = 4;
@@ -94,6 +103,7 @@ void XAVStream::AllocateBufferPool(int number, int size, int channels) {
 		throwXAVException("channels count is out of bounds: "+std::to_string(channels));
 
 	for (int i = 0; i < number; i++) {
+		memset(&frames[i], 0, sizeof(frames[0]));
 		for (int j = 0; j < channels; j++) {
 			unsigned char *buffer = (unsigned char *)av_malloc(size);
 			frames[i].buffers[j] = buffer;
@@ -169,24 +179,9 @@ bool XAVStream::Decode(AVPacket *packet)
 		else if (pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO) {
 			int length = avcodec_decode_audio4(pCodecCtx, pFrame, &frameFinished, packet);
 			if (frameFinished){
-				if (nFramesDecoded == 0)
-					AllocateBufferPool(numFrames, pFrame->nb_samples * formatSize, channels);
-
-				freeBuffs.wait_for(200);
-
-				// replace all of this mumbo with an XFifo
-				int frameIdx = (nFramesDecoded - 1) & (numFrames - 1);
-				XAVBuffer& xb = frames[frameIdx];
-				xb.pts = packet->pts;
-
-				xb.nChannels = channels;
-
 				for (int i = 0; i < channels; i++)
-					memcpy(xb.buffers[i], pFrame->data[i], xb.size);
-
-				streamTime += (double)pFrame->nb_samples / (double)pFrame->sample_rate;
+					cbSet[i].get()->Write(pFrame->data[i], pFrame->nb_samples * formatSize);
 				nFramesDecoded++;
-				usedBuffs.notify();
 			}
 		}
 	}

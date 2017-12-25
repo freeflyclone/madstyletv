@@ -35,11 +35,15 @@ class XAVStream;
 typedef std::shared_ptr<XAVStream> XAVStreamHandle;
 typedef std::vector<XAVStreamHandle> XAVStreamSet;
 
+typedef std::shared_ptr<XCircularBuffer> XAVCircularBufferHandle;
+typedef std::vector<XAVCircularBufferHandle> XAVCircularBufferSet;
+
+
 // Multimedia sources possibly have more than one "stream" (audio/video for ex.)
 class XAVStream
 {
 public:
-	static const int numFrames = 8;
+	static const int numFrames = 4;
 	static const int maxChannels = 8;
 
 	typedef struct {
@@ -101,6 +105,9 @@ public:
 	int timebaseNum;
 	int timebaseDen;
 	int ticksPerFrame;
+
+	// Intended for audio: one XCircularBuffer per audio channel
+	XAVCircularBufferSet cbSet;
 };
 
 class XAVSrc : public XThread
