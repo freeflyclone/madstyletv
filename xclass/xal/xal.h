@@ -65,7 +65,7 @@ public:
 
 	// these must both be powers of 2
 	static const int audioSamples = 128;
-	static const int maxBuffers = 512;
+	static const int maxBuffers = 32;
 
 	static const int defaultSamplerate = 48000;
 	static const int defaultFormat = AL_FORMAT_STEREO16;

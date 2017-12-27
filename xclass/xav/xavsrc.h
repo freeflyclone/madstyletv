@@ -115,8 +115,8 @@ class XAVSrc : public XThread
 public:
 	XAVSrc(const std::string name, bool v, bool a);
 	XAVSrc();
-	bool DecodeVideo(AVPacket *packet);
-	bool DecodeAudio(AVPacket *packet);
+	//bool DecodeVideo(AVPacket *packet);
+	//bool DecodeAudio(AVPacket *packet);
 	virtual void Run();
 
 	XAVStream *VideoStream();

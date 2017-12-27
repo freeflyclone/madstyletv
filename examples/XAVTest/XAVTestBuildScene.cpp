@@ -15,6 +15,7 @@
 #include "ExampleXGL.h"
 
 #include <iostream>
+#include <chrono>
 
 #include <xav.h>
 #include <xavfile.h>
@@ -122,9 +123,16 @@ public:
 
 	void Run() {
 		float channelBuff[XAVStream::maxChannels][XAL::audioSamples];
+		auto start = std::chrono::steady_clock::now();
 
 		while (IsRunning()) {
-			xal.WaitForProcessedBuffer();
+			{
+				auto start = std::chrono::high_resolution_clock::now();
+				xal.WaitForProcessedBuffer();
+				auto end = std::chrono::high_resolution_clock::now();
+				std::chrono::duration<double, std::micro> duration = end - start;
+				xprintf("xal delay: %0.2fus\n", duration);
+			}
 
 			for (int i = 0; i < stream->channels; i++)
 				stream->cbSet[i].get()->Read((uint8_t *)&channelBuff[i], XAL::audioSamples * stream->formatSize);
@@ -133,6 +141,11 @@ public:
 			xal.Buffer();
 			xal.Restart();
 			pts += deltaPts;
+
+			auto now = std::chrono::steady_clock::now();
+			std::chrono::duration<double, std::micro> when = now - start;
+
+			//xprintf("%0.6f,%0.2fus\n", pts,when);
 		}
 		xprintf("AudioStreamThread done.\n");
 	}
@@ -298,7 +311,7 @@ void ExampleXGL::BuildScene() {
 
 				if (pavp != NULL && pVst->IsRunning() && (ib.width != 0)) {
 					pVst->usedBuffs.wait();
-					xprintf("%0.5f, %0.5f\n", pVst->pts, pAst->pts);
+					//xprintf("%0.5f, %0.5f\n", pVst->pts, pAst->pts);
 
 					glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit0"), 0);
 					glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit1"), 1);

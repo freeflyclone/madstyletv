@@ -120,7 +120,12 @@ bool XAVStream::Decode(AVPacket *packet)
 {
 	if (pCodecCtx) {
 		if (pCodecCtx->codec_type == AVMEDIA_TYPE_VIDEO) {
+			auto start = std::chrono::high_resolution_clock::now();
 			avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, packet);
+			auto end = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<double, std::micro> duration = end - start;
+			//xprintf("pict_type: %d, vdt: %0.6f\n", pFrame->pict_type, duration);
+
 			if (frameFinished) {
 				freeBuffs.wait_for(200);
 				int frameIdx = (nFramesDecoded - 1) & (numFrames - 1);
@@ -177,7 +182,11 @@ bool XAVStream::Decode(AVPacket *packet)
 			}
 		}
 		else if (pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO) {
+			auto start = std::chrono::high_resolution_clock::now();
 			int length = avcodec_decode_audio4(pCodecCtx, pFrame, &frameFinished, packet);
+			auto end = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<double, std::micro> duration = end - start;
+			xprintf("adt: %0.2f\n", duration);
 			if (frameFinished){
 				for (int i = 0; i < channels; i++)
 					cbSet[i].get()->Write(pFrame->data[i], pFrame->nb_samples * formatSize);
@@ -288,16 +297,8 @@ XAVSrc::XAVSrc() :
 
 void XAVSrc::Run()
 {
-	while( av_read_frame(pFormatCtx, &packet) >= 0 )
-	{
-		//if (packet.stream_index <= 1) {
-		for (int i = 0; i < mUsedStreams; i++) {
-			if (mStreams[i]->streamIdx == packet.stream_index) {
-				mStreams[i]->Decode(&packet);
-				av_packet_unref(&packet);
-			}
-		}
-	}
+	while( (av_read_frame(pFormatCtx, &packet) >= 0) )
+		mStreams[packet.stream_index]->Decode(&packet);
 }
 
 XAVStream *XAVSrc::VideoStream() {
