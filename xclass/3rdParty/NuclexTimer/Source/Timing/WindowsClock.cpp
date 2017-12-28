@@ -25,6 +25,7 @@ License along with this library
 #include <limits>
 #include <stdexcept>
 #include <cassert>
+#include <algorithm>
 
 // Don't use WIN32_LEAN_AND_MEAN in this case.
 #include <Windows.h>

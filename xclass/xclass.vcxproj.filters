@@ -58,6 +58,15 @@
     <Filter Include="xphy\Source Files">
       <UniqueIdentifier>{b98d8333-ee70-4626-b6b2-85fa2392fab4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="NuclexTimer">
+      <UniqueIdentifier>{3ec429a7-30eb-4fc4-863d-56fc693f364f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NuclexTimer\Source Files">
+      <UniqueIdentifier>{3a9069e1-dfcf-4151-b5b7-25c48e6728f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NuclexTimer\Header Files">
+      <UniqueIdentifier>{e5839538-6589-4764-9350-4478dc8df7fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -228,6 +237,27 @@
     <ClInclude Include="xphy\xphy.h">
       <Filter>xphy\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\Clock.h">
+      <Filter>NuclexTimer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\GameTime.h">
+      <Filter>NuclexTimer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\ManualClock.h">
+      <Filter>NuclexTimer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\ScaledTimer.h">
+      <Filter>NuclexTimer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\SteppedTimer.h">
+      <Filter>NuclexTimer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\Timer.h">
+      <Filter>NuclexTimer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\WindowsClock.h">
+      <Filter>NuclexTimer\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xgl\xglbuffer.cpp">
@@ -346,6 +376,27 @@
     </ClCompile>
     <ClCompile Include="xav\xavsrc.cpp">
       <Filter>xav\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\Clock.cpp">
+      <Filter>NuclexTimer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\GameTime.cpp">
+      <Filter>NuclexTimer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\ManualClock.cpp">
+      <Filter>NuclexTimer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\ScaledTimer.cpp">
+      <Filter>NuclexTimer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\SteppedTimer.cpp">
+      <Filter>NuclexTimer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\Timer.cpp">
+      <Filter>NuclexTimer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\WindowsClock.cpp">
+      <Filter>NuclexTimer\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

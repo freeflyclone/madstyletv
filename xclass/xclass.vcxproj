@@ -211,6 +211,13 @@
     <Text Include="xgl\ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\Clock.h" />
+    <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\GameTime.h" />
+    <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\ManualClock.h" />
+    <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\ScaledTimer.h" />
+    <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\SteppedTimer.h" />
+    <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\Timer.h" />
+    <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\WindowsClock.h" />
     <ClInclude Include="3rdParty\soil\src\image_DXT.h" />
     <ClInclude Include="3rdParty\soil\src\image_helper.h" />
     <ClInclude Include="3rdParty\soil\src\SOIL.h" />
@@ -267,6 +274,13 @@
     <ClInclude Include="xutils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\Clock.cpp" />
+    <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\GameTime.cpp" />
+    <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\ManualClock.cpp" />
+    <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\ScaledTimer.cpp" />
+    <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\SteppedTimer.cpp" />
+    <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\Timer.cpp" />
+    <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\WindowsClock.cpp" />
     <ClCompile Include="3rdParty\soil\src\image_DXT.c" />
     <ClCompile Include="3rdParty\soil\src\image_helper.c" />
     <ClCompile Include="3rdParty\soil\src\SOIL.c" />
