@@ -21,6 +21,7 @@
 #include <xavfile.h>
 #include <xfifo.h>
 #include <xal.h>
+#include <xtimer.h>
 #include "xavdata.h"
 #include "xavgpmf.h"
 
@@ -131,7 +132,7 @@ public:
 				xal.WaitForProcessedBuffer();
 				auto end = std::chrono::high_resolution_clock::now();
 				std::chrono::duration<double, std::micro> duration = end - start;
-				xprintf("xal delay: %0.2fus\n", duration);
+				//xprintf("xal delay: %0.2fus\n", duration);
 			}
 
 			for (int i = 0; i < stream->channels; i++)
@@ -247,12 +248,14 @@ namespace {
 };
 
 XGLGuiWindow* textWindow = nullptr;
+SteppedTimer videoTimer;
+GameTime videoTime;
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
 	initHmd = false;
-	preferredSwapInterval = 1;
+	preferredSwapInterval = 0;
 
 	// Initialize the Camera matrix
 	glm::vec3 cameraPosition(5, -20, 20);
@@ -309,29 +312,31 @@ void ExampleXGL::BuildScene() {
 				VideoStreamThread* pVst = pavp->vst;
 				AudioStreamThread* pAst = pavp->ast;
 
-				if (pavp != NULL && pVst->IsRunning() && (ib.width != 0)) {
-					pVst->usedBuffs.wait();
-					//xprintf("%0.5f, %0.5f\n", pVst->pts, pAst->pts);
+				while (videoTimer.TryAdvance(videoTime)) {
+					if (pavp != NULL && pVst->IsRunning() && (ib.width != 0)) {
+						pVst->usedBuffs.wait();
+						//xprintf("%0.5f, %0.5f\n", pVst->pts, pAst->pts);
 
-					glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit0"), 0);
-					glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit1"), 1);
-					glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit2"), 2);
+						glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit0"), 0);
+						glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit1"), 1);
+						glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit2"), 2);
 
-					glActiveTexture(GL_TEXTURE0);
-					glBindTexture(GL_TEXTURE_2D, shape->texIds[0]);
-					glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.width, ib.height, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)ib.y);
-					GL_CHECK("glGetTexImage() didn't work");
+						glActiveTexture(GL_TEXTURE0);
+						glBindTexture(GL_TEXTURE_2D, shape->texIds[0]);
+						glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.width, ib.height, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)ib.y);
+						GL_CHECK("glGetTexImage() didn't work");
 
-					glActiveTexture(GL_TEXTURE1);
-					glBindTexture(GL_TEXTURE_2D, shape->texIds[1]);
-					glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.chromaWidth, ib.chromaHeight, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)ib.u);
-					GL_CHECK("glGetTexImage() didn't work");
+						glActiveTexture(GL_TEXTURE1);
+						glBindTexture(GL_TEXTURE_2D, shape->texIds[1]);
+						glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.chromaWidth, ib.chromaHeight, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)ib.u);
+						GL_CHECK("glGetTexImage() didn't work");
 
-					glActiveTexture(GL_TEXTURE2);
-					glBindTexture(GL_TEXTURE_2D, shape->texIds[2]);
-					glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.chromaWidth, ib.chromaHeight, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)ib.v);
-					GL_CHECK("glGetTexImage() didn't work");
-					pVst->freeBuffs.notify();
+						glActiveTexture(GL_TEXTURE2);
+						glBindTexture(GL_TEXTURE_2D, shape->texIds[2]);
+						glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ib.chromaWidth, ib.chromaHeight, 0, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)ib.v);
+						GL_CHECK("glGetTexImage() didn't work");
+						pVst->freeBuffs.notify();
+					}
 				}
 				oldClock = clock;
 			}
@@ -388,5 +393,6 @@ void ExampleXGL::BuildScene() {
 #endif // DATA_STREAMS_ENGAGE
 	
 		pavp->Start();
+		videoTimer.SetStepFrequency(120);
 	}
 }

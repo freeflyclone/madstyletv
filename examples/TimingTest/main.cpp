@@ -15,12 +15,7 @@
 ** by lack of precision in thread scheduling.
 *************************************************************/
 #include <iostream>
-
-#include "Timing/SteppedTimer.h"
-#include "Timing/ScaledTimer.h"
-
-using namespace std;
-using namespace Nuclex::Game::Timing;
+#include <xtimer.h>
 
 void moveCursorOneLineUp();
 
@@ -43,13 +38,13 @@ int main() {
 		// and continue with Ctrl+Q to see how it catches up again if enough time
 		// for multiple steps has elapsed!
 		while (steppedTimer.TryAdvance(gameTime)) {
-			cout << "Time stepped " << gameTime.RealWorldDeltaUs << " microseconds (step #" << stepIndex++ << ")" << endl;
+			std::cout << "Time stepped " << gameTime.RealWorldDeltaUs << " microseconds (step #" << stepIndex++ << ")" << std::endl;
 		}
 
 		// The scaled timer simply continues running and returns the exact time
 		// in microsecond whenever it is asked.
 		gameTime = scaledTimer.GetElapsedAndResetDelta();
-		cout << "Running for " << gameTime.RealWorldTotalUs	<< " microseconds" << endl;
+		std::cout << "Running for " << gameTime.RealWorldTotalUs << " microseconds" << std::endl;
 
 		moveCursorOneLineUp();
 	}

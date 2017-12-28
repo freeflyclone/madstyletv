@@ -186,7 +186,7 @@ bool XAVStream::Decode(AVPacket *packet)
 			int length = avcodec_decode_audio4(pCodecCtx, pFrame, &frameFinished, packet);
 			auto end = std::chrono::high_resolution_clock::now();
 			std::chrono::duration<double, std::micro> duration = end - start;
-			xprintf("adt: %0.2f\n", duration);
+			//xprintf("adt: %0.2f\n", duration);
 			if (frameFinished){
 				for (int i = 0; i < channels; i++)
 					cbSet[i].get()->Write(pFrame->data[i], pFrame->nb_samples * formatSize);
