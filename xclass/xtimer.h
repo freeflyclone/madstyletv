@@ -27,8 +27,8 @@ public:
 		return diff;
 	}
 
-	LARGE_INTEGER epoch,since,last;
-	LARGE_INTEGER frequency;
+	LARGE_INTEGER epoch{}, since{}, last{};
+	LARGE_INTEGER frequency{};
 };
 #else
 class XTimer {
