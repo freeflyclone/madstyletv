@@ -163,6 +163,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TimingTest", "examples\TimingTest\TimingTest.vcxproj", "{489EC3E4-ED7D-4646-BD56-6EB4AE5491F6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MP4Dev", "examples\MP4Dev\MP4Dev.vcxproj", "{913656F0-B7A6-4CA3-9490-864ED433246A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AC4080D2-1C42-4812-943D-79CA13A1D86C} = {AC4080D2-1C42-4812-943D-79CA13A1D86C}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
