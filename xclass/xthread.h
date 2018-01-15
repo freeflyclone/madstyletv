@@ -111,6 +111,11 @@ public:
 		return retVal;
 	}
 
+	unsigned int get_count() { 
+		std::unique_lock<std::mutex> lock(mutex); 
+		return count;
+	}
+
 private:
 	unsigned int count;
 	unsigned int waitNum;

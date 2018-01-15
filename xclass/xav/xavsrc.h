@@ -43,7 +43,7 @@ typedef std::vector<XAVCircularBufferHandle> XAVCircularBufferSet;
 class XAVStream
 {
 public:
-	static const int numFrames = 4;
+	static const int numFrames = 64;
 	static const int maxChannels = 8;
 
 	typedef struct {

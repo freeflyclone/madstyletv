@@ -297,8 +297,10 @@ XAVSrc::XAVSrc() :
 
 void XAVSrc::Run()
 {
-	while( (av_read_frame(pFormatCtx, &packet) >= 0) )
+	while ((av_read_frame(pFormatCtx, &packet) >= 0)) {
 		mStreams[packet.stream_index]->Decode(&packet);
+		av_free_packet(&packet);
+	}
 }
 
 XAVStream *XAVSrc::VideoStream() {

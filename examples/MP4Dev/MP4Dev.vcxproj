@@ -176,6 +176,9 @@
     <ClCompile Include="..\common\main.cpp" />
     <ClCompile Include="MP4DevBuildScene.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\assets\config.json" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
