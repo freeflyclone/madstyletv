@@ -85,6 +85,11 @@ public:
 	// Initially, this semaphore must be notify()'d before a wait() will be satisfied
 	XSemaphore(int c = 0) : count(c) {};
 
+	void operator()(int c) {
+		std::unique_lock<std::mutex> lock(mutex);
+		count = c;
+	}
+
 	void notify(int n = 1) {
 		std::unique_lock<std::mutex> lock(mutex);
 		count += n;

@@ -174,7 +174,7 @@ int main(void) {
 		glfwTerminate();
 		return -1;
 	}
-
+	glfwSetWindowPos(window, 16, 64);
 	glfwMakeContextCurrent(window);
 
 	glfwSetKeyCallback(window, key_callback);

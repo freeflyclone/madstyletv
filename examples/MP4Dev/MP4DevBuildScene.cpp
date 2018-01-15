@@ -7,7 +7,7 @@
 #include "ExampleXGL.h"
 #include "xav.h"
 
-static const int numFrames = 128;
+static const int numFrames = 64;
 static const int vWidth = 1920;
 static const int vHeight = 1080;
 
@@ -61,6 +61,11 @@ public:
 		for (int i = 0; pFormatCtx->nb_streams; i++) {
 			if (pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) { //CODEC_TYPE_VIDEO
 				vStreamIdx = i;
+				vStream = pFormatCtx->streams[i];
+				float frameRate = (float)vStream->r_frame_rate.num / (float)vStream->r_frame_rate.den;
+				float duration = (float)vStream->duration / frameRate;
+				xprintf("frameRate: %0.4f, %0.4f\n", frameRate, duration);
+				
 				break;
 			}
 		}
@@ -84,7 +89,11 @@ public:
 		chromaWidth = pCodecCtx->width / (1 << pixDesc->log2_chroma_w);
 		chromaHeight = pCodecCtx->height / (1 << pixDesc->log2_chroma_h);
 
-		pFrames = new FramePool(pCodecCtx->width, pCodecCtx->height);
+		if ((pFrames = new FramePool(pCodecCtx->width, pCodecCtx->height)) == nullptr) {
+			avcodec_close(pCodecCtx);
+			avformat_close_input(&pFormatCtx);
+			throwXAVException("Unable to allocate new FramePool");
+		}
 	}
 
 	~MP4Demux() {
@@ -93,13 +102,13 @@ public:
 	}
 
 	void Run() {
-		while (IsRunning() && (retVal == 0)) {
+		while (IsRunning()) {
 			if ((retVal = av_read_frame(pFormatCtx, &packet)) == 0) {
 				if (packet.stream_index == vStreamIdx) {
 					int frameFinished;
 					avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
 					if (frameFinished) {
-						if (pFrames->freeBuffs.wait_for(1000)) {
+						if (pFrames->freeBuffs.wait_for(100)) {
 							VideoFrame *pvf = pFrames->frames[nFramesDecoded & (numFrames - 1)];
 
 							int ySize = pFrame->height * pFrame->linesize[0];
@@ -113,34 +122,58 @@ public:
 							pFrames->usedBuffs.notify();
 						}
 						else {
-							xprintf("Timed out waiting for freeBuff: %d\n", pFrames->freeBuffs.get_count());
+							//xprintf("Timed out waiting for freeBuff: %d\n", pFrames->freeBuffs.get_count());
 						}
 						av_frame_unref(pFrame);
 					}
 				}
 				av_free_packet(&packet);
 			}
+			else {
+				Seek(0);
+				retVal = 0;
+			}
 		}
 	}
 
+	void Seek(int frameIdx) {
+		pFrames->freeBuffs(0);
+		pFrames->usedBuffs(0);
+		nFramesDecoded = 0;
+		nFramesDisplayed = 0;
+		av_seek_frame(pFormatCtx, vStreamIdx, frameIdx, AVSEEK_FLAG_FRAME);
+		pFrames->freeBuffs(numFrames);
+	}
+
+	void SeekPercent(float p) {
+		int frameIdx = (int)p * vStream->nb_frames / 100;
+
+		xprintf("SeekPercent(): %0.2f\n", p);
+		frameIdx = (frameIdx / 30) * 30;
+		xprintf("frameIdx: %d/%d\n", frameIdx,vStream->nb_frames);
+		Seek(frameIdx);
+	}
+
 	AVFormatContext *pFormatCtx;
-	int             vStreamIdx{ -1 };
-	AVCodecContext  *pCodecCtx;
-	AVCodec         *pCodec;
-	AVPacket		packet;
-	AVFrame			*pFrame;
+	AVStream *vStream;
+	int vStreamIdx{ -1 };
+	AVCodecContext *pCodecCtx;
+	AVCodec *pCodec;
+	AVPacket packet;
+	AVFrame *pFrame;
 	int retVal{ 0 };
 
 	FramePool *pFrames;
-	int nFramesDecoded{ 0 };
-	int nFramesDisplayed{ 0 };
-	int chromaWidth, chromaHeight;
+	int	nFramesDecoded{ 0 }, nFramesDisplayed{ 0 };
+	int	chromaWidth{ 0 }, chromaHeight{ 0 };
 };
 
 MP4Demux *pMp4;
 
 void ExampleXGL::BuildScene() {
 	preferredSwapInterval = 1;
+	//preferredWidth = 1880;
+	//preferredHeight = 1016;
 
 	std::string videoUrl = config.WideToBytes(config.Find(L"VideoFile")->AsString());
 	std::string videoPath;
@@ -167,7 +200,7 @@ void ExampleXGL::BuildScene() {
 		static float oldClock = 0.0f;
 		//if (clock > oldClock) {
 			oldClock = clock;
-			if ((pMp4->nFramesDecoded - pMp4->nFramesDisplayed) > (numFrames / 2)) {
+			if ((pMp4->nFramesDecoded - pMp4->nFramesDisplayed) > 4) {
 				VideoFrame *pFrame = pMp4->pFrames->frames[pMp4->nFramesDisplayed++ & (numFrames - 1)];
 
 				glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit0"), 0);
@@ -193,6 +226,37 @@ void ExampleXGL::BuildScene() {
 			}
 		//}
 	});
+
+	XInputKeyFunc seekFunc = [&](int key, int flags) {
+		const bool isDown = (flags & 0x8000) == 0;
+		const bool isRepeat = (flags & 0x4000) != 0;
+		static bool wireFrameMode = false;
+
+		if (isDown && !isRepeat){
+			pMp4->Seek(0);
+		}
+	};
+
+
+	XInputKeyFunc seekPercentFunc = [&](int key, int flags) {
+		const bool isDown = (flags & 0x8000) == 0;
+		const bool isRepeat = (flags & 0x4000) != 0;
+		static bool wireFrameMode = false;
+
+		if (isDown && !isRepeat){
+			key -= '0';
+			if (key < 0)
+				key = 0;
+			else if (key > 9)
+				key = 9;
+
+			pMp4->SeekPercent((float)key * 10.0f);
+		}
+	};
+
+	AddKeyFunc('H', seekFunc);
+	AddKeyFunc('h', seekFunc);
+	AddKeyFunc(XInputKeyRange('0', '9'), seekPercentFunc);
 
 	pMp4->Start();
 }
