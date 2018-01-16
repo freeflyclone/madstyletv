@@ -3,6 +3,8 @@
 **
 ** Minimal libavcodec/libavformat demo, capable of decoding
 ** & rendering GoPro files shot in HD @ 120 FPS
+**
+** At present: 1920x1080 120 fps specifically.  All else: YMMV
 **************************************************************/
 #include "ExampleXGL.h"
 #include "xav.h"
@@ -46,19 +48,23 @@ public:
 	MP4Demux(const char *fn) : fileName(fn), XThread("MP4Demux") {
 		av_register_all();
 
-		GetAllTheThings();
+		ended = true;
+		StartPlaying();
 	}
 
 	~MP4Demux() {
-		avcodec_close(pCodecCtx);
-		avformat_close_input(&pFormatCtx);
+		if (playing)
+			StopPlaying();
+
+		if (pCodecCtx)
+			ReleaseAllTheThings();
 	}
 
 	void GetAllTheThings() {
 		if ((pFormatCtx = avformat_alloc_context()) == nullptr)
 			throwXAVException("Unable to allocate AVFormatContext for:  " + fileName + "");
 
-		if ((pFrame = avcodec_alloc_frame()) == nullptr)
+		if ((pFrame = av_frame_alloc()) == nullptr)
 			throwXAVException("Unable to allocate AVFrame for: " + fileName + "");
 
 		if (avformat_open_input(&pFormatCtx, fileName.c_str(), 0, NULL) != 0)
@@ -118,7 +124,7 @@ public:
 			pFormatCtx = nullptr;
 		}
 		if (pFrame) {
-			avcodec_free_frame(&pFrame);
+			av_frame_free(&pFrame);
 			pFrame = nullptr;
 		}
 	}

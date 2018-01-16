@@ -36,7 +36,7 @@ public:
 			usedCount.wait();
 			std::this_thread::sleep_for(std::chrono::milliseconds(200));
 			freeCount.notify();
-			MyPrintf("ConsumeThread::Run(): %d\n", usedCount.peekCount());
+			MyPrintf("ConsumeThread::Run(): %d\n", usedCount.get_count());
 		}
 		MyPrintf("ConsumeThread::Run() ended\n");
 	}
