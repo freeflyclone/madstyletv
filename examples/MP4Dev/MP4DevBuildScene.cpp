@@ -103,55 +103,65 @@ public:
 
 	void Run() {
 		while (IsRunning()) {
-			if ((retVal = av_read_frame(pFormatCtx, &packet)) == 0) {
-				if (packet.stream_index == vStreamIdx) {
-					int frameFinished;
-					avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
-					if (frameFinished) {
-						if (pFrames->freeBuffs.wait_for(100)) {
-							VideoFrame *pvf = pFrames->frames[nFramesDecoded & (numFrames - 1)];
+			if (playing) {
+				std::unique_lock<std::mutex> lock(playMutex);
+				if ((retVal = av_read_frame(pFormatCtx, &packet)) == 0) {
+					if (packet.stream_index == vStreamIdx) {
+						int frameFinished;
+						avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
+						if (frameFinished) {
+							if (pFrames->freeBuffs.wait_for(100)) {
+								VideoFrame *pvf = pFrames->frames[nFramesDecoded & (numFrames - 1)];
 
-							int ySize = pFrame->height * pFrame->linesize[0];
-							int uvSize = chromaWidth * chromaHeight;
+								int ySize = pFrame->height * pFrame->linesize[0];
+								int uvSize = chromaWidth * chromaHeight;
 
-							memcpy(pvf->y, pFrame->data[0], ySize);
-							memcpy(pvf->u, pFrame->data[1], uvSize);
-							memcpy(pvf->v, pFrame->data[2], uvSize);
+								memcpy(pvf->y, pFrame->data[0], ySize);
+								memcpy(pvf->u, pFrame->data[1], uvSize);
+								memcpy(pvf->v, pFrame->data[2], uvSize);
 
-							nFramesDecoded++;
-							pFrames->usedBuffs.notify();
+								nFramesDecoded++;
+								pFrames->usedBuffs.notify();
+							}
+							else {
+								//xprintf("Timed out waiting for freeBuff: %d\n", pFrames->freeBuffs.get_count());
+							}
+							av_frame_unref(pFrame);
 						}
-						else {
-							//xprintf("Timed out waiting for freeBuff: %d\n", pFrames->freeBuffs.get_count());
-						}
-						av_frame_unref(pFrame);
 					}
+					av_free_packet(&packet);
 				}
-				av_free_packet(&packet);
-			}
-			else {
-				Seek(0);
-				retVal = 0;
+				else {
+					Seek(0);
+					retVal = 0;
+				}
 			}
 		}
 	}
 
-	void Seek(int frameIdx) {
+	void Seek(int64_t timeOffset) {
+		std::unique_lock<std::mutex> lock(playMutex);
 		pFrames->freeBuffs(0);
 		pFrames->usedBuffs(0);
 		nFramesDecoded = 0;
 		nFramesDisplayed = 0;
-		av_seek_frame(pFormatCtx, vStreamIdx, frameIdx, AVSEEK_FLAG_FRAME);
+		retVal = avformat_seek_file(pFormatCtx, -1, INT64_MIN, timeOffset, INT64_MAX, 0);
+		avio_flush(pFormatCtx->pb);
 		pFrames->freeBuffs(numFrames);
 	}
 
 	void SeekPercent(float p) {
-		int frameIdx = (int)p * vStream->nb_frames / 100;
+		float duration = (float)pFormatCtx->duration;
+		int64_t tm = (int64_t)(duration * p / 100.0f);
+		Seek(tm);
+	}
 
-		xprintf("SeekPercent(): %0.2f\n", p);
-		frameIdx = (frameIdx / 30) * 30;
-		xprintf("frameIdx: %d/%d\n", frameIdx,vStream->nb_frames);
-		Seek(frameIdx);
+	void StartPlaying() { 
+		playing = true; 
+	}
+
+	void StopPlaying() { 
+		playing = false; 
 	}
 
 	AVFormatContext *pFormatCtx;
@@ -166,6 +176,9 @@ public:
 	FramePool *pFrames;
 	int	nFramesDecoded{ 0 }, nFramesDisplayed{ 0 };
 	int	chromaWidth{ 0 }, chromaHeight{ 0 };
+	bool playing{ false };
+
+	std::mutex playMutex;
 };
 
 MP4Demux *pMp4;
@@ -200,7 +213,7 @@ void ExampleXGL::BuildScene() {
 		static float oldClock = 0.0f;
 		//if (clock > oldClock) {
 			oldClock = clock;
-			if ((pMp4->nFramesDecoded - pMp4->nFramesDisplayed) > 4) {
+			if ((pMp4->nFramesDecoded - pMp4->nFramesDisplayed) > 8 && (pMp4->playing)) {
 				VideoFrame *pFrame = pMp4->pFrames->frames[pMp4->nFramesDisplayed++ & (numFrames - 1)];
 
 				glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit0"), 0);
@@ -230,10 +243,9 @@ void ExampleXGL::BuildScene() {
 	XInputKeyFunc seekFunc = [&](int key, int flags) {
 		const bool isDown = (flags & 0x8000) == 0;
 		const bool isRepeat = (flags & 0x4000) != 0;
-		static bool wireFrameMode = false;
 
 		if (isDown && !isRepeat){
-			pMp4->Seek(0);
+			pMp4->SeekPercent(0.0f);
 		}
 	};
 
@@ -241,7 +253,6 @@ void ExampleXGL::BuildScene() {
 	XInputKeyFunc seekPercentFunc = [&](int key, int flags) {
 		const bool isDown = (flags & 0x8000) == 0;
 		const bool isRepeat = (flags & 0x4000) != 0;
-		static bool wireFrameMode = false;
 
 		if (isDown && !isRepeat){
 			key -= '0';
@@ -257,6 +268,24 @@ void ExampleXGL::BuildScene() {
 	AddKeyFunc('H', seekFunc);
 	AddKeyFunc('h', seekFunc);
 	AddKeyFunc(XInputKeyRange('0', '9'), seekPercentFunc);
+
+	AddKeyFunc('P', [&](int key, int flags){
+		const bool isDown = (flags & 0x8000) == 0;
+		const bool isRepeat = (flags & 0x4000) != 0;
+
+		if (isDown && !isRepeat){
+			pMp4->StartPlaying();
+		}
+	});
+
+	AddKeyFunc('O', [&](int key, int flags){
+		const bool isDown = (flags & 0x8000) == 0;
+		const bool isRepeat = (flags & 0x4000) != 0;
+
+		if (isDown && !isRepeat){
+			pMp4->StopPlaying();
+		}
+	});
 
 	pMp4->Start();
 }
