@@ -43,43 +43,52 @@ public:
 
 class MP4Demux  : public XThread {
 public:
-	MP4Demux(const char *filename) : XThread("MP4Demux") {
+	MP4Demux(const char *fn) : fileName(fn), XThread("MP4Demux") {
 		av_register_all();
 
+		GetAllTheThings();
+	}
+
+	~MP4Demux() {
+		avcodec_close(pCodecCtx);
+		avformat_close_input(&pFormatCtx);
+	}
+
+	void GetAllTheThings() {
 		if ((pFormatCtx = avformat_alloc_context()) == nullptr)
-			throwXAVException("Unable to allocate AVFormatContext");
+			throwXAVException("Unable to allocate AVFormatContext for:  " + fileName + "");
 
 		if ((pFrame = avcodec_alloc_frame()) == nullptr)
-			throwXAVException("Unable to allocate AVFrame");
+			throwXAVException("Unable to allocate AVFrame for: " + fileName + "");
 
-		if (avformat_open_input(&pFormatCtx, filename, 0, NULL) != 0)
-			throwXAVException("avformat_open_input failed: Couldn't open file\n");
+		if (avformat_open_input(&pFormatCtx, fileName.c_str(), 0, NULL) != 0)
+			throwXAVException("avformat_open_input failed: " + fileName + "\n");
 
 		if (avformat_find_stream_info(pFormatCtx, NULL) < 0)
-			throwXAVException("avformat_find_stream_info failed: Couldn't find stream information\n");
+			throwXAVException("avformat_find_stream_info failed: Couldn't find stream information " + fileName + "\n");
 
 		for (int i = 0; pFormatCtx->nb_streams; i++) {
-			if (pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) { //CODEC_TYPE_VIDEO
+			if (pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
 				vStreamIdx = i;
 				vStream = pFormatCtx->streams[i];
 				float frameRate = (float)vStream->r_frame_rate.num / (float)vStream->r_frame_rate.den;
 				float duration = (float)vStream->duration / frameRate;
 				xprintf("frameRate: %0.4f, %0.4f\n", frameRate, duration);
-				
+
 				break;
 			}
 		}
 
 		if (vStreamIdx == -1)
-			throwXAVException("No video stream found in " + std::string(filename));
+			throwXAVException("No video stream found in " + fileName);
 
 		pCodecCtx = pFormatCtx->streams[vStreamIdx]->codec;
 
 		if ((pCodec = avcodec_find_decoder(pCodecCtx->codec_id)) == nullptr)
-			throwXAVException("Unsupported codec!\n");
+			throwXAVException("Unsupported codec " + fileName + "!\n");
 
 		if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0)
-			throwXAVException("Unable to open codec");
+			throwXAVException("Unable to open codec " + fileName + "");
 
 		// figure out the chroma sub-sampling of the pixel format
 		int pixelFormat = pCodecCtx->pix_fmt;
@@ -92,13 +101,26 @@ public:
 		if ((pFrames = new FramePool(pCodecCtx->width, pCodecCtx->height)) == nullptr) {
 			avcodec_close(pCodecCtx);
 			avformat_close_input(&pFormatCtx);
-			throwXAVException("Unable to allocate new FramePool");
+			throwXAVException("Unable to allocate new FramePool " + fileName + "");
 		}
 	}
 
-	~MP4Demux() {
+	void ReleaseAllTheThings(){
 		avcodec_close(pCodecCtx);
 		avformat_close_input(&pFormatCtx);
+
+		if (pFrames){
+			delete pFrames;
+			pFrames = nullptr;
+		}
+		if (pFormatCtx) {
+			avformat_free_context(pFormatCtx);
+			pFormatCtx = nullptr;
+		}
+		if (pFrame) {
+			avcodec_free_frame(&pFrame);
+			pFrame = nullptr;
+		}
 	}
 
 	void Run() {
@@ -132,15 +154,18 @@ public:
 					av_free_packet(&packet);
 				}
 				else {
-					Seek(0);
-					retVal = 0;
+					playing = false;
+					ended = true;
+					ReleaseAllTheThings();
 				}
 			}
+			else
+				std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
 		}
 	}
 
+private:
 	void Seek(int64_t timeOffset) {
-		std::unique_lock<std::mutex> lock(playMutex);
 		pFrames->freeBuffs(0);
 		pFrames->usedBuffs(0);
 		nFramesDecoded = 0;
@@ -150,33 +175,50 @@ public:
 		pFrames->freeBuffs(numFrames);
 	}
 
+public:
 	void SeekPercent(float p) {
-		float duration = (float)pFormatCtx->duration;
-		int64_t tm = (int64_t)(duration * p / 100.0f);
-		Seek(tm);
+		if (!ended) {
+			std::unique_lock<std::mutex> lock(playMutex);
+			float duration = (float)pFormatCtx->duration;
+			int64_t tm = (int64_t)(duration * p / 100.0f);
+			Seek(tm);
+		}
 	}
 
-	void StartPlaying() { 
+	void StartPlaying() {
+		if (playing)
+			return;
+
+		if (ended) {
+			GetAllTheThings();
+			ended = false;
+		}
+		nFramesDecoded = nFramesDisplayed = 0;
+		pFrames->freeBuffs(0);
+		pFrames->usedBuffs(0);
 		playing = true; 
+		pFrames->freeBuffs(numFrames);
 	}
 
 	void StopPlaying() { 
 		playing = false; 
 	}
 
-	AVFormatContext *pFormatCtx;
+	std::string fileName;
+	AVFormatContext *pFormatCtx = nullptr;
 	AVStream *vStream;
 	int vStreamIdx{ -1 };
-	AVCodecContext *pCodecCtx;
+	AVCodecContext *pCodecCtx = nullptr;
 	AVCodec *pCodec;
 	AVPacket packet;
-	AVFrame *pFrame;
+	AVFrame *pFrame = nullptr;
 	int retVal{ 0 };
 
-	FramePool *pFrames;
+	FramePool *pFrames = nullptr;
 	int	nFramesDecoded{ 0 }, nFramesDisplayed{ 0 };
 	int	chromaWidth{ 0 }, chromaHeight{ 0 };
 	bool playing{ false };
+	bool ended{ false };
 
 	std::mutex playMutex;
 };
@@ -185,8 +227,8 @@ MP4Demux *pMp4;
 
 void ExampleXGL::BuildScene() {
 	preferredSwapInterval = 1;
-	//preferredWidth = 1880;
-	//preferredHeight = 1016;
+	preferredWidth = 1880;
+	preferredHeight = 1016;
 
 	std::string videoUrl = config.WideToBytes(config.Find(L"VideoFile")->AsString());
 	std::string videoPath;
@@ -196,8 +238,6 @@ void ExampleXGL::BuildScene() {
 		videoPath = videoUrl;
 	else
 		videoPath = pathToAssets + "/" + videoUrl;
-
-	pMp4 = new MP4Demux(videoPath.c_str());
 
 	XGLShape *shape;
 	AddShape("shaders/yuv", [&](){ shape = new XGLTexQuad(vWidth, vHeight, 1); return shape; });
@@ -209,11 +249,13 @@ void ExampleXGL::BuildScene() {
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	shape->model = translate * rotate *scale;
 
+	pMp4 = new MP4Demux(videoPath.c_str());
+
 	shape->SetAnimationFunction([&, shape](float clock) {
 		static float oldClock = 0.0f;
 		//if (clock > oldClock) {
 			oldClock = clock;
-			if ((pMp4->nFramesDecoded - pMp4->nFramesDisplayed) > 8 && (pMp4->playing)) {
+			if ((pMp4->nFramesDecoded - pMp4->nFramesDisplayed) > 16 && (pMp4->playing)) {
 				VideoFrame *pFrame = pMp4->pFrames->frames[pMp4->nFramesDisplayed++ & (numFrames - 1)];
 
 				glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit0"), 0);
