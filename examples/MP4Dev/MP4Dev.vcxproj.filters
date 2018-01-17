@@ -21,10 +21,10 @@
     <ClCompile Include="..\common\ExampleXGL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\common\ExampleGUI.cpp">
+    <ClCompile Include="MP4DevBuildScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MP4DevBuildScene.cpp">
+    <ClCompile Include="MP4DevGui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

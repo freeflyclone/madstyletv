@@ -171,10 +171,10 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\common\ExampleGUI.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
     <ClCompile Include="MP4DevBuildScene.cpp" />
+    <ClCompile Include="MP4DevGui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\config.json" />

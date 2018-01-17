@@ -234,7 +234,7 @@ MP4Demux *pMp4;
 void ExampleXGL::BuildScene() {
 	preferredSwapInterval = 1;
 	preferredWidth = 1880;
-	preferredHeight = 1016;
+	preferredHeight = 960;
 
 	std::string videoUrl = config.WideToBytes(config.Find(L"VideoFile")->AsString());
 	std::string videoPath;
@@ -334,6 +334,20 @@ void ExampleXGL::BuildScene() {
 			pMp4->StopPlaying();
 		}
 	});
+
+	XGLGuiManager *gm = GetGuiManager();
+	XGLGuiSlider *slider = (XGLGuiSlider *)(gm->FindObject("File Seek"));
+	if (slider != nullptr) {
+		XGLGuiCanvas::MouseEventListener mel = [slider](float x, float y, int flags) {
+			if (slider->HasMouse()) {
+				XGLGuiCanvas *thumb = (XGLGuiCanvas *)slider->Children()[1];
+				float percent = slider->Position() * 100.0f;
+				pMp4->SeekPercent(percent);
+			}
+		};
+
+		slider->AddMouseEventListener(mel);
+	}
 
 	pMp4->Start();
 }
