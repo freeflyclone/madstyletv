@@ -9,7 +9,7 @@
 #include "ExampleXGL.h"
 #include "xav.h"
 
-static const int numFrames = 64;
+static const int numFrames = 32;
 static const int vWidth = 1920;
 static const int vHeight = 1080;
 
@@ -152,7 +152,7 @@ public:
 								pFrames->usedBuffs.notify();
 							}
 							else {
-								//xprintf("Timed out waiting for freeBuff: %d\n", pFrames->freeBuffs.get_count());
+								xprintf("Timed out waiting for freeBuff: %d\n", pFrames->freeBuffs.get_count());
 							}
 							av_frame_unref(pFrame);
 						}
@@ -172,6 +172,10 @@ public:
 
 private:
 	void Seek(int64_t timeOffset) {
+		std::unique_lock<std::mutex> lock(playMutex);
+		wasPlaying = playing;
+		playing = false;
+
 		pFrames->freeBuffs(0);
 		pFrames->usedBuffs(0);
 		nFramesDecoded = 0;
@@ -179,12 +183,13 @@ private:
 		retVal = avformat_seek_file(pFormatCtx, -1, INT64_MIN, timeOffset, INT64_MAX, 0);
 		avio_flush(pFormatCtx->pb);
 		pFrames->freeBuffs(numFrames);
+		if (wasPlaying)
+			playing = true;
 	}
 
 public:
 	void SeekPercent(float p) {
 		if (!ended) {
-			std::unique_lock<std::mutex> lock(playMutex);
 			float duration = (float)pFormatCtx->duration;
 			int64_t tm = (int64_t)(duration * p / 100.0f);
 			Seek(tm);
@@ -225,11 +230,13 @@ public:
 	int	chromaWidth{ 0 }, chromaHeight{ 0 };
 	bool playing{ false };
 	bool ended{ false };
+	bool wasPlaying{ false };
 
 	std::mutex playMutex;
 };
 
 MP4Demux *pMp4;
+XGLShape *shape;
 
 void ExampleXGL::BuildScene() {
 	preferredSwapInterval = 1;
@@ -245,7 +252,6 @@ void ExampleXGL::BuildScene() {
 	else
 		videoPath = pathToAssets + "/" + videoUrl;
 
-	XGLShape *shape;
 	AddShape("shaders/yuv", [&](){ shape = new XGLTexQuad(vWidth, vHeight, 1); return shape; });
 	shape->AddTexture(vWidth / 2, vHeight / 2, 1);
 	shape->AddTexture(vWidth / 2, vHeight / 2, 1);
@@ -257,35 +263,37 @@ void ExampleXGL::BuildScene() {
 
 	pMp4 = new MP4Demux(videoPath.c_str());
 
-	shape->SetAnimationFunction([&, shape](float clock) {
+	shape->SetAnimationFunction([&](float clock) {
 		static float oldClock = 0.0f;
-		//if (clock > oldClock) {
+		if (clock > oldClock) {
 			oldClock = clock;
-			if ((pMp4->nFramesDecoded - pMp4->nFramesDisplayed) > 16 && (pMp4->playing)) {
-				VideoFrame *pFrame = pMp4->pFrames->frames[pMp4->nFramesDisplayed++ & (numFrames - 1)];
+			if (pMp4->playing){
+				if (pMp4->pFrames->usedBuffs.wait_for(100)) {
+					VideoFrame *pFrame = pMp4->pFrames->frames[pMp4->nFramesDisplayed++ & (numFrames - 1)];
 
-				glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit0"), 0);
-				glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit1"), 1);
-				glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit2"), 2);
+					glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit0"), 0);
+					glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit1"), 1);
+					glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit2"), 2);
 
-				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, shape->texIds[0]);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, vWidth, vHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->y);
-				GL_CHECK("glGetTexImage() didn't work");
+					glActiveTexture(GL_TEXTURE0);
+					glBindTexture(GL_TEXTURE_2D, shape->texIds[0]);
+					glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, vWidth, vHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->y);
+					GL_CHECK("glGetTexImage() didn't work");
 
-				glActiveTexture(GL_TEXTURE1);
-				glBindTexture(GL_TEXTURE_2D, shape->texIds[1]);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pMp4->chromaWidth, pMp4->chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->u);
-				GL_CHECK("glGetTexImage() didn't work");
+					glActiveTexture(GL_TEXTURE1);
+					glBindTexture(GL_TEXTURE_2D, shape->texIds[1]);
+					glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pMp4->chromaWidth, pMp4->chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->u);
+					GL_CHECK("glGetTexImage() didn't work");
 
-				glActiveTexture(GL_TEXTURE2);
-				glBindTexture(GL_TEXTURE_2D, shape->texIds[2]);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pMp4->chromaWidth, pMp4->chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->v);
-				GL_CHECK("glGetTexImage() didn't work");
+					glActiveTexture(GL_TEXTURE2);
+					glBindTexture(GL_TEXTURE_2D, shape->texIds[2]);
+					glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pMp4->chromaWidth, pMp4->chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->v);
+					GL_CHECK("glGetTexImage() didn't work");
 
-				pMp4->pFrames->freeBuffs.notify();
+					pMp4->pFrames->freeBuffs.notify();
+				}
 			}
-		//}
+		}
 	});
 
 	XInputKeyFunc seekFunc = [&](int key, int flags) {

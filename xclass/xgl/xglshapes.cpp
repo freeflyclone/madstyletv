@@ -35,7 +35,7 @@ void XGLShape::Animate(float clock){
 	for (auto child : Children()) {
 		if (dynamic_cast<XGLShape *>(child)) {
 			XGLShape *childShape = (XGLShape *)child;
-			//childShape->Animate(clock);
+			childShape->Animate(clock);
 		}
 	}
 }
