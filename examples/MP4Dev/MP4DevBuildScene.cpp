@@ -9,7 +9,7 @@
 #include "ExampleXGL.h"
 #include "xav.h"
 
-static const int numFrames = 32;
+static const int numFrames = 128;
 static const int vWidth = 1920;
 static const int vHeight = 1080;
 
@@ -181,18 +181,18 @@ private:
 		nFramesDecoded = 0;
 		nFramesDisplayed = 0;
 		retVal = avformat_seek_file(pFormatCtx, -1, INT64_MIN, timeOffset, INT64_MAX, 0);
-		avio_flush(pFormatCtx->pb);
+		avcodec_flush_buffers(pCodecCtx);
 		pFrames->freeBuffs(numFrames);
 		if (wasPlaying)
 			playing = true;
 	}
 
 public:
-	void SeekPercent(float p) {
+	void SeekPercent(float percent) {
 		if (!ended) {
 			float duration = (float)pFormatCtx->duration;
-			int64_t tm = (int64_t)(duration * p / 100.0f);
-			Seek(tm);
+			int64_t timeOffset = (int64_t)(duration * percent / 100.0f);
+			Seek(timeOffset);
 		}
 	}
 
@@ -238,11 +238,14 @@ public:
 MP4Demux *pMp4;
 XGLShape *shape;
 
+extern bool initHmd;
+
 void ExampleXGL::BuildScene() {
 	preferredSwapInterval = 1;
 	preferredWidth = 1880;
 	preferredHeight = 960;
-
+	//initHmd = true;
+	
 	std::string videoUrl = config.WideToBytes(config.Find(L"VideoFile")->AsString());
 	std::string videoPath;
 	if (videoUrl.find("http") != videoUrl.npos)
