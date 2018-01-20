@@ -73,6 +73,8 @@ public:
 		if (avformat_find_stream_info(pFormatCtx, NULL) < 0)
 			throwXAVException("avformat_find_stream_info failed: Couldn't find stream information " + fileName + "\n");
 
+		av_new_packet(&packet, 0x100000);
+
 		for (int i = 0; pFormatCtx->nb_streams; i++) {
 			if (pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
 				vStreamIdx = i;
@@ -95,6 +97,11 @@ public:
 
 		if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0)
 			throwXAVException("Unable to open codec " + fileName + "");
+
+		timeBase = pCodecCtx->time_base;
+		ticksPerFrame = pCodecCtx->ticks_per_frame;
+
+		xprintf("video context delay: %d, num: %d, den: %d\n", pCodecCtx->delay, timeBase.num, timeBase.den);
 
 		// figure out the chroma sub-sampling of the pixel format
 		int pixelFormat = pCodecCtx->pix_fmt;
@@ -127,6 +134,8 @@ public:
 			av_frame_free(&pFrame);
 			pFrame = nullptr;
 		}
+
+		av_shrink_packet(&packet, 0);
 	}
 
 	void Run() {
@@ -138,6 +147,11 @@ public:
 						int frameFinished;
 						avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
 						if (frameFinished) {
+							currentPlayTime = Pts2Time(pFrame->pkt_dts);
+							if (showFrameStatus) {
+								xprintf("pts: %d, %0.4f, pict_type: %d%s\n", pFrame->pkt_pts, currentPlayTime, pFrame->pict_type, pFrame->key_frame ? " key frame" : "");
+								showFrameStatus = false;
+							}
 							if (pFrames->freeBuffs.wait_for(100)) {
 								VideoFrame *pvf = pFrames->frames[nFramesDecoded & (numFrames - 1)];
 
@@ -150,9 +164,6 @@ public:
 
 								nFramesDecoded++;
 								pFrames->usedBuffs.notify();
-							}
-							else {
-								xprintf("Timed out waiting for freeBuff: %d\n", pFrames->freeBuffs.get_count());
 							}
 							av_frame_unref(pFrame);
 						}
@@ -182,6 +193,7 @@ private:
 		nFramesDisplayed = 0;
 		retVal = avformat_seek_file(pFormatCtx, -1, INT64_MIN, timeOffset, INT64_MAX, 0);
 		avcodec_flush_buffers(pCodecCtx);
+		showFrameStatus = true;
 		pFrames->freeBuffs(numFrames);
 		if (wasPlaying)
 			playing = true;
@@ -215,14 +227,20 @@ public:
 		playing = false; 
 	}
 
+	float Pts2Time(int64_t pts){
+		return ((float)pts * (float)(timeBase.num * ticksPerFrame) / (float)timeBase.den) / 1000.0f;
+	}
+
 	std::string fileName;
 	AVFormatContext *pFormatCtx = nullptr;
-	AVStream *vStream;
+	AVStream *vStream = nullptr;
 	int vStreamIdx{ -1 };
 	AVCodecContext *pCodecCtx = nullptr;
-	AVCodec *pCodec;
-	AVPacket packet;
+	AVCodec *pCodec = nullptr;
+	AVPacket packet{};
 	AVFrame *pFrame = nullptr;
+	AVRational timeBase;
+	int ticksPerFrame;
 	int retVal{ 0 };
 
 	FramePool *pFrames = nullptr;
@@ -231,6 +249,8 @@ public:
 	bool playing{ false };
 	bool ended{ false };
 	bool wasPlaying{ false };
+	bool showFrameStatus{ false };
+	float currentPlayTime{ 0.0 };
 
 	std::mutex playMutex;
 };
@@ -271,7 +291,7 @@ void ExampleXGL::BuildScene() {
 		if (clock > oldClock) {
 			oldClock = clock;
 			if (pMp4->playing){
-				if (pMp4->pFrames->usedBuffs.wait_for(100)) {
+				if (pMp4->pFrames->usedBuffs.get_count() > 2) {
 					VideoFrame *pFrame = pMp4->pFrames->frames[pMp4->nFramesDisplayed++ & (numFrames - 1)];
 
 					glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit0"), 0);
