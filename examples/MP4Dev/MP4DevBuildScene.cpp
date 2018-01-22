@@ -140,7 +140,7 @@ public:
 
 	void Run() {
 		while (IsRunning()) {
-			if (playing) {
+			if (playing || step) {
 				std::unique_lock<std::mutex> lock(playMutex);
 				if ((retVal = av_read_frame(pFormatCtx, &packet)) == 0) {
 					if (packet.stream_index == vStreamIdx) {
@@ -148,8 +148,9 @@ public:
 						avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
 						if (frameFinished) {
 							currentPlayTime = Pts2Time(pFrame->pkt_dts);
+							int64_t pts = Time2Pts(currentPlayTime);
 							if (showFrameStatus) {
-								xprintf("pts: %d, %0.4f, pict_type: %d%s\n", pFrame->pkt_pts, currentPlayTime, pFrame->pict_type, pFrame->key_frame ? " key frame" : "");
+								xprintf("pts: %d, %0.4f, %d, pict_type: %d%s\n", pFrame->pkt_pts, currentPlayTime, pts, pFrame->pict_type, pFrame->key_frame ? " key frame" : "");
 								showFrameStatus = false;
 							}
 							if (pFrames->freeBuffs.wait_for(100)) {
@@ -167,11 +168,13 @@ public:
 							}
 							av_frame_unref(pFrame);
 						}
+						if (step)
+							step = false;
 					}
 					av_free_packet(&packet);
 				}
 				else {
-					playing = false;
+					StopPlaying();
 					ended = true;
 					ReleaseAllTheThings();
 				}
@@ -215,12 +218,11 @@ public:
 		if (ended) {
 			GetAllTheThings();
 			ended = false;
+			nFramesDecoded = nFramesDisplayed = 0;
+			pFrames->usedBuffs(0);
+			pFrames->freeBuffs(numFrames);
 		}
-		nFramesDecoded = nFramesDisplayed = 0;
-		pFrames->freeBuffs(0);
-		pFrames->usedBuffs(0);
 		playing = true; 
-		pFrames->freeBuffs(numFrames);
 	}
 
 	void StopPlaying() { 
@@ -229,6 +231,10 @@ public:
 
 	float Pts2Time(int64_t pts){
 		return ((float)pts * (float)(timeBase.num * ticksPerFrame) / (float)timeBase.den) / 1000.0f;
+	}
+
+	uint64_t Time2Pts(float time) {
+		return (uint64_t)((time * 1000.0f) * (float)timeBase.den) / timeBase.num / ticksPerFrame;
 	}
 
 	std::string fileName;
@@ -248,6 +254,7 @@ public:
 	int	chromaWidth{ 0 }, chromaHeight{ 0 };
 	bool playing{ false };
 	bool ended{ false };
+	bool step{ false };
 	bool wasPlaying{ false };
 	bool showFrameStatus{ false };
 	float currentPlayTime{ 0.0 };
@@ -343,10 +350,28 @@ void ExampleXGL::BuildScene() {
 			pMp4->SeekPercent((float)key * 10.0f);
 		}
 	};
-
-	AddKeyFunc('H', seekFunc);
-	AddKeyFunc('h', seekFunc);
 	AddKeyFunc(XInputKeyRange('0', '9'), seekPercentFunc);
+
+	XInputKeyFunc seekDeltaFunc = [&](int key, int flags) {
+		const bool isDown = (flags & 0x8000) == 0;
+		const bool isRepeat = (flags & 0x4000) != 0;
+		int64_t time = -1;
+		if (isDown && !isRepeat) {
+			switch (key) {
+				case GLFW_KEY_RIGHT:
+					xprintf("+1\n");
+					pMp4->playing = false;
+					pMp4->step = true;
+					break;
+
+				case GLFW_KEY_LEFT:
+					xprintf("-1\n");
+					pMp4->playing = false;
+					break;
+			}
+		}
+	};
+	AddKeyFunc(XInputKeyRange(GLFW_KEY_RIGHT, GLFW_KEY_END), seekDeltaFunc);
 
 	AddKeyFunc('P', [&](int key, int flags){
 		const bool isDown = (flags & 0x8000) == 0;
