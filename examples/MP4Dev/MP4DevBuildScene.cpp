@@ -140,7 +140,7 @@ public:
 
 	void Run() {
 		while (IsRunning()) {
-			if (playing || step) {
+			if (playing) {
 				std::unique_lock<std::mutex> lock(playMutex);
 				if ((retVal = av_read_frame(pFormatCtx, &packet)) == 0) {
 					if (packet.stream_index == vStreamIdx) {
@@ -168,8 +168,6 @@ public:
 							}
 							av_frame_unref(pFrame);
 						}
-						if (step)
-							step = false;
 					}
 					av_free_packet(&packet);
 				}
@@ -254,7 +252,6 @@ public:
 	int	chromaWidth{ 0 }, chromaHeight{ 0 };
 	bool playing{ false };
 	bool ended{ false };
-	bool step{ false };
 	bool wasPlaying{ false };
 	bool showFrameStatus{ false };
 	float currentPlayTime{ 0.0 };
@@ -264,6 +261,7 @@ public:
 
 MP4Demux *pMp4;
 XGLShape *shape;
+bool step;
 
 extern bool initHmd;
 
@@ -297,7 +295,7 @@ void ExampleXGL::BuildScene() {
 		static float oldClock = 0.0f;
 		if (clock > oldClock) {
 			oldClock = clock;
-			if (pMp4->playing){
+			if (step || pMp4->playing){
 				if (pMp4->pFrames->usedBuffs.get_count() > 2) {
 					VideoFrame *pFrame = pMp4->pFrames->frames[pMp4->nFramesDisplayed++ & (numFrames - 1)];
 
@@ -361,7 +359,7 @@ void ExampleXGL::BuildScene() {
 				case GLFW_KEY_RIGHT:
 					xprintf("+1\n");
 					pMp4->playing = false;
-					pMp4->step = true;
+					step = true;
 					break;
 
 				case GLFW_KEY_LEFT:
