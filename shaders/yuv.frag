@@ -2,6 +2,11 @@
 
 precision highp float;
 
+uniform vec4 ambient;
+uniform vec4 diffuse;
+uniform vec4 specular;
+uniform float shininess;
+
 in  vec4 ex_Color;
 in  vec2 UV;
 
@@ -25,5 +30,5 @@ void main(void)
 	float g = y - (0.39173 * u) - (0.81290 * v);
 	float b = y + (2.017 * u);
 
-	out_Color = vec4(r,g,b,1.0);
+	out_Color = vec4(r,g,b,ambient.a);
 }

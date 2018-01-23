@@ -178,6 +178,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\config.json" />
+    <None Include="..\..\shaders\specular.frag" />
+    <None Include="..\..\shaders\specular.vert" />
+    <None Include="..\..\shaders\yuv.frag" />
+    <None Include="..\..\shaders\yuv.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

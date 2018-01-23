@@ -317,7 +317,7 @@ void ExampleXGL::BuildScene() {
 	shape->AddTexture(vWidth / 2, vHeight / 2, 1);
 
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(16.0f, 9.0f, 1.0f));
-	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(-16.0f, 0.0f, 9.0f));
+	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(-8.0f, 0.0f, 9.0f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	shape->model = translate * rotate *scale;
 
@@ -326,16 +326,17 @@ void ExampleXGL::BuildScene() {
 	shape2->AddTexture(vWidth / 2, vHeight / 2, 1);
 
 	scale = glm::scale(glm::mat4(), glm::vec3(16.0f, 9.0f, 1.0f));
-	translate = glm::translate(glm::mat4(), glm::vec3(16.0f, 0.0f, 9.0f));
+	translate = glm::translate(glm::mat4(), glm::vec3(8.0f, -0.01f, 9.0f));
 	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	shape2->model = translate * rotate *scale;
+	shape2->attributes.ambientColor = { 1.0, 1.0, 1.0, 0.4 };
 
 	pMp4 = new MP4Demux(videoPath.c_str());
 	pMp42 = new MP4Demux(videoPath2.c_str());
 
 	shape->SetAnimationFunction([&](float clock) {
 		static float oldClock = 0.0f;
-		if (clock > oldClock) {
+		if(true){//if (clock > oldClock) {
 			oldClock = clock;
 			if (step || pMp4->playing){
 				if (pMp4->pFrames->usedBuffs.get_count() > 2) {
@@ -368,7 +369,7 @@ void ExampleXGL::BuildScene() {
 
 	shape2->SetAnimationFunction([&](float clock) {
 		static float oldClock = 0.0f;
-		if (clock > oldClock) {
+		if(true) {//if (clock > oldClock) {
 			oldClock = clock;
 			if (step || pMp42->playing){
 				if (pMp42->pFrames->usedBuffs.get_count() > 2) {
@@ -398,16 +399,6 @@ void ExampleXGL::BuildScene() {
 			}
 		}
 	});
-
-	XInputKeyFunc seekFunc = [&](int key, int flags) {
-		const bool isDown = (flags & 0x8000) == 0;
-		const bool isRepeat = (flags & 0x4000) != 0;
-
-		if (isDown && !isRepeat){
-			pMp4->SeekPercent(0.0f);
-		}
-	};
-
 
 	XInputKeyFunc seekPercentFunc = [&](int key, int flags) {
 		const bool isDown = (flags & 0x8000) == 0;
@@ -472,6 +463,7 @@ void ExampleXGL::BuildScene() {
 				XGLGuiCanvas *thumb = (XGLGuiCanvas *)slider->Children()[1];
 				float percent = slider->Position() * 100.0f;
 				pMp4->SeekPercent(percent);
+				pMp42->SeekPercent(percent);
 			}
 		};
 

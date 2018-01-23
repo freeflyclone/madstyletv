@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{ef6f90f9-314a-4bda-a243-bd17afd6a21c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\common\main.cpp">
@@ -31,6 +34,18 @@
   <ItemGroup>
     <None Include="..\..\assets\config.json">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\shaders\yuv.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\yuv.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\specular.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\specular.vert">
+      <Filter>shaders</Filter>
     </None>
   </ItemGroup>
 </Project>
