@@ -43,7 +43,7 @@ public:
 	XSemaphore freeBuffs, usedBuffs;
 };
 
-class MP4Demux  : public XThread {
+class MP4Demux : public XThread {
 public:
 	MP4Demux(const char *fn) : fileName(fn), XThread("MP4Demux") {
 		av_register_all();
@@ -73,7 +73,13 @@ public:
 		if (avformat_find_stream_info(pFormatCtx, NULL) < 0)
 			throwXAVException("avformat_find_stream_info failed: Couldn't find stream information " + fileName + "\n");
 
-		av_new_packet(&packet, 0x100000);
+		av_init_packet(&packet);
+		packet.data = packetBuff;
+		packet.size = sizeof(packetBuff);
+
+		av_init_packet(&vPkt);
+		vPkt.data = vPacketBuff;
+		vPkt.size = sizeof(vPacketBuff);
 
 		for (int i = 0; pFormatCtx->nb_streams; i++) {
 			if (pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
@@ -144,8 +150,9 @@ public:
 				std::unique_lock<std::mutex> lock(playMutex);
 				if ((retVal = av_read_frame(pFormatCtx, &packet)) == 0) {
 					if (packet.stream_index == vStreamIdx) {
+						CopyAVPacket(vPkt, packet);
 						int frameFinished;
-						avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
+						avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &vPkt);
 						if (frameFinished) {
 							currentPlayTime = Pts2Time(pFrame->pkt_dts);
 							int64_t pts = Time2Pts(currentPlayTime);
@@ -200,6 +207,11 @@ private:
 			playing = true;
 	}
 
+	void CopyAVPacket(AVPacket& dst, AVPacket& src) {
+		dst.size = src.size;
+		memcpy(dst.data, src.data, dst.size);
+	}
+
 public:
 	void SeekPercent(float percent) {
 		if (!ended) {
@@ -220,11 +232,11 @@ public:
 			pFrames->usedBuffs(0);
 			pFrames->freeBuffs(numFrames);
 		}
-		playing = true; 
+		playing = true;
 	}
 
-	void StopPlaying() { 
-		playing = false; 
+	void StopPlaying() {
+		playing = false;
 	}
 
 	float Pts2Time(int64_t pts){
@@ -241,11 +253,16 @@ public:
 	int vStreamIdx{ -1 };
 	AVCodecContext *pCodecCtx = nullptr;
 	AVCodec *pCodec = nullptr;
-	AVPacket packet{};
+	AVPacket packet{}, vPkt, aPkt, uPkt[3];
 	AVFrame *pFrame = nullptr;
 	AVRational timeBase;
 	int ticksPerFrame;
 	int retVal{ 0 };
+
+	//TODO(?): make these dynamic
+	uint8_t packetBuff[0x100000];
+	uint8_t vPacketBuff[0x100000];
+
 
 	FramePool *pFrames = nullptr;
 	int	nFramesDecoded{ 0 }, nFramesDisplayed{ 0 };
@@ -271,6 +288,11 @@ void ExampleXGL::BuildScene() {
 	preferredHeight = 960;
 	//initHmd = true;
 	
+	glm::vec3 cameraPosition(0, -20, 9);
+	glm::vec3 cameraDirection(0, 1, 0);
+	glm::vec3 cameraUp = { 0, 0, 1 };
+	camera.Set(cameraPosition, cameraDirection, cameraUp);
+
 	std::string videoUrl = config.WideToBytes(config.Find(L"VideoFile")->AsString());
 	std::string videoPath;
 	if (videoUrl.find("http") != videoUrl.npos)
@@ -404,4 +426,5 @@ void ExampleXGL::BuildScene() {
 	}
 
 	pMp4->Start();
+
 }
