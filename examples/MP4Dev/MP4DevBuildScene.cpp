@@ -276,8 +276,8 @@ public:
 	std::mutex playMutex;
 };
 
-MP4Demux *pMp4;
-XGLShape *shape;
+MP4Demux *pMp4, *pMp42;
+XGLShape *shape,*shape2;
 bool step;
 
 extern bool initHmd;
@@ -288,12 +288,14 @@ void ExampleXGL::BuildScene() {
 	preferredHeight = 960;
 	//initHmd = true;
 	
-	glm::vec3 cameraPosition(0, -20, 9);
+	glm::vec3 cameraPosition(0, -40, 9);
 	glm::vec3 cameraDirection(0, 1, 0);
 	glm::vec3 cameraUp = { 0, 0, 1 };
 	camera.Set(cameraPosition, cameraDirection, cameraUp);
 
 	std::string videoUrl = config.WideToBytes(config.Find(L"VideoFile")->AsString());
+	std::string video2Url = config.WideToBytes(config.Find(L"VideoFile2")->AsString());
+
 	std::string videoPath;
 	if (videoUrl.find("http") != videoUrl.npos)
 		videoPath = videoUrl;
@@ -302,16 +304,34 @@ void ExampleXGL::BuildScene() {
 	else
 		videoPath = pathToAssets + "/" + videoUrl;
 
+	std::string videoPath2;
+	if (video2Url.find("http") != video2Url.npos)
+		videoPath2 = video2Url;
+	else if (video2Url.find(":", 1) != video2Url.npos)
+		videoPath2 = video2Url;
+	else
+		videoPath2 = pathToAssets + "/" + video2Url;
+
 	AddShape("shaders/yuv", [&](){ shape = new XGLTexQuad(vWidth, vHeight, 1); return shape; });
 	shape->AddTexture(vWidth / 2, vHeight / 2, 1);
 	shape->AddTexture(vWidth / 2, vHeight / 2, 1);
 
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(16.0f, 9.0f, 1.0f));
-	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 9.0f));
+	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(-16.0f, 0.0f, 9.0f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	shape->model = translate * rotate *scale;
 
+	AddShape("shaders/yuv", [&](){ shape2 = new XGLTexQuad(vWidth, vHeight, 1); return shape2; });
+	shape2->AddTexture(vWidth / 2, vHeight / 2, 1);
+	shape2->AddTexture(vWidth / 2, vHeight / 2, 1);
+
+	scale = glm::scale(glm::mat4(), glm::vec3(16.0f, 9.0f, 1.0f));
+	translate = glm::translate(glm::mat4(), glm::vec3(16.0f, 0.0f, 9.0f));
+	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	shape2->model = translate * rotate *scale;
+
 	pMp4 = new MP4Demux(videoPath.c_str());
+	pMp42 = new MP4Demux(videoPath2.c_str());
 
 	shape->SetAnimationFunction([&](float clock) {
 		static float oldClock = 0.0f;
@@ -341,6 +361,39 @@ void ExampleXGL::BuildScene() {
 					GL_CHECK("glGetTexImage() didn't work");
 
 					pMp4->pFrames->freeBuffs.notify();
+				}
+			}
+		}
+	});
+
+	shape2->SetAnimationFunction([&](float clock) {
+		static float oldClock = 0.0f;
+		if (clock > oldClock) {
+			oldClock = clock;
+			if (step || pMp42->playing){
+				if (pMp42->pFrames->usedBuffs.get_count() > 2) {
+					VideoFrame *pFrame = pMp42->pFrames->frames[pMp42->nFramesDisplayed++ & (numFrames - 1)];
+
+					glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit0"), 0);
+					glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit1"), 1);
+					glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit2"), 2);
+
+					glActiveTexture(GL_TEXTURE0);
+					glBindTexture(GL_TEXTURE_2D, shape2->texIds[0]);
+					glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, vWidth, vHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->y);
+					GL_CHECK("glGetTexImage() didn't work");
+
+					glActiveTexture(GL_TEXTURE1);
+					glBindTexture(GL_TEXTURE_2D, shape2->texIds[1]);
+					glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pMp42->chromaWidth, pMp42->chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->u);
+					GL_CHECK("glGetTexImage() didn't work");
+
+					glActiveTexture(GL_TEXTURE2);
+					glBindTexture(GL_TEXTURE_2D, shape2->texIds[2]);
+					glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pMp42->chromaWidth, pMp42->chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->v);
+					GL_CHECK("glGetTexImage() didn't work");
+
+					pMp42->pFrames->freeBuffs.notify();
 				}
 			}
 		}
@@ -426,5 +479,5 @@ void ExampleXGL::BuildScene() {
 	}
 
 	pMp4->Start();
-
+	pMp42->Start();
 }
