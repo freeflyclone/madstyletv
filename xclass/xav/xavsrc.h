@@ -27,13 +27,23 @@ extern "C" {
 };
 
 #include "xthread.h"
+#include "xcircularbuffer.h"
 #include "xavexcept.h"
+
+class XAVStream;
+
+typedef std::shared_ptr<XAVStream> XAVStreamHandle;
+typedef std::vector<XAVStreamHandle> XAVStreamSet;
+
+typedef std::shared_ptr<XCircularBuffer> XAVCircularBufferHandle;
+typedef std::vector<XAVCircularBufferHandle> XAVCircularBufferSet;
+
 
 // Multimedia sources possibly have more than one "stream" (audio/video for ex.)
 class XAVStream
 {
 public:
-	static const int numFrames = 4;
+	static const int numFrames = 64;
 	static const int maxChannels = 8;
 
 	typedef struct {
@@ -41,6 +51,7 @@ public:
 		int nChannels;
 		int size;
 		int count;
+		int64_t pts; // in tics (this stream's framerate)
 	} XAVBuffer;
 
 	XAVStream(AVCodecContext *context);
@@ -86,6 +97,17 @@ public:
 	int frameFinished;
 	XSemaphore freeBuffs;
 	XSemaphore usedBuffs;
+
+	XCircularBuffer *pcb;
+
+	int framerateNum;
+	int framerateDen;
+	int timebaseNum;
+	int timebaseDen;
+	int ticksPerFrame;
+
+	// Intended for audio: one XCircularBuffer per audio channel
+	XAVCircularBufferSet cbSet;
 };
 
 class XAVSrc : public XThread
@@ -93,8 +115,8 @@ class XAVSrc : public XThread
 public:
 	XAVSrc(const std::string name, bool v, bool a);
 	XAVSrc();
-	bool DecodeVideo(AVPacket *packet);
-	bool DecodeAudio(AVPacket *packet);
+	//bool DecodeVideo(AVPacket *packet);
+	//bool DecodeAudio(AVPacket *packet);
 	virtual void Run();
 
 	XAVStream *VideoStream();
@@ -105,9 +127,9 @@ public:
 	int mNumStreams;
 	int mUsedStreams;
 	AVPacket packet;
-	std::vector<std::shared_ptr<XAVStream> >mStreams;
-	std::shared_ptr<XAVStream> mVideoStream;
-	std::shared_ptr<XAVStream> mAudioStream;
+	XAVStreamSet mStreams;
+	XAVStreamHandle mVideoStream;
+	XAVStreamHandle mAudioStream;
 	std::string name;
 
 	bool doVideo, doAudio;

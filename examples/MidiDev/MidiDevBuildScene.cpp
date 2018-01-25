@@ -12,12 +12,24 @@
 
 #include "xmidi.h"
 
+#ifdef WIN32
+#define KKS25 L"Komplete Kontrol - 1"
+#define LAUNCHPAD L"2- Launchpad S"
+#define RIGKONTROL L"Rig Kontrol 3 MIDI In"
+#else
+#define KKS25 L"KOMPLETE KONTROL S25"
+#define LAUNCHPAD L"Launchpad S"
+#define RIGKONTROL L"Rig Kontrol 3 MIDI In"
+#endif
+
 XMidiInput *pKontrol25 = nullptr;
 XGLCube *kontrol25Cube;
 
 XMidiInput *pLaunchpad = nullptr;
 XGLCube *launchpadCube;
 glm::vec3 launchpadTranslate = { 10.0f, 10.0f, 0.0f };
+
+XMidiInput *pRigKontrol;
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
@@ -26,7 +38,7 @@ void ExampleXGL::BuildScene() {
 
 	if (true) {
 		AddShape("shaders/specular", [&](){ kontrol25Cube = new XGLCube(); return kontrol25Cube; });
-		pKontrol25 = new XMidiInput(L"KOMPLETE KONTROL S25");
+		pKontrol25 = new XMidiInput(KKS25);
 		pKontrol25->AddKeyFunc(0xB00e, [this](int key, int flags) {
 			glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(1, 1, (flags / 12.8f)));
 			glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, (flags / 12.8)));
@@ -42,13 +54,28 @@ void ExampleXGL::BuildScene() {
 
 	if (true) {
 		AddShape("shaders/specular", [&](){ launchpadCube = new XGLCube(); return launchpadCube; });
-		pLaunchpad = new XMidiInput(L"Launchpad S");
+		launchpadCube->model = glm::translate(glm::mat4(), launchpadTranslate);
+
+		pLaunchpad = new XMidiInput(LAUNCHPAD);
 		pLaunchpad->AddKeyFunc(0x9000, [this](int key, int flags) {
 			glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(1, 1, (flags > 0) ? 2 : 1));
 			launchpadCube->model = glm::translate(glm::mat4(),launchpadTranslate) * scale;
 		});
 		try {
 			pLaunchpad->Start();
+		}
+		catch (std::runtime_error e) {
+			xprintf("Open failed: %s\n", e.what());
+		}
+	}
+
+	if (true){
+		pRigKontrol = new XMidiInput(RIGKONTROL);
+		pRigKontrol->AddKeyFunc({ 0x8000, 0xE000 }, [this](int key, int flags) {
+			xprintf("Key: %04X: %d\n", key, flags);
+		});
+		try {
+			pRigKontrol->Start();
 		}
 		catch (std::runtime_error e) {
 			xprintf("Open failed: %s\n", e.what());

@@ -2,7 +2,8 @@
 	"AssetFolder" : "assets",
 	"ShaderFolder" : "shaders",
 	"SharedMemory" : false,
-	"VideoFile" : "assets/CulturalPhenomenon.mp4",
+	"VideoFile" : "assets/GH010031.mp4",
+	"VideoFile2" : "assets/GH010033.mp4",
 	"Encoder" : {
 		"enabled" : false,
 		"preset" : "faster",

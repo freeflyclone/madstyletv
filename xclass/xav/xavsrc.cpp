@@ -1,76 +1,109 @@
 #include "xavsrc.h"
 
-XAVStream::XAVStream(AVCodecContext *ctx) : freeBuffs(numFrames), pStream(NULL), streamIdx(0), streamTime(0.0) {
+XAVStream::XAVStream(AVCodecContext *ctx) : 
+	freeBuffs(numFrames), 
+	pStream(NULL), 
+	streamIdx(0), 
+	streamTime(0.0),
+	pcb(nullptr)
+{
 	pCodecCtx = ctx;
 
-	pCodec=avcodec_find_decoder(pCodecCtx->codec_id);
-	if(pCodec==NULL)
-		throwXAVException("codec not found");
+	if (pCodecCtx) {
+		pCodec = avcodec_find_decoder(pCodecCtx->codec_id);
+		if (pCodec) {
+			if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0)
+				throwXAVException("Failed to open codec");
 
-	if( avcodec_open2(pCodecCtx, pCodec,NULL) < 0 )
-		throwXAVException("Failed to open codec");
+			pFrame = av_frame_alloc();
+			if (!pFrame)
+				throwXAVException("error allocating getting AVFrame\n");
 
-	pFrame = av_frame_alloc();
-	if (!pFrame)
-		throwXAVException("error allocating getting AVFrame\n");
+			if (pCodecCtx->codec_type == AVMEDIA_TYPE_VIDEO) {
+				xprintf("Found AVMEDIA_TYPE_VIDEO\n");
+				xprintf("               width: %d\n", pCodecCtx->width);
+				xprintf("              height: %d\n", pCodecCtx->height);
+				numBytes = av_image_get_buffer_size(pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height, 8);
 
-	if (pCodecCtx->codec_type == AVMEDIA_TYPE_VIDEO) {
-		xprintf("Found AVMEDIA_TYPE_VIDEO\n");
-		xprintf("               width: %d\n", pCodecCtx->width);
-		xprintf("              height: %d\n", pCodecCtx->height);
-		numBytes = av_image_get_buffer_size(pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height,8);
+				AllocateBufferPool(numFrames, numBytes, 3);
+				width = pCodecCtx->width;
+				height = pCodecCtx->height;
 
-		AllocateBufferPool(numFrames, numBytes, 3);
-		width = pCodecCtx->width;
-		height = pCodecCtx->height;
+				channels = pCodecCtx->channels;
+				sampleRate = pCodecCtx->sample_rate;
+				formatSize = 0;
 
-		// figure out the chroma sub-sampling of the pixel format
-		int pixelFormat = pCodecCtx->pix_fmt;
-		const AVPixFmtDescriptor *pixDesc = av_pix_fmt_desc_get((AVPixelFormat)pixelFormat);
+				// figure out the chroma sub-sampling of the pixel format
+				int pixelFormat = pCodecCtx->pix_fmt;
+				const AVPixFmtDescriptor *pixDesc = av_pix_fmt_desc_get((AVPixelFormat)pixelFormat);
 
-		// save it so our clients can know
-		chromaWidth = pCodecCtx->width / (1 << pixDesc->log2_chroma_w);
-		chromaHeight = pCodecCtx->height / (1 << pixDesc->log2_chroma_h);
-	}
-	else if (pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO) {
-		xprintf("Found AVMEDIA_TYPE_AUDIO\n");
-		xprintf("  Samples Per Second: %d\n", pCodecCtx->sample_rate);
-		xprintf("        SampleFormat: %d\n", pCodecCtx->sample_fmt);
-		xprintf("          BlockAlign: %d\n", pCodecCtx->block_align);
-		xprintf("            Channels: %d\n", pCodecCtx->channels);
+				// save it so our clients can know
+				chromaWidth = pCodecCtx->width / (1 << pixDesc->log2_chroma_w);
+				chromaHeight = pCodecCtx->height / (1 << pixDesc->log2_chroma_h);
 
-		channels = pCodecCtx->channels;
-		formatSize = 0;
-		isFloat = false;
-		sampleRate = pCodecCtx->sample_rate;
+				// need to pass timing info downstream to client(s)
+				framerateNum = pCodecCtx->framerate.num;
+				framerateDen = pCodecCtx->framerate.den;
+				timebaseNum = pCodecCtx->time_base.num;
+				timebaseDen = pCodecCtx->time_base.den;
+				ticksPerFrame = pCodecCtx->ticks_per_frame;
+			}
+			else if (pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO) {
+				xprintf("Found AVMEDIA_TYPE_AUDIO\n");
+				xprintf("  Samples Per Second: %d\n", pCodecCtx->sample_rate);
+				xprintf("        SampleFormat: %d\n", pCodecCtx->sample_fmt);
+				xprintf("          BlockAlign: %d\n", pCodecCtx->block_align);
+				xprintf("            Channels: %d\n", pCodecCtx->channels);
 
-		switch (pCodecCtx->sample_fmt) {
-			case 8:
-				formatSize = 4;
-				isFloat = true;
-				break;
+				channels = pCodecCtx->channels;
+				formatSize = 0;
+				isFloat = false;
+				sampleRate = pCodecCtx->sample_rate;
 
-			default:
-				throwXAVException("unknown pCodecCtx->sampleFmt");
+				framerateNum = pCodecCtx->framerate.num;
+				framerateDen = pCodecCtx->framerate.den;
+				timebaseNum = pCodecCtx->time_base.num;
+				timebaseDen = pCodecCtx->time_base.den;
+				ticksPerFrame = pCodecCtx->ticks_per_frame;
+
+				// make XCircularBuffer for each channel
+				for (int i = 0; i < pCodecCtx->channels; i++)
+					cbSet.emplace_back(std::make_shared<XCircularBuffer>(0x40000));
+
+				switch (pCodecCtx->sample_fmt) {
+				case 8:
+					formatSize = 4;
+					isFloat = true;
+					break;
+
+				default:
+					throwXAVException("unknown pCodecCtx->sampleFmt");
+				}
+				// defer AllocateBufferPool() until first audio frame is decoded
+			}
+			else
+				xprintf("Found unknown AVMEDIA_TYPE\n");
+
+			nFramesDecoded = 0;
+			nFramesRead = 0;
 		}
-		// defer AllocateBufferPool() until first audio frame is decoded
 	}
-	else
-		xprintf("Found unknown AVMEDIA_TYPE\n");
-
-	nFramesDecoded = 0;
-	nFramesRead = 0;
+	else {
+		xprintf("Found data stream.  Allocating XCircularBuffer.\n");
+		pcb = new XCircularBuffer();
+	}
 }
 
 void XAVStream::AllocateBufferPool(int number, int size, int channels) {
 	// TODO: make this number dynamic
 	if (number != numFrames)
-		throwXAVException("number != bumFrames");
+		throwXAVException("number != numFrames");
 
 	if ((channels<1) || (channels>maxChannels))
 		throwXAVException("channels count is out of bounds: "+std::to_string(channels));
 
 	for (int i = 0; i < number; i++) {
+		memset(&frames[i], 0, sizeof(frames[0]));
 		for (int j = 0; j < channels; j++) {
 			unsigned char *buffer = (unsigned char *)av_malloc(size);
 			frames[i].buffers[j] = buffer;
@@ -85,93 +118,93 @@ void XAVStream::AllocateBufferPool(int number, int size, int channels) {
 
 bool XAVStream::Decode(AVPacket *packet)
 {
-	if(pCodecCtx==NULL)
-		return false;
+	if (pCodecCtx) {
+		if (pCodecCtx->codec_type == AVMEDIA_TYPE_VIDEO) {
+			auto start = std::chrono::high_resolution_clock::now();
+			avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, packet);
+			auto end = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<double, std::micro> duration = end - start;
+			//xprintf("pict_type: %d, vdt: %0.6f\n", pFrame->pict_type, duration);
 
-	if( pCodecCtx->codec_type == AVMEDIA_TYPE_VIDEO ) {
-		avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, packet);
-		if( frameFinished ) {
-			freeBuffs.wait_for(200);
-			int frameIdx = (nFramesDecoded - 1) & (numFrames - 1);
+			if (frameFinished) {
+				freeBuffs.wait_for(200);
+				int frameIdx = (nFramesDecoded - 1) & (numFrames - 1);
 
-			XAVBuffer xb = frames[frameIdx];
+				XAVBuffer& xb = frames[frameIdx]; // get reference, else 'xb' is a copy (undesirable)
+				xb.pts = packet->pts;
 
-			// if linesize[x] == width, we can copy the frame with a single memcpy()
-			if (pFrame->linesize[0] == width) {
-				// luminance Y
-				int ySize = height * pFrame->linesize[0];
-				memcpy(xb.buffers[0], pFrame->data[0], ySize);
+				// if linesize[x] == width, we can copy the frame with a single memcpy()
+				if (pFrame->linesize[0] == width) {
+					// luminance Y
+					int ySize = height * pFrame->linesize[0];
+					memcpy(xb.buffers[0], pFrame->data[0], ySize);
 
-				// chrominance U
-				int uSize = chromaWidth * chromaHeight;
-				memcpy(xb.buffers[1], pFrame->data[1], uSize);
+					// chrominance U
+					int uSize = chromaWidth * chromaHeight;
+					memcpy(xb.buffers[1], pFrame->data[1], uSize);
 
-				// chrominance V
-				int vSize = chromaWidth * chromaHeight;
-				memcpy(xb.buffers[2], pFrame->data[2], uSize);
+					// chrominance V
+					int vSize = chromaWidth * chromaHeight;
+					memcpy(xb.buffers[2], pFrame->data[2], uSize);
+				}
+				// ... otherwise it has to be scanline at a time.
+				else {
+					// luminance Y
+					unsigned char *s = pFrame->data[0];
+					unsigned char *d = xb.buffers[0];
+					for (int i = 0; i < height; i++) {
+						memcpy(d, s, pFrame->linesize[0]);
+						s += pFrame->linesize[0];
+						d += width;
+					}
+
+					// chrominance U
+					s = pFrame->data[1];
+					d = xb.buffers[1];
+					for (int i = 0; i < chromaHeight; i++) {
+						memcpy(d, s, pFrame->linesize[1]);
+						s += pFrame->linesize[1];
+						d += chromaWidth;
+					}
+
+					// chrominance V
+					s = pFrame->data[2];
+					d = xb.buffers[2];
+					for (int i = 0; i < chromaHeight; i++) {
+						memcpy(d, s, pFrame->linesize[2]);
+						s += pFrame->linesize[2];
+						d += chromaWidth;
+					}
+				}
+
+				nFramesDecoded++;
+				usedBuffs.notify();
 			}
-			// ... otherwise it has to be scanline at a time.
-			else {
-				// luminance Y
-				unsigned char *s = pFrame->data[0];
-				unsigned char *d = xb.buffers[0];
-				for (int i = 0; i < height; i++) {
-					memcpy(d, s, pFrame->linesize[0]);
-					s += pFrame->linesize[0];
-					d += width;
-				}
-
-				// chrominance U
-				s = pFrame->data[1];
-				d = xb.buffers[1];
-				for (int i = 0; i < chromaHeight; i++) {
-					memcpy(d, s, pFrame->linesize[1]);
-					s += pFrame->linesize[1];
-					d += chromaWidth;
-				}
-
-				// chrominance V
-				s = pFrame->data[2];
-				d = xb.buffers[2];
-				for (int i = 0; i < chromaHeight; i++) {
-					memcpy(d, s, pFrame->linesize[2]);
-					s += pFrame->linesize[2];
-					d += chromaWidth;
-				}
+		}
+		else if (pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO) {
+			auto start = std::chrono::high_resolution_clock::now();
+			int length = avcodec_decode_audio4(pCodecCtx, pFrame, &frameFinished, packet);
+			auto end = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<double, std::micro> duration = end - start;
+			//xprintf("adt: %0.2f\n", duration);
+			if (frameFinished){
+				for (int i = 0; i < channels; i++)
+					cbSet[i].get()->Write(pFrame->data[i], pFrame->nb_samples * formatSize);
+				nFramesDecoded++;
 			}
-
-			nFramesDecoded++;
-			usedBuffs.notify();
 		}
 	}
-	else if( pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO ) {
-		int length = avcodec_decode_audio4(pCodecCtx, pFrame, &frameFinished, packet);
-		if (frameFinished){
-			if (nFramesDecoded == 0)
-				AllocateBufferPool(numFrames, pFrame->nb_samples * formatSize, channels);
-
-			freeBuffs.wait_for(200);
-
-			// replace all of this mumbo with an XFifo
-			int frameIdx = (nFramesDecoded - 1) & (numFrames - 1);
-			XAVBuffer xb = frames[frameIdx];
-
-			xb.nChannels = channels;
-
-			for (int i = 0; i < channels; i++)
-				memcpy(xb.buffers[i], pFrame->data[i], xb.size);
-
-			streamTime += (double)pFrame->nb_samples / (double)pFrame->sample_rate;
-			nFramesDecoded++;
-			usedBuffs.notify();
-		}
+	else {
+		// else this is a data stream, write to its circular buffer
+		auto p = packet;
+		pcb->Write(p->data, p->size);
 	}
 
 	return true;
 }
 
 XAVStream::XAVBuffer XAVStream::GetBuffer() {
-	if (!usedBuffs.wait_for(1000)) {
+	if (!usedBuffs.wait_for(10000)) {
 		xprintf("XAVStream::GetBuffer() timed out\n");
 		return XAVBuffer{ { NULL, NULL, NULL }, 0, 0 };
 	}
@@ -240,8 +273,15 @@ XAVSrc::XAVSrc(const std::string name, bool video=true, bool audio=true) :
 				}
 			}
 		}
-		else
-			xprintf("Unknown codec type: %d, id: %d\n", pFormatCtx->streams[i]->codec->codec_type, pFormatCtx->streams[i]->codec);
+		else {
+			XAVStreamHandle meta = std::make_shared<XAVStream>(nullptr);
+
+			meta->pStream = pFormatCtx->streams[i];
+			meta->streamIdx = i;
+			mStreams.emplace_back(meta);
+			mUsedStreams++;
+			xprintf("Registered data stream id: %X\n", pFormatCtx->streams[i]->id);
+		}
 	}
 	xprintf("XAVSrc::XAVSrc() complete, %s video, %s audio\n", (mVideoStream == NULL) ? "does not have" : "has", (mAudioStream == NULL) ? "does not have" : "has");
 }
@@ -257,15 +297,9 @@ XAVSrc::XAVSrc() :
 
 void XAVSrc::Run()
 {
-	while( av_read_frame(pFormatCtx, &packet) >= 0 )
-	{
-		//if (packet.stream_index <= 1) {
-		for (int i = 0; i < mUsedStreams; i++) {
-			if (mStreams[i]->streamIdx == packet.stream_index) {
-				mStreams[i]->Decode(&packet);
-				av_packet_unref(&packet);
-			}
-		}
+	while ((av_read_frame(pFormatCtx, &packet) >= 0)) {
+		mStreams[packet.stream_index]->Decode(&packet);
+		av_free_packet(&packet);
 	}
 }
 

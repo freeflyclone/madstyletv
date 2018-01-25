@@ -4,7 +4,7 @@ include topheader.mk
 
 all: $(SUBDIRS)
 	for subdir in $(SUBDIRS); do \
-		$(MAKE) -C $$subdir -j 12 all ; \
+		$(MAKE) -C $$subdir all ; \
 	done
 
 clean: $(SUBDIRS)

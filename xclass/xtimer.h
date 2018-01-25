@@ -7,9 +7,17 @@
 
 #include "xutils.h"
 
+#include "Timing/SteppedTimer.h"
+#include "Timing/ScaledTimer.h"
+
+namespace {
+	using namespace Nuclex::Game::Timing;
+}
+
 #ifdef _WIN32
 #include <Windows.h>
 class XTimer {
+
 public:
 	XTimer() {
 		QueryPerformanceFrequency(&frequency);
@@ -27,8 +35,10 @@ public:
 		return diff;
 	}
 
-	LARGE_INTEGER epoch,since,last;
-	LARGE_INTEGER frequency;
+	LARGE_INTEGER epoch{}, since{}, last{};
+	LARGE_INTEGER frequency{};
+
+	SteppedTimer steppedTimer;
 };
 #else
 class XTimer {

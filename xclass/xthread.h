@@ -24,6 +24,8 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include <memory>
+#include <vector>
 
 class XThread {
 public:
@@ -63,16 +65,31 @@ public:
 			return false;
 	}
 
+	std::string Name() { return name; }
+
 private:
 	std::thread t;
 	std::string name;
 	bool isRunning;
 };
 
+typedef std::shared_ptr<XThread> XThreadHandle;
+typedef std::vector<XThreadHandle> XThreadPool;
+
+template <typename T>
+XThreadHandle XThreadCreate(std::string n) {
+	return std::make_shared<T>(n);
+}
+
 class XSemaphore {
 public:
 	// Initially, this semaphore must be notify()'d before a wait() will be satisfied
 	XSemaphore(int c = 0) : count(c) {};
+
+	void operator()(int c) {
+		std::unique_lock<std::mutex> lock(mutex);
+		count = c;
+	}
 
 	void notify(int n = 1) {
 		std::unique_lock<std::mutex> lock(mutex);
@@ -98,6 +115,11 @@ public:
 			count -= waitForNum;
 
 		return retVal;
+	}
+
+	unsigned int get_count() { 
+		std::unique_lock<std::mutex> lock(mutex); 
+		return count;
 	}
 
 private:

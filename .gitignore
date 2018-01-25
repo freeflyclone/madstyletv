@@ -1,2 +1,6 @@
+*.suo
+*.sdf
+*.bak
 *.[oa]
 *.obj
+/bin/*.dll

@@ -18,11 +18,15 @@
 
 static PhysXXGL *pxgl = NULL;
 #ifndef OPENGL_MAJOR_VERSION
-#define OPENGL_MAJOR_VERSION 3
+#define OPENGL_MAJOR_VERSION 4
 #endif
 
 #ifndef OPENGL_MINOR_VERSION
-#define OPENGL_MINOR_VERSION 2
+#define OPENGL_MINOR_VERSION 5
+#endif
+
+#ifndef GLFW_WINDOW_TITLE
+#define GLFW_WINDOW_TITLE "Mad Style TV Example"
 #endif
 
 #ifdef _WIN32
@@ -96,8 +100,63 @@ static void cursor_position_callback(GLFWwindow *window, double x, double y) {
 		pxgl->MouseEvent((int)x, (int)y, state);
 }
 
+static void mouse_button_callback(GLFWwindow *window, int button, int action, int mods) {
+	int state = 0;
+	double x, y;
+
+	glfwGetCursorPos(window, &x, &y);
+	state |= glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+	state |= glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) << 1;
+
+	if (pxgl != NULL)
+		pxgl->MouseEvent((int)x, (int)y, state);
+}
+
+static void window_size_callback(GLFWwindow *window, int width, int height) {
+	if (pxgl != NULL) {
+		pxgl->Reshape(width, height);
+		pxgl->Display();
+		glfwSwapBuffers(window);
+	}
+}
+
+static void window_refresh_callback(GLFWwindow *window){
+	if (pxgl != NULL)
+		pxgl->Display();
+}
+
+static void enumerate_joysticks() {
+	int i;
+
+	for (i = 0; i < GLFW_JOYSTICK_LAST; i++) {
+		if (glfwJoystickPresent(i)) {
+			const char *name = glfwGetJoystickName(i);
+			XJoystick j;
+
+			strcpy(j.fullName, name);
+			char *tmpPtr = j.shortName;
+			
+			// strip whitespace from name (probably not really needed)
+			for (int j = 0; j < strlen(name); j++)
+				if (name[j] != ' ')
+					*tmpPtr++ = name[j];
+			*tmpPtr = 0;
+
+			// get the number of axes this joystick supports.
+			j.numAxes = 0;
+			j.pollFunc = [i](int* count) { 
+				return glfwGetJoystickAxes(i, count); 
+			};
+
+			glfwGetJoystickAxes(i, &j.numAxes);
+			pxgl->AddJoystick(j);
+		}
+	}
+}
+
 int main(void) {
 	GLFWwindow *window;
+	int width, height;
 	/*
 	if (!FreeConsole()) {
 	printf("Freeing the console failed: %d\n", GetLastError());
@@ -111,11 +170,11 @@ int main(void) {
 
 	glfwSetErrorCallback(error_callback);
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, OPENGL_MAJOR_VERSION);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, OPENGL_MINOR_VERSION);
 	glfwWindowHint(GLFW_SAMPLES, 8);
 
-	window = glfwCreateWindow(1280, 720, "Mad Style TV Example", NULL, NULL);
+	window = glfwCreateWindow(1280, 720, GLFW_WINDOW_TITLE, NULL, NULL);
 	if (!window) {
 		printf("glfwCreateWindow() failed\n");
 		glfwTerminate();
@@ -126,9 +185,8 @@ int main(void) {
 
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetCursorPosCallback(window, cursor_position_callback);
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-	glfwSwapInterval(1);
+	glfwSetWindowSizeCallback(window, window_size_callback);
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
@@ -137,32 +195,41 @@ int main(void) {
 		exit(-1);
 	}
 
+	glfwGetFramebufferSize(window, &width, &height);
+
     SetGlobalWorkingDirectoryName();
     pathToAssets = currentWorkingDir + "/..";
 
-
 	try {
 		pxgl = new PhysXXGL();
-
-		while (!glfwWindowShouldClose(window)) {
-			int width, height;
-			static int prevWidth = 0, prevHeight = 0;
-
-			glfwGetFramebufferSize(window, &width, &height);
-			if ((width != prevWidth) || (height != prevHeight)){
-				pxgl->Reshape(width, height);
-				prevWidth = width;
-				prevHeight = height;
+		pxgl->GetPreferredWindowSize(&width, &height);
+		glfwSetWindowSize(window, width, height);
+		glfwSwapInterval(pxgl->GetPreferredSwapInterval());
+		pxgl->Reshape(width, height);
+	}
+	catch (std::runtime_error e) {
+		printf("Exception: %s\n", e.what());
 			}
 
-			glClear(GL_COLOR_BUFFER_BIT);
-
-			pxgl->Display();
+	try {
+		bool shouldQuit = false;
+		while (!glfwWindowShouldClose(window) && !shouldQuit) {
+			glfwPollEvents();
+			pxgl->PollJoysticks();
+			pxgl->Animate();
 
 			glfwSwapBuffers(window);
-			glfwPollEvents();
+
+			shouldQuit = pxgl->Display();
+			pxgl->stepPhysics(true);
+		}
+	}
+	catch (std::runtime_error e) {
+		printf("Exception: %s\n", e.what());
 		}
 
+	try {
+		delete pxgl;
 		glfwTerminate();
 	}
 	catch (std::runtime_error e) {

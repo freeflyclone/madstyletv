@@ -31,10 +31,22 @@ void CheckGlStatus(const char *file, int line) {
 	}
 }
 
-XGL::XGL() : clock(0.0f), pb(NULL), fb(NULL), renderGui(false), guiManager(nullptr), mouseCaptured(nullptr), keyboardFocused(nullptr) {
+XGL::XGL() : clock(0.0f), pb(NULL), fb(NULL), renderGui(false), guiManager(nullptr), mouseCaptured(nullptr), keyboardFocused(nullptr),
+preferredWidth(1280),
+preferredHeight(720),
+useHmd(false),
+preferredSwapInterval(1),
+pHmd(nullptr),
+hmdSled(nullptr)
+{
 	SetName("XGL");
 	xprintf("OpenGL version: %s\n", glGetString(GL_VERSION));
 	glGetError();
+
+	shapeLayers.push_back(new XGLShapesMap());
+	shapeLayers.push_back(new XGLShapesMap());
+	shapeLayers.push_back(new XGLShapesMap());
+	shapeLayers.push_back(new XGLShapesMap());
 
 	//QueryContext();
 
@@ -101,11 +113,13 @@ XGL::XGL() : clock(0.0f), pb(NULL), fb(NULL), renderGui(false), guiManager(nullp
 	// enabling this takes up GPU time,
 	// mostly because of glReadPixels().
 	// with the encoder in the loop, it's even worse
-	//if (config.Find(L"SharedMemory")->AsBool())
-		//fb = new XGLSharedFBO(this);
+	if (config.Find(L"SharedMemory")->AsBool())
+		fb = new XGLSharedFBO(this);
 }
 
 XGL::~XGL(){
+	threadPool.clear();
+
     // iterate through all of the shapes, according to which shader they use
     XGLShapesMap::iterator perShader;
 
@@ -125,26 +139,67 @@ XGL::~XGL(){
 		}
 	}
 	
-	for (perShader = shapes.begin(); perShader != shapes.end(); perShader++) {
-        std::string name = perShader->first;
-        shader = shaderMap[name];
+	for (auto shapes : shapeLayers) {
+		for (perShader = shapes->begin(); perShader != shapes->end(); perShader++) {
+			std::string name = perShader->first;
+			shader = shaderMap[name];
 
-        for (perShape = perShader->second->begin(); perShape != perShader->second->end(); perShape++) {
-            XGLShape *shape = *perShape;
-            delete shape;
-        }
-        delete perShader->second;
-        delete shader;
-    }
+			for (perShape = perShader->second->begin(); perShape != perShader->second->end(); perShape++) {
+				XGLShape *shape = *perShape;
+				delete shape;
+			}
+			delete perShader->second;
+		}
+	}
+
+	// since we now have layers do NOT delete the shader above as was previously done,
+	// wait for all shapes layers to be deleted THEN delete all the shaders.
+	for (auto shaderMapEntry : shaderMap)
+		delete shaderMapEntry.second;
+}
+void XGL::InitHmd()	{
+#ifdef LINUX
+	return;
+#else
+	// Create a cockpit that can be flown in the world, put it in layer 2 to override world object rendering
+	// (Turns out the layers hack only works between top level shapes right now)
+	AddShape("shaders/000-simple", [&]() { hmdSled = new XGLSled(); return hmdSled; }, 2);
+	hmdSled->SetName("HmdSled", false);
+
+	// move forward/backward
+	AddProportionalFunc("LeftThumbStick.y", [this](float v) {
+		glm::vec4 backward = glm::toMat4(hmdSled->o) * glm::vec4(0.0, v / 10.0f, 0.0, 0.0);
+		hmdSled->p += glm::vec3(backward);
+		hmdSled->model = hmdSled->GetFinalMatrix();
+	});
+
+	// yaw (rudder)
+	AddProportionalFunc("LeftThumbStick.x", [this](float v) { hmdSled->SampleInput(-v, 0.0f, 0.0f); });
+
+	// pitch (elevator)
+	AddProportionalFunc("RightThumbStick.y", [this](float v) { hmdSled->SampleInput(0.0f, -v, 0.0f); });
+
+	// roll (ailerons)
+	AddProportionalFunc("RightThumbStick.x", [this](float v) { hmdSled->SampleInput(0.0f, 0.0f, v); });
+
+	// change the default configuration so the HMD will work.
+	preferredWidth = 1080;
+	preferredHeight = 600;
+
+	pHmd = new XGLHmd(this, preferredWidth, preferredHeight);
+	useHmd = true;
+	preferredSwapInterval = 0;
+#endif
 }
 
-void XGL::RenderScene(XGLShapesMap *shapes) {
-	camera.Animate();
 
-	// set the projection,view,orthoProjection matrices in the matrix UBO
-	shaderMatrix.view = camera.GetViewMatrix();
-	shaderMatrix.projection = projector.GetProjectionMatrix();
-	shaderMatrix.orthoProjection = projector.GetOrthoMatrix();
+void XGL::RenderScene(XGLShapesMap *shapes) {
+	if (!useHmd) {
+		// set the projection,view,orthoProjection matrices in the matrix UBO
+		shaderMatrix.view = camera.GetViewMatrix();
+		shaderMatrix.projection = projector.GetProjectionMatrix();
+		shaderMatrix.orthoProjection = projector.GetOrthoMatrix();
+	}
 
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(shaderMatrix), (GLvoid *)&shaderMatrix, GL_DYNAMIC_DRAW);
 	GL_CHECK("glBufferData() failed");
@@ -158,13 +213,37 @@ void XGL::RenderScene(XGLShapesMap *shapes) {
 		GL_CHECK("glUniform3fv() failed");
 
 		for (auto const shape : *(perShader.second))
-			shape->Render(clock);
-
+			if (shape->isVisible)
+				shape->Render();
+		
         shader->UnUse();
     }
 }
 
-void XGL::Display(){
+void XGL::Animate() {
+	camera.Animate();
+
+	for (auto shapesMaps : shapeLayers)
+		for (auto shaders : *shapesMaps)
+			for (auto const perShader : *shapesMaps) {
+				const XGLShader *shader = shaderMap[perShader.first];
+				for (auto const shape : *(perShader.second))
+					shape->Animate(clock);
+			}
+	clock += 1.0f;
+}
+
+void XGL::PreRender() {
+	for (auto fn : preRenderFunctions)
+		fn(clock);
+}
+
+void XGL::PostRender() {
+	for (auto fn : postRenderFunctions)
+		fn(clock);
+}
+
+bool XGL::Display(){
 	PreRender();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -174,7 +253,8 @@ void XGL::Display(){
 	GL_CHECK("glBindBuffer() failed");
 
 	// render the world
-	RenderScene(&shapes);
+	for (auto shapes : shapeLayers)
+		RenderScene(shapes);
 
 	// render the GUI
 	if (renderGui) {
@@ -189,21 +269,10 @@ void XGL::Display(){
 	if (pb)
 		pb->Render();
 
-	clock += 1.0f;
-}
+	PostRender();
 
-void XGL::PreRender() {
-	for (auto perShader : shapes) {
-		XGLShader *shader = shaderMap[perShader.first];
-		
-		shader->Use();
-
-		for (auto shape : *(perShader.second))
-			if (shape->preRenderFunction)
-				shape->preRenderFunction(clock);
-
-		shader->UnUse();
-	}
+	// always return shouldQuit = false
+	return false;
 }
 
 XGLShape* XGL::CreateShape(XGLShapesMap *shapes, std::string shName, XGLNewShapeLambda fn){
@@ -232,14 +301,14 @@ XGLShape* XGL::CreateShape(XGLShapesMap *shapes, std::string shName, XGLNewShape
 	return pShape;
 }
 
-XGLShape* XGL::CreateShape(std::string shName, XGLNewShapeLambda fn){
-	return CreateShape(&shapes, shName, fn);
+XGLShape* XGL::CreateShape(std::string shName, XGLNewShapeLambda fn, int layer){
+	return CreateShape(shapeLayers[layer], shName, fn);
 }
 
-void XGL::AddShape(std::string shName, XGLNewShapeLambda fn){
-	XGLShape *pShape = CreateShape(shName, fn);
+void XGL::AddShape(std::string shName, XGLNewShapeLambda fn, int layer){
+	XGLShape *pShape = CreateShape(shName, fn, layer);
 
-	shapes[pShape->shader->Name()]->push_back(pShape);
+	(*shapeLayers[layer])[pShape->shader->Name()]->push_back(pShape);
 
 	AddChild(pShape);
 }
@@ -258,13 +327,15 @@ void XGL::AddGuiShape(std::string shName, XGLNewShapeLambda fn){
 }
 
 void XGL::IterateShapesMap(){
-	for (auto perShader : shapes) {
-        XGLShader *shader = shaderMap[perShader.first];
-		xprintf("XGL::IterateShapesMap(): '%s', shader->shader: %d\n", Name().c_str(), shader->programId);
+	for (auto shapes : shapeLayers) {
+		for (auto perShader : *shapes) {
+			XGLShader *shader = shaderMap[perShader.first];
+			xprintf("XGL::IterateShapesMap(): '%s', shader->shader: %d\n", Name().c_str(), shader->programId);
 
-		for (auto shape : *(perShader.second))
-			xprintf("   shape->b: vao:%d, vbo:%d, program:%d\n", shape->vao, shape->vbo, shape->shader->programId);
-    }
+			for (auto shape : *(perShader.second))
+				xprintf("   shape->b: vao:%d, vbo:%d, program:%d\n", shape->vao, shape->vbo, shape->shader->programId);
+		}
+	}
 }
 
 bool XGL::GuiResolveMouseEvent(XGLShape *shape, int x, int y, int flags) {
@@ -328,15 +399,24 @@ bool XGL::GuiResolveMouseEvent(XGLShape *shape, int x, int y, int flags) {
 	return handledByChild;
 }
 
+void XGL::GetPreferredWindowSize(int *w, int *h) {
+	*w = preferredWidth;
+	*h = preferredHeight;
+}
+
 #define QUERY_GLCONTEXT( x, v ) { glGetIntegerv((x),&(v)); GL_CHECK("glGetIntegerv() failed"); xprintf("%s: %d\n", #x,(v)); }
 
 void XGL::QueryContext() {
 	GLint value = 0;
 
-	QUERY_GLCONTEXT(GL_MAX_UNIFORM_BUFFER_BINDINGS, value);
-	QUERY_GLCONTEXT(GL_MAX_UNIFORM_BLOCK_SIZE, value);
-	QUERY_GLCONTEXT(GL_MAX_VERTEX_UNIFORM_BLOCKS, value);
-	QUERY_GLCONTEXT(GL_MAX_FRAGMENT_UNIFORM_BLOCKS, value);
-	QUERY_GLCONTEXT(GL_MAX_GEOMETRY_UNIFORM_BLOCKS, value);
-	QUERY_GLCONTEXT(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, value);
+//	QUERY_GLCONTEXT(GL_MAX_UNIFORM_BUFFER_BINDINGS, value);
+//	QUERY_GLCONTEXT(GL_MAX_UNIFORM_BLOCK_SIZE, value);
+//	QUERY_GLCONTEXT(GL_MAX_VERTEX_UNIFORM_BLOCKS, value);
+//	QUERY_GLCONTEXT(GL_MAX_FRAGMENT_UNIFORM_BLOCKS, value);
+//	QUERY_GLCONTEXT(GL_MAX_GEOMETRY_UNIFORM_BLOCKS, value);
+//	QUERY_GLCONTEXT(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, value);
+}
+
+void  XGL::AddThread(std::shared_ptr<XThread> t) {
+	threadPool.push_back(t);
 }

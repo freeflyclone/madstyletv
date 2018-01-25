@@ -7,7 +7,6 @@
 ****************************************************************************/
 #ifndef XGLFRAMEBUFFER_H
 #define XGLFRAMEBUFFER_H
-#include "xglobject.h"
 #include "xglprimitives.h"
 #include "xglshapes.h"
 #include "xshmem.h"
@@ -15,7 +14,7 @@
 
 typedef std::function<void()> XGLFBORender;
 
-class XGLFramebuffer : public XGLObject {
+class XGLFramebuffer : public XObject {
 public:
 	static const int renderWidth = 3840;
 	static const int renderHeight = 2160;

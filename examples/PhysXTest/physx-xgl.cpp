@@ -1,8 +1,6 @@
 #include "physx-xgl.h"
 
 PhysXXGL::PhysXXGL() : dynamicsSerialNumber(-1), activeActor(NULL), mouseSphere(NULL), mouseJoint(NULL) {
-	xprintf("PhysXXGL::PhysXXGL()\n");
-
 	initPhysics(true);
 
 	BuildScene();
@@ -51,12 +49,15 @@ void PhysXXGL::initPhysics(bool interactive)
 	std::string shaderName = "shaders/specular";
 	AddShape(shaderName, [&]() { renderer = new PhysxRenderer(this); return renderer; });
 	renderer->Init(GetShader(shaderName));
+	/* 
+	// Doing this here will result in this being called once for each eye if HMD, which we don't want 
 	renderer->SetAnimationFunction([this](float clock) {
 		if (clock > renderer->prevClock) {
 			stepPhysics(true);
 			renderer->prevClock = clock;
 		}
 	});
+	*/
 
 	//if(false)
 	for (int i = -20; i < 20; i += 5) {
@@ -127,7 +128,11 @@ void PhysXXGL::createStack(const physx::PxTransform& t, physx::PxU32 size, physx
 
 void PhysXXGL::stepPhysics(bool interactive) {
 	PX_UNUSED(interactive);
-	mScene->simulate(1.0f / 60.0f);
+	if (useHmd)
+		mScene->simulate(1.0f / 90.0f);
+	else
+		mScene->simulate(1.0f / 60.0f);
+
 	mScene->fetchResults(true);
 }
 void PhysXXGL::RenderActors(physx::PxRigidActor** actors, const physx::PxU32 numActors, bool shadows, const physx::PxVec3 & color) {

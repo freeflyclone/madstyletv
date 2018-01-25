@@ -162,6 +162,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_USE_MATH_DEFINES;XML_STATIC;GLEW_STATIC;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -175,16 +177,25 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\common\ExampleGUI.cpp" />
+    <ClCompile Include="..\..\xclass\3rdParty\gpmf-parser\GPMF_parser.c" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
+    <ClCompile Include="xavdata.cpp" />
+    <ClCompile Include="xavgpmf.cpp" />
     <ClCompile Include="XAVTestBuildScene.cpp" />
+    <ClCompile Include="XAVTestGUI.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\assets\config.json" />
     <None Include="..\..\shaders\tex.frag" />
     <None Include="..\..\shaders\tex.vert" />
     <None Include="..\..\shaders\yuv.frag" />
     <None Include="..\..\shaders\yuv.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\xclass\3rdParty\gpmf-parser\GPMF_parser.h" />
+    <ClInclude Include="xavdata.h" />
+    <ClInclude Include="xavgpmf.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

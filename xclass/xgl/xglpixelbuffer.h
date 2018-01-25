@@ -7,12 +7,11 @@
 ****************************************************************************/
 #ifndef XGLPIXELBUFFER_H
 #define XGLPIXELBUFFER_H
-#include "xglobject.h"
 #include "xshmem.h"
 
 typedef std::function<void()> XGLPBORender;
 
-class XGLPixelbuffer : public XGLObject {
+class XGLPixelbuffer : public XObject {
 public:
 	XGLPixelbuffer(int w = XGLFramebuffer::renderWidth, int h = XGLFramebuffer::renderHeight);
 	virtual ~XGLPixelbuffer();

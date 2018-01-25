@@ -6,7 +6,7 @@
     <LibDir Condition="'$(PlatformTarget)'=='x86'">Win32</LibDir>
   </PropertyGroup>
   <PropertyGroup>
-    <IncludePath>$(SolutionDir)\xclass\3rdParty\openal-soft\include;$(SolutionDir)\xclass\3rdParty\openal-soft\include\AL;$(IncludePath)</IncludePath>
+    <IncludePath>$(OPENAL_DIR)\include;$(OPENAL_DIR)\include\AL;$(IncludePath)</IncludePath>
     <LibraryPath>$(OPENAL_DIR)\libs\$(LibDir);$(OPENAL_DIR)\libs\$(LibDir)\EFX-Util_MT;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>

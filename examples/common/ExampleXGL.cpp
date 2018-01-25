@@ -1,5 +1,8 @@
 #include "ExampleXGL.h"
 
+// change to global from const, so it can be changed on a per-project basis
+bool initHmd = false;
+
 // TODO:  I don't think I need to initialize "wc" this way if I'm using
 // lambda functions for the world cursor.  Will investigate.
 ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
@@ -94,12 +97,31 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 		}
 	});
 
+	XInputKeyFunc renderMod = [&](int key, int flags) {
+		const bool isDown = (flags & 0x8000) == 0;
+		const bool isRepeat = (flags & 0x4000) != 0;
+		static bool wireFrameMode = false;
+
+		if (isDown && !isRepeat){
+			wireFrameMode = wireFrameMode ? false : true;
+			glPolygonMode(GL_FRONT_AND_BACK, wireFrameMode ? GL_LINE : GL_FILL);
+			GL_CHECK("glPolygonMode() failed.");
+		}
+	};
+
+	AddKeyFunc('M', renderMod);
+	AddKeyFunc('m', renderMod);
+
 	// add a default "ground" plane grid.
 	AddShape("shaders/000-simple", [&](){ shape = new XYPlaneGrid(); return shape; });
 
 	// Features of the framework are incrementally introduced by enhancing this function
 	// on a per example basis.
 	BuildScene();
+
+	// set the following to 'true' to enable Oculus Rift with cockpit flight controls on Touch Controllers.
+	if (initHmd)
+		InitHmd();
 }
 
 void ExampleXGL::Reshape(int w, int h) {
@@ -112,4 +134,18 @@ void ExampleXGL::Reshape(int w, int h) {
 	catch (std::runtime_error e){
 		xprintf("Well that didn't work: %s\n", e.what());
 	}
+}
+
+bool ExampleXGL::Display() {
+#ifndef LINUX
+	if (pHmd)
+		return pHmd->Loop();
+	else
+#endif
+		return XGL::Display();
+}
+
+ExampleXGL::~ExampleXGL() {
+	if (pHmd)
+		delete pHmd;
 }

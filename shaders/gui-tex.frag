@@ -21,10 +21,9 @@ uniform sampler2D texUnit3;
 void main(void)
 {
     vec4 tc0 = texture(texUnit0,UV);
-	vec4 tc1 = texture(texUnit1,UV);
 
 	if (monoMode)
-		out_Color = diffuse * vec4(tc0.r, tc0.r, tc0.r, tc0.a);
+		out_Color = ambient + diffuse * tc0.r;
 	else
-		out_Color = diffuse * tc0;
+		out_Color = ambient + diffuse * tc0;
 }

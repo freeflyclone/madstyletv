@@ -23,9 +23,11 @@
 class ExampleXGL : public XGL {
 public:
 	ExampleXGL();
+	~ExampleXGL();
 
 	void BuildScene();
 	virtual void BuildGUI();
+	virtual bool Display();
 
 	void Reshape(int w, int h);
 

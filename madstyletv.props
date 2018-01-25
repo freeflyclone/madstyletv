@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <XCLASS_DIR>$(SolutionDir)\xclass</XCLASS_DIR>
+    <OPENAL_DIR>$(XCLASS_DIR)\3rdParty\openal-soft</OPENAL_DIR>
+    <MAVLINK_DIR>$(XCLASS_DIR)\3rdParty\mavlink\c_library_v1</MAVLINK_DIR>
+    <LIBOVR_DIR>$(XCLASS_DIR)\3rdParty\OculusSDK\LibOVR</LIBOVR_DIR>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <BuildMacro Include="XCLASS_DIR">
+      <Value>$(XCLASS_DIR)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="OPENAL_DIR">
+      <Value>$(OPENAL_DIR)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="MAVLINK_DIR">
+      <Value>$(MAVLINK_DIR)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="LIBOVR_DIR">
+      <Value>$(LIBOVR_DIR)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

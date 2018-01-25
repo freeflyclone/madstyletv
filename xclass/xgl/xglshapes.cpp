@@ -1,7 +1,7 @@
 #include "xgl.h"
 
 
-XGLShape::XGLShape() {
+XGLShape::XGLShape() : isVisible(true), parent(nullptr) {
 	//xprintf("XGLShape::XGLShape()\n");
 	SetName("XGLShape");
 }
@@ -19,6 +19,11 @@ XGLShape::~XGLShape(){
 	}
 }
 
+void XGLShape::AddChild(XGLShape *s) {
+	s->parent = this;
+	XObject::AddChild(s);
+}
+
 void XGLShape::SetAnimationFunction(XGLShape::AnimationFn fn){
     animationFunction = fn;
 }
@@ -26,6 +31,13 @@ void XGLShape::SetAnimationFunction(XGLShape::AnimationFn fn){
 void XGLShape::Animate(float clock){
 	if (animationFunction)
 		animationFunction(clock);
+
+	for (auto child : Children()) {
+		if (dynamic_cast<XGLShape *>(child)) {
+			XGLShape *childShape = (XGLShape *)child;
+			childShape->Animate(clock);
+		}
+	}
 }
 
 void XGLShape::Transform(glm::mat4 tm){
@@ -39,30 +51,11 @@ void XGLShape::SetColor(XGLColor c) {
 	UnmapVertexBuffer();
 }
 
-void XGLShape::Render(float clock) {
-	// Geometry-less XGLTransformer shape doesn't get rendered.  It has no OpenGL resources.
-	if (v.size()>0) {
-		glProgramUniformMatrix4fv(shader->programId, shader->modelUniformLocation, 1, false, (GLfloat *)&model);
-		GL_CHECK("glProgramUniformMatrix4fv() failed");
-
-		XGLBuffer::Bind();
-		XGLMaterial::Bind(shader->programId);
-	}
-	Animate(clock);
-	Draw();
-
-	if (v.size()>0)
-		Unbind();
-
-	for (auto child : Children()) {
-		if (dynamic_cast<XGLShape *>(child)) {
-			XGLShape *childShape = (XGLShape *)child;
-			childShape->Render(model * childShape->model, clock);
-		}
-	}
+void XGLShape::Render() {
+	Render(model);
 }
 
-void XGLShape::Render(glm::mat4 modelChain, float clock) {
+void XGLShape::Render(glm::mat4 modelChain) {
 	if (v.size() > 0) {
 		glProgramUniformMatrix4fv(shader->programId, shader->modelUniformLocation, 1, false, (GLfloat *)&modelChain);
 		GL_CHECK("glProgramUniformMatrix4fv() failed");
@@ -70,7 +63,6 @@ void XGLShape::Render(glm::mat4 modelChain, float clock) {
 		XGLBuffer::Bind();
 		XGLMaterial::Bind(shader->programId);
 	}
-	Animate(clock);
 	Draw();
 
 	if (v.size()>0)
@@ -79,18 +71,36 @@ void XGLShape::Render(glm::mat4 modelChain, float clock) {
 	for (auto child : Children()) {
 		if (dynamic_cast<XGLShape *>(child)) {
 			XGLShape *childShape = (XGLShape *)child;
-			childShape->Render(modelChain * childShape->model, clock);
+			if (childShape->isVisible) {
+				if (childShape->preRenderFunction)
+					childShape->preRenderFunction(clock);
+
+				childShape->Render(modelChain * childShape->model);
+
+				if (childShape->postRenderFunction)
+					childShape->postRenderFunction(clock);
+			}
 		}
 	}
 }
 
-XYPlaneGrid::XYPlaneGrid() {
+XGLAxis::XGLAxis(float length, XGLColor color, XGLVertex vertex) {
+	SetName("XGLAxis");
+
+	v.push_back({ glm::vec3(0), {}, {}, color });
+	v.push_back({ vertex * length, {}, {}, color });
+}
+
+void XGLAxis::Draw(){
+	glDrawArrays(GL_LINES, 0, GLsizei(v.size()));
+	GL_CHECK("glDrawArrays() failed");
+}
+
+XYPlaneGrid::XYPlaneGrid(float size, float step) {
 	SetName("XYPlaneGrid");
-	const float size = 100.0f;
-	const int gridIncrement = 10;
 	const XGLColor gridColor = { 0.5, 0, 0, 1 };
 
-	for (int i = 0; i <= 100; i += gridIncrement) {
+	for (float i = 0; i <= 100.0f; i += step) {
 		v.push_back({ { float(i), size, 0 }, {}, {}, gridColor });
 		v.push_back({ { float(i), -size, 0 }, {}, {}, gridColor });
 		v.push_back({ { -float(i), size, 0 }, {}, {}, gridColor });
@@ -228,6 +238,81 @@ void XGLSphere::Draw() {
 	GL_CHECK("glDrawElements() failed");
 }
 
+
+XGLHemiSphere::XGLHemiSphere(float r, int n) : radius(r), nSegments(n - (n & 1)), visualizeNormals(false) {
+	SetName("XGLSphere");
+	int i, j;
+	float twoPi = (2 * (float)PI);
+	XGLVertexAttributes vrtx;
+	int halfSeg = nSegments >> 2;
+	int halfSegPlus = halfSeg + 1;
+	int loopSegments = nSegments;
+
+	for (j = 0; j <loopSegments; j++) {
+		for (i = 0; i < halfSegPlus; i++) {
+			float angle = (float)i * twoPi / (float)nSegments;
+			float angle2 = (float)j * twoPi / (float)nSegments;
+
+			float x = sin(angle)*cos(angle2) * radius;
+			float y = cos(angle) * radius;
+			float z = (sin(angle)*sin(angle2)) * radius;
+
+			vrtx.t = { (0.5f * x+0.5f), (0.5f * z + 0.5f) };
+			vrtx.v = { x, y, z };
+			vrtx.c = XGLColors::white;
+			vrtx.n = { x / radius, y / radius, z / radius };
+
+			v.push_back(vrtx);
+		}
+	}
+
+	int nVerts = (int)v.size();
+
+	if (true) {
+		j = 0;
+		int count = (loopSegments - 2);
+		for (j = 0; j < count; j++) {
+			for (int i = 0; i < halfSegPlus; i++) {
+				idx.push_back((j*halfSegPlus) + i);
+				idx.push_back(((j + 1)*halfSegPlus) + i);
+			}
+
+			for (int i = 1; i < halfSegPlus; i++) {
+				idx.push_back(((j + 2)*halfSegPlus) + halfSegPlus - i);
+				idx.push_back(((j + 1)*halfSegPlus) + halfSegPlus - i);
+			}
+		}
+		for (i = 0; i < halfSegPlus; i++) {
+			idx.push_back(((j + 1)*halfSegPlus) + i);
+			idx.push_back(i);
+		}
+
+		if (visualizeNormals) {
+			for (i = 0; i < nVerts; i++) {
+				XGLVertexAttributes nVrtx = v[i];
+				vrtx = nVrtx;
+				vrtx.v /= radius;
+				vrtx.v *= 2;
+
+				nVrtx.v.x += vrtx.v.x;
+				nVrtx.v.y += vrtx.v.y;
+				nVrtx.v.z += vrtx.v.z;
+
+				v.push_back(nVrtx);
+			}
+			for (i = 0; i < nVerts; i++) {
+				idx.push_back(i%nVerts);
+				idx.push_back((i%nVerts) + nVerts);
+			}
+		}
+	}
+}
+
+void XGLHemiSphere::Draw() {
+	glDrawArrays(GL_POINTS, 0, GLsizei(v.size()));
+	glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
+	GL_CHECK("glDrawElements() failed");
+}
 
 // draw 2 hemispheres, joined by a cylinder, centered about the origin, along the X axis
 // (This is how PhysX likes it)
@@ -730,3 +815,72 @@ XGLTransformer::XGLTransformer(){
 	SetName("XGLTransformer");
 };
 
+XGLSled::XGLSled(bool sa) : showAxes(sa) {
+	SetName("XGLSled");
+
+	// 3 lines to represent X,Y,Z axes (orientation)
+	// X
+	v.push_back({ glm::vec3(0), {}, {}, XGLColors::red });
+	v.push_back({ glm::vec3(1.0, 0.0, 0.0) * 5.0f, {}, {}, XGLColors::red });
+	// Y
+	v.push_back({ glm::vec3(0), {}, {}, XGLColors::green });
+	v.push_back({ glm::vec3(0.0, 1.0, 0.0) * 5.0f, {}, {}, XGLColors::green });
+	// Z
+	v.push_back({ glm::vec3(0), {}, {}, XGLColors::blue });
+	v.push_back({ glm::vec3(0.0, 0.0, 1.0) * 5.0f, {}, {}, XGLColors::blue });
+}
+
+void XGLSled::Draw() {
+	if (showAxes) {
+		glDrawArrays(GL_LINES, 0, 6);
+		GL_CHECK("glDrawArrays() failed");
+	}
+}
+
+glm::mat4 XGLSled::GetFinalMatrix() {
+	// add the translation of the sled's position for the final model matrix
+	return glm::translate(glm::mat4(), p) * glm::toMat4(o);
+}
+
+void XGLSled::SampleInput(float yaw, float pitch, float roll) {
+	glm::quat rotation;
+
+	// combine yaw,pitch & roll changes into incremental rotation quaternion
+	rotation = glm::angleAxis(glm::radians(yaw), glm::vec3(0.0, 0.0, 1.0));
+	rotation *= glm::angleAxis(glm::radians(pitch), glm::vec3(1.0, 0.0, 0.0));
+	rotation *= glm::angleAxis(glm::radians(roll), glm::vec3(0.0, 1.0, 0.0));
+
+	// Add combined rotationChange to sled's "currentRotation" (orientation) quaternion
+	// This order is key to local-relative rotation or world-relative.  This is local-relative
+	// Swapping the operand order changes to world-relative order, which is what I had been doing.
+	//
+	// Can't believe how long it took to figure this out, because it's SO simple now that I know.
+	o = o * rotation;
+
+	model = GetFinalMatrix();
+}
+
+XGLPointCloud::XGLPointCloud(int nPoints, float radius, XGLColor color, XGLVertex center) : drawFn(nullptr) {
+	SetName("XGLPointCloud");
+
+	std::random_device rd;  //Will be used to obtain a seed for the random number engine
+	std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+	std::uniform_real_distribution<> dis(0.0, radius);
+
+	for (int i = 0; i < nPoints; i++) {
+		XGLVertex vrtx;
+		vrtx.x = dis(gen);
+		vrtx.y = dis(gen);
+		vrtx.z = dis(gen);
+		v.push_back({ vrtx, {}, {}, color });
+	}
+}
+
+void XGLPointCloud::Draw(){
+	if (!drawFn) {
+		glDrawArrays(GL_POINTS, 0, GLsizei(v.size()));
+		GL_CHECK("glDrawPoints() failed");
+	}
+	else
+		drawFn();
+}

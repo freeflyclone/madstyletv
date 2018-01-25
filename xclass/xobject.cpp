@@ -5,11 +5,12 @@ namespace {
 	XObjectPtr foundObject;
 }
 
-XObject::XObject(std::string n) : parent(NULL) {
+XObject::XObject(std::string n) {// : parent(NULL) {
 	uchildren = std::make_unique<XObjectChildren>();
 }
 
 XObject::~XObject() {
+	//xprintf("XObject::~XObject() - dtor: %s\n", name.c_str());
 }
 
 void XObject::SetName(std::string n, bool makeUnique) {
@@ -23,7 +24,7 @@ void XObject::SetName(std::string n, bool makeUnique) {
 }
 
 void XObject::AddChild(XObject *c) {
-	c->parent = this;
+	//c->parent = this;
 	uchildren->push_back(c);
 }
 

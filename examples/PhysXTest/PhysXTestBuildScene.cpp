@@ -7,7 +7,8 @@
 
 XGLSphere *sphere;
 
-void ExampleXGL::BuildScene() {}
+void ExampleXGL::BuildScene() {
+}
 
 void PhysXXGL::BuildScene() {
 
@@ -34,9 +35,18 @@ void PhysXXGL::BuildScene() {
 			pos.y = camera.pos.y;
 			pos.z = camera.pos.z - 2.0f;
 
-			dir.x = camera.front.x;
-			dir.y = camera.front.y;
-			dir.z = camera.front.z;
+			if (hmdSled) {
+				glm::vec4 forward = glm::toMat4(hmdSled->o) * glm::vec4(0.0, 1.0, 0.0, 0.0);
+				dir.x = forward.x;
+				dir.y = forward.y;
+				dir.z = forward.z;
+
+			}
+			else {
+				dir.x = camera.front.x;
+				dir.y = camera.front.y;
+				dir.z = camera.front.z;
+			}
 
 			dir *= 80.0;
 
@@ -44,6 +54,25 @@ void PhysXXGL::BuildScene() {
 		}
 	};
 	AddKeyFunc(' ', fireKey);
+
+	if (hmdSled) {
+		// fire forward
+		AddProportionalFunc("RightIndexTrigger", [this](float v) {
+			// 90Hz is way too fast, slow it down to 10Hz
+			if (fmod(clock, 9.0f) == 1.0f) {
+				if (v > 0.5f)
+					KeyEvent(' ', 0);
+				else
+					KeyEvent(' ', 0x8000);
+			}
+		});
+
+		// drop stack of boxes
+		AddKeyFunc(1, [this](int key, int flags){
+			KeyEvent('B', flags);
+		});
+	}
+
 
 	XInputKeyFunc blocksKey = [&](int key, int flags) {
 		const bool isDown = (flags & 0x8000) == 0;

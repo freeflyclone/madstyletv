@@ -57,6 +57,7 @@ public:
 	void RenderText(std::string t, int pixelSize = 64);
 	void SetPenPosition(int x, int y) { penX = x; penY = y; }
 	void Fill(GLubyte val);
+	void Clear();
 
 	virtual ~XGLGuiCanvas();
 
@@ -74,6 +75,8 @@ private:
 
 	// text rendering stuff
 	int penX, penY;
+	const static int defaultPexX{ 10 };
+	const static int defalutPenY{ 64 };
 
 	XGL *pxgl;
 	MouseEventListeners mouseEventListeners;

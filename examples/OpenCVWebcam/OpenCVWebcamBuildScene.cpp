@@ -111,9 +111,9 @@ public:
 		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit2"), 2);
 		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit3"), 3);
 
-		XGLShape::Render(0.0);
+		XGLShape::Render();
 		for (auto imgQuad : imgQuads)
-			imgQuad->Render(0.0);
+			imgQuad->Render();
 	}
 	
 	void MakeSubQuad(GLuint texId, glm::mat4 model) {
@@ -134,9 +134,9 @@ public:
 	int *windowWidth, *windowHeight;
 };
 
-class CameraThread : public XGLObject, public XThread {
+class CameraThread : public XObject, public XThread {
 public:
-	CameraThread(std::string n, int w, int h, int c) : XGLObject(n), XThread(n), width(w), height(h), channels(c), frameNumber(0) {
+	CameraThread(std::string n, int w, int h, int c) : XObject(n), XThread(n), width(w), height(h), channels(c), frameNumber(0) {
 		SetName(n);
 	};
 

@@ -22,49 +22,67 @@
 
 class XCircularBuffer {
 public:
-	XCircularBuffer(int s) : size(s), rIdx(0), wIdx(0), emptyCount(s) {
-		if ((buff = new unsigned char[size]) == NULL)
-			throw std::runtime_error("Circular::Circular(): Unable to allocate circular buffer");
+	XCircularBuffer(size_t s = 0x8000) : size(s), rIdx(0), wIdx(0) {
+		if ((buff = new uint8_t[size]) == NULL)
+			throw std::runtime_error("XCircularBuffer::XCircularBuffer(): Unable to allocate circular buffer");
 	}
 
 	~XCircularBuffer() {
-		if (buff)
-			delete buff;
+		delete buff;
 	}
 
-	int Write(unsigned char *b, unsigned int n) {
-		while (n) {
-			emptyCount.wait_for(100);
+	size_t Write(uint8_t *b, size_t n) {
+		std::lock_guard<std::mutex> lock(mutexLock);
+
+		for(size_t i=0; i<n; i++) {
 			buff[wIdx&(size - 1)] = *b++;
 			wIdx++;
-			n--;
-			fullCount.notify();
 		}
+
 		return n;
 	}
 
-	int Read(unsigned char *b, unsigned int n) {
-		while (n) {
-			fullCount.wait_for(100);
+	size_t Read(uint8_t *b, size_t n) {
+		while (Count() < n)
+			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
+
+		std::lock_guard<std::mutex> lock(mutexLock);
+		for (int i = 0; i<n; i++) {
 			*b++ = buff[rIdx&(size - 1)];
 			rIdx++;
-			n--;
-			emptyCount.notify();
+		}
+
+		return n;
+	}
+
+	uint64_t Skip(uint64_t n) { 
+		//while (Count() < n)
+			//std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
+
+		std::lock_guard<std::mutex> lock(mutexLock);
+		if (rIdx + n < wIdx) {
+			rIdx += n;
+			n = 0;
+		}
+		else {
+			n -= wIdx - rIdx;
+			rIdx = wIdx;
 		}
 		return n;
 	}
 
-	int Count() {
-		return int(wIdx - rIdx);
+	uint64_t Count() { 
+		std::lock_guard<std::mutex> lock(mutexLock);
+		return wIdx - rIdx;
 	}
+	size_t Size() { return size; }
 
-private:
-	const int size;
-	unsigned char *buff;
-	std::atomic<std::uint64_t> rIdx;
-	std::atomic<std::uint64_t> wIdx;
-	XSemaphore emptyCount;
-	XSemaphore fullCount;
+//private:
+	size_t size;
+	uint8_t *buff;
+	uint64_t rIdx;
+	uint64_t wIdx;
+	std::mutex mutexLock;
 };
 
 

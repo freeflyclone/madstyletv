@@ -160,7 +160,7 @@ void XGLSharedFBO::RenderFlipQuadToShared() {
 	glViewport(0, 0, XGLFramebuffer::renderWidth, XGLFramebuffer::renderHeight);
 
 	flipQuad->model = glm::mat4(1);
-	flipQuad->Render(0.0);
+	flipQuad->Render();
 }
 
 void XGLSharedFBO::RenderFlipQuadToEncoder() {
@@ -178,7 +178,7 @@ void XGLSharedFBO::RenderFlipQuadToEncoder() {
 
 	flipQuad->model = scale * translate;
 
-	flipQuad->Render(0.0);
+	flipQuad->Render();
 
 	glViewport(0, 0, vpWidth, vpHeight);
 }

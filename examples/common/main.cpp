@@ -54,15 +54,15 @@ void SetGlobalWorkingDirectoryName()
 #else
 void SetGlobalWorkingDirectoryName() {
 	char buff[FILENAME_MAX];
-    char *xclass_dir = getenv("XCLASS_DIR");
+	char *xclass_dir = getenv("XCLASS_DIR");
 
-    if (xclass_dir) {
-        currentWorkingDir = std::string(xclass_dir);
-    }
-    else {
-        getcwd(buff, sizeof(buff));
-        currentWorkingDir = std::string(buff);
-    }
+	if (xclass_dir) {
+		currentWorkingDir = std::string(xclass_dir);
+	}
+	else {
+		getcwd(buff, sizeof(buff));
+		currentWorkingDir = std::string(buff);
+	}
 	xprintf("Cwd: %s\n", currentWorkingDir.c_str());
 }
 #endif
@@ -86,11 +86,11 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 
 static void cursor_position_callback(GLFWwindow *window, double x, double y) {
 	int state = 0;
-	
+
 	state |= glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
 	state |= glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) << 1;
 
-	if (exgl != NULL) 
+	if (exgl != NULL)
 		exgl->MouseEvent((int)x, (int)y, state);
 }
 
@@ -119,13 +119,42 @@ static void window_refresh_callback(GLFWwindow *window){
 		exgl->Display();
 }
 
+static void enumerate_joysticks() {
+	int i;
+
+	for (i = 0; i < GLFW_JOYSTICK_LAST; i++) {
+		if (glfwJoystickPresent(i)) {
+			const char *name = glfwGetJoystickName(i);
+			XJoystick j;
+
+			strcpy(j.fullName, name);
+			char *tmpPtr = j.shortName;
+			
+			// strip whitespace from name (probably not really needed)
+			for (int j = 0; j < strlen(name); j++)
+				if (name[j] != ' ')
+					*tmpPtr++ = name[j];
+			*tmpPtr = 0;
+
+			// get the number of axes this joystick supports.
+			j.numAxes = 0;
+			j.pollFunc = [i](int* count) { 
+				return glfwGetJoystickAxes(i, count); 
+			};
+
+			glfwGetJoystickAxes(i, &j.numAxes);
+			exgl->AddJoystick(j);
+		}
+	}
+}
+
 int main(void) {
 	GLFWwindow *window;
 	int width, height;
 	/*
 	if (!FreeConsole()) {
-		printf("Freeing the console failed: %d\n", GetLastError());
-		exit(0);
+	printf("Freeing the console failed: %d\n", GetLastError());
+	exit(0);
 	}
 	*/
 	if (!glfwInit()) {
@@ -145,7 +174,7 @@ int main(void) {
 		glfwTerminate();
 		return -1;
 	}
-
+	glfwSetWindowPos(window, 16, 64);
 	glfwMakeContextCurrent(window);
 
 	glfwSetKeyCallback(window, key_callback);
@@ -153,15 +182,13 @@ int main(void) {
 	glfwSetWindowSizeCallback(window, window_size_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
-	glfwSwapInterval(1);
-
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 	if (GLEW_OK != err) {
 		printf("glewInit() failed: %s\n", glewGetErrorString(err));
 		exit(-1);
 	}
-	
+
 	glfwGetFramebufferSize(window, &width, &height);
 
 	SetGlobalWorkingDirectoryName();
@@ -169,22 +196,35 @@ int main(void) {
 
 	try {
 		exgl = new ExampleXGL();
+		enumerate_joysticks();
+		exgl->GetPreferredWindowSize(&width, &height);
+		glfwSetWindowSize(window, width, height);
+		glfwSwapInterval(exgl->GetPreferredSwapInterval());
 		exgl->Reshape(width, height);
 
-		while (!glfwWindowShouldClose(window)) {
+		bool shouldQuit = false;
+		while (!glfwWindowShouldClose(window) && !shouldQuit) {
 			glfwPollEvents();
+			exgl->PollJoysticks();
+			exgl->Animate();
+
+			shouldQuit = exgl->Display();
 
 			glfwSwapBuffers(window);
-
-			exgl->Display();
 		}
+	}
+	catch (std::runtime_error e) {
+		printf("Exception: %s\n", e.what());
+		xprintf("Exception: %s\n", e.what());
+	}
 
+	try {
 		delete exgl;
-
 		glfwTerminate();
 	}
 	catch (std::runtime_error e) {
 		printf("Exception: %s\n", e.what());
+		xprintf("Exception: %s\n", e.what());
 	}
 
 	return 0;

@@ -1,5 +1,5 @@
 // modify the "view" matrix to move the Camera(s)
-class XGLCamera : public XGLObject {
+class XGLCamera : public XObject {
 public:
     typedef std::function<void(XGLCamera *)> XGLCameraFunk;
 

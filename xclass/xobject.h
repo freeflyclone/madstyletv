@@ -36,12 +36,12 @@ public:
 	void DumpChildren();
 	XObjectPtr FindObject(std::string n);
 
-	XObjectPtr Parent() { return parent; }
+	//XObjectPtr Parent() { return parent; }
 	std::string Name() { return name; }
 
 private:
 	std::unique_ptr<XObjectChildren> uchildren;
 	std::string name;
-	XObjectPtr parent;
+	//XObjectPtr parent;
 };
 

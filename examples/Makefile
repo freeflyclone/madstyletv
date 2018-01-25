@@ -1,4 +1,5 @@
 SUBDIRS=Example02 \
+	ExampleSpring \
 	OpenALTest \
 	OpenCVTest \
 	OpenCVWebcam \

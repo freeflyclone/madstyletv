@@ -55,29 +55,29 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="ffmpeg.props" />
     <Import Project="xclass.props" />
+    <Import Project="ffmpeg.props" />
     <Import Project="OpenAL.props" />
     <Import Project="ftdi.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="ffmpeg.props" />
     <Import Project="xclass.props" />
+    <Import Project="ffmpeg.props" />
     <Import Project="OpenAL.props" />
     <Import Project="ftdi.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="ffmpeg.props" />
     <Import Project="xclass.props" />
+    <Import Project="ffmpeg.props" />
     <Import Project="OpenAL.props" />
     <Import Project="ftdi.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="ffmpeg.props" />
     <Import Project="xclass.props" />
+    <Import Project="ffmpeg.props" />
     <Import Project="OpenAL.props" />
     <Import Project="ftdi.props" />
   </ImportGroup>
@@ -211,6 +211,13 @@
     <Text Include="xgl\ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\Clock.h" />
+    <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\GameTime.h" />
+    <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\ManualClock.h" />
+    <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\ScaledTimer.h" />
+    <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\SteppedTimer.h" />
+    <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\Timer.h" />
+    <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\WindowsClock.h" />
     <ClInclude Include="3rdParty\soil\src\image_DXT.h" />
     <ClInclude Include="3rdParty\soil\src\image_helper.h" />
     <ClInclude Include="3rdParty\soil\src\SOIL.h" />
@@ -231,6 +238,8 @@
     <ClInclude Include="xcircularbuffer.h" />
     <ClInclude Include="xfifo.h" />
     <ClInclude Include="xftdi.h" />
+    <ClInclude Include="xglew.h" />
+    <ClInclude Include="xgl\GLAppUtil.h" />
     <ClInclude Include="xgl\glew.h" />
     <ClInclude Include="xgl\glxew.h" />
     <ClInclude Include="xgl\wglew.h" />
@@ -241,9 +250,9 @@
     <ClInclude Include="xgl\xglfont.h" />
     <ClInclude Include="xgl\xglframebuffer.h" />
     <ClInclude Include="xgl\xglgui.h" />
+    <ClInclude Include="xgl\xglhmd.h" />
     <ClInclude Include="xgl\xgllight.h" />
     <ClInclude Include="xgl\xglmaterial.h" />
-    <ClInclude Include="xgl\xglobject.h" />
     <ClInclude Include="xgl\xglpixelbuffer.h" />
     <ClInclude Include="xgl\xglprimitives.h" />
     <ClInclude Include="xgl\xglprojector.h" />
@@ -255,6 +264,8 @@
     <ClInclude Include="xmavlink.h" />
     <ClInclude Include="xmqtt.h" />
     <ClInclude Include="xobject.h" />
+    <ClInclude Include="xphy\xphy.h" />
+    <ClInclude Include="xphy\xphybody.h" />
     <ClInclude Include="xshmem.h" />
     <ClInclude Include="xthread.h" />
     <ClInclude Include="xtimer.h" />
@@ -263,6 +274,13 @@
     <ClInclude Include="xutils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\Clock.cpp" />
+    <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\GameTime.cpp" />
+    <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\ManualClock.cpp" />
+    <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\ScaledTimer.cpp" />
+    <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\SteppedTimer.cpp" />
+    <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\Timer.cpp" />
+    <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\WindowsClock.cpp" />
     <ClCompile Include="3rdParty\soil\src\image_DXT.c" />
     <ClCompile Include="3rdParty\soil\src\image_helper.c" />
     <ClCompile Include="3rdParty\soil\src\SOIL.c" />
@@ -284,6 +302,7 @@
     <ClCompile Include="xgl\xglfont.cpp" />
     <ClCompile Include="xgl\xglframebuffer.cpp" />
     <ClCompile Include="xgl\xglgui.cpp" />
+    <ClCompile Include="xgl\xglhmd.cpp" />
     <ClCompile Include="xgl\xgllight.cpp" />
     <ClCompile Include="xgl\xglmaterial.cpp" />
     <ClCompile Include="xgl\xglpixelbuffer.cpp" />
@@ -296,13 +315,18 @@
     <ClCompile Include="xmavlink.cpp" />
     <ClCompile Include="xmqtt.cpp" />
     <ClCompile Include="xobject.cpp" />
+    <ClCompile Include="xphy\xphybody.cpp" />
     <ClCompile Include="xshmem.cpp" />
     <ClCompile Include="xuart.cpp" />
     <ClCompile Include="xuartascii.cpp" />
     <ClCompile Include="xutils.c" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\madstyletv.props" />
     <None Include="3rdParty\3rdPartyCopy.proj">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="ffmpeg.props">
       <SubType>Designer</SubType>
     </None>
     <None Include="ftdi.props" />

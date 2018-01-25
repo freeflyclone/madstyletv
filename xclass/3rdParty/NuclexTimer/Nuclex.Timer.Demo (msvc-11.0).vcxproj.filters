@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>
+      </Extensions>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx;h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Source\Timing">
+      <UniqueIdentifier>{4245f34e-da77-41e5-bea6-3445541ba8bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Timing">
+      <UniqueIdentifier>{e07427c6-55d9-4658-9f87-bc13c9e60dc8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\main.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Timing\Clock.cpp">
+      <Filter>Source\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Timing\GameTime.cpp">
+      <Filter>Source\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Timing\ManualClock.cpp">
+      <Filter>Source\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Timing\ScaledTimer.cpp">
+      <Filter>Source\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Timing\SteppedTimer.cpp">
+      <Filter>Source\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Timing\Timer.cpp">
+      <Filter>Source\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Timing\WindowsClock.cpp">
+      <Filter>Source\Timing</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\Timing\Clock.h">
+      <Filter>Include\Timing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Timing\GameTime.h">
+      <Filter>Include\Timing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Timing\ManualClock.h">
+      <Filter>Include\Timing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Timing\ScaledTimer.h">
+      <Filter>Include\Timing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Timing\SteppedTimer.h">
+      <Filter>Include\Timing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Timing\Timer.h">
+      <Filter>Include\Timing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Timing\WindowsClock.h">
+      <Filter>Include\Timing</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

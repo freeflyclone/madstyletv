@@ -25,8 +25,8 @@ hasFocus(false)
 
 	width = w;
 	height = h;
-	penX = 10;
-	penY = 64;
+	penX = defaultPexX;
+	penY = defalutPenY;
 
 	if (addTexture) {
 		// our base class is XGLTexQuad with no texture map
@@ -41,8 +41,10 @@ hasFocus(false)
 }
 
 XGLGuiCanvas::~XGLGuiCanvas() {
-	if (buffer != NULL)
+	if (buffer != NULL) {
 		delete buffer;
+		buffer = nullptr;
+	}
 }
 
 void XGLGuiCanvas::AddChildShape(std::string shaderName, XGLNewShapeLambda fn){
@@ -113,22 +115,34 @@ void XGLGuiCanvas::RenderText(std::string text, int pixelSize) {
 }
 
 void XGLGuiCanvas::RenderText(std::wstring text, int pixelSize) {
-	font.SetPixelSize(pixelSize);
-	font.RenderText(text, buffer, width, height, &penX, &penY);
+	if (buffer) {
+		font.SetPixelSize(pixelSize);
+		font.RenderText(text, buffer, width, height, &penX, &penY);
 
-	// this should probably be done with just the rectangle of the line in question
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texIds[0]);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, buffer);
-	GL_CHECK("glGetTexImage() didn't work");
+		// this should probably be done with just the rectangle of the line in question
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texIds[0]);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, buffer);
+		GL_CHECK("glGetTexImage() didn't work");
+	}
 }
 
 void XGLGuiCanvas::Fill(GLubyte val)  {
-	memset(buffer, val, width*height);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texIds[0]);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, buffer);
-	GL_CHECK("glGetTexImage() didn't work");
+	if (buffer) {
+		memset(buffer, val, width*height);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texIds[0]);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, buffer);
+		GL_CHECK("glGetTexImage() didn't work");
+	}
+}
+
+void XGLGuiCanvas::Clear()  {
+	if (buffer) {
+		memset(buffer, 0, width*height);
+	}
+	penX = defaultPexX;
+	penY = defalutPenY;
 }
 
 XGLGuiManager::XGLGuiManager(XGL *xgl, bool addTexture) : XGLGuiCanvas(xgl), pxgl(xgl), padding(20) {

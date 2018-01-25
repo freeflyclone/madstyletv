@@ -49,11 +49,14 @@
 #include <sstream>
 #include <fstream>
 #include <stdexcept>
+#include <random>
+#include <iostream>
 #include <functional>
 #include <vector>
 #include <cmath>
 #include <type_traits>
 #include "glm.hpp"
+#include "glm/gtx/quaternion.hpp"
 #include "matrix_transform.hpp"
 #include "type_ptr.hpp"
 
@@ -62,7 +65,6 @@
 #include FT_FREETYPE_H
 
 #include "xclasses.h"
-#include "xglobject.h"
 #include "xconfig.h"
 #include "xglexcept.h"
 #include "xpath.h"
@@ -79,14 +81,22 @@
 #include "xglpixelbuffer.h"
 #include "xglshapes.h"
 #include "xglgui.h"
+#include "xglhmd.h"
 
 // want to reference XGLShader by it's name, so use std::map for that
-typedef std::map<std::string, GLint> XGLTextureMap;
 typedef std::map<std::string, XGLShader *> XGLShaderMap;
 
 // define types for std::vector of shapes ptrs, and the std::map of shapes-lists-by-shader
 typedef std::vector<XGLShape *> XGLShapeList;
 typedef std::map<std::string, XGLShapeList *> XGLShapesMap;
+
+// layers of XGLShapesMap, for sorting of scene objects to achieve rendering effects
+// such as sky box, transparency, and others as yet unconceived.
+typedef std::vector<XGLShapesMap*> XGLShapeLayers;
+
+// Global definition of animate function, and vector thereof
+typedef std::function<void(float)> AnimationFn;
+typedef std::vector<AnimationFn> AnimationFunctions;
 
 // write code to set these before creating XGL instance, for XGLException messages
 // and to locate assets (ie: shaders) in the local filesystem
@@ -96,7 +106,7 @@ extern std::string pathToAssets;
 extern XGLFont font;
 
 // Manage a GL context, platform independently
-class XGL : public XGLObject, public XInput
+class XGL : public XObject, public XInput
 {
 public:
     // this one is for Windows (wgl)
@@ -105,18 +115,28 @@ public:
     virtual ~XGL();
 
 	void PreRender();
-	virtual void Display();
+	void PostRender();
+
+	virtual void Animate();
+	virtual bool Display();
 	virtual void RenderScene(XGLShapesMap *);
 	virtual void Idle() {};
 
+	void InitHmd();
+
+	void AddPreRenderFunction(AnimationFn fn) { preRenderFunctions.push_back(fn); }
+	void AddPostRenderFunction(AnimationFn fn) { postRenderFunctions.push_back(fn); }
+
 	XGLShape* CreateShape(XGLShapesMap *s, std::string shaderName, XGLNewShapeLambda fn);
-	XGLShape* CreateShape(std::string shaderName, XGLNewShapeLambda fn);
-	void AddShape(std::string shaderName, XGLNewShapeLambda fn);
+	XGLShape* CreateShape(std::string shaderName, XGLNewShapeLambda fn, int layer = defaultLayer);
+	void AddShape(std::string shaderName, XGLNewShapeLambda fn, int layer = defaultLayer);
 	void AddGuiShape(std::string shaderName, XGLNewShapeLambda fn);
 	void IterateShapesMap();
 
 	// query the OpenGL context for various implementation limits, and dump output
 	void QueryContext();
+
+	void AddThread(std::shared_ptr<XThread>);
 
 	// some of these might be dynamic, but that'll be later
 	XGLLights lights;
@@ -133,8 +153,13 @@ public:
 	XConfig config;
 
 	// all the scene objects and GUI objects , mapped by XGLShader name
-    XGLShapesMap shapes;
+    //XGLShapesMap shapes;
 	XGLShapesMap guiShapes;
+
+	// Layers allow for sorting groups of object to achieve RenderScene() effects
+	// that require sorting, in particular transparency.
+	static const int defaultLayer = 1;
+	XGLShapeLayers shapeLayers;
 
     // encapsulate the camera and projection tranforms (view,perspectiv matrices)
     XGLCamera camera;
@@ -155,12 +180,25 @@ public:
 	XGLShape *mouseCaptured;
 	XGLShape *keyboardFocused;
 
+	void GetPreferredWindowSize(int *width, int *height);
+	bool UseHMD() { return useHmd; }
+	int GetPreferredSwapInterval() { return preferredSwapInterval; }
+	int preferredWidth, preferredHeight;
+	bool useHmd;
+	int preferredSwapInterval;
+	XGLSled *hmdSled;
+	XGLHmd *pHmd;
+
 private:
     // this is returned by GetShader().  Use of GetShader() feels funky, like my structure design blows chunks.
     XGLShader *currentShader;
 	GLuint matrixUbo, lightUbo;
 	bool renderGui;
 	XGLGuiManager *guiManager;
+	AnimationFunctions preRenderFunctions;
+	AnimationFunctions postRenderFunctions;
+
+	std::vector<std::shared_ptr<XThread>> threadPool;
 };
 
 #endif // XGL_H

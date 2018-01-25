@@ -28,10 +28,13 @@ CXXFLAGS +=-std=c++14\
 	-I${THIRDPARTYDIR}/ftdi/include \
 	-I${THIRDPARTYDIR}/ftdi/include/linux \
 	-I${THIRDPARTYDIR}/mosquitto/lib \
+	-I${THIRDPARTYDIR}/OculusSDK/LibOVR/Include \
 	-I${XCLASSDIR} \
 	-I/usr/include/AL \
 	-I/usr/local/include/AL \
+	-I${THIRDPARTYDIR}/openal-soft/include/AL \
 	-DNDEBUG \
+	-DLINUX \
 	-D_GNU_SOURCE=1 \
 	-DGLEW_STATIC \
 	-Wno-deprecated-declarations \
@@ -43,6 +46,7 @@ CFLAGS +=-std=c11 \
 	-I${XGLDIR} \
 	-I${XGLDIR}/glm \
 	-I${XCLASSDIR} \
+	-DLINUX \
 	-D_GNU_SOURCE=1 \
 	-DGLEW_STATIC \
 	-g
@@ -51,6 +55,7 @@ LDFLAGS +=\
 	-L${XCLASSDIR} \
 	-L${THIRDPARTYDIR}/glfw/lib \
 	-L${THIRDPARTYDIR}/mosquitto/lib \
+	-L${THIRDPARTYDIR}/OculusSDK/LibOVR/Projects/Linux \
 	-L/usr/local/lib \
 	-L/usr/lib/x86_64-linux-gnu
 
