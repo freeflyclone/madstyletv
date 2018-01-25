@@ -97,7 +97,7 @@ void ExampleXGL::BuildScene() {
 
 	try {
 		xuart = new XUartAscii("/dev/ttyUSB0");
-		shape->AddChild(xuart);
+		shape->AddChild((XGLShape*)xuart);
 		xuart->AddListener([&](unsigned char *line){
 			static long int count = 0;
 			const long int maxCalibrationCount = 125;

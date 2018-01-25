@@ -14,11 +14,14 @@ XCLASSDIR=${TOPDIR}xclass
 XGLDIR=${XCLASSDIR}/xgl
 XALDIR=${XCLASSDIR}/xal
 XAVDIR=${XCLASSDIR}/xav
+XPHYDIR=${XCLASSDIR}/xphy
+XPHYDIR=${XCLASSDIR}/xphy
 THIRDPARTYDIR=${XCLASSDIR}/3rdParty
 
 CXXFLAGS +=-std=c++14\
 	-I${XALDIR} \
 	-I${XAVDIR} \
+	-I${XPHYDIR} \
 	-I${XGLDIR} \
 	-I${XGLDIR}/glm \
 	-I${XGLDIR}/glm/gtc \
@@ -29,6 +32,9 @@ CXXFLAGS +=-std=c++14\
 	-I${THIRDPARTYDIR}/ftdi/include/linux \
 	-I${THIRDPARTYDIR}/mosquitto/lib \
 	-I${THIRDPARTYDIR}/OculusSDK/LibOVR/Include \
+	-I${THIRDPARTYDIR}/NuclexTimer/Include \
+	-I${THIRDPARTYDIR}/NuclexTimer/Source \
+	-I${THIRDPARTYDIR}/gpmf-parser \
 	-I${XCLASSDIR} \
 	-I/usr/include/AL \
 	-I/usr/local/include/AL \
@@ -46,6 +52,9 @@ CFLAGS +=-std=c11 \
 	-I${XGLDIR} \
 	-I${XGLDIR}/glm \
 	-I${XCLASSDIR} \
+	-I${THIRDPARTYDIR}/NuclexTimer/Include \
+	-I${THIRDPARTYDIR}/NuclexTimer/Source \
+	-I${THIRDPARTYDIR}/gpmf-parser \
 	-DLINUX \
 	-D_GNU_SOURCE=1 \
 	-DGLEW_STATIC \
