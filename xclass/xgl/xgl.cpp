@@ -224,12 +224,10 @@ void XGL::Animate() {
 	camera.Animate();
 
 	for (auto shapesMaps : shapeLayers)
-		for (auto shaders : *shapesMaps)
-			for (auto const perShader : *shapesMaps) {
-				const XGLShader *shader = shaderMap[perShader.first];
-				for (auto const shape : *(perShader.second))
-					shape->Animate(clock);
-			}
+		for (auto const shader : *shapesMaps)
+			for (auto const shape : *shader.second)
+				shape->Animate(clock);
+
 	clock += 1.0f;
 }
 
