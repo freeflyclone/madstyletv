@@ -13,46 +13,63 @@ static const int numFrames = 128;
 static const int vWidth = 1920;
 static const int vHeight = 1080;
 
-class VideoFrame {
+class VideoFrameBuffer {
 public:
-	VideoFrame(int ySize, int uvSize) {
+	VideoFrameBuffer(int ySize, int uvSize) : ySize(ySize), uvSize(uvSize) {
 		y = new uint8_t[ySize];
 		u = new uint8_t[uvSize];
 		v = new uint8_t[uvSize];
 	}
 
 	uint8_t *y, *u, *v;
+	int ySize, uvSize;
 };
 
-class FramePool {
+class FrameBufferPool {
 public:
-	FramePool(int width, int height) : freeBuffs(numFrames), usedBuffs(0) {
+	FrameBufferPool(int width, int height) : freeBuffs(numFrames), usedBuffs(0) {
 		int ySize = width * height;
 		int uvSize = (width / 2 * height / 2);
 
 		for (int i = 0; i < numFrames; i++)
-			frames[i] = new VideoFrame(ySize, uvSize);
+			frames[i] = new VideoFrameBuffer(ySize, uvSize);
 	}
 
-	~FramePool() {
+	~FrameBufferPool() {
 		for (int i = 0; i < numFrames; i++)
 			delete frames[i];
 	}
 
-	VideoFrame *frames[numFrames];
+	VideoFrameBuffer *frames[numFrames];
 	XSemaphore freeBuffs, usedBuffs;
 };
 
-class MP4Demux : public XThread {
+// XAVPacket derives from AVPacket soley to add the assignment operator
+// (not copying side_data for now)
+class XAVPacket : public AVPacket {
 public:
-	MP4Demux(const char *fn) : fileName(fn), XThread("MP4Demux") {
+	void operator = (const XAVPacket& p) {
+		size = p.size;
+		dts = p.dts;
+		stream_index = p.stream_index;
+		flags = p.flags;
+		duration = p.duration;
+		pos = p.pos;
+		convergence_duration = p.convergence_duration;
+		memcpy(data, p.data, size);
+	}
+};
+
+class XAVDemux : public XThread {
+public:
+	XAVDemux(const char *fn) : fileName(fn), XThread("XAVDemux") {
 		av_register_all();
 
 		ended = true;
 		StartPlaying();
 	}
 
-	~MP4Demux() {
+	~XAVDemux() {
 		if (playing)
 			StopPlaying();
 
@@ -117,10 +134,10 @@ public:
 		chromaWidth = pCodecCtx->width / (1 << pixDesc->log2_chroma_w);
 		chromaHeight = pCodecCtx->height / (1 << pixDesc->log2_chroma_h);
 
-		if ((pFrames = new FramePool(pCodecCtx->width, pCodecCtx->height)) == nullptr) {
+		if ((pFrames = new FrameBufferPool(pCodecCtx->width, pCodecCtx->height)) == nullptr) {
 			avcodec_close(pCodecCtx);
 			avformat_close_input(&pFormatCtx);
-			throwXAVException("Unable to allocate new FramePool " + fileName + "");
+			throwXAVException("Unable to allocate new FrameBufferPool " + fileName + "");
 		}
 	}
 
@@ -149,8 +166,10 @@ public:
 			if (playing) {
 				std::unique_lock<std::mutex> lock(playMutex);
 				if ((retVal = av_read_frame(pFormatCtx, &packet)) == 0) {
+					// Video stream...
 					if (packet.stream_index == vStreamIdx) {
-						CopyAVPacket(vPkt, packet);
+						// copy the XAVPacket
+						vPkt = packet;
 						int frameFinished;
 						avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &vPkt);
 						if (frameFinished) {
@@ -161,7 +180,7 @@ public:
 								showFrameStatus = false;
 							}
 							if (pFrames->freeBuffs.wait_for(100)) {
-								VideoFrame *pvf = pFrames->frames[nFramesDecoded & (numFrames - 1)];
+								VideoFrameBuffer *pvf = pFrames->frames[nFramesDecoded & (numFrames - 1)];
 
 								int ySize = pFrame->height * pFrame->linesize[0];
 								int uvSize = chromaWidth * chromaHeight;
@@ -207,11 +226,6 @@ private:
 			playing = true;
 	}
 
-	void CopyAVPacket(AVPacket& dst, AVPacket& src) {
-		dst.size = src.size;
-		memcpy(dst.data, src.data, dst.size);
-	}
-
 public:
 	void SeekPercent(float percent) {
 		if (!ended) {
@@ -253,7 +267,7 @@ public:
 	int vStreamIdx{ -1 };
 	AVCodecContext *pCodecCtx = nullptr;
 	AVCodec *pCodec = nullptr;
-	AVPacket packet{}, vPkt, aPkt, uPkt[3];
+	XAVPacket packet{}, vPkt, aPkt, uPkt[3];
 	AVFrame *pFrame = nullptr;
 	AVRational timeBase;
 	int ticksPerFrame;
@@ -264,7 +278,7 @@ public:
 	uint8_t vPacketBuff[0x100000];
 
 
-	FramePool *pFrames = nullptr;
+	FrameBufferPool *pFrames = nullptr;
 	int	nFramesDecoded{ 0 }, nFramesDisplayed{ 0 };
 	int	chromaWidth{ 0 }, chromaHeight{ 0 };
 	bool playing{ false };
@@ -276,7 +290,7 @@ public:
 	std::mutex playMutex;
 };
 
-MP4Demux *pMp4, *pMp42;
+XAVDemux *pMp4, *pMp42;
 XGLShape *shape,*shape2;
 bool step;
 
@@ -331,8 +345,8 @@ void ExampleXGL::BuildScene() {
 	shape2->model = translate * rotate *scale;
 	shape2->attributes.ambientColor = { 1.0, 1.0, 1.0, 0.4 };
 
-	pMp4 = new MP4Demux(videoPath.c_str());
-	pMp42 = new MP4Demux(videoPath2.c_str());
+	pMp4 = new XAVDemux(videoPath.c_str());
+	pMp42 = new XAVDemux(videoPath2.c_str());
 
 	shape->SetAnimationFunction([&](float clock) {
 		static float oldClock = 0.0f;
@@ -340,7 +354,7 @@ void ExampleXGL::BuildScene() {
 			oldClock = clock;
 			if (step || pMp4->playing){
 				if (pMp4->pFrames->usedBuffs.get_count() > 2) {
-					VideoFrame *pFrame = pMp4->pFrames->frames[pMp4->nFramesDisplayed++ & (numFrames - 1)];
+					VideoFrameBuffer *pFrame = pMp4->pFrames->frames[pMp4->nFramesDisplayed++ & (numFrames - 1)];
 
 					glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit0"), 0);
 					glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit1"), 1);
@@ -373,7 +387,7 @@ void ExampleXGL::BuildScene() {
 			oldClock = clock;
 			if (step || pMp42->playing){
 				if (pMp42->pFrames->usedBuffs.get_count() > 2) {
-					VideoFrame *pFrame = pMp42->pFrames->frames[pMp42->nFramesDisplayed++ & (numFrames - 1)];
+					VideoFrameBuffer *pFrame = pMp42->pFrames->frames[pMp42->nFramesDisplayed++ & (numFrames - 1)];
 
 					glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit0"), 0);
 					glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit1"), 1);
