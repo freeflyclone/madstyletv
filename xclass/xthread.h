@@ -54,6 +54,11 @@ public:
 		isRunning = false;
 	}
 
+	bool WaitForStop() {
+		Stop();
+		return WaitForJoin();
+	}
+
 	virtual void Run() = 0;
 
 	bool WaitForJoin() {

@@ -77,6 +77,9 @@ public:
 		if (playing)
 			StopPlaying();
 
+		// thread stop, not "playing stop"
+		WaitForStop();
+
 		if (pCodecCtx)
 			ReleaseAllTheThings();
 	}
@@ -102,7 +105,7 @@ public:
 		vPkt.data = vPacketBuff;
 		vPkt.size = sizeof(vPacketBuff);
 
-		for (int i = 0; i<pFormatCtx->nb_streams; i++) {
+		for (unsigned int i = 0; i<pFormatCtx->nb_streams; i++) {
 			if (pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
 				vStreamIdx = i;
 				vStream = pFormatCtx->streams[i];
@@ -200,9 +203,6 @@ public:
 							av_frame_unref(pFrame);
 						}
 					}
-					else if (packet.stream_index == aStreamIdx) {
-						xprintf("Audio: %d\n", packet.size);
-					}
 					av_free_packet(&packet);
 				}
 				else {
@@ -290,7 +290,6 @@ public:
 	uint8_t packetBuff[0x100000];
 	uint8_t vPacketBuff[0x100000];
 
-
 	FrameBufferPool *pFrames = nullptr;
 	int	nFramesDecoded{ 0 }, nFramesDisplayed{ 0 };
 	int	chromaWidth{ 0 }, chromaHeight{ 0 };
@@ -310,7 +309,14 @@ public:
 		AddTexture(vWidth / 2, vHeight / 2, 1);
 	}
 
+	~XAVPlayer() {
+		dmx.Stop();
+	}
+
 	void StartPlaying() {
+		if (dmx.IsRunning() == false)
+			dmx.Start();
+
 		dmx.StartPlaying();
 	}
 
@@ -318,11 +324,39 @@ public:
 		dmx.StopPlaying();
 	}
 
+	void Draw() {
+		if (dmx.pFrames->usedBuffs.get_count() > 2) {
+			VideoFrameBuffer *pFrame = dmx.pFrames->frames[dmx.nFramesDisplayed++ & (numFrames - 1)];
+
+			glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit0"), 0);
+			glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit1"), 1);
+			glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit2"), 2);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texIds[0]);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, vWidth, vHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->y);
+			GL_CHECK("glGetTexImage() didn't work");
+
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, texIds[1]);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dmx.chromaWidth, dmx.chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->u);
+			GL_CHECK("glGetTexImage() didn't work");
+
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, texIds[2]);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dmx.chromaWidth, dmx.chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->v);
+			GL_CHECK("glGetTexImage() didn't work");
+
+			dmx.pFrames->freeBuffs.notify();
+		}
+
+		XGLTexQuad::Draw();
+	}
+
 	XAVDemux dmx;
 };
 
-XAVDemux *pMp4;
-XGLShape *shape;
+XAVPlayer *pPlayer;
 bool step;
 
 extern bool initHmd;
@@ -349,47 +383,12 @@ void ExampleXGL::BuildScene() {
 	else
 		videoPath = pathToAssets + "/" + videoUrl;
 
-	AddShape("shaders/yuv", [&](){ shape = new XGLTexQuad(vWidth, vHeight, 1); return shape; });
-	shape->AddTexture(vWidth / 2, vHeight / 2, 1);
-	shape->AddTexture(vWidth / 2, vHeight / 2, 1);
+	AddShape("shaders/yuv", [&](){ pPlayer = new XAVPlayer(videoPath); return pPlayer; });
 
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(16.0f, 9.0f, 1.0f));
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(-8.0f, 0.0f, 9.0f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	shape->model = translate * rotate *scale;
-
-	pMp4 = new XAVDemux(videoPath.c_str());
-
-	shape->SetAnimationFunction([&](float clock) {
-		static float oldClock = 0.0f;
-		oldClock = clock;
-		if (step || pMp4->playing){
-			if (pMp4->pFrames->usedBuffs.get_count() > 2) {
-				VideoFrameBuffer *pFrame = pMp4->pFrames->frames[pMp4->nFramesDisplayed++ & (numFrames - 1)];
-
-				glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit0"), 0);
-				glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit1"), 1);
-				glProgramUniform1i(shape->shader->programId, glGetUniformLocation(shape->shader->programId, "texUnit2"), 2);
-
-				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, shape->texIds[0]);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, vWidth, vHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->y);
-				GL_CHECK("glGetTexImage() didn't work");
-
-				glActiveTexture(GL_TEXTURE1);
-				glBindTexture(GL_TEXTURE_2D, shape->texIds[1]);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pMp4->chromaWidth, pMp4->chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->u);
-				GL_CHECK("glGetTexImage() didn't work");
-
-				glActiveTexture(GL_TEXTURE2);
-				glBindTexture(GL_TEXTURE_2D, shape->texIds[2]);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pMp4->chromaWidth, pMp4->chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->v);
-				GL_CHECK("glGetTexImage() didn't work");
-
-				pMp4->pFrames->freeBuffs.notify();
-			}
-		}
-	});
+	pPlayer->model = translate * rotate *scale;
 
 	XInputKeyFunc seekPercentFunc = [&](int key, int flags) {
 		const bool isDown = (flags & 0x8000) == 0;
@@ -402,7 +401,7 @@ void ExampleXGL::BuildScene() {
 			else if (key > 9)
 				key = 9;
 
-			pMp4->SeekPercent((float)key * 10.0f);
+			pPlayer->dmx.SeekPercent((float)key * 10.0f);
 		}
 	};
 	AddKeyFunc(XInputKeyRange('0', '9'), seekPercentFunc);
@@ -415,13 +414,13 @@ void ExampleXGL::BuildScene() {
 			switch (key) {
 				case GLFW_KEY_RIGHT:
 					xprintf("+1\n");
-					pMp4->playing = false;
+					pPlayer->dmx.playing = false;
 					step = true;
 					break;
 
 				case GLFW_KEY_LEFT:
 					xprintf("-1\n");
-					pMp4->playing = false;
+					pPlayer->dmx.playing = false;
 					break;
 			}
 		}
@@ -433,7 +432,7 @@ void ExampleXGL::BuildScene() {
 		const bool isRepeat = (flags & 0x4000) != 0;
 
 		if (isDown && !isRepeat){
-			pMp4->StartPlaying();
+			pPlayer->dmx.StartPlaying();
 		}
 	});
 
@@ -442,7 +441,7 @@ void ExampleXGL::BuildScene() {
 		const bool isRepeat = (flags & 0x4000) != 0;
 
 		if (isDown && !isRepeat){
-			pMp4->StopPlaying();
+			pPlayer->dmx.StopPlaying();
 		}
 	});
 
@@ -453,12 +452,12 @@ void ExampleXGL::BuildScene() {
 			if (slider->HasMouse()) {
 				XGLGuiCanvas *thumb = (XGLGuiCanvas *)slider->Children()[1];
 				float percent = slider->Position() * 100.0f;
-				pMp4->SeekPercent(percent);
+				pPlayer->dmx.SeekPercent(percent);
 			}
 		};
 
 		slider->AddMouseEventListener(mel);
 	}
 
-	pMp4->Start();
+	pPlayer->StartPlaying();
 }
