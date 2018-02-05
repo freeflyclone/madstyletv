@@ -66,7 +66,26 @@ public:
 
 class XAVDemux : public XThread {
 public:
-	XAVDemux(std::string fn) : fileName(fn), XThread("XAVDemux") {
+	class Sequencer : public XThread, public SteppedTimer {
+	public:
+		Sequencer(XAVDemux& dmx) : XThread("XAVDemux::SequncerThread"), dmx(dmx) {
+			SetStepFrequency(120);
+		};
+
+		void Run() {
+			while (IsRunning()) {
+				GameTime gameTime;
+				while (TryAdvance(gameTime)) {
+					dmx.UpdateDisplay();
+					xprintf("Time stepped: %dus, fullness: %d\n", gameTime.RealWorldDeltaUs, dmx.GetFullness());
+				}
+			}
+		}
+
+		XAVDemux& dmx;
+	} sequencer;
+
+	XAVDemux(std::string fn) : fileName(fn), XThread("XAVDemux"), sequencer(*this) {
 		av_register_all();
 
 		ended = true;
@@ -169,6 +188,21 @@ public:
 		av_shrink_packet(&packet, 0);
 	}
 
+	int64_t GetFullness() { return nFramesDecoded - nFramesDisplayed; }
+
+	void UpdateDisplay() {
+		int idx = nFramesDisplayed & (numFrames - 1);
+
+		VideoFrameBuffer* pvfb = pFrames->frames[idx];
+
+		memcpy(vFrameBuffer.y, pvfb->y, vFrameBuffer.ySize);
+		memcpy(vFrameBuffer.u, pvfb->u, vFrameBuffer.uvSize);
+		memcpy(vFrameBuffer.v, pvfb->v, vFrameBuffer.uvSize);
+
+		if (nFramesDecoded > nFramesDisplayed)
+			nFramesDisplayed++;
+	}
+
 	void Run() {
 		while (IsRunning()) {
 			if (playing) {
@@ -254,10 +288,12 @@ public:
 			pFrames->usedBuffs(0);
 			pFrames->freeBuffs(numFrames);
 		}
+		sequencer.Start();
 		playing = true;
 	}
 
 	void StopPlaying() {
+		sequencer.Stop();
 		playing = false;
 	}
 
@@ -291,6 +327,8 @@ public:
 	uint8_t vPacketBuff[0x100000];
 
 	FrameBufferPool *pFrames = nullptr;
+	VideoFrameBuffer vFrameBuffer{ vWidth*vHeight, (vWidth / 2)*(vHeight / 2) };
+
 	int	nFramesDecoded{ 0 }, nFramesDisplayed{ 0 };
 	int	chromaWidth{ 0 }, chromaHeight{ 0 };
 	bool playing{ false };
@@ -326,7 +364,7 @@ public:
 
 	void Draw() {
 		if (dmx.pFrames->usedBuffs.get_count() > 2) {
-			VideoFrameBuffer *pFrame = dmx.pFrames->frames[dmx.nFramesDisplayed++ & (numFrames - 1)];
+			VideoFrameBuffer *pFrame = &dmx.vFrameBuffer;
 
 			glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit0"), 0);
 			glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit1"), 1);
@@ -362,7 +400,7 @@ bool step;
 extern bool initHmd;
 
 void ExampleXGL::BuildScene() {
-	preferredSwapInterval = 1;
+	preferredSwapInterval = 0;
 	preferredWidth = 1880;
 	preferredHeight = 960;
 	//initHmd = true;
