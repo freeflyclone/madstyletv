@@ -75,10 +75,8 @@ public:
 		void Run() {
 			while (IsRunning()) {
 				GameTime gameTime;
-				while (TryAdvance(gameTime)) {
+				while (TryAdvance(gameTime))
 					dmx.UpdateDisplay();
-					xprintf("Time stepped: %dus, fullness: %d\n", gameTime.RealWorldDeltaUs, dmx.GetFullness());
-				}
 			}
 		}
 
@@ -190,23 +188,29 @@ public:
 
 	int64_t GetFullness() { return nFramesDecoded - nFramesDisplayed; }
 
+	// this is run by the sequencer thread, at PTS/DTS interval
 	void UpdateDisplay() {
-		int idx = nFramesDisplayed & (numFrames - 1);
+		if (pFrames->usedBuffs.wait_for(100)) {
+			std::lock_guard<std::mutex> lock(displayMutex);
+			VideoFrameBuffer* pvfb = pFrames->frames[nFramesDisplayed & (numFrames - 1)];
 
-		VideoFrameBuffer* pvfb = pFrames->frames[idx];
+			memcpy(vFrameBuffer.y, pvfb->y, vFrameBuffer.ySize);
+			memcpy(vFrameBuffer.u, pvfb->u, vFrameBuffer.uvSize);
+			memcpy(vFrameBuffer.v, pvfb->v, vFrameBuffer.uvSize);
 
-		memcpy(vFrameBuffer.y, pvfb->y, vFrameBuffer.ySize);
-		memcpy(vFrameBuffer.u, pvfb->u, vFrameBuffer.uvSize);
-		memcpy(vFrameBuffer.v, pvfb->v, vFrameBuffer.uvSize);
+			if (nFramesDecoded > nFramesDisplayed)
+				nFramesDisplayed++;
 
-		if (nFramesDecoded > nFramesDisplayed)
-			nFramesDisplayed++;
+			pFrames->freeBuffs.notify();
+		}
 	}
+
+	std::lock_guard<std::mutex>& LockDisplay() { return std::lock_guard<std::mutex>(displayMutex); }
 
 	void Run() {
 		while (IsRunning()) {
 			if (playing) {
-				std::unique_lock<std::mutex> lock(playMutex);
+				std::lock_guard<std::mutex> lock(playMutex);
 				if ((retVal = av_read_frame(pFormatCtx, &packet)) == 0) {
 					// Video stream...
 					if (packet.stream_index == vStreamIdx) {
@@ -252,7 +256,7 @@ public:
 
 private:
 	void Seek(int64_t timeOffset) {
-		std::unique_lock<std::mutex> lock(playMutex);
+		std::lock_guard<std::mutex> lock(playMutex);
 		wasPlaying = playing;
 		playing = false;
 
@@ -338,6 +342,7 @@ public:
 	float currentPlayTime{ 0.0 };
 
 	std::mutex playMutex;
+	std::mutex displayMutex;
 };
 
 class XAVPlayer : public XGLTexQuad {
@@ -364,6 +369,8 @@ public:
 
 	void Draw() {
 		if (dmx.pFrames->usedBuffs.get_count() > 2) {
+			dmx.LockDisplay();
+
 			VideoFrameBuffer *pFrame = &dmx.vFrameBuffer;
 
 			glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit0"), 0);
@@ -384,8 +391,6 @@ public:
 			glBindTexture(GL_TEXTURE_2D, texIds[2]);
 			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dmx.chromaWidth, dmx.chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->v);
 			GL_CHECK("glGetTexImage() didn't work");
-
-			dmx.pFrames->freeBuffs.notify();
 		}
 
 		XGLTexQuad::Draw();
@@ -403,7 +408,7 @@ void ExampleXGL::BuildScene() {
 	preferredSwapInterval = 0;
 	preferredWidth = 1880;
 	preferredHeight = 960;
-	//initHmd = true;
+	initHmd = false;
 	
 	glm::vec3 cameraPosition(0, -40, 9);
 	glm::vec3 cameraDirection(0, 1, 0);
