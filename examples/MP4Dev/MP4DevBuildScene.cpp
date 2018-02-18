@@ -102,9 +102,6 @@ public:
 	}
 
 	void GetAllTheThings() {
-		if ((pFormatCtx = avformat_alloc_context()) == nullptr)
-			throwXAVException("Unable to allocate AVFormatContext for:  " + fileName + "");
-
 		if ((pFrame = av_frame_alloc()) == nullptr)
 			throwXAVException("Unable to allocate AVFrame for: " + fileName + "");
 
@@ -204,8 +201,6 @@ public:
 			pFrames->freeBuffs.notify();
 		}
 	}
-
-	std::lock_guard<std::mutex>& LockDisplay() { return std::lock_guard<std::mutex>(displayMutex); }
 
 	void Run() {
 		while (IsRunning()) {
@@ -369,8 +364,7 @@ public:
 
 	void Draw() {
 		if (dmx.pFrames->usedBuffs.get_count() > 2) {
-			dmx.LockDisplay();
-
+			std::lock_guard<std::mutex> lock(dmx.displayMutex);
 			VideoFrameBuffer *pFrame = &dmx.vFrameBuffer;
 
 			glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit0"), 0);

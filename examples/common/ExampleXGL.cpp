@@ -126,9 +126,10 @@ ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 
 void ExampleXGL::Reshape(int w, int h) {
 	try {
-		width = w;
-		height = h;
-		projector.Reshape(w, h);
+		width = (w<=0)?1:w;
+		height = (h<=0)?1:h;
+
+		projector.Reshape(width, height);
 		Display();
 	}
 	catch (std::runtime_error e){
