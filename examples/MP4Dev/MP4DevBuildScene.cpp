@@ -9,7 +9,7 @@
 #include "ExampleXGL.h"
 #include "xav.h"
 
-static const int numFrames = 128;
+static const int numFrames = 8;
 static const int vWidth = 1920;
 static const int vHeight = 1080;
 
@@ -69,7 +69,7 @@ public:
 	class Sequencer : public XThread, public SteppedTimer {
 	public:
 		Sequencer(XAVDemux& dmx) : XThread("XAVDemux::SequncerThread"), dmx(dmx) {
-			SetStepFrequency(120);
+			SetStepFrequency(30);
 		};
 
 		void Run() {
@@ -399,10 +399,18 @@ bool step;
 extern bool initHmd;
 
 void ExampleXGL::BuildScene() {
-	preferredSwapInterval = 0;
-	preferredWidth = 1880;
-	preferredHeight = 960;
-	initHmd = false;
+
+	if (false) {
+		preferredSwapInterval = 0;
+		preferredWidth = 1880;
+		preferredHeight = 960;
+		initHmd = false;
+	}
+	else {
+		preferredSwapInterval = 1;
+		preferredWidth = 1920;
+		preferredHeight = 1080;
+	}
 	
 	glm::vec3 cameraPosition(0, -40, 9);
 	glm::vec3 cameraDirection(0, 1, 0);
