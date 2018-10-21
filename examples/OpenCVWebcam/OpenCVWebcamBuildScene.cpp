@@ -165,6 +165,7 @@ public:
 			frameNumber++;
 			width = frame.cols;
 			height = frame.rows;
+			xprintf("frame: %d\n", frameNumber);
 		}
 	}
 
@@ -180,38 +181,45 @@ public:
 };
 
 void ExampleXGL::BuildScene() {
-	ImageProcessing *shape;
+	//ImageProcessing *shape;
+	XGLTexQuad *shape;
 	const int camWidth = 1920;
 	const int camHeight = 1080;
 	const int camChannels = 3;
-	CameraThread *pct = new CameraThread("CameraThread", camWidth, camHeight, camChannels);
 
+	useHmd = true;
+
+	//CameraThread *pct = new CameraThread("CameraThread", camWidth, camHeight, camChannels);
+
+	AddShape("shaders/tex", [&](){ shape = new XGLTexQuad(camWidth, camHeight, camChannels); return shape; });
+	/*
 	AddShape("shaders/imageproc", [&](){ shape = new ImageProcessing(camWidth, camHeight, camChannels); return shape; });
 	shape->windowWidth = &width;
 	shape->windowHeight = &height;
-
+	*/
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(-10, 0, 5.625f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	shape->model = translate * rotate * scale;
 
 	// animation function to grab a web cam frame from the web cam capture thread and upload it to texture memory
+	/*
 	shape->SetAnimationFunction([pct,shape](float clock) {
-		ImageProcessing *ipShape = (ImageProcessing *)shape;
+		XGLTexQuad *ipShape = (XGLTexQuad *)shape;
 		if (pct != NULL && pct->IsRunning() && (pct->frameNumber>3) ) {
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, ipShape->texIds[0]);
 			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pct->width, pct->height, GL_BGR, GL_UNSIGNED_BYTE, pct->videoFrame[(pct->frameNumber-1)&3]);
 			GL_CHECK("glGetTexImage() didn't work");
 
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, ipShape->texIds[1]);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pct->width, pct->height, GL_BGR, GL_UNSIGNED_BYTE, pct->videoFrame[(pct->frameNumber-2)&3]);
-			GL_CHECK("glGetTexImage() didn't work");
+			//glActiveTexture(GL_TEXTURE1);
+			//glBindTexture(GL_TEXTURE_2D, ipShape->texIds[1]);
+			//glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pct->width, pct->height, GL_BGR, GL_UNSIGNED_BYTE, pct->videoFrame[(pct->frameNumber-2)&3]);
+			//GL_CHECK("glGetTexImage() didn't work");
 		}
 	});
+	*/
+	//pct->Start();
 
-	pct->Start();
-
-	AddChild(pct);
+	//AddChild(pct);
 }
