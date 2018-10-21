@@ -11,9 +11,13 @@ const static int nParticles = 100000;
 
 XGLParticleSystem *pParticles;
 
+extern bool initHmd;
+
 void ExampleXGL::BuildScene() {
 	AddShape("shaders/000-simple2", [&]() { pParticles = new XGLParticleSystem(nParticles); return pParticles; });
 
 	if (true)
 		AddPreRenderFunction(pParticles->invokeComputeShader);
+
+	initHmd = false;
 }

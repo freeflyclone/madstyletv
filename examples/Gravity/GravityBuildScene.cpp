@@ -16,7 +16,8 @@ const glm::vec3 g = { 0.0f, 0.0f, -9.80665f };
 XGLSphere *shape;
 
 void ExampleXGL::BuildScene() {
-
+	extern bool initHmd;
+	initHmd = false;
 	AddShape("shaders/specular", [&](){ shape = new XGLSphere(0.5f, 64); return shape; });
 	shape->p = { 0.0f, 0.0f, 10.0f };
 	shape->m = 1.0f;

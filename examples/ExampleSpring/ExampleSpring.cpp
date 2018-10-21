@@ -10,7 +10,7 @@ public:
 	Spring(XGLShape* s1, XGLShape* s2) : s1(s1), s2(s2) {};
 
 	void Integrate() {
-		// get normalize direction vectors between the 2 shapes
+		// get normalized direction vectors between the 2 shapes
 		d1 = glm::normalize(s2->p - s1->p);
 		d2 = glm::normalize(s1->p - s2->p);
 
@@ -52,7 +52,7 @@ XGLSphere *ball1, *ball2, *ball3, *ball4;
 const float bump{ 2.0 };
 
 void ExampleXGL::BuildScene() {
-	//initHmd = true;
+	initHmd = false;
 
 	AddShape("shaders/specular", [&](){ ball1 = new XGLSphere(1.0f, 32); return ball1; });
 	ball1->SetName("Ball");

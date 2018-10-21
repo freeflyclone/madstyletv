@@ -7,11 +7,13 @@
 
 XGLSphere *sphere;
 
+extern bool initHmd;
+
 void ExampleXGL::BuildScene() {
+	initHmd = false;
 }
 
 void PhysXXGL::BuildScene() {
-
 	XInputKeyFunc renderMod = [&](int key, int flags) {
 		const bool isDown = (flags & 0x8000) == 0;
 		const bool isRepeat = (flags & 0x4000) != 0;
