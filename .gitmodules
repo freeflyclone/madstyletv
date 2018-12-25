@@ -10,3 +10,6 @@
 [submodule "xclass/3rdParty/mosquitto"]
 	path = xclass/3rdParty/mosquitto
 	url = https://github.com/eclipse/mosquitto.git
+[submodule "xclass/3rdParty/kaldi"]
+	path = xclass/3rdParty/kaldi
+	url = https://github.com/kaldi-asr/kaldi.git
