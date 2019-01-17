@@ -43,7 +43,7 @@ public:
 		const int numGlyphs = (const int)(charMap.size());
 		xprintf("XGLFreeType::XGLFreeType() - There are %d glyphs.\n", numGlyphs);
 
-		gindex = charMap['M'];
+		gindex = charMap['S'];
 
 		FT_Load_Glyph(face, gindex, FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT);
 
@@ -55,9 +55,29 @@ public:
 
 		FT_Vector* pftv;
 		int i;
-		for (i = 0, pftv = fto.points; i < fto.n_points; i++, pftv++) {
+		int count = fto.n_points;
+		char *pTags = fto.tags;
+
+		for (i = 0, pftv = fto.points; i < count; i++, pftv++, pTags++) {
 			xprintf("Point %d: (%d,%d) - %02X\n", i, pftv->x, pftv->y, fto.tags[i] & 0xFF);
-			v.push_back({ { pftv->x / 500.0f, pftv->y / 500.0f, 0 }, {}, {}, { 1, 1, 0, 1 } });
+			if (i + 1 < count) {
+				if ( *(pTags+1) & 1)
+					v.push_back({ { pftv->x / scaleFactor, pftv->y / scaleFactor, 0 }, {}, {}, { 1, 1, 0, 1 } });
+				else if (((*(pTags + 1) & 1) == 0) && ((*(pTags + 2) & 1) == 0)) {
+					EvaluateCubicBezier(*pftv, *(pftv + 1), *(pftv + 2), *(pftv + 3));
+					i += 2;
+					pftv += 2;
+					pTags += 2;
+				}
+				else if (((*(pTags + 1) & 1) == 0) && ((*(pTags + 2) & 1) == 1)) {
+					EvaluateQuadraticBezier(*pftv, *(pftv + 1), *(pftv + 2));
+					i += 1;
+					pftv += 1;
+					pTags += 1;
+				}
+			}
+			else
+				v.push_back({ { pftv->x / scaleFactor, pftv->y / scaleFactor, 0 }, {}, {}, { 1, 1, 0, 1 } });
 		}
 	};
 
@@ -71,10 +91,63 @@ public:
 		GL_CHECK("glDrawArrays() failed");
 	}
 
+	float GetInterpolatedPoint(float n1, float n2, float percent) {
+		float diff = n2 - n1;
+		return n1 + (diff * percent);
+	}
+
+	void EvaluateQuadraticBezier(FT_Vector p0, FT_Vector p1, FT_Vector p2) {
+		xprintf("EvaluateQuadratic\n");
+		float xa, xb, ya, yb;
+		float x, y;
+		float interpolant;
+
+		for (interpolant = 0.0f; interpolant < 1.0f; interpolant += 0.1f) {
+			xa = GetInterpolatedPoint((float)p0.x, (float)p1.x, interpolant);
+			ya = GetInterpolatedPoint((float)p0.y, (float)p1.y, interpolant);
+
+			xb = GetInterpolatedPoint((float)p1.x, (float)p2.x, interpolant);
+			yb = GetInterpolatedPoint((float)p1.y, (float)p2.y, interpolant);
+
+			x = GetInterpolatedPoint(xa, xb, interpolant);
+			y = GetInterpolatedPoint(ya, yb, interpolant);
+
+			v.push_back({ { x/scaleFactor, y/scaleFactor, 0 }, {}, {}, { 1, 1, 0, 1 } });
+		}
+	}
+
+	void EvaluateCubicBezier(FT_Vector p0, FT_Vector p1, FT_Vector p2, FT_Vector p3) {
+		xprintf("EvaluateCubic\n");
+		float xa, xb, xc, ya, yb, yc;
+		float xm, xn, ym, yn;
+		float x, y;
+		float interpolant;
+
+		for (interpolant = 0.0f; interpolant < 1.0f; interpolant += 0.1f) {
+			xa = GetInterpolatedPoint((float)p0.x, (float)p1.x, interpolant);
+			ya = GetInterpolatedPoint((float)p0.y, (float)p1.y, interpolant);
+			xb = GetInterpolatedPoint((float)p1.x, (float)p2.x, interpolant);
+			yb = GetInterpolatedPoint((float)p1.y, (float)p2.y, interpolant);
+			xc = GetInterpolatedPoint((float)p2.x, (float)p3.x, interpolant);
+			yc = GetInterpolatedPoint((float)p2.y, (float)p3.y, interpolant);
+
+			xm = GetInterpolatedPoint(xa, xb, interpolant);
+			ym = GetInterpolatedPoint(ya, yb, interpolant);
+			xn = GetInterpolatedPoint(xb, xc, interpolant);
+			yn = GetInterpolatedPoint(yb, yc, interpolant);
+
+			x = GetInterpolatedPoint(xm, xn, interpolant);
+			y = GetInterpolatedPoint(ym, yn, interpolant);
+
+			v.push_back({ { x / scaleFactor, y / scaleFactor, 0 }, {}, {}, { 1, 1, 0, 1 } });
+		}
+	}
+
 	FT_Library ft;
 	FT_Face face;
 	FT_GlyphSlot g;
 	CharMap charMap;
+	float scaleFactor = 200.0f;
 };
 
 void ExampleXGL::BuildScene() {
