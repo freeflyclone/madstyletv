@@ -169,6 +169,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MP4Dev", "examples\MP4Dev\M
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NanoSvgTest", "examples\NanoSvgTest\NanoSvgTest.vcxproj", "{EB4BFA4A-D7A5-4518-8BF3-B3CE9D589303}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FreeTypeDev", "examples\FreeTypeDev\FreeTypeDev.vcxproj", "{EBFE4111-B324-4144-929E-01E41DAE575E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -563,6 +565,18 @@ Global
 		{EB4BFA4A-D7A5-4518-8BF3-B3CE9D589303}.Release|Win32.Build.0 = Release|Win32
 		{EB4BFA4A-D7A5-4518-8BF3-B3CE9D589303}.Release|x64.ActiveCfg = Release|x64
 		{EB4BFA4A-D7A5-4518-8BF3-B3CE9D589303}.Release|x64.Build.0 = Release|x64
+		{EBFE4111-B324-4144-929E-01E41DAE575E}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{EBFE4111-B324-4144-929E-01E41DAE575E}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{EBFE4111-B324-4144-929E-01E41DAE575E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EBFE4111-B324-4144-929E-01E41DAE575E}.Debug|Win32.Build.0 = Debug|Win32
+		{EBFE4111-B324-4144-929E-01E41DAE575E}.Debug|x64.ActiveCfg = Debug|x64
+		{EBFE4111-B324-4144-929E-01E41DAE575E}.Debug|x64.Build.0 = Debug|x64
+		{EBFE4111-B324-4144-929E-01E41DAE575E}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{EBFE4111-B324-4144-929E-01E41DAE575E}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{EBFE4111-B324-4144-929E-01E41DAE575E}.Release|Win32.ActiveCfg = Release|Win32
+		{EBFE4111-B324-4144-929E-01E41DAE575E}.Release|Win32.Build.0 = Release|Win32
+		{EBFE4111-B324-4144-929E-01E41DAE575E}.Release|x64.ActiveCfg = Release|x64
+		{EBFE4111-B324-4144-929E-01E41DAE575E}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -599,5 +613,6 @@ Global
 		{70A25750-7EAB-41EE-864C-49C9BC63F7AA} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 		{489EC3E4-ED7D-4646-BD56-6EB4AE5491F6} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 		{913656F0-B7A6-4CA3-9490-864ED433246A} = {24EAE59C-1779-4D00-8819-415B4A41868E}
+		{EBFE4111-B324-4144-929E-01E41DAE575E} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 	EndGlobalSection
 EndGlobal
