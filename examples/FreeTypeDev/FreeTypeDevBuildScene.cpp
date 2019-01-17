@@ -7,6 +7,8 @@
 **************************************************************/
 #include "ExampleXGL.h"
 
+#include FT_OUTLINE_H
+
 #ifdef FONT_NAME
 #undef FONT_NAME
 #endif
@@ -43,41 +45,51 @@ public:
 		const int numGlyphs = (const int)(charMap.size());
 		xprintf("XGLFreeType::XGLFreeType() - There are %d glyphs.\n", numGlyphs);
 
-		gindex = charMap['S'];
+		gindex = charMap['M'];
 
 		FT_Load_Glyph(face, gindex, FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT);
 
 		FT_Outline fto = g->outline;
+		FT_Outline_Funcs ftof;
 
-		xprintf("    format: %c%c%c%c\n", (g->format >> 24) & 0xFF, (g->format >> 16) & 0xFF, (g->format >> 8) & 0xFF, (g->format) & 0xFF);
-		xprintf("n_contours: %d\n", fto.n_contours);
-		xprintf("  n_points: %d\n", fto.n_points);
+		ftof.move_to = [](const FT_Vector* to, void* user) -> int { xprintf("MoveToFunc\n");  return 0; };
+		ftof.line_to = [](const FT_Vector* to, void* user) -> int { xprintf("LineToFunc\n");  return 0; };
+		ftof.conic_to = [](const FT_Vector* control, const FT_Vector*to, void* user) -> int { xprintf("ConicToFunc\n");  return 0; };
+		ftof.cubic_to = [](const FT_Vector* control1, const FT_Vector* control2, const FT_Vector*to, void* user) -> int { xprintf("CubicToFunc\n");  return 0; };
 
-		FT_Vector* pftv;
-		int i;
-		int count = fto.n_points;
-		char *pTags = fto.tags;
+		FT_Outline_Decompose(&fto, &ftof, this);
 
-		for (i = 0, pftv = fto.points; i < count; i++, pftv++, pTags++) {
-			xprintf("Point %d: (%d,%d) - %02X\n", i, pftv->x, pftv->y, fto.tags[i] & 0xFF);
-			if (i + 1 < count) {
-				if ( *(pTags+1) & 1)
+		if (false) {
+			xprintf("    format: %c%c%c%c\n", (g->format >> 24) & 0xFF, (g->format >> 16) & 0xFF, (g->format >> 8) & 0xFF, (g->format) & 0xFF);
+			xprintf("n_contours: %d\n", fto.n_contours);
+			xprintf("  n_points: %d\n", fto.n_points);
+
+			FT_Vector* pftv;
+			int i;
+			int count = fto.n_points;
+			char *pTags = fto.tags;
+
+			for (i = 0, pftv = fto.points; i < count; i++, pftv++, pTags++) {
+				xprintf("Point %d: (%d,%d) - %02X\n", i, pftv->x, pftv->y, fto.tags[i] & 0xFF);
+				if (i + 1 < count) {
+					if (*(pTags + 1) & 1)
+						v.push_back({ { pftv->x / scaleFactor, pftv->y / scaleFactor, 0 }, {}, {}, { 1, 1, 0, 1 } });
+					else if (((*(pTags + 1) & 1) == 0) && ((*(pTags + 2) & 1) == 0)) {
+						EvaluateCubicBezier(*pftv, *(pftv + 1), *(pftv + 2), *(pftv + 3));
+						i += 2;
+						pftv += 2;
+						pTags += 2;
+					}
+					else if (((*(pTags + 1) & 1) == 0) && ((*(pTags + 2) & 1) == 1)) {
+						EvaluateQuadraticBezier(*pftv, *(pftv + 1), *(pftv + 2));
+						i += 1;
+						pftv += 1;
+						pTags += 1;
+					}
+				}
+				else
 					v.push_back({ { pftv->x / scaleFactor, pftv->y / scaleFactor, 0 }, {}, {}, { 1, 1, 0, 1 } });
-				else if (((*(pTags + 1) & 1) == 0) && ((*(pTags + 2) & 1) == 0)) {
-					EvaluateCubicBezier(*pftv, *(pftv + 1), *(pftv + 2), *(pftv + 3));
-					i += 2;
-					pftv += 2;
-					pTags += 2;
-				}
-				else if (((*(pTags + 1) & 1) == 0) && ((*(pTags + 2) & 1) == 1)) {
-					EvaluateQuadraticBezier(*pftv, *(pftv + 1), *(pftv + 2));
-					i += 1;
-					pftv += 1;
-					pTags += 1;
-				}
 			}
-			else
-				v.push_back({ { pftv->x / scaleFactor, pftv->y / scaleFactor, 0 }, {}, {}, { 1, 1, 0, 1 } });
 		}
 	};
 
@@ -87,6 +99,8 @@ public:
 	};
 
 	void Draw() {
+		if (v.size() == 0)
+			return;
 		glDrawArrays(GL_LINE_LOOP, 0, (GLsizei)v.size());
 		GL_CHECK("glDrawArrays() failed");
 	}
