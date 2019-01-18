@@ -18,13 +18,16 @@
 class XGLFreeType : public XGLShape {
 public:
 	typedef std::map<FT_ULong, FT_UInt> CharMap;
+	typedef std::vector<GLsizei> ContourOffsets;
 
 	class FreeTypeDecomposer : public FT_Outline_Funcs {
 	public:
 		static int MoveToFunc(const FT_Vector* to, void *pCtx) {
 			XGLFreeType* pxft = (XGLFreeType*)pCtx;
-			pxft->v.push_back({ { to->x / pxft->scaleFactor, to->y / pxft->scaleFactor, 0 }, {}, {}, { 1, 1, 0, 1 } });
 			pxft->fdc.currentPoint = *to;
+			if (pxft->v.size() > 0)
+				pxft->contourOffsets.push_back(pxft->v.size());
+			pxft->v.push_back({ { to->x / pxft->scaleFactor, to->y / pxft->scaleFactor, 0 }, {}, {}, { 1, 1, 0, 1 } });
 			return 0;
 		}
 		static int LineToFunc(const FT_Vector* to, void *pCtx) {
@@ -53,6 +56,8 @@ public:
 			cubic_to = CubicToFunc;
 			shift = 0;
 			delta = 0;
+
+			currentPoint = { 0, 0 };
 		}
 
 		FT_Vector currentPoint;
@@ -73,7 +78,12 @@ public:
 		if (FT_Select_Charmap(face, ft_encoding_unicode))
 			throwXGLException("FT_Select_Charmap(UNICODE) failed.");
 
-		// scale the rendering to 1 pixel per 'point' resolution
+		// scale the rendering to some ridiculous size.
+		// This is required, else the outline points will all be zero.
+		// NOTE: the first two #s are 26.6 fixed point, so 256 is actually 4.0
+		//       The second pair are DPI numbers.
+		//       Both pairs ought to be fairly large, so that
+		//		 FreeType's internal math doesn't bodge the precision of the outline.
 		FT_Set_Char_Size(face, 256, 0, 512, 0);
 
 		FT_GlyphSlot g = face->glyph;
@@ -89,9 +99,9 @@ public:
 		gindex = charMap['&'];
 
 		FT_Load_Glyph(face, gindex, FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT);
-
-		FT_Outline fto = g->outline;
+		fto = g->outline;
 		FT_Outline_Decompose(&fto, &fdc, this);
+		contourOffsets.push_back(v.size());
 	};
 
 	~XGLFreeType() {
@@ -101,7 +111,11 @@ public:
 
 	void Draw() {
 		if (v.size()) {
-			glDrawArrays(GL_LINE_LOOP, 0, (GLsizei)v.size());
+			int i = 0;
+			for (auto c : contourOffsets) {
+				glDrawArrays(GL_LINE_LOOP, i, (GLsizei)(c-i));
+				i = c+1;
+			}
 			GL_CHECK("glDrawArrays() failed");
 		}
 	}
@@ -112,12 +126,11 @@ public:
 	}
 
 	void EvaluateQuadraticBezier(FT_Vector p0, FT_Vector p1, FT_Vector p2) {
-		xprintf("EvaluateQuadratic\n");
 		float xa, xb, ya, yb;
 		float x, y;
 		float interpolant;
 
-		for (interpolant = 0.0f; interpolant < 1.0f; interpolant += 0.1f) {
+		for (interpolant = 0.0f; interpolant < 1.0f; interpolant += interpolationFactor) {
 			xa = GetInterpolatedPoint((float)p0.x, (float)p1.x, interpolant);
 			ya = GetInterpolatedPoint((float)p0.y, (float)p1.y, interpolant);
 
@@ -132,13 +145,12 @@ public:
 	}
 
 	void EvaluateCubicBezier(FT_Vector p0, FT_Vector p1, FT_Vector p2, FT_Vector p3) {
-		xprintf("EvaluateCubic\n");
 		float xa, xb, xc, ya, yb, yc;
 		float xm, xn, ym, yn;
 		float x, y;
 		float interpolant;
 
-		for (interpolant = 0.0f; interpolant < 1.0f; interpolant += 0.1f) {
+		for (interpolant = 0.0f; interpolant < 1.0f; interpolant += interpolationFactor) {
 			xa = GetInterpolatedPoint((float)p0.x, (float)p1.x, interpolant);
 			ya = GetInterpolatedPoint((float)p0.y, (float)p1.y, interpolant);
 			xb = GetInterpolatedPoint((float)p1.x, (float)p2.x, interpolant);
@@ -158,15 +170,20 @@ public:
 		}
 	}
 
+	ContourOffsets contourOffsets;
 	FT_Library ft;
 	FT_Face face;
 	FT_GlyphSlot g;
+	FT_Outline fto;
 	CharMap charMap;
 	float scaleFactor = 200.0f;
+	float interpolationFactor = 0.05f;
 };
 
 void ExampleXGL::BuildScene() {
 	XGLFreeType *shape;
 
 	AddShape("shaders/000-simple", [&](){ shape = new XGLFreeType(); return shape; });
+	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 1.0));
+	shape->model = translate;
 }
