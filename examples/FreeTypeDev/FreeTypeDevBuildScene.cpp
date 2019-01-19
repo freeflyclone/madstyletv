@@ -16,56 +16,38 @@
 #define FONT_NAME "C:/windows/fonts/times.ttf"
 
 class XGLFreeType : public XGLShape {
+private:
+	// A class to map static C callback functions called by 
+	// FT_Outline_Decompose() to XGLFreeType instance methods.
+	class FreeTypeDecomposer : public FT_Outline_Funcs {
+	public:
+		static int _MoveToFunc(const FT_Vector* to, void *pCtx) {
+			return ((XGLFreeType*)pCtx)->MoveTo(to);
+		}
+		static int _LineToFunc(const FT_Vector* to, void *pCtx) {
+			return ((XGLFreeType*)pCtx)->LineTo(to);
+		}
+		static int _ConicToFunc(const FT_Vector*	control, const FT_Vector* to, void *pCtx) {
+			return ((XGLFreeType*)pCtx)->ConicTo(control, to);
+		}
+		static int _CubicToFunc(const FT_Vector*	control1, const FT_Vector*	control2, const FT_Vector* to, void *pCtx) {
+			return ((XGLFreeType*)pCtx)->CubicTo(control1, control2, to);
+		}
+
+		FreeTypeDecomposer() {
+			move_to = _MoveToFunc;
+			line_to = _LineToFunc;
+			conic_to = _ConicToFunc;
+			cubic_to = _CubicToFunc;
+			shift = 0;
+			delta = 0;
+		}
+	};
 public:
 	typedef std::map<FT_ULong, FT_UInt> CharMap;
 	typedef std::vector<GLsizei> ContourOffsets;
 
-	class FreeTypeDecomposer : public FT_Outline_Funcs {
-	public:
-		static int MoveToFunc(const FT_Vector* to, void *pCtx) {
-			XGLFreeType* pxft = (XGLFreeType*)pCtx;
-			pxft->fdc.currentPoint = *to;
-			if (pxft->v.size() > 0)
-				pxft->contourOffsets.push_back(pxft->v.size());
-			pxft->v.push_back({ { to->x / pxft->scaleFactor, to->y / pxft->scaleFactor, 0 }, {}, {}, { 1, 1, 0, 1 } });
-			return 0;
-		}
-		static int LineToFunc(const FT_Vector* to, void *pCtx) {
-			XGLFreeType* pxft = (XGLFreeType*)pCtx;
-			pxft->v.push_back({ { to->x / pxft->scaleFactor, to->y / pxft->scaleFactor, 0 }, {}, {}, { 1, 1, 0, 1 } });
-			pxft->fdc.currentPoint = *to;
-			return 0;
-		}
-		static int ConicToFunc(const FT_Vector*	control, const FT_Vector* to, void *pCtx){
-			XGLFreeType* pxft = (XGLFreeType*)pCtx;
-			pxft->EvaluateQuadraticBezier(pxft->fdc.currentPoint, *control, *to);
-			pxft->fdc.currentPoint = *to;
-			return 0;
-		}
-		static int CubicToFunc(const FT_Vector*	control1, const FT_Vector*	control2, const FT_Vector* to, void *pCtx){
-			XGLFreeType* pxft = (XGLFreeType*)pCtx;
-			pxft->EvaluateCubicBezier(pxft->fdc.currentPoint, *control1, *control2, *to);
-			pxft->fdc.currentPoint = *to;
-			return 0;
-		}
-
-		FreeTypeDecomposer() {
-			move_to = MoveToFunc;
-			line_to = LineToFunc;
-			conic_to = ConicToFunc;
-			cubic_to = CubicToFunc;
-			shift = 0;
-			delta = 0;
-
-			currentPoint = { 0, 0 };
-		}
-
-		FT_Vector currentPoint;
-	};
-
-	FreeTypeDecomposer fdc;
-
-	XGLFreeType() {
+	XGLFreeType(std::string t) : textToRender(t) {
 		FT_UInt gindex = 0;
 		FT_ULong charcode = 0;
 
@@ -94,14 +76,19 @@ public:
 			charMap.emplace(charcode, gindex);
 
 		const int numGlyphs = (const int)(charMap.size());
-		xprintf("XGLFreeType::XGLFreeType() - There are %d glyphs.\n", numGlyphs);
 
-		gindex = charMap['&'];
+		currentPoint = { 0, 0 };
+		advance = { 0, 0 };
 
-		FT_Load_Glyph(face, gindex, FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT);
-		fto = g->outline;
-		FT_Outline_Decompose(&fto, &fdc, this);
-		contourOffsets.push_back(v.size());
+		for (auto c : textToRender) {
+			gindex = charMap[c];
+
+			FT_Load_Glyph(face, gindex, FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL);
+			FT_Outline_Decompose(&g->outline, &fdc, this);
+			contourOffsets.push_back(v.size());
+			advance.x += g->advance.x;
+			advance.y += g->advance.y;
+		}
 	};
 
 	~XGLFreeType() {
@@ -118,6 +105,47 @@ public:
 			}
 			GL_CHECK("glDrawArrays() failed");
 		}
+	}
+
+	FT_Vector Advance(const FT_Vector* vector) {
+		return{ advance.x + vector->x, advance.y + vector->y };
+	}
+
+	int MoveTo(const FT_Vector* to) {
+		// mark our progress along the outline
+		currentPoint = *to;
+
+		// if this isn't the very first contour, the #of vertices
+		// is the OFFSET of the next contour start, so save it 
+		// for rendering.
+		if (v.size() > 0) {
+			contourOffsets.push_back(v.size());
+		}
+
+		// add the first point of the new contour
+		v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, { 1, 1, 0, 1 } });
+
+		return 0;
+	}
+
+	int LineTo(const FT_Vector* to) {
+		v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, { 1, 1, 0, 1 } });
+		currentPoint = *to;
+		return 0;
+	}
+
+	int ConicTo(const FT_Vector* control, const FT_Vector* to) {
+		EvaluateQuadraticBezier(Advance(&currentPoint), Advance(control), Advance(to));
+		v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, { 1, 1, 0, 1 } });
+		currentPoint = *to;
+		return 0;
+	}
+
+	int CubicTo(const FT_Vector* control1, const FT_Vector* control2, const FT_Vector* to) {
+		EvaluateCubicBezier(Advance(&currentPoint), Advance(control1), Advance(control2), Advance(to));
+		v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, { 1, 1, 0, 1 } });
+		currentPoint = *to;
+		return 0;
 	}
 
 	float GetInterpolatedPoint(float n1, float n2, float percent) {
@@ -170,12 +198,17 @@ public:
 		}
 	}
 
+	std::string textToRender;
+	FreeTypeDecomposer fdc;
 	ContourOffsets contourOffsets;
 	FT_Library ft;
 	FT_Face face;
 	FT_GlyphSlot g;
-	FT_Outline fto;
 	CharMap charMap;
+
+	FT_Vector currentPoint;
+	FT_Vector advance;
+
 	float scaleFactor = 200.0f;
 	float interpolationFactor = 0.05f;
 };
@@ -183,7 +216,7 @@ public:
 void ExampleXGL::BuildScene() {
 	XGLFreeType *shape;
 
-	AddShape("shaders/000-simple", [&](){ shape = new XGLFreeType(); return shape; });
+	AddShape("shaders/000-simple", [&](){ shape = new XGLFreeType("The quick brown fox jumped over the lazy dog."); return shape; });
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 1.0));
 	shape->model = translate;
 }
