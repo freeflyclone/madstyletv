@@ -84,8 +84,17 @@ public:
 			gindex = charMap[c];
 
 			FT_Load_Glyph(face, gindex, FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL);
-			FT_Outline_Decompose(&g->outline, &fdc, this);
-			contourOffsets.push_back(v.size());
+			if (false)
+			{
+				drawCurves = false;
+				FT_Outline_Decompose(&g->outline, &fdc, this);
+				contourOffsets.push_back((int)v.size());
+			}
+			{
+				drawCurves = true;
+				FT_Outline_Decompose(&g->outline, &fdc, this);
+				contourOffsets.push_back((int)v.size());
+			}
 			advance.x += g->advance.x;
 			advance.y += g->advance.y;
 		}
@@ -119,31 +128,35 @@ public:
 		// is the OFFSET of the next contour start, so save it 
 		// for rendering.
 		if (v.size() > 0) {
-			contourOffsets.push_back(v.size());
+			contourOffsets.push_back((int)v.size());
 		}
 
 		// add the first point of the new contour
-		v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, { 1, 1, 0, 1 } });
+		v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
 
 		return 0;
 	}
 
 	int LineTo(const FT_Vector* to) {
-		v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, { 1, 1, 0, 1 } });
+		v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
 		currentPoint = *to;
 		return 0;
 	}
 
 	int ConicTo(const FT_Vector* control, const FT_Vector* to) {
-		EvaluateQuadraticBezier(Advance(&currentPoint), Advance(control), Advance(to));
-		v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, { 1, 1, 0, 1 } });
+		if (drawCurves)
+			EvaluateQuadraticBezier(Advance(&currentPoint), Advance(control), Advance(to));
+		else
+			v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
 		currentPoint = *to;
 		return 0;
 	}
 
 	int CubicTo(const FT_Vector* control1, const FT_Vector* control2, const FT_Vector* to) {
-		EvaluateCubicBezier(Advance(&currentPoint), Advance(control1), Advance(control2), Advance(to));
-		v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, { 1, 1, 0, 1 } });
+		if (drawCurves)
+			EvaluateCubicBezier(Advance(&currentPoint), Advance(control1), Advance(control2), Advance(to));
+		else
+			v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
 		currentPoint = *to;
 		return 0;
 	}
@@ -168,8 +181,15 @@ public:
 			x = GetInterpolatedPoint(xa, xb, interpolant);
 			y = GetInterpolatedPoint(ya, yb, interpolant);
 
-			v.push_back({ { x/scaleFactor, y/scaleFactor, 0 }, {}, {}, { 1, 1, 0, 1 } });
+			v.push_back({ { x/scaleFactor, y/scaleFactor, 0 }, {}, {}, curvesColor });
 		}
+		v.push_back({ { p2.x / scaleFactor, p2.y / scaleFactor, 0 }, {}, {}, curvesColor });
+		v.push_back({ { p2.x / scaleFactor, p2.y / scaleFactor, 0 }, {}, {}, controlColor });
+		v.push_back({ { p1.x / scaleFactor, p1.y / scaleFactor, 0 }, {}, {}, controlColor });
+		v.push_back({ { p0.x / scaleFactor, p0.y / scaleFactor, 0 }, {}, {}, controlColor });
+		v.push_back({ { p1.x / scaleFactor, p1.y / scaleFactor, 0 }, {}, {}, controlColor });
+		v.push_back({ { p2.x / scaleFactor, p2.y / scaleFactor, 0 }, {}, {}, controlColor });
+		v.push_back({ { p2.x / scaleFactor, p2.y / scaleFactor, 0 }, {}, {}, curvesColor });
 	}
 
 	void EvaluateCubicBezier(FT_Vector p0, FT_Vector p1, FT_Vector p2, FT_Vector p3) {
@@ -194,9 +214,15 @@ public:
 			x = GetInterpolatedPoint(xm, xn, interpolant);
 			y = GetInterpolatedPoint(ym, yn, interpolant);
 
-			v.push_back({ { x / scaleFactor, y / scaleFactor, 0 }, {}, {}, { 1, 1, 0, 1 } });
+			v.push_back({ { x / scaleFactor, y / scaleFactor, 0 }, {}, {}, curvesColor });
 		}
+		v.push_back({ { p3.x / scaleFactor, p3.y / scaleFactor, 0 }, {}, {}, curvesColor });
 	}
+
+	bool drawCurves;
+	XGLColor pointsColor = XGLColors::yellow;
+	XGLColor curvesColor = XGLColors::cyan;
+	XGLColor controlColor = XGLColors::magenta;
 
 	std::string textToRender;
 	FreeTypeDecomposer fdc;
@@ -216,7 +242,7 @@ public:
 void ExampleXGL::BuildScene() {
 	XGLFreeType *shape;
 
-	AddShape("shaders/000-simple", [&](){ shape = new XGLFreeType("The quick brown fox jumped over the lazy dog."); return shape; });
+	AddShape("shaders/000-simple", [&](){ shape = new XGLFreeType(config.WideToBytes(config.Find(L"FreeTypeText")->AsString())); return shape; });
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 1.0));
 	shape->model = translate;
 }
