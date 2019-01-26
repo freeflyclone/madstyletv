@@ -119,22 +119,22 @@ class BDMFile
 {
 public:
 	BDMFile(string filename, bool parse=true);
-        ~BDMFile();
+    ~BDMFile();
   
 	PointbaseMap& points()    { return _points; }
 	LineMap&      edges()     { return _edges; }
  
 private:
-        bool   readline(ifstream& filename, string& result);
-        int    countfield(const string& source, char delim); 
-        string findfield(string& source);
-        bool   is_exist(double, double); 
-        void   read_bdm(const string& filename);
+    bool   readline(ifstream& filename, string& result);
+    int    countfield(const string& source, char delim); 
+    string findfield(string& source);
+    bool   is_exist(double, double); 
+    void   read_bdm(const string& filename);
 	void   read_bdm(const string& filename, bool parse);
  
 protected:
-        unsigned int            _ncontours;   //number of contours
-        vector<unsigned int>    _nVertices;   //
+    unsigned int            _ncontours;   //number of contours
+    vector<unsigned int>    _nVertices;   //
 	PointbaseMap            _points;      //all vertices
 	LineMap                 _edges;       //all edges 
 	double                  _xmin,_xmax, _ymin,_ymax; //boundary box for polygon
@@ -143,19 +143,19 @@ protected:
 
 class Polygon: public BDMFile  
 {
-   public:
+public:
 	//constructor and destructor   
 	Polygon(string filename, bool parse=true);
-        ~Polygon();
+    ~Polygon();
 
-        // main member function for polygon triangulation; 	
+    // main member function for polygon triangulation; 	
 	void         partition2Monotone();
 	void         searchMonotones();
 	void         triangulation();
 	void         delTriangulation() { cout<<"not available for this version\n";}
 
 	//return all triangles
-        Triangles    triangles() { return _triangles; }
+    Triangles    triangles() { return _triangles; }
 
 	//output file format;
 	void         setDebugOption(bool debug);
@@ -164,12 +164,12 @@ class Polygon: public BDMFile
 	void         saveAsMetaPost();
 		
    //private member functions.	
-   private:
+private:
 	//rotate input polygon by angle theta, not used; 
 	void         rotate(double theta);
 	void         initializate();
 
-        //prev or next point/edge id for a given ith point/edge; 	
+    //prev or next point/edge id for a given ith point/edge; 	
 	unsigned int prev(unsigned int i);
 	unsigned int next(unsigned int i);
 
@@ -191,19 +191,18 @@ class Polygon: public BDMFile
 	unsigned int selectNextEdge(Linebase* edge);
 	
 	//triangulate a monotone polygon piece;                        
-        void         triangulateMonotone(Monopoly& mpoly);
+    void         triangulateMonotone(Monopoly& mpoly);
 	
-        //private data memebers 
-        PQueue      _qpoints;                            //priority queue for event points
-        EdgeBST     _edgebst;                            //edge binary searching tree (splaytree) 
-        Monopolys   _mpolys;                             //all monotone polygon piece list;
+    //private data memebers 
+    PQueue      _qpoints;                            //priority queue for event points
+    EdgeBST     _edgebst;                            //edge binary searching tree (splaytree) 
+    Monopolys   _mpolys;                             //all monotone polygon piece list;
 	Triangles   _triangles;                          //all triangle list;
 
 	//data for monotone piece searching purpose;
-        AdjEdgeMap  _startAdjEdgeMap;                    //all edges starting from given points (map)   
-        LineMap     _diagonals;                          //added diagonals to partition polygon to 
-	                                                 //monotont pieces, not all diagonals of 
-							 //given polygon
+    AdjEdgeMap  _startAdjEdgeMap;                    //all edges starting from given points (map)   
+    LineMap     _diagonals;                          //added diagonals to partition polygon to 
+	                                                 //monotont pieces, not all diagonals of given polygon
 							 
 	bool        _debug;                              //debug option;
 	fstream     _logfile;                            //log file for debug purpose;
