@@ -1,0 +1,162 @@
+Poly2Tri:Fast and Robust Simple Polygon triangulation with/without holes 
+                        by Sweep Line Algorithm                            
+                               Liang, Wu
+        http://www.mema.ucl.ac.be/~wu/Poly2Tri/poly2tri.html 
+        Copyright (C) 2003, 2004, 2005, ALL RIGHTS RESERVED.
+                                                   
+----------------------------------------------------------------------               
+wu@mema.ucl.ac.be                           wuliang@femagsoft.com
+Centre for Sys. Eng. & App. Mech.           FEMAGSoft S.A.
+Universite Cathalique de Louvain            4, Avenue Albert Einstein
+Batiment Euler, Avenue Georges Lemaitre, 4  B-1348 Louvain-la-Neuve
+B-1348, Louvain-la-Neuve                    Belgium
+Belgium
+----------------------------------------------------------------------
+
+1. Introduction 
+
+Poly2Tri is a fast and robust simple polygon triangulator by sweep line
+algorithm. It can handle simple polygon with/without holes as your wish.
+There is no vertices/holes limits for input polygon. The full discript-
+ions of this sweep line algorithm and improvment by me can be found from
+1) Mark de Berg, Marc van Kreveld, Mark Overmars, and Otfried Schwarzkopf, 
+Computational Geometry: Algorithms and Applications, 2nd Edition.
+2) J. O'Rourke, Computational in C, 2nd Edition. 
+3) Poly2Tri's website mentioned above.
+
+Poly2Tri was developed by standard C++ and didn't use any additional lib-
+raries, so it could be compiled on most Linux/Unix like platform. I will
+port to windows platform if i have time. In order to well understand the 
+source codes, the reader should have a basic understanding on Standard 
+template Library (STL), since most of the data structures I used is from 
+STL, like list, map, pripority queue, stack etc., unless those data str-
+uctures i couldn't find from STL, like splay tree for efficient edge bi-
+nary searching. Unlike most papers/textbooks recommended, I didn't use 
+circular double-linked list in Poly2Tri. 
+
+As far as i know, Poly2Tri is one of the fastest code open to public on 
+the web and outperformed other popular triangulation codes according my
+primary testings. A full comparsions and disscussions between Poly2Tri
+and other popular codes like "Triangle" by Shewchuk, "FIST" ny Held and 
+"triangulation" code by Narkhede and Manocha will be available soon from
+Poly2Tri's website.
+
+Poly2Tri is also robust thanks to routines from Shewchuk arbitrary prec-
+ision floating-point arithmetic and fast robust geometric predicates. A-
+lso thanks to FEMAGSoft S.A, i can open this source code to public. Pol- 
+y2Tri was developed in a very short time, please Report bugs to: 
+wu@mema.ucl.ac.be or wuliang@femagsoft.com. Thanks for your contributions.
+
+2. How to install Poly2Tri?
+
+2.1 Linux/Unix
+
+Download Poly2Tri from the link above if you haven't. 
+
+> tar zxvf poly2tri.tar.tgz
+> cd poly2tri
+> make
+
+It should work on most Linux/Unix like distribution. Currently, I only 
+tested Poly2Tri on Redhat Linux 8.0 (gcc 2.9.6) and Mandrake Linux 10.1 
+( gcc-3.4.1 ) with my IBM T23 Laptop (yeah, I'm a Thinkpad fan and this  
+laptop works perferctly for me for three years already!  My next laptop 
+should be Thinkpad X4X or X5X:-)).
+
+2.2 Microsoft Windows
+
+Poly2Tri was ported to Microsoft Windows recently. You can download the 
+the latest binary code from Poly2Tri's website. Since the previous version
+of Microsoft Visual C++ (for example Visual C++ 6.0) doesn't support stand-
+ard C++ template very well, i couldn't compile it sucessfully by VC 6.0. 
+If you really want to try and compile the souce code on Microsoft Windows 
+platform, the compiler I recommend is the Microsoft Visual C++ 2005 Express 
+Edition, which is free and you can download it from the link below:      
+http://msdn.microsoft.com/vstudio/express/visualc/
+
+3. How to use Poly2Tri? 
+
+Usage: poly2tri [-hpstmd] filename.
+Options:
+     -p: DO NOT parse input bdm (boundary mesh) file.
+         Use this option if the input is very large without any comments.
+     -s: Output results as ShowMe formats.
+     -t: Output results as TECPLOT ASCII PLT format.
+     -m: DO NOT output monotone polygons and triangulation results
+         as metapost source file.
+     -d: Output debug information (log file).
+     -h: This help message.
+
+Examples:
+
+     ./poly2tri sample.bdm
+
+     Poly2Tri will parse the sample.bdm and then triangulate it to triangles. 
+     One file sample.mp will be generated. This file is a metapost source file,
+     you may compile it by metapost (go to the following link to download one
+     if you don't have. http://cm.bell-labs.com/who/hobby/MetaPost.html).
+     
+     mpost sample.mp
+     waiting few seconds then enter "end", another three files sample.1 and 
+     sample.2 and simple.3 will be generated. These are three EPS/PS files
+     and can be viewed by gsview, kghostview etc. sample.1 is an EPS/PS file 
+     of input polygon and sample.2 is an EPS/PS file with all inserted diagonals 
+     which paritition the polygon to monotone pieces, and all shadowed monotone 
+     polygons; sample.3 is an EPS/PS file with all triangles.
+
+     If you want to show the vertex index labels, remove the comments from 
+     metapost source file. See the sample.mp source code for details. Please
+     be noticed that if you do like that, you have to run mps2eps before you
+     view by gsview, kghostview etc. About mps2eps, see
+     http://www.ida.liu.se/~joned/download/mps2eps/ for details.
+     
+
+
+     ./poly2tri sample.bdm -spm
+
+     Poly2Tri will NOT parse the sample.bdm and triangulate it to triangles.
+     Metapost source file sample.mp is ingnored and two sample.ele and 
+     sample.node are generated, which can be visualized by ShowMe developed 
+     by Jonathan Shewchuk. if you don't have it, go to Jonathan's website to
+     download one, http://www.cs.cmu.edu/~quake/triangle.html.  
+
+     ./poly2tri sample.bdm -tsd
+     Four files will be generated.
+     sample.mp                     (metapost source file)
+     sample.ele and sample.node    (visualized by ShowMe)
+     sample.log                    (debug file, for debugging purpose only)
+     sample.plt                    (TECPLOT ASCII FEM mesh file format)
+     TECPLOT is a commerical visulization tool, If you don't have it, sorry,
+     you have to buy a copy.
+
+4. Known bugs
+ 
+   MetaPost couldn't handle variable dimension bigger than 4096, so the .mp 
+   source file couldn't be compiled sucessfully. At this case, i suggest you
+   run poly2tri with -sm options if the size of you input polygon is larger 
+   than 4096, then run ShowMe to save .eps or .ps file instead.
+ 
+5. Fix bugs/updates
+
+    5.1 Nov. 14, 2005. Monotone polygon searching method is improved. 
+    
+    5.2 Nov. 17, 2005. Using the line segment left x coordinate as splaytree 
+                       binary searching key to find the direct left edge when 
+                       handling an event vertex, instead using the mid-side
+                       x coordinate.
+
+    5.3 Nov. 19, 2005. Using dynamic splaytree binary searching key for 
+                       direct left line segment searching, instead of using
+                       mid-side x coordinate or left x coordinate.
+
+                       Thanks polygon geometries from Prof. Martin Held, I
+                       can find and fix above two bugs.
+
+    5.4 Dec. 20, 2005. Ported to Microsoft Windows platform.  
+
+
+Liang, Wu
+12/20/2005
+ 
+
+ 
