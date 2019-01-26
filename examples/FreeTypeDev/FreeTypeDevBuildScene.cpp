@@ -84,12 +84,13 @@ public:
 			gindex = charMap[c];
 
 			FT_Load_Glyph(face, gindex, FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL);
-			if (false)
+			if (true)
 			{
 				drawCurves = false;
 				FT_Outline_Decompose(&g->outline, &fdc, this);
 				contourOffsets.push_back((int)v.size());
 			}
+			if (true)
 			{
 				drawCurves = true;
 				FT_Outline_Decompose(&g->outline, &fdc, this);
