@@ -4,3 +4,7 @@
 *.[oa]
 *.obj
 /bin/*.dll
+examples/*/Release
+examples/*/Debug
+examples/*/x64
+bin/*.exe
