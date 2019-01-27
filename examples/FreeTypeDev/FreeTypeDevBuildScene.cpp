@@ -29,46 +29,49 @@ extern "C" {
 
 class Triangulator : public XGLShape, public triangulateio {
 public:
+	void ReadPolyFile(std::string fileName, triangulateio* t) {
+		t->numberofpoints = 4;
+		t->numberofpointattributes = 1;
+		t->pointlist = (REAL *)malloc(t->numberofpoints * 2 * sizeof(REAL));
+		t->pointlist[0] = 0.0;
+		t->pointlist[1] = 0.0;
+		t->pointlist[2] = 1.0;
+		t->pointlist[3] = 0.0;
+		t->pointlist[4] = 1.0;
+		t->pointlist[5] = 10.0;
+		t->pointlist[6] = 0.0;
+		t->pointlist[7] = 10.0;
+		t->pointattributelist = (REAL *)malloc(t->numberofpoints *
+			t->numberofpointattributes *
+			sizeof(REAL));
+		t->pointattributelist[0] = 0.0;
+		t->pointattributelist[1] = 1.0;
+		t->pointattributelist[2] = 11.0;
+		t->pointattributelist[3] = 10.0;
+		t->pointmarkerlist = (int *)malloc(t->numberofpoints * sizeof(int));
+		t->pointmarkerlist[0] = 0;
+		t->pointmarkerlist[1] = 2;
+		t->pointmarkerlist[2] = 0;
+		t->pointmarkerlist[3] = 0;
+
+		t->numberofsegments = 0;
+		t->numberofholes = 0;
+		t->numberofregions = 1;
+		t->regionlist = (REAL *)malloc(t->numberofregions * 4 * sizeof(REAL));
+		t->regionlist[0] = 0.5;
+		t->regionlist[1] = 5.0;
+		t->regionlist[2] = 7.0;            /* Regional attribute (for whole mesh). */
+		t->regionlist[3] = 0.1;          /* Area constraint that will not be used. */
+	}
+
 	Triangulator() {
 		struct triangulateio in, mid;
 
+		ReadPolyFile("../assets/a.poly", &in);
 		/* Define input points. */
 
-		in.numberofpoints = 4;
-		in.numberofpointattributes = 1;
-		in.pointlist = (REAL *)malloc(in.numberofpoints * 2 * sizeof(REAL));
-		in.pointlist[0] = 0.0;
-		in.pointlist[1] = 0.0;
-		in.pointlist[2] = 1.0;
-		in.pointlist[3] = 0.0;
-		in.pointlist[4] = 1.0;
-		in.pointlist[5] = 10.0;
-		in.pointlist[6] = 0.0;
-		in.pointlist[7] = 10.0;
-		in.pointattributelist = (REAL *)malloc(in.numberofpoints *
-			in.numberofpointattributes *
-			sizeof(REAL));
-		in.pointattributelist[0] = 0.0;
-		in.pointattributelist[1] = 1.0;
-		in.pointattributelist[2] = 11.0;
-		in.pointattributelist[3] = 10.0;
-		in.pointmarkerlist = (int *)malloc(in.numberofpoints * sizeof(int));
-		in.pointmarkerlist[0] = 0;
-		in.pointmarkerlist[1] = 2;
-		in.pointmarkerlist[2] = 0;
-		in.pointmarkerlist[3] = 0;
-
-		in.numberofsegments = 0;
-		in.numberofholes = 0;
-		in.numberofregions = 1;
-		in.regionlist = (REAL *)malloc(in.numberofregions * 4 * sizeof(REAL));
-		in.regionlist[0] = 0.5;
-		in.regionlist[1] = 5.0;
-		in.regionlist[2] = 7.0;            /* Regional attribute (for whole mesh). */
-		in.regionlist[3] = 0.1;          /* Area constraint that will not be used. */
-
-		printf("Input point set:\n\n");
-		report(&in, 1, 1, 1, 1, 1, 1);
+		//xprintf("Input point set:\n\n");
+		//report(&in, 1, 1, 1, 1, 1, 1);
 
 		/* Make necessary initializations so that Triangle can return a */
 		/*   triangulation in `mid' and a voronoi diagram in `vorout'.  */
@@ -95,6 +98,33 @@ public:
 		/*   neighbor list (n).                                              */
 
 		triangulate("pczAen", &in, &mid, nullptr);
+
+		//xprintf("triangulate() output: (numberofcorners: %d)\n", mid.numberofcorners);
+		//report(&mid, 1, 1, 1, 1, 1, 1);
+
+		//xyzzy
+		// during dev, use GL_LINES to visualize, so push 2 vertices per outline point,
+		// the point we're on, plus the one that comes after. Handle wraparound
+		// with the usual modulo trick.
+		for (int i = 0; i < mid.numberoftriangles; i++) {
+			for (int j = 0; j < mid.numberofcorners; j++) {
+				int idx = mid.trianglelist[i * mid.numberofcorners + j];
+				// modulo trick: get the next (possibly wrapped) vertex of *this* triangle
+				int idxNext = mid.trianglelist[(i*mid.numberofcorners + ((j+1) % mid.numberofcorners))];
+
+				// first point of the line segment of this triangle's edge
+				REAL x = mid.pointlist[idx * 2];
+				REAL y = mid.pointlist[idx * 2 + 1];
+
+				// and the second point this triangle's edge
+				REAL x2 = mid.pointlist[idxNext * 2];
+				REAL y2 = mid.pointlist[idxNext * 2 + 1];
+
+				// put them in the Vertex buffer for rendering.
+				v.push_back({ { x, y, 1 }, {}, {}, { XGLColors::white } });
+				v.push_back({ { x2, y2, 1 }, {}, {}, { XGLColors::white } });
+			}
+		}
 	}
 	void report(struct triangulateio *io,int markers, int reporttriangles, int reportneighbors, int reportsegments, int reportedges, int reportnorms) {
 	  int i, j;
@@ -182,6 +212,12 @@ public:
 	  }
 	}
 
+	void Draw() {
+		if (v.size()) {
+			glDrawArrays(GL_LINES, 0, (GLsizei)(v.size()));
+			GL_CHECK("glDrawArrays() failed");
+		}
+	}
 };
 
 class XGLFreeType : public XGLShape {
