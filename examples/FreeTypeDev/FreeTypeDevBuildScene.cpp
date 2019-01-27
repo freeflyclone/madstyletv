@@ -99,6 +99,10 @@ public:
 			advance.x += g->advance.x;
 			advance.y += g->advance.y;
 		}
+
+		xprintf("Contours:\n");
+		for (auto c : contourOffsets)
+			xprintf("%d\n", c);
 	};
 
 	~XGLFreeType() {
@@ -111,9 +115,9 @@ public:
 			int i = 0;
 			for (auto c : contourOffsets) {
 				glDrawArrays(GL_LINE_LOOP, i, (GLsizei)(c-i));
-				i = c+1;
+				GL_CHECK("glDrawArrays() failed");
+				i = c + 1;
 			}
-			GL_CHECK("glDrawArrays() failed");
 		}
 	}
 
@@ -125,11 +129,14 @@ public:
 		// mark our progress along the outline
 		currentPoint = *to;
 
-		// if this isn't the very first contour, the #of vertices
-		// is the OFFSET of the next contour start, so save it 
-		// for rendering.
+		// if this isn't the very first vertex...
 		if (v.size() > 0) {
-			contourOffsets.push_back((int)v.size());
+			//...we've seen vertices, is this the very first contour?...
+			if (contourOffsets.empty())
+				contourOffsets.push_back((int)v.size());
+			// not first contour ever, ensure it isn't the first contour of new glyph
+			else if (v.size() > contourOffsets.back())
+				contourOffsets.push_back((int)v.size());
 		}
 
 		// add the first point of the new contour
