@@ -27,5 +27,8 @@
     <ClCompile Include="FreeTypeDevBuildScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xclass\3rdParty\Triangle\triangle.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
