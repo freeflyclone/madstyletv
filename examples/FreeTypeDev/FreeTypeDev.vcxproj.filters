@@ -31,4 +31,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\assets\A.poly">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

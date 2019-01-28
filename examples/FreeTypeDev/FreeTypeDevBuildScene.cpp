@@ -6,6 +6,7 @@
 ** on StackOverFlow.
 **************************************************************/
 #include "ExampleXGL.h"
+#include <string>
 
 #include FT_OUTLINE_H
 
@@ -16,8 +17,8 @@
 extern "C" {
 	#define ANSI_DECLARATORS
 	#define TRILIBRARY
-    #define REDUCED
-    #define CDT_ONLY
+    //#define REDUCED
+    //#define CDT_ONLY
 	#include "triangle.h"
 };
 
@@ -29,9 +30,101 @@ extern "C" {
 
 class Triangulator : public XGLShape, public triangulateio {
 public:
+	enum polyParseState {
+		GET_POINTS_HEADER,
+		GET_POINTS,
+		GET_SEGMENTS_HEADER,
+		GET_SEGMENTS,
+		GET_HOLES_HEADER,
+		GET_HOLES,
+		GET_REGION_HEADER,
+		GET_REGIONS
+	};
+
 	void ReadPolyFile(std::string fileName, triangulateio* t) {
+		std::ifstream file(fileName);
+		std::string line;
+		polyParseState ps = GET_POINTS_HEADER;
+		int numberPointMarkers = 0;
+		int numberSegmentMarkers = 0;
+		double x, y;
+
+		while (std::getline(file, line)) {
+			std::stringstream ss(line);
+			std::vector<std::string> tokens;
+			std::string token;
+			int index, p1, p2, p3;
+
+			// we know our input is tokenized with whitespace, so the following works.
+			while (ss >> token)
+				tokens.push_back(token);
+
+			switch (ps) {
+				case GET_POINTS_HEADER:
+					t->numberofpoints = std::stoi(tokens[0]);
+					t->numberofpointattributes = std::stoi(tokens[2]);
+					numberPointMarkers = std::stoi(tokens[3]);
+					t->pointlist = (REAL *)malloc(t->numberofpoints * 2 * sizeof(REAL));
+					t->pointattributelist = (REAL *)malloc(t->numberofpoints * t->numberofpointattributes *	sizeof(REAL));
+					ps = GET_POINTS;
+					break;
+
+				case GET_POINTS:
+					index = std::stoi(tokens[0]) - 1;
+					x = std::stod(tokens[1]);
+					y = std::stod(tokens[2]);
+					t->pointlist[index * 2] = x;
+					t->pointlist[index * 2 + 1] = y;
+
+					for (int i = 0; i < t->numberofpointattributes; i++)
+						t->pointattributelist[index * t->numberofpointattributes + i] = std::stod(tokens[3]);
+
+					if ((1+index) == t->numberofpoints)
+						ps = GET_SEGMENTS_HEADER;
+					break;
+
+				case GET_SEGMENTS_HEADER:
+					t->numberofsegments = std::stoi(tokens[0]);
+					numberSegmentMarkers = std::stoi(tokens[1]);
+					t->segmentlist = (int*)malloc(t->numberofsegments * 2 * sizeof(int));
+					ps = GET_SEGMENTS;
+					break;
+
+				case GET_SEGMENTS:
+					index = std::stoi(tokens[0]) - 1;
+					p1 = std::stoi(tokens[1]);
+					p2 = std::stoi(tokens[2]);
+					t->segmentlist[index * 2] = p1;
+					t->segmentlist[index * 2 + 1] = p2;
+					if ((1 + index) == t->numberofsegments)
+						ps = GET_HOLES_HEADER;
+					break;
+
+				case GET_HOLES_HEADER:
+					t->numberofholes = std::stoi(tokens[0]);
+					t->holelist = (REAL*)malloc(2 * t->numberofcorners * sizeof(REAL));
+					ps = GET_HOLES;
+					break;
+
+				case GET_HOLES:
+					index = std::stoi(tokens[0]) - 1;
+					x = std::stod(tokens[1]);
+					y = std::stod(tokens[2]);
+					t->holelist[index * 2] = x;
+					t->holelist[index * 2 + 1] = y;
+					if ((1 + index) == t->numberofholes)
+						ps = GET_REGION_HEADER;
+					break;
+					
+				default:
+					xprintf("The line is: %s\n", line.c_str());
+					break;
+			}
+		}
+
+		/*
 		t->numberofpoints = 4;
-		t->numberofpointattributes = 1;
+		t->numberofpointattributes = 0;
 		t->pointlist = (REAL *)malloc(t->numberofpoints * 2 * sizeof(REAL));
 		t->pointlist[0] = 0.0;
 		t->pointlist[1] = 0.0;
@@ -41,13 +134,13 @@ public:
 		t->pointlist[5] = 10.0;
 		t->pointlist[6] = 0.0;
 		t->pointlist[7] = 10.0;
-		t->pointattributelist = (REAL *)malloc(t->numberofpoints *
-			t->numberofpointattributes *
-			sizeof(REAL));
+		t->pointattributelist = (REAL *)malloc(t->numberofpoints * t->numberofpointattributes *	sizeof(REAL));
 		t->pointattributelist[0] = 0.0;
-		t->pointattributelist[1] = 1.0;
-		t->pointattributelist[2] = 11.0;
-		t->pointattributelist[3] = 10.0;
+		t->pointattributelist[1] = 0.0;// 1.0;
+		t->pointattributelist[2] = 0.0;// 11.0;
+		t->pointattributelist[3] = 0.0;// 10.0;
+
+		/*
 		t->pointmarkerlist = (int *)malloc(t->numberofpoints * sizeof(int));
 		t->pointmarkerlist[0] = 0;
 		t->pointmarkerlist[1] = 2;
@@ -56,16 +149,18 @@ public:
 
 		t->numberofsegments = 0;
 		t->numberofholes = 0;
+
 		t->numberofregions = 1;
 		t->regionlist = (REAL *)malloc(t->numberofregions * 4 * sizeof(REAL));
 		t->regionlist[0] = 0.5;
 		t->regionlist[1] = 5.0;
-		t->regionlist[2] = 7.0;            /* Regional attribute (for whole mesh). */
-		t->regionlist[3] = 0.1;          /* Area constraint that will not be used. */
+		t->regionlist[2] = 7.0;            // Regional attribute (for whole mesh).
+		t->regionlist[3] = 0.1;          // Area constraint that will not be used.
+		*/
 	}
 
 	Triangulator() {
-		struct triangulateio in, mid;
+		struct triangulateio in{ 0 }, mid{ 0 };
 
 		ReadPolyFile("../assets/a.poly", &in);
 		/* Define input points. */
@@ -97,10 +192,10 @@ public:
 		/*   produce an edge list (e), a Voronoi diagram (v), and a triangle */
 		/*   neighbor list (n).                                              */
 
-		triangulate("pczAen", &in, &mid, nullptr);
+		triangulate("pcz", &in, &mid, nullptr);
 
-		//xprintf("triangulate() output: (numberofcorners: %d)\n", mid.numberofcorners);
-		//report(&mid, 1, 1, 1, 1, 1, 1);
+		xprintf("triangulate() output: (numberofcorners: %d)\n", mid.numberofcorners);
+		report(&mid, 1, 1, 0, 0, 0, 0);
 
 		//xyzzy
 		// during dev, use GL_LINES to visualize, so push 2 vertices per outline point,
@@ -458,5 +553,6 @@ void ExampleXGL::BuildScene() {
 
 	AddShape("shaders/000-simple", [&](){ t = new Triangulator(); return t; });
 	translate = glm::translate(glm::mat4(), glm::vec3(5, 10, 1.0));
-	t->model = translate;
+	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(4, 4, 4));
+	t->model = translate * scale;
 }
