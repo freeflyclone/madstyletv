@@ -25,19 +25,20 @@ extern "C" {
 
 #define FONT_NAME "C:/windows/fonts/times.ttf"
 
+enum polyParseState {
+	GET_POINTS_HEADER,
+	GET_POINTS,
+	GET_SEGMENTS_HEADER,
+	GET_SEGMENTS,
+	GET_HOLES_HEADER,
+	GET_HOLES,
+	GET_REGION_HEADER,
+	GET_REGIONS
+};
+
+
 class Triangulator : public XGLShape, public triangulateio {
 public:
-	enum polyParseState {
-		GET_POINTS_HEADER,
-		GET_POINTS,
-		GET_SEGMENTS_HEADER,
-		GET_SEGMENTS,
-		GET_HOLES_HEADER,
-		GET_HOLES,
-		GET_REGION_HEADER,
-		GET_REGIONS
-	};
-
 	void ReadPolyFile(std::string fileName, triangulateio* t) {
 		std::ifstream file(fileName);
 		std::string line;
@@ -95,7 +96,7 @@ public:
 					p1 = std::stoi(tokens[1]);
 					p2 = std::stoi(tokens[2]);
 					// we're using "start from zero" triangulation, input poly file starts from one,
-					// so compensate with by subtracting 1 from all input point indexes.
+					// so compensate by subtracting 1 from all input point indexes.
 					t->segmentlist[index * 2] = p1 - 1;
 					t->segmentlist[index * 2 + 1] = p2 - 1;
 					if ((1 + index) == t->numberofsegments)
@@ -140,7 +141,6 @@ public:
 
 		triangulate("pz", &in, &mid, nullptr);
 
-		//xyzzy
 		for (int i = 0; i < mid.numberoftriangles; i++) {
 			for (int j = 0; j < 3; j++) {
 				int idx = mid.trianglelist[i * mid.numberofcorners + j];
@@ -174,7 +174,10 @@ private:
 };
 
 class XGLFreeType : public XGLShape {
-private:
+public:
+	typedef std::map<FT_ULong, FT_UInt> CharMap;
+	typedef std::vector<GLsizei> ContourEndPoints;
+
 	// A class to map static C callback functions called by 
 	// FT_Outline_Decompose() to XGLFreeType instance methods.
 	class FreeTypeDecomposer : public FT_Outline_Funcs {
@@ -201,11 +204,170 @@ private:
 			delta = 0;
 		}
 	};
-public:
-	typedef std::map<FT_ULong, FT_UInt> CharMap;
-	typedef std::vector<GLsizei> ContourOffsets;
 
-	XGLFreeType(std::string t) : textToRender(t) {
+	// use the "Triangle" package from http://www.cs.cmu.edu/~quake/triangle.html
+	class Triangulator : public triangulateio {
+	public:
+		void ReadPolyFile(std::string fileName) {
+			std::ifstream file(fileName);
+			std::string line;
+			polyParseState ps = GET_POINTS_HEADER;
+			int numberPointMarkers = 0;
+			int numberSegmentMarkers = 0;
+			double x, y;
+			int lineNum{ 0 };
+
+			while (std::getline(file, line)) {
+				std::stringstream ss(line);
+				std::vector<std::string> tokens;
+				std::string token;
+				int index, p1, p2, p3;
+
+				// we know our input is tokenized with whitespace, so the following works.
+				while (ss >> token)
+					tokens.push_back(token);
+
+				lineNum++;
+				switch (ps) {
+				case GET_POINTS_HEADER:
+					numberofpoints = std::stoi(tokens[0]);
+					numberofpointattributes = std::stoi(tokens[2]);
+					numberPointMarkers = std::stoi(tokens[3]);
+					pointlist = (REAL *)malloc(numberofpoints * 2 * sizeof(REAL));
+					pointattributelist = (REAL *)malloc(numberofpoints * numberofpointattributes *	sizeof(REAL));
+					ps = GET_POINTS;
+					break;
+
+				case GET_POINTS:
+					index = std::stoi(tokens[0]) - 1;
+					x = std::stod(tokens[1]);
+					y = std::stod(tokens[2]);
+					pointlist[index * 2] = x;
+					pointlist[index * 2 + 1] = y;
+
+					for (int i = 0; i < numberofpointattributes; i++)
+						pointattributelist[index * numberofpointattributes + i] = std::stod(tokens[3 + i]);
+
+					if ((1 + index) == numberofpoints) {
+						ps = GET_SEGMENTS_HEADER;
+					}
+					break;
+
+				case GET_SEGMENTS_HEADER:
+					numberofsegments = std::stoi(tokens[0]);
+					numberSegmentMarkers = std::stoi(tokens[1]);
+					segmentlist = (int*)malloc(numberofsegments * 2 * sizeof(int));
+					ps = GET_SEGMENTS;
+					break;
+
+				case GET_SEGMENTS:
+					index = std::stoi(tokens[0]) - 1;
+					p1 = std::stoi(tokens[1]);
+					p2 = std::stoi(tokens[2]);
+					// we're using "start from zero" triangulation, input poly file starts from one,
+					// so compensate by subtracting 1 from all input point indexes.
+					segmentlist[index * 2] = p1 - 1;
+					segmentlist[index * 2 + 1] = p2 - 1;
+					if ((1 + index) == numberofsegments)
+						ps = GET_HOLES_HEADER;
+					break;
+
+				case GET_HOLES_HEADER:
+					numberofholes = std::stoi(tokens[0]);
+					holelist = (REAL*)malloc(2 * numberofholes * sizeof(REAL));
+					ps = GET_HOLES;
+					break;
+
+				case GET_HOLES:
+					index = std::stoi(tokens[0]) - 1;
+					x = std::stod(tokens[1]);
+					y = std::stod(tokens[2]);
+					holelist[index * 2] = x;
+					holelist[index * 2 + 1] = y;
+					if ((1 + index) == numberofholes)
+						ps = GET_REGION_HEADER;
+					break;
+
+				default:
+					xprintf("The line is: %s\n", line.c_str());
+					break;
+				}
+			}
+		}
+
+		void Init() {
+			pointlist = nullptr;
+			pointattributelist = nullptr;
+			pointmarkerlist = nullptr;
+			numberofpoints = 0;
+			numberofpointattributes = 0;
+
+			trianglelist = nullptr;
+			triangleattributelist = nullptr;
+			trianglearealist = nullptr;
+			neighborlist = nullptr;
+			numberoftriangles = 0;
+			numberofcorners = 0;
+			numberoftriangleattributes = 0;
+
+			segmentlist = nullptr;
+			segmentmarkerlist = nullptr;
+			numberofsegments = 0;
+
+			holelist = nullptr;
+			numberofholes = 0;
+
+			regionlist = nullptr;
+			numberofregions = 0;
+
+			edgelist = nullptr;
+			edgemarkerlist = nullptr;
+			normlist = nullptr;
+			numberofedges = 0;
+		};
+
+		Triangulator() { Init(); }
+
+		Triangulator(const XGLVertexList& v, ContourEndPoints& ce) {
+			Init();
+			numberofpoints = v.size();
+			pointlist = (REAL*)malloc(sizeof(REAL) * 2 * numberofpoints);
+
+			numberofsegments = v.size();
+			segmentlist = (int*)malloc(sizeof(int) * 2 * numberofsegments);
+
+			// build pointlist from XGLVertexList "v"
+			unsigned int idx = 0;
+			for (auto vrtx : v) {
+				pointlist[idx * 2] = vrtx.v.x;
+				pointlist[idx * 2 + 1] = vrtx.v.y;
+				idx++;
+			}
+
+			// start segments at last point -> first point 
+			idx = 0;
+			for (auto vrtx : v) {
+				int idxMinusOne = (idx - 1) % numberofsegments;
+				xprintf("Segment idxs: %d, %d\n", idxMinusOne, idx);
+
+				segmentlist[idx * 2] = idxMinusOne;
+				segmentlist[idx * 2 + 1] = idx;
+				idx++;
+			}
+		}
+		void Dump() {
+			xprintf("          Number of points: %d\n", numberofpoints);
+			xprintf("Number of point attributes: %d\n", numberofpointattributes);
+			for (int i = 0; i < numberofpoints; i++)
+				xprintf("Point %d: %0.6f, %0.6f\n", i, pointlist[i * 2], pointlist[i * 2 + 1]);
+
+			xprintf("Number of segments: %d\n", numberofsegments);
+			for (int i = 0; i < numberofsegments; i++)
+				xprintf("Segment %d: %d,%d\n", i, segmentlist[i * 2], segmentlist[i * 2 + 1]);
+		}
+	};
+
+	XGLFreeType(std::string text) : textToRender(text) {
 		FT_UInt gindex = 0;
 		FT_ULong charcode = 0;
 
@@ -242,21 +404,24 @@ public:
 			gindex = charMap[c];
 
 			FT_Load_Glyph(face, gindex, FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL);
-			if (false)
-			{
-				drawCurves = false;
-				FT_Outline_Decompose(&g->outline, &fdc, this);
-				contourOffsets.push_back((int)v.size());
-			}
-			if (true)
-			{
-				drawCurves = true;
-				FT_Outline_Decompose(&g->outline, &fdc, this);
-				contourOffsets.push_back((int)v.size());
-			}
+			drawCurves = true;
+
+			FT_Outline_Decompose(&g->outline, &fdc, this);
+			contourEndPoints.push_back((int)v.size());
+
+			xprintf("There are %d contours:\n", contourEndPoints.size());
+			for (auto c : contourEndPoints)
+				xprintf("Contour@ %d\n", c);
+
 			advance.x += g->advance.x;
 			advance.y += g->advance.y;
 		}
+
+		Triangulator in(v, contourEndPoints), out;
+
+		in.Dump();
+
+		//triangulate("czp", (triangulateio*)&in, (triangulateio*)&out, nullptr);
 	};
 
 	~XGLFreeType() {
@@ -267,7 +432,7 @@ public:
 	void Draw() {
 		if (v.size()) {
 			int i = 0;
-			for (auto c : contourOffsets) {
+			for (auto c : contourEndPoints) {
 				glDrawArrays(GL_LINE_LOOP, i, (GLsizei)(c-i));
 				GL_CHECK("glDrawArrays() failed");
 				i = c + 1;
@@ -286,11 +451,11 @@ public:
 		// if this isn't the very first vertex...
 		if (v.size() > 0) {
 			//...we've seen vertices, is this the very first contour?...
-			if (contourOffsets.empty())
-				contourOffsets.push_back((int)v.size());
+			if (contourEndPoints.empty())
+				contourEndPoints.push_back((int)v.size());
 			// not first contour ever, ensure it isn't the first contour of new glyph
-			else if (v.size() > contourOffsets.back())
-				contourOffsets.push_back((int)v.size());
+			else if (v.size() > contourEndPoints.back())
+				contourEndPoints.push_back((int)v.size());
 		}
 
 		// add the first point of the new contour
@@ -382,7 +547,7 @@ public:
 
 	std::string textToRender;
 	FreeTypeDecomposer fdc;
-	ContourOffsets contourOffsets;
+	ContourEndPoints contourEndPoints;
 	FT_Library ft;
 	FT_Face face;
 	FT_GlyphSlot g;
@@ -392,7 +557,7 @@ public:
 	FT_Vector advance;
 
 	float scaleFactor = 200.0f;
-	float interpolationFactor = 0.05f;
+	float interpolationFactor = 0.5f;
 };
 
 void ExampleXGL::BuildScene() {
