@@ -16,9 +16,6 @@
 #endif
 extern "C" {
 	#define ANSI_DECLARATORS
-	#define TRILIBRARY
-    //#define REDUCED
-    //#define CDT_ONLY
 	#include "triangle.h"
 };
 
@@ -48,6 +45,7 @@ public:
 		int numberPointMarkers = 0;
 		int numberSegmentMarkers = 0;
 		double x, y;
+		int lineNum{ 0 };
 
 		while (std::getline(file, line)) {
 			std::stringstream ss(line);
@@ -59,6 +57,7 @@ public:
 			while (ss >> token)
 				tokens.push_back(token);
 
+			lineNum++;
 			switch (ps) {
 				case GET_POINTS_HEADER:
 					t->numberofpoints = std::stoi(tokens[0]);
@@ -77,10 +76,11 @@ public:
 					t->pointlist[index * 2 + 1] = y;
 
 					for (int i = 0; i < t->numberofpointattributes; i++)
-						t->pointattributelist[index * t->numberofpointattributes + i] = std::stod(tokens[3]);
+						t->pointattributelist[index * t->numberofpointattributes + i] = std::stod(tokens[3+i]);
 
-					if ((1+index) == t->numberofpoints)
+					if ((1 + index) == t->numberofpoints) {
 						ps = GET_SEGMENTS_HEADER;
+					}
 					break;
 
 				case GET_SEGMENTS_HEADER:
@@ -94,15 +94,17 @@ public:
 					index = std::stoi(tokens[0]) - 1;
 					p1 = std::stoi(tokens[1]);
 					p2 = std::stoi(tokens[2]);
-					t->segmentlist[index * 2] = p1;
-					t->segmentlist[index * 2 + 1] = p2;
+					// we're using "start from zero" triangulation, input poly file starts from one,
+					// so compensate with by subtracting 1 from all input point indexes.
+					t->segmentlist[index * 2] = p1 - 1;
+					t->segmentlist[index * 2 + 1] = p2 - 1;
 					if ((1 + index) == t->numberofsegments)
 						ps = GET_HOLES_HEADER;
 					break;
 
 				case GET_HOLES_HEADER:
 					t->numberofholes = std::stoi(tokens[0]);
-					t->holelist = (REAL*)malloc(2 * t->numberofcorners * sizeof(REAL));
+					t->holelist = (REAL*)malloc(2 * t->numberofholes * sizeof(REAL));
 					ps = GET_HOLES;
 					break;
 
@@ -121,70 +123,14 @@ public:
 					break;
 			}
 		}
-
-		/*
-		t->numberofpoints = 4;
-		t->numberofpointattributes = 0;
-		t->pointlist = (REAL *)malloc(t->numberofpoints * 2 * sizeof(REAL));
-		t->pointlist[0] = 0.0;
-		t->pointlist[1] = 0.0;
-		t->pointlist[2] = 1.0;
-		t->pointlist[3] = 0.0;
-		t->pointlist[4] = 1.0;
-		t->pointlist[5] = 10.0;
-		t->pointlist[6] = 0.0;
-		t->pointlist[7] = 10.0;
-		t->pointattributelist = (REAL *)malloc(t->numberofpoints * t->numberofpointattributes *	sizeof(REAL));
-		t->pointattributelist[0] = 0.0;
-		t->pointattributelist[1] = 0.0;// 1.0;
-		t->pointattributelist[2] = 0.0;// 11.0;
-		t->pointattributelist[3] = 0.0;// 10.0;
-
-		/*
-		t->pointmarkerlist = (int *)malloc(t->numberofpoints * sizeof(int));
-		t->pointmarkerlist[0] = 0;
-		t->pointmarkerlist[1] = 2;
-		t->pointmarkerlist[2] = 0;
-		t->pointmarkerlist[3] = 0;
-
-		t->numberofsegments = 0;
-		t->numberofholes = 0;
-
-		t->numberofregions = 1;
-		t->regionlist = (REAL *)malloc(t->numberofregions * 4 * sizeof(REAL));
-		t->regionlist[0] = 0.5;
-		t->regionlist[1] = 5.0;
-		t->regionlist[2] = 7.0;            // Regional attribute (for whole mesh).
-		t->regionlist[3] = 0.1;          // Area constraint that will not be used.
-		*/
 	}
 
 	Triangulator() {
 		struct triangulateio in{ 0 }, mid{ 0 };
 
-		ReadPolyFile("../assets/a.poly", &in);
+
 		/* Define input points. */
-
-		//xprintf("Input point set:\n\n");
-		//report(&in, 1, 1, 1, 1, 1, 1);
-
-		/* Make necessary initializations so that Triangle can return a */
-		/*   triangulation in `mid' and a voronoi diagram in `vorout'.  */
-
-		mid.pointlist = (REAL *)NULL;            /* Not needed if -N switch used. */
-		/* Not needed if -N switch used or number of point attributes is zero: */
-		mid.pointattributelist = (REAL *)NULL;
-		mid.pointmarkerlist = (int *)NULL; /* Not needed if -N or -B switch used. */
-		mid.trianglelist = (int *)NULL;          /* Not needed if -E switch used. */
-		/* Not needed if -E switch used or number of triangle attributes is zero: */
-		mid.triangleattributelist = (REAL *)NULL;
-		mid.neighborlist = (int *)NULL;         /* Needed only if -n switch used. */
-		/* Needed only if segments are output (-p or -c) and -P not used: */
-		mid.segmentlist = (int *)NULL;
-		/* Needed only if segments are output (-p or -c) and -P and -B not used: */
-		mid.segmentmarkerlist = (int *)NULL;
-		mid.edgelist = (int *)NULL;             /* Needed only if -e switch used. */
-		mid.edgemarkerlist = (int *)NULL;   /* Needed if -e used and -B not used. */
+		ReadPolyFile("../assets/a.poly", &in);
 
 		/* Triangulate the points.  Switches are chosen to read and write a  */
 		/*   PSLG (p), preserve the convex hull (c), number everything from  */
@@ -192,17 +138,11 @@ public:
 		/*   produce an edge list (e), a Voronoi diagram (v), and a triangle */
 		/*   neighbor list (n).                                              */
 
-		triangulate("pcz", &in, &mid, nullptr);
-
-		xprintf("triangulate() output: (numberofcorners: %d)\n", mid.numberofcorners);
-		report(&mid, 1, 1, 0, 0, 0, 0);
+		triangulate("pz", &in, &mid, nullptr);
 
 		//xyzzy
-		// during dev, use GL_LINES to visualize, so push 2 vertices per outline point,
-		// the point we're on, plus the one that comes after. Handle wraparound
-		// with the usual modulo trick.
 		for (int i = 0; i < mid.numberoftriangles; i++) {
-			for (int j = 0; j < mid.numberofcorners; j++) {
+			for (int j = 0; j < 3; j++) {
 				int idx = mid.trianglelist[i * mid.numberofcorners + j];
 				// modulo trick: get the next (possibly wrapped) vertex of *this* triangle
 				int idxNext = mid.trianglelist[(i*mid.numberofcorners + ((j+1) % mid.numberofcorners))];
@@ -210,109 +150,27 @@ public:
 				// first point of the line segment of this triangle's edge
 				REAL x = mid.pointlist[idx * 2];
 				REAL y = mid.pointlist[idx * 2 + 1];
-
-				// and the second point this triangle's edge
-				REAL x2 = mid.pointlist[idxNext * 2];
-				REAL y2 = mid.pointlist[idxNext * 2 + 1];
-
-				// put them in the Vertex buffer for rendering.
 				v.push_back({ { x, y, 1 }, {}, {}, { XGLColors::white } });
-				v.push_back({ { x2, y2, 1 }, {}, {}, { XGLColors::white } });
-			}
-		}
-	}
-	void report(struct triangulateio *io,int markers, int reporttriangles, int reportneighbors, int reportsegments, int reportedges, int reportnorms) {
-	  int i, j;
 
-	  for (i = 0; i < io->numberofpoints; i++) {
-		xprintf("Point %4d:", i);
-		for (j = 0; j < 2; j++) {
-		  xprintf("  %.6g", io->pointlist[i * 2 + j]);
-		}
-		if (io->numberofpointattributes > 0) {
-		  xprintf("   attributes");
-		}
-		for (j = 0; j < io->numberofpointattributes; j++) {
-		  xprintf("  %.6g",
-				 io->pointattributelist[i * io->numberofpointattributes + j]);
-		}
-		if (markers) {
-		  xprintf("   marker %d\n", io->pointmarkerlist[i]);
-		} else {
-		  xprintf("\n");
-		}
-	  }
-	  xprintf("\n");
-
-	  if (reporttriangles || reportneighbors) {
-		for (i = 0; i < io->numberoftriangles; i++) {
-		  if (reporttriangles) {
-			xprintf("Triangle %4d points:", i);
-			for (j = 0; j < io->numberofcorners; j++) {
-			  xprintf("  %4d", io->trianglelist[i * io->numberofcorners + j]);
+				// for debugging during dev
+				if (drawMode == GL_LINES) {
+					REAL x2 = mid.pointlist[idxNext * 2];
+					REAL y2 = mid.pointlist[idxNext * 2 + 1];
+					v.push_back({ { x2, y2, 1 }, {}, {}, { XGLColors::white } });
+				}
 			}
-			if (io->numberoftriangleattributes > 0) {
-			  xprintf("   attributes");
-			}
-			for (j = 0; j < io->numberoftriangleattributes; j++) {
-			  xprintf("  %.6g", io->triangleattributelist[i *
-											 io->numberoftriangleattributes + j]);
-			}
-			xprintf("\n");
-		  }
-		  if (reportneighbors) {
-			xprintf("Triangle %4d neighbors:", i);
-			for (j = 0; j < 3; j++) {
-			  xprintf("  %4d", io->neighborlist[i * 3 + j]);
-			}
-			xprintf("\n");
-		  }
 		}
-		xprintf("\n");
-	  }
-
-	  if (reportsegments) {
-		for (i = 0; i < io->numberofsegments; i++) {
-		  xprintf("Segment %4d points:", i);
-		  for (j = 0; j < 2; j++) {
-			xprintf("  %4d", io->segmentlist[i * 2 + j]);
-		  }
-		  if (markers) {
-			xprintf("   marker %d\n", io->segmentmarkerlist[i]);
-		  } else {
-			xprintf("\n");
-		  }
-		}
-		xprintf("\n");
-	  }
-
-	  if (reportedges) {
-		for (i = 0; i < io->numberofedges; i++) {
-		  xprintf("Edge %4d points:", i);
-		  for (j = 0; j < 2; j++) {
-			xprintf("  %4d", io->edgelist[i * 2 + j]);
-		  }
-		  if (reportnorms && (io->edgelist[i * 2 + 1] == -1)) {
-			for (j = 0; j < 2; j++) {
-			  xprintf("  %.6g", io->normlist[i * 2 + j]);
-			}
-		  }
-		  if (markers) {
-			xprintf("   marker %d\n", io->edgemarkerlist[i]);
-		  } else {
-			xprintf("\n");
-		  }
-		}
-		xprintf("\n");
-	  }
 	}
 
 	void Draw() {
 		if (v.size()) {
-			glDrawArrays(GL_LINES, 0, (GLsizei)(v.size()));
+			glDrawArrays(drawMode, 0, (GLsizei)(v.size()));
 			GL_CHECK("glDrawArrays() failed");
 		}
 	}
+
+private:
+	GLuint drawMode = GL_TRIANGLES; // could also be GL_LINES
 };
 
 class XGLFreeType : public XGLShape {
@@ -384,7 +242,7 @@ public:
 			gindex = charMap[c];
 
 			FT_Load_Glyph(face, gindex, FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL);
-			if (true)
+			if (false)
 			{
 				drawCurves = false;
 				FT_Outline_Decompose(&g->outline, &fdc, this);
@@ -485,15 +343,9 @@ public:
 			x = GetInterpolatedPoint(xa, xb, interpolant);
 			y = GetInterpolatedPoint(ya, yb, interpolant);
 
-			v.push_back({ { x/scaleFactor, y/scaleFactor, 0 }, {}, {}, curvesColor });
+			v.push_back({ { x/scaleFactor, y/scaleFactor, 0 }, {}, {}, pointsColor });
 		}
-		v.push_back({ { p2.x / scaleFactor, p2.y / scaleFactor, 0 }, {}, {}, curvesColor });
-		v.push_back({ { p2.x / scaleFactor, p2.y / scaleFactor, 0 }, {}, {}, controlColor });
-		v.push_back({ { p1.x / scaleFactor, p1.y / scaleFactor, 0 }, {}, {}, controlColor });
-		v.push_back({ { p0.x / scaleFactor, p0.y / scaleFactor, 0 }, {}, {}, controlColor });
-		v.push_back({ { p1.x / scaleFactor, p1.y / scaleFactor, 0 }, {}, {}, controlColor });
-		v.push_back({ { p2.x / scaleFactor, p2.y / scaleFactor, 0 }, {}, {}, controlColor });
-		v.push_back({ { p2.x / scaleFactor, p2.y / scaleFactor, 0 }, {}, {}, curvesColor });
+		v.push_back({ { p2.x / scaleFactor, p2.y / scaleFactor, 0 }, {}, {}, pointsColor });
 	}
 
 	void EvaluateCubicBezier(FT_Vector p0, FT_Vector p1, FT_Vector p2, FT_Vector p3) {
