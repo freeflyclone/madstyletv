@@ -13,15 +13,16 @@ void PhysXXGL::initPhysics(bool interactive)
 	if (!mFoundation)
 		throwXGLException("PxCreateFoundation() failed\n");
 
-	physx::PxProfileZoneManager* profileZoneManager = &physx::PxProfileZoneManager::createProfileZoneManager(mFoundation);
-	if (!profileZoneManager)
-		throwXGLException("createProfileZoneManager() failed\n");
+	mPvd = physx::PxCreatePvd(*mFoundation);
+	physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate("localhost", 5425, 10);
+	mPvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
 
-	mPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *mFoundation, physx::PxTolerancesScale(), true, profileZoneManager);
+
+	mPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *mFoundation, physx::PxTolerancesScale(), false, mPvd);
 	if (!mPhysics)
 		throwXGLException("PxCreatePhysics() failed");
 
-	PxInitExtensions(*mPhysics);
+	PxInitExtensions(*mPhysics, mPvd);
 
 	// Added by me to allow for cooking a triangle mesh, which I use for collision detection with XGLShape objects
 	// in ShapeToActor().  This is *supposed* to be able to work with any triangle mesh from XGLShape class,
@@ -148,7 +149,7 @@ void PhysXXGL::RenderActors(physx::PxRigidActor** actors, const physx::PxU32 num
 		if (actor == mouseSphere)
 			continue;
 		actor->getShapes(shapes, nbShapes);
-		bool sleeping = actor->isRigidDynamic() ? actor->isRigidDynamic()->isSleeping() : false;
+		//bool sleeping = actor->isRigidDynamic() ? actor->isRigidDynamic()->isSleeping() : false;
 		bool isHit = false;
 
 		if (UserData *ud = (UserData *)actor->userData) {
@@ -210,10 +211,10 @@ void PhysXXGL::PhysxRenderer::Draw()
 {
 	physx::PxScene* scene;
 	PxGetPhysics().getScenes(&scene, 1);
-	physx::PxU32 nbActors = scene->getNbActors(physx::PxActorTypeSelectionFlag::eRIGID_DYNAMIC | physx::PxActorTypeSelectionFlag::eRIGID_STATIC);
+	physx::PxU32 nbActors = scene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC | physx::PxActorTypeFlag::eRIGID_STATIC);
 	if (nbActors) {
 		std::vector<physx::PxRigidActor*> actors(nbActors);
-		scene->getActors(physx::PxActorTypeSelectionFlag::eRIGID_DYNAMIC | physx::PxActorTypeSelectionFlag::eRIGID_STATIC, (physx::PxActor**)&actors[0], nbActors);
+		scene->getActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC | physx::PxActorTypeFlag::eRIGID_STATIC, (physx::PxActor**)&actors[0], nbActors);
 		container->RenderActors(&actors[0], (physx::PxU32)actors.size(), true);
 	}
 }
@@ -238,7 +239,9 @@ void PhysXXGL::RayCast(glm::vec3 o, glm::vec3 d) {
 	if (activeActor == NULL) {
 		dir -= orig;
 		dir.normalize();
-		mScene->raycastSingle(orig, dir, length, physx::PxHitFlag::eDEFAULT, hit);
+
+		//xyzzy - TODO: fix final argument to this call to make physx grabbing object work
+		//mScene->raycast(orig, dir, length, (physx::PxRaycastCallback&)hit);
 
 		if ((actor = hit.actor) != NULL) {
 			if (actor->is<physx::PxRigidDynamic>()) {
@@ -249,7 +252,7 @@ void PhysXXGL::RayCast(glm::vec3 o, glm::vec3 d) {
 				{
 					physx::PxVec3 pos(hit.position), dir(0);
 					mouseSphere = createDynamic(physx::PxTransform(pos), physx::PxSphereGeometry(0.0001f), dir);
-					mouseSphere->setRigidDynamicFlag(physx::PxRigidDynamicFlag::eKINEMATIC, true);
+					mouseSphere->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
 					selectedActor = (physx::PxRigidDynamic*)actor;
 					selectedActor->wakeUp();
 

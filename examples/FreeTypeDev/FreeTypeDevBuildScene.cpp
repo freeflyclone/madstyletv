@@ -36,6 +36,11 @@ enum polyParseState {
 	GET_REGIONS
 };
 
+int numPoints = 0;
+int num2draw;
+
+int numPoints2 = 0;
+int num2draw2;
 
 class Triangulator : public XGLShape, public triangulateio {
 public:
@@ -141,11 +146,27 @@ public:
 
 		triangulate("pz", &in, &mid, nullptr);
 
+		RenderSegments(in);
+
+		drawCount = v.size();
+		num2draw2 = drawCount;
+		numPoints2 = drawCount;
+		xprintf("Ended up with %d points\n", drawCount);
+	}
+
+	void Draw() {
+		if (v.size()) {
+			glDrawArrays(drawMode, 0, num2draw2);
+			GL_CHECK("glDrawArrays() failed");
+		}
+	}
+
+	void RenderTriangles(triangulateio& mid) {
 		for (int i = 0; i < mid.numberoftriangles; i++) {
 			for (int j = 0; j < 3; j++) {
 				int idx = mid.trianglelist[i * mid.numberofcorners + j];
 				// modulo trick: get the next (possibly wrapped) vertex of *this* triangle
-				int idxNext = mid.trianglelist[(i*mid.numberofcorners + ((j+1) % mid.numberofcorners))];
+				int idxNext = mid.trianglelist[(i*mid.numberofcorners + ((j + 1) % mid.numberofcorners))];
 
 				// first point of the line segment of this triangle's edge
 				REAL x = mid.pointlist[idx * 2];
@@ -162,15 +183,22 @@ public:
 		}
 	}
 
-	void Draw() {
-		if (v.size()) {
-			glDrawArrays(drawMode, 0, (GLsizei)(v.size()));
-			GL_CHECK("glDrawArrays() failed");
+	void RenderSegments(triangulateio& t) {
+		for (int i = 0; i < t.numberofsegments; i++) {
+			for (int j = 0; j < 2; j++) {
+				int idx = t.segmentlist[i * 2 + j];
+
+				REAL x = t.pointlist[idx * 2];
+				REAL y = t.pointlist[idx * 2 + 1];
+				v.push_back({ { x, y, 1 }, {}, {}, { XGLColors::white } });
+			}
 		}
 	}
 
+	void SetDrawCount(GLsizei count){ drawCount = (count<v.size()) ? count : v.size(); }
 private:
-	GLuint drawMode = GL_TRIANGLES; // could also be GL_LINES
+	GLuint drawMode = GL_LINE_STRIP; // could also be GL_LINES
+	GLsizei drawCount;
 };
 
 class XGLFreeType : public XGLShape {
@@ -346,13 +374,15 @@ public:
 
 			// start segments at last point -> first point 
 			idx = 0;
+			int endIdx = numberofsegments;
 			for (auto vrtx : v) {
-				int idxMinusOne = (idx - 1) % numberofsegments;
-				xprintf("Segment idxs: %d, %d\n", idxMinusOne, idx);
+				int idxPlusOne = (endIdx + 1) % numberofsegments;
+				//xprintf("Segment idxs: %d, %d\n", idxPlusOne, endIdx);
 
-				segmentlist[idx * 2] = idxMinusOne;
-				segmentlist[idx * 2 + 1] = idx;
+				segmentlist[idx * 2] = idxPlusOne;
+				segmentlist[idx * 2 + 1] = endIdx;
 				idx++;
+				endIdx--;
 			}
 		}
 		void Dump() {
@@ -417,9 +447,12 @@ public:
 			advance.y += g->advance.y;
 		}
 
+		numPoints = v.size();
+		num2draw = numPoints;
+
 		Triangulator in(v, contourEndPoints), out;
 
-		in.Dump();
+		//in.Dump();
 
 		//triangulate("czp", (triangulateio*)&in, (triangulateio*)&out, nullptr);
 	};
@@ -433,7 +466,9 @@ public:
 		if (v.size()) {
 			int i = 0;
 			for (auto c : contourEndPoints) {
-				glDrawArrays(GL_LINE_LOOP, i, (GLsizei)(c-i));
+				GLsizei count = c - i;
+				count = num2draw;
+				glDrawArrays(GL_LINE_LOOP, i, count);
 				GL_CHECK("glDrawArrays() failed");
 				i = c + 1;
 			}
@@ -557,7 +592,7 @@ public:
 	FT_Vector advance;
 
 	float scaleFactor = 200.0f;
-	float interpolationFactor = 0.5f;
+	float interpolationFactor = 0.05f;
 };
 
 void ExampleXGL::BuildScene() {
@@ -572,4 +607,27 @@ void ExampleXGL::BuildScene() {
 	translate = glm::translate(glm::mat4(), glm::vec3(5, 10, 1.0));
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(4, 4, 4));
 	t->model = translate * scale;
+
+	// now hook up the GUI sliders to the rotating torus thingy to control it's speeds.
+	XGLGuiSlider *hs, *hs2;
+
+	XGLGuiCanvas *sliders = (XGLGuiCanvas *)(GetGuiManager()->FindObject("HorizontalSliderWindow"));
+	if (sliders != nullptr) {
+		if ((hs = (XGLGuiSlider *)sliders->FindObject("Horizontal Slider 1")) != nullptr) {
+			hs->AddMouseEventListener([hs](float x, float y, int flags) {
+				if (hs->HasMouse()) {
+					num2draw = (int)(hs->Position()*numPoints);
+					xprintf("Position: %d\n", num2draw);
+				}
+			});
+		}
+		if ((hs2 = (XGLGuiSlider *)sliders->FindObject("Horizontal Slider 2")) != nullptr) {
+			hs2->AddMouseEventListener([hs2](float x, float y, int flags) {
+				if (hs2->HasMouse()) {
+					num2draw2 = (int)(hs2->Position()*numPoints2);
+					xprintf("Position: %d\n", num2draw2);
+				}
+			});
+		}
+	}
 }

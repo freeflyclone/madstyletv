@@ -335,6 +335,7 @@
     <None Include="OpenCV.props">
       <SubType>Designer</SubType>
     </None>
+    <None Include="PhysX.props" />
     <None Include="xclass-copy.proj">
       <SubType>Designer</SubType>
     </None>

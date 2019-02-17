@@ -409,5 +409,6 @@
     <None Include="ftdi.props" />
     <None Include="..\madstyletv.props" />
     <None Include="ffmpeg.props" />
+    <None Include="PhysX.props" />
   </ItemGroup>
 </Project>
