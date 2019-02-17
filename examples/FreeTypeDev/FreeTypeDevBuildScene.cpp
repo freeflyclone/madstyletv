@@ -8,16 +8,10 @@
 #include "ExampleXGL.h"
 #include <string>
 
+#include "Triangulator.h"
+
 #include FT_OUTLINE_H
 
-// triangle.h wants this
-#ifndef REAL
-#define REAL double
-#endif
-extern "C" {
-	#define ANSI_DECLARATORS
-	#include "triangle.h"
-};
 
 #ifdef FONT_NAME
 #undef FONT_NAME
@@ -25,181 +19,12 @@ extern "C" {
 
 #define FONT_NAME "C:/windows/fonts/times.ttf"
 
-enum polyParseState {
-	GET_POINTS_HEADER,
-	GET_POINTS,
-	GET_SEGMENTS_HEADER,
-	GET_SEGMENTS,
-	GET_HOLES_HEADER,
-	GET_HOLES,
-	GET_REGION_HEADER,
-	GET_REGIONS
-};
 
 int numPoints = 0;
 int num2draw;
 
 int numPoints2 = 0;
 int num2draw2;
-
-class Triangulator : public XGLShape, public triangulateio {
-public:
-	void ReadPolyFile(std::string fileName, triangulateio* t) {
-		std::ifstream file(fileName);
-		std::string line;
-		polyParseState ps = GET_POINTS_HEADER;
-		int numberPointMarkers = 0;
-		int numberSegmentMarkers = 0;
-		double x, y;
-		int lineNum{ 0 };
-
-		while (std::getline(file, line)) {
-			std::stringstream ss(line);
-			std::vector<std::string> tokens;
-			std::string token;
-			int index, p1, p2, p3;
-
-			// we know our input is tokenized with whitespace, so the following works.
-			while (ss >> token)
-				tokens.push_back(token);
-
-			lineNum++;
-			switch (ps) {
-				case GET_POINTS_HEADER:
-					t->numberofpoints = std::stoi(tokens[0]);
-					t->numberofpointattributes = std::stoi(tokens[2]);
-					numberPointMarkers = std::stoi(tokens[3]);
-					t->pointlist = (REAL *)malloc(t->numberofpoints * 2 * sizeof(REAL));
-					t->pointattributelist = (REAL *)malloc(t->numberofpoints * t->numberofpointattributes *	sizeof(REAL));
-					ps = GET_POINTS;
-					break;
-
-				case GET_POINTS:
-					index = std::stoi(tokens[0]) - 1;
-					x = std::stod(tokens[1]);
-					y = std::stod(tokens[2]);
-					t->pointlist[index * 2] = x;
-					t->pointlist[index * 2 + 1] = y;
-
-					for (int i = 0; i < t->numberofpointattributes; i++)
-						t->pointattributelist[index * t->numberofpointattributes + i] = std::stod(tokens[3+i]);
-
-					if ((1 + index) == t->numberofpoints) {
-						ps = GET_SEGMENTS_HEADER;
-					}
-					break;
-
-				case GET_SEGMENTS_HEADER:
-					t->numberofsegments = std::stoi(tokens[0]);
-					numberSegmentMarkers = std::stoi(tokens[1]);
-					t->segmentlist = (int*)malloc(t->numberofsegments * 2 * sizeof(int));
-					ps = GET_SEGMENTS;
-					break;
-
-				case GET_SEGMENTS:
-					index = std::stoi(tokens[0]) - 1;
-					p1 = std::stoi(tokens[1]);
-					p2 = std::stoi(tokens[2]);
-					// we're using "start from zero" triangulation, input poly file starts from one,
-					// so compensate by subtracting 1 from all input point indexes.
-					t->segmentlist[index * 2] = p1 - 1;
-					t->segmentlist[index * 2 + 1] = p2 - 1;
-					if ((1 + index) == t->numberofsegments)
-						ps = GET_HOLES_HEADER;
-					break;
-
-				case GET_HOLES_HEADER:
-					t->numberofholes = std::stoi(tokens[0]);
-					t->holelist = (REAL*)malloc(2 * t->numberofholes * sizeof(REAL));
-					ps = GET_HOLES;
-					break;
-
-				case GET_HOLES:
-					index = std::stoi(tokens[0]) - 1;
-					x = std::stod(tokens[1]);
-					y = std::stod(tokens[2]);
-					t->holelist[index * 2] = x;
-					t->holelist[index * 2 + 1] = y;
-					if ((1 + index) == t->numberofholes)
-						ps = GET_REGION_HEADER;
-					break;
-					
-				default:
-					xprintf("The line is: %s\n", line.c_str());
-					break;
-			}
-		}
-	}
-
-	Triangulator() {
-		struct triangulateio in{ 0 }, mid{ 0 };
-
-
-		/* Define input points. */
-		ReadPolyFile("../assets/a.poly", &in);
-
-		/* Triangulate the points.  Switches are chosen to read and write a  */
-		/*   PSLG (p), preserve the convex hull (c), number everything from  */
-		/*   zero (z), assign a regional attribute to each element (A), and  */
-		/*   produce an edge list (e), a Voronoi diagram (v), and a triangle */
-		/*   neighbor list (n).                                              */
-
-		triangulate("pz", &in, &mid, nullptr);
-
-		RenderSegments(in);
-
-		drawCount = v.size();
-		num2draw2 = drawCount;
-		numPoints2 = drawCount;
-		xprintf("Ended up with %d points\n", drawCount);
-	}
-
-	void Draw() {
-		if (v.size()) {
-			glDrawArrays(drawMode, 0, num2draw2);
-			GL_CHECK("glDrawArrays() failed");
-		}
-	}
-
-	void RenderTriangles(triangulateio& mid) {
-		for (int i = 0; i < mid.numberoftriangles; i++) {
-			for (int j = 0; j < 3; j++) {
-				int idx = mid.trianglelist[i * mid.numberofcorners + j];
-				// modulo trick: get the next (possibly wrapped) vertex of *this* triangle
-				int idxNext = mid.trianglelist[(i*mid.numberofcorners + ((j + 1) % mid.numberofcorners))];
-
-				// first point of the line segment of this triangle's edge
-				REAL x = mid.pointlist[idx * 2];
-				REAL y = mid.pointlist[idx * 2 + 1];
-				v.push_back({ { x, y, 1 }, {}, {}, { XGLColors::white } });
-
-				// for debugging during dev
-				if (drawMode == GL_LINES) {
-					REAL x2 = mid.pointlist[idxNext * 2];
-					REAL y2 = mid.pointlist[idxNext * 2 + 1];
-					v.push_back({ { x2, y2, 1 }, {}, {}, { XGLColors::white } });
-				}
-			}
-		}
-	}
-
-	void RenderSegments(triangulateio& t) {
-		for (int i = 0; i < t.numberofsegments; i++) {
-			for (int j = 0; j < 2; j++) {
-				int idx = t.segmentlist[i * 2 + j];
-
-				REAL x = t.pointlist[idx * 2];
-				REAL y = t.pointlist[idx * 2 + 1];
-				v.push_back({ { x, y, 1 }, {}, {}, { XGLColors::white } });
-			}
-		}
-	}
-
-	void SetDrawCount(GLsizei count){ drawCount = (count<v.size()) ? count : v.size(); }
-private:
-	GLuint drawMode = GL_LINE_STRIP; // could also be GL_LINES
-	GLsizei drawCount;
-};
 
 class XGLFreeType : public XGLShape {
 public:
@@ -234,9 +59,9 @@ public:
 	};
 
 	// use the "Triangle" package from http://www.cs.cmu.edu/~quake/triangle.html
-	class Triangulator : public triangulateio {
+	class Triangulator {
 	public:
-		void ReadPolyFile(std::string fileName) {
+		void ReadPolyFile(std::string fileName, triangulateio& in) {
 			std::ifstream file(fileName);
 			std::string line;
 			polyParseState ps = GET_POINTS_HEADER;
@@ -258,11 +83,11 @@ public:
 				lineNum++;
 				switch (ps) {
 				case GET_POINTS_HEADER:
-					numberofpoints = std::stoi(tokens[0]);
-					numberofpointattributes = std::stoi(tokens[2]);
+					in.numberofpoints = std::stoi(tokens[0]);
+					in.numberofpointattributes = std::stoi(tokens[2]);
 					numberPointMarkers = std::stoi(tokens[3]);
-					pointlist = (REAL *)malloc(numberofpoints * 2 * sizeof(REAL));
-					pointattributelist = (REAL *)malloc(numberofpoints * numberofpointattributes *	sizeof(REAL));
+					in.pointlist = (REAL *)malloc(in.numberofpoints * 2 * sizeof(REAL));
+					in.pointattributelist = (REAL *)malloc(in.numberofpoints * in.numberofpointattributes *	sizeof(REAL));
 					ps = GET_POINTS;
 					break;
 
@@ -270,21 +95,21 @@ public:
 					index = std::stoi(tokens[0]) - 1;
 					x = std::stod(tokens[1]);
 					y = std::stod(tokens[2]);
-					pointlist[index * 2] = x;
-					pointlist[index * 2 + 1] = y;
+					in.pointlist[index * 2] = x;
+					in.pointlist[index * 2 + 1] = y;
 
-					for (int i = 0; i < numberofpointattributes; i++)
-						pointattributelist[index * numberofpointattributes + i] = std::stod(tokens[3 + i]);
+					for (int i = 0; i < in.numberofpointattributes; i++)
+						in.pointattributelist[index * in.numberofpointattributes + i] = std::stod(tokens[3 + i]);
 
-					if ((1 + index) == numberofpoints) {
+					if ((1 + index) == in.numberofpoints) {
 						ps = GET_SEGMENTS_HEADER;
 					}
 					break;
 
 				case GET_SEGMENTS_HEADER:
-					numberofsegments = std::stoi(tokens[0]);
+					in.numberofsegments = std::stoi(tokens[0]);
 					numberSegmentMarkers = std::stoi(tokens[1]);
-					segmentlist = (int*)malloc(numberofsegments * 2 * sizeof(int));
+					in.segmentlist = (int*)malloc(in.numberofsegments * 2 * sizeof(int));
 					ps = GET_SEGMENTS;
 					break;
 
@@ -294,15 +119,15 @@ public:
 					p2 = std::stoi(tokens[2]);
 					// we're using "start from zero" triangulation, input poly file starts from one,
 					// so compensate by subtracting 1 from all input point indexes.
-					segmentlist[index * 2] = p1 - 1;
-					segmentlist[index * 2 + 1] = p2 - 1;
-					if ((1 + index) == numberofsegments)
+					in.segmentlist[index * 2] = p1 - 1;
+					in.segmentlist[index * 2 + 1] = p2 - 1;
+					if ((1 + index) == in.numberofsegments)
 						ps = GET_HOLES_HEADER;
 					break;
 
 				case GET_HOLES_HEADER:
-					numberofholes = std::stoi(tokens[0]);
-					holelist = (REAL*)malloc(2 * numberofholes * sizeof(REAL));
+					in.numberofholes = std::stoi(tokens[0]);
+					in.holelist = (REAL*)malloc(2 * in.numberofholes * sizeof(REAL));
 					ps = GET_HOLES;
 					break;
 
@@ -310,9 +135,9 @@ public:
 					index = std::stoi(tokens[0]) - 1;
 					x = std::stod(tokens[1]);
 					y = std::stod(tokens[2]);
-					holelist[index * 2] = x;
-					holelist[index * 2 + 1] = y;
-					if ((1 + index) == numberofholes)
+					in.holelist[index * 2] = x;
+					in.holelist[index * 2 + 1] = y;
+					if ((1 + index) == in.numberofholes)
 						ps = GET_REGION_HEADER;
 					break;
 
@@ -323,77 +148,77 @@ public:
 			}
 		}
 
-		void Init() {
-			pointlist = nullptr;
-			pointattributelist = nullptr;
-			pointmarkerlist = nullptr;
-			numberofpoints = 0;
-			numberofpointattributes = 0;
+		void Init(triangulateio& in) {
+			in.pointlist = nullptr;
+			in.pointattributelist = nullptr;
+			in.pointmarkerlist = nullptr;
+			in.numberofpoints = 0;
+			in.numberofpointattributes = 0;
 
-			trianglelist = nullptr;
-			triangleattributelist = nullptr;
-			trianglearealist = nullptr;
-			neighborlist = nullptr;
-			numberoftriangles = 0;
-			numberofcorners = 0;
-			numberoftriangleattributes = 0;
+			in.trianglelist = nullptr;
+			in.triangleattributelist = nullptr;
+			in.trianglearealist = nullptr;
+			in.neighborlist = nullptr;
+			in.numberoftriangles = 0;
+			in.numberofcorners = 0;
+			in.numberoftriangleattributes = 0;
 
-			segmentlist = nullptr;
-			segmentmarkerlist = nullptr;
-			numberofsegments = 0;
+			in.segmentlist = nullptr;
+			in.segmentmarkerlist = nullptr;
+			in.numberofsegments = 0;
 
-			holelist = nullptr;
-			numberofholes = 0;
+			in.holelist = nullptr;
+			in.numberofholes = 0;
 
-			regionlist = nullptr;
-			numberofregions = 0;
+			in.regionlist = nullptr;
+			in.numberofregions = 0;
 
-			edgelist = nullptr;
-			edgemarkerlist = nullptr;
-			normlist = nullptr;
-			numberofedges = 0;
+			in.edgelist = nullptr;
+			in.edgemarkerlist = nullptr;
+			in.normlist = nullptr;
+			in.numberofedges = 0;
 		};
 
-		Triangulator() { Init(); }
+		Triangulator(triangulateio& in) { Init(in); }
 
-		Triangulator(const XGLVertexList& v, ContourEndPoints& ce) {
-			Init();
-			numberofpoints = v.size();
-			pointlist = (REAL*)malloc(sizeof(REAL) * 2 * numberofpoints);
+		Triangulator(const XGLVertexList& v, ContourEndPoints& ce, triangulateio& in) {
+			Init(in);
+			in.numberofpoints = v.size();
+			in.pointlist = (REAL*)malloc(sizeof(REAL) * 2 * in.numberofpoints);
 
-			numberofsegments = v.size();
-			segmentlist = (int*)malloc(sizeof(int) * 2 * numberofsegments);
+			in.numberofsegments = v.size();
+			in.segmentlist = (int*)malloc(sizeof(int) * 2 * in.numberofsegments);
 
 			// build pointlist from XGLVertexList "v"
 			unsigned int idx = 0;
 			for (auto vrtx : v) {
-				pointlist[idx * 2] = vrtx.v.x;
-				pointlist[idx * 2 + 1] = vrtx.v.y;
+				in.pointlist[idx * 2] = vrtx.v.x;
+				in.pointlist[idx * 2 + 1] = vrtx.v.y;
 				idx++;
 			}
-
-			// start segments at last point -> first point 
+			
+			//xyzzy
+			int idx1 = 0;
+			int idx2 = 1;
 			idx = 0;
-			int endIdx = numberofsegments;
 			for (auto vrtx : v) {
-				int idxPlusOne = (endIdx + 1) % numberofsegments;
-				//xprintf("Segment idxs: %d, %d\n", idxPlusOne, endIdx);
-
-				segmentlist[idx * 2] = idxPlusOne;
-				segmentlist[idx * 2 + 1] = endIdx;
+				xprintf("idxs: %d, %d\n", idx1, idx2);
+				in.segmentlist[idx * 2] = idx1;
+				in.segmentlist[idx * 2 + 1] = idx2;
 				idx++;
-				endIdx--;
+				idx1 = (idx1 + 1) % v.size();
+				idx2 = (idx2 + 1) % v.size();
 			}
 		}
-		void Dump() {
-			xprintf("          Number of points: %d\n", numberofpoints);
-			xprintf("Number of point attributes: %d\n", numberofpointattributes);
-			for (int i = 0; i < numberofpoints; i++)
-				xprintf("Point %d: %0.6f, %0.6f\n", i, pointlist[i * 2], pointlist[i * 2 + 1]);
+		void Dump(triangulateio& in) {
+			xprintf("          Number of points: %d\n", in.numberofpoints);
+			xprintf("Number of point attributes: %d\n", in.numberofpointattributes);
+			for (int i = 0; i < in.numberofpoints; i++)
+				xprintf("Point %d: %0.6f, %0.6f\n", i, in.pointlist[i * 2], in.pointlist[i * 2 + 1]);
 
-			xprintf("Number of segments: %d\n", numberofsegments);
-			for (int i = 0; i < numberofsegments; i++)
-				xprintf("Segment %d: %d,%d\n", i, segmentlist[i * 2], segmentlist[i * 2 + 1]);
+			xprintf("Number of segments: %d\n", in.numberofsegments);
+			for (int i = 0; i < in.numberofsegments; i++)
+				xprintf("Segment %d: %d,%d\n", i, in.segmentlist[i * 2], in.segmentlist[i * 2 + 1]);
 		}
 	};
 
@@ -450,11 +275,14 @@ public:
 		numPoints = v.size();
 		num2draw = numPoints;
 
-		Triangulator in(v, contourEndPoints), out;
+		xprintf("found %d points\n", numPoints);
 
-		//in.Dump();
+		triangulateio in, out;
+		Triangulator t(v, contourEndPoints, in);
 
-		//triangulate("czp", (triangulateio*)&in, (triangulateio*)&out, nullptr);
+		t.Dump(in);
+
+		//triangulate("VVVVczp", &in, &out, nullptr);
 	};
 
 	~XGLFreeType() {
@@ -476,7 +304,7 @@ public:
 	}
 
 	FT_Vector Advance(const FT_Vector* vector) {
-		return{ advance.x + vector->x, advance.y + vector->y };
+		return{ advance.x + vector->x, advance.y - vector->y };
 	}
 
 	int MoveTo(const FT_Vector* to) {
@@ -494,13 +322,13 @@ public:
 		}
 
 		// add the first point of the new contour
-		v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
+		v.insert(v.begin(), { { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
 
 		return 0;
 	}
 
 	int LineTo(const FT_Vector* to) {
-		v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
+		v.insert(v.begin(), { { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
 		currentPoint = *to;
 		return 0;
 	}
@@ -509,7 +337,7 @@ public:
 		if (drawCurves)
 			EvaluateQuadraticBezier(Advance(&currentPoint), Advance(control), Advance(to));
 		else
-			v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
+			v.insert(v.begin(), { { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
 		currentPoint = *to;
 		return 0;
 	}
@@ -518,7 +346,7 @@ public:
 		if (drawCurves)
 			EvaluateCubicBezier(Advance(&currentPoint), Advance(control1), Advance(control2), Advance(to));
 		else
-			v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
+			v.insert(v.begin(), { { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
 		currentPoint = *to;
 		return 0;
 	}
@@ -543,9 +371,9 @@ public:
 			x = GetInterpolatedPoint(xa, xb, interpolant);
 			y = GetInterpolatedPoint(ya, yb, interpolant);
 
-			v.push_back({ { x/scaleFactor, y/scaleFactor, 0 }, {}, {}, pointsColor });
+			v.insert(v.begin(), { { x / scaleFactor, y / scaleFactor, 0 }, {}, {}, pointsColor });
 		}
-		v.push_back({ { p2.x / scaleFactor, p2.y / scaleFactor, 0 }, {}, {}, pointsColor });
+		v.insert(v.begin(), { { p2.x / scaleFactor, p2.y / scaleFactor, 0 }, {}, {}, pointsColor });
 	}
 
 	void EvaluateCubicBezier(FT_Vector p0, FT_Vector p1, FT_Vector p2, FT_Vector p3) {
@@ -570,9 +398,9 @@ public:
 			x = GetInterpolatedPoint(xm, xn, interpolant);
 			y = GetInterpolatedPoint(ym, yn, interpolant);
 
-			v.push_back({ { x / scaleFactor, y / scaleFactor, 0 }, {}, {}, curvesColor });
+			v.insert(v.begin(), { { x / scaleFactor, y / scaleFactor, 0 }, {}, {}, curvesColor });
 		}
-		v.push_back({ { p3.x / scaleFactor, p3.y / scaleFactor, 0 }, {}, {}, curvesColor });
+		v.insert(v.begin(), { { p3.x / scaleFactor, p3.y / scaleFactor, 0 }, {}, {}, curvesColor });
 	}
 
 	bool drawCurves;
@@ -592,7 +420,9 @@ public:
 	FT_Vector advance;
 
 	float scaleFactor = 200.0f;
-	float interpolationFactor = 0.05f;
+	float interpolationFactor = 0.5f;
+
+	struct triangulateio in, mid, out;
 };
 
 void ExampleXGL::BuildScene() {

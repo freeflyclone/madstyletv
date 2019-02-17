@@ -35,5 +35,16 @@
     <None Include="..\..\assets\A.poly">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="..\..\assets\test.poly">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\assets\test2.poly">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Triangulator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

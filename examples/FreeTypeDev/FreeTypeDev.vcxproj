@@ -172,10 +172,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xclass\3rdParty\Triangle\triangle.c">
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">TRILIBRARY;NO_TIMER;_USE_MATH_DEFINES;XML_STATIC;GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">TRILIBRARY;NO_TIMER;_USE_MATH_DEFINES;XML_STATIC;GLEW_STATIC;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TRILIBRARY;NO_TIMER;_USE_MATH_DEFINES;XML_STATIC;GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TRILIBRARY;NO_TIMER;_USE_MATH_DEFINES;XML_STATIC;GLEW_STATIC;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ANSI_DECLARATORS;TRILIBRARY;NO_TIMER;_USE_MATH_DEFINES;XML_STATIC;GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ANSI_DECLARATORS;TRILIBRARY;NO_TIMER;_USE_MATH_DEFINES;XML_STATIC;GLEW_STATIC;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ANSI_DECLARATORS;TRILIBRARY;NO_TIMER;_USE_MATH_DEFINES;XML_STATIC;GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ANSI_DECLARATORS;TRILIBRARY;NO_TIMER;_USE_MATH_DEFINES;XML_STATIC;GLEW_STATIC;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="..\common\ExampleGUI.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
@@ -184,6 +184,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\A.poly" />
+    <None Include="..\..\assets\test.poly" />
+    <None Include="..\..\assets\test2.poly" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Triangulator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
