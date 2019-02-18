@@ -357,6 +357,7 @@
 #include "triangle.h"
 #endif /* TRILIBRARY */
 
+/* EJM */#define printf xprintf
 /* A few forward declarations.                                               */
 
 #ifndef TRILIBRARY

@@ -120,21 +120,20 @@ public:
 
 
 		/* Define input points. */
-		ReadPolyFile("../assets/test.poly", &in);
+		ReadPolyFile("../assets/test4.poly", &in);
 
 		/* Triangulate the points.  Switches are chosen to read and write a  */
 		/*   PSLG (p), number everything from  */
 		/*   zero (z),  */
 		/*   neighbor list (n).                                              */
 
-		triangulate("zp", &in, &mid, nullptr);
+		triangulate("Vzp", &in, &mid, nullptr);
 
 		RenderTriangles(mid);
 
 		drawCount = v.size();
 		num2draw2 = drawCount;
 		numPoints2 = drawCount;
-		xprintf("Ended up with %d points\n", drawCount);
 	}
 
 	void Draw() {

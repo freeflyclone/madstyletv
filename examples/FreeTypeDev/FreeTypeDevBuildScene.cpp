@@ -17,7 +17,7 @@
 #undef FONT_NAME
 #endif
 
-#define FONT_NAME "C:/windows/fonts/times.ttf"
+#define FONT_NAME "C:/windows/fonts/arial.ttf"
 
 
 int numPoints = 0;
@@ -202,7 +202,6 @@ public:
 			int idx2 = 1;
 			idx = 0;
 			for (auto vrtx : v) {
-				xprintf("idxs: %d, %d\n", idx1, idx2);
 				in.segmentlist[idx * 2] = idx1;
 				in.segmentlist[idx * 2 + 1] = idx2;
 				idx++;
@@ -211,14 +210,13 @@ public:
 			}
 		}
 		void Dump(triangulateio& in) {
-			xprintf("          Number of points: %d\n", in.numberofpoints);
-			xprintf("Number of point attributes: %d\n", in.numberofpointattributes);
+			xprintf("%d 2 %d 0\n", in.numberofpoints, in.numberofpointattributes);
 			for (int i = 0; i < in.numberofpoints; i++)
-				xprintf("Point %d: %0.6f, %0.6f\n", i, in.pointlist[i * 2], in.pointlist[i * 2 + 1]);
+				xprintf("%d %0.6f %0.6f\n", i+1, in.pointlist[i * 2], in.pointlist[i * 2 + 1]);
 
-			xprintf("Number of segments: %d\n", in.numberofsegments);
+			xprintf("%d 0\n", in.numberofsegments);
 			for (int i = 0; i < in.numberofsegments; i++)
-				xprintf("Segment %d: %d,%d\n", i, in.segmentlist[i * 2], in.segmentlist[i * 2 + 1]);
+				xprintf("%d %d %d\n", i+1, in.segmentlist[i * 2]+1, in.segmentlist[i * 2 + 1]+1);
 		}
 	};
 
@@ -304,7 +302,7 @@ public:
 	}
 
 	FT_Vector Advance(const FT_Vector* vector) {
-		return{ advance.x + vector->x, advance.y - vector->y };
+		return{ advance.x + vector->x, advance.y + vector->y };
 	}
 
 	int MoveTo(const FT_Vector* to) {
@@ -322,13 +320,13 @@ public:
 		}
 
 		// add the first point of the new contour
-		v.insert(v.begin(), { { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
+		v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
 
 		return 0;
 	}
 
 	int LineTo(const FT_Vector* to) {
-		v.insert(v.begin(), { { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
+		v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
 		currentPoint = *to;
 		return 0;
 	}
@@ -337,7 +335,7 @@ public:
 		if (drawCurves)
 			EvaluateQuadraticBezier(Advance(&currentPoint), Advance(control), Advance(to));
 		else
-			v.insert(v.begin(), { { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
+			v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
 		currentPoint = *to;
 		return 0;
 	}
@@ -346,7 +344,7 @@ public:
 		if (drawCurves)
 			EvaluateCubicBezier(Advance(&currentPoint), Advance(control1), Advance(control2), Advance(to));
 		else
-			v.insert(v.begin(), { { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
+			v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
 		currentPoint = *to;
 		return 0;
 	}
@@ -371,9 +369,9 @@ public:
 			x = GetInterpolatedPoint(xa, xb, interpolant);
 			y = GetInterpolatedPoint(ya, yb, interpolant);
 
-			v.insert(v.begin(), { { x / scaleFactor, y / scaleFactor, 0 }, {}, {}, pointsColor });
+			v.push_back({ { x / scaleFactor, y / scaleFactor, 0 }, {}, {}, pointsColor });
 		}
-		v.insert(v.begin(), { { p2.x / scaleFactor, p2.y / scaleFactor, 0 }, {}, {}, pointsColor });
+		v.push_back({ { p2.x / scaleFactor, p2.y / scaleFactor, 0 }, {}, {}, pointsColor });
 	}
 
 	void EvaluateCubicBezier(FT_Vector p0, FT_Vector p1, FT_Vector p2, FT_Vector p3) {
@@ -398,9 +396,9 @@ public:
 			x = GetInterpolatedPoint(xm, xn, interpolant);
 			y = GetInterpolatedPoint(ym, yn, interpolant);
 
-			v.insert(v.begin(), { { x / scaleFactor, y / scaleFactor, 0 }, {}, {}, curvesColor });
+			v.push_back({ { x / scaleFactor, y / scaleFactor, 0 }, {}, {}, curvesColor });
 		}
-		v.insert(v.begin(), { { p3.x / scaleFactor, p3.y / scaleFactor, 0 }, {}, {}, curvesColor });
+		v.push_back({ { p3.x / scaleFactor, p3.y / scaleFactor, 0 }, {}, {}, curvesColor });
 	}
 
 	bool drawCurves;
