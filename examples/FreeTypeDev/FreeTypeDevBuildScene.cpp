@@ -260,7 +260,7 @@ public:
 			drawCurves = true;
 
 			FT_Outline_Decompose(&g->outline, &fdc, this);
-			contourEndPoints.push_back((int)v.size());
+			contourEndPoints.push_back((int)v.size()-1);
 
 			xprintf("There are %d contours:\n", contourEndPoints.size());
 			for (auto c : contourEndPoints)
@@ -275,12 +275,15 @@ public:
 
 		xprintf("found %d points\n", numPoints);
 
-		triangulateio in, out;
+		// It's vital that these are initialized to empty!
+		triangulateio in{ 0 }, out{ 0 };
+
 		Triangulator t(v, contourEndPoints, in);
 
+		xprintf("XGLFreeType::Triangulator()\n");
 		t.Dump(in);
 
-		//triangulate("VVVVczp", &in, &out, nullptr);
+		triangulate("Vzp", &in, &out, nullptr);
 	};
 
 	~XGLFreeType() {
@@ -307,7 +310,11 @@ public:
 
 	int MoveTo(const FT_Vector* to) {
 		// mark our progress along the outline
+		xprintf("MoveTo: %d %d\n", to->x, to->y);
 		currentPoint = *to;
+
+		if (v.size() == 0)
+			firstPoint = *to;
 
 		// if this isn't the very first vertex...
 		if (v.size() > 0) {
@@ -326,12 +333,19 @@ public:
 	}
 
 	int LineTo(const FT_Vector* to) {
-		v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
-		currentPoint = *to;
+		if (to->x != firstPoint.x || to->y != firstPoint.y) {
+			xprintf("LineTo: %d %d\n", to->x, to->y);
+			v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
+			currentPoint = *to;
+		}
+		else
+			xprintf("LineTo: %d %d (coincident with firstPoint, ignoring)\n", to->x, to->y);
+
 		return 0;
 	}
 
 	int ConicTo(const FT_Vector* control, const FT_Vector* to) {
+		xprintf(" ConTo: %d %d\n", to->x, to->y);
 		if (drawCurves)
 			EvaluateQuadraticBezier(Advance(&currentPoint), Advance(control), Advance(to));
 		else
@@ -341,6 +355,7 @@ public:
 	}
 
 	int CubicTo(const FT_Vector* control1, const FT_Vector* control2, const FT_Vector* to) {
+		xprintf("CubeTo: %d %d\n", to->x, to->y);
 		if (drawCurves)
 			EvaluateCubicBezier(Advance(&currentPoint), Advance(control1), Advance(control2), Advance(to));
 		else
@@ -359,7 +374,8 @@ public:
 		float x, y;
 		float interpolant;
 
-		for (interpolant = 0.0f; interpolant < 1.0f; interpolant += interpolationFactor) {
+		// the triangulator() fails when there are coincident points, so avoid starting the curve at 0th point
+		for (interpolant = interpolationFactor; interpolant < 1.0f; interpolant += interpolationFactor) {
 			xa = GetInterpolatedPoint((float)p0.x, (float)p1.x, interpolant);
 			ya = GetInterpolatedPoint((float)p0.y, (float)p1.y, interpolant);
 
@@ -371,7 +387,6 @@ public:
 
 			v.push_back({ { x / scaleFactor, y / scaleFactor, 0 }, {}, {}, pointsColor });
 		}
-		v.push_back({ { p2.x / scaleFactor, p2.y / scaleFactor, 0 }, {}, {}, pointsColor });
 	}
 
 	void EvaluateCubicBezier(FT_Vector p0, FT_Vector p1, FT_Vector p2, FT_Vector p3) {
@@ -380,7 +395,8 @@ public:
 		float x, y;
 		float interpolant;
 
-		for (interpolant = 0.0f; interpolant < 1.0f; interpolant += interpolationFactor) {
+		// the triangulator() fails when there are coincident points, so avoid starting the curve at 0th point
+		for (interpolant = interpolationFactor; interpolant < 1.0f; interpolant += interpolationFactor) {
 			xa = GetInterpolatedPoint((float)p0.x, (float)p1.x, interpolant);
 			ya = GetInterpolatedPoint((float)p0.y, (float)p1.y, interpolant);
 			xb = GetInterpolatedPoint((float)p1.x, (float)p2.x, interpolant);
@@ -398,7 +414,6 @@ public:
 
 			v.push_back({ { x / scaleFactor, y / scaleFactor, 0 }, {}, {}, curvesColor });
 		}
-		v.push_back({ { p3.x / scaleFactor, p3.y / scaleFactor, 0 }, {}, {}, curvesColor });
 	}
 
 	bool drawCurves;
@@ -415,6 +430,7 @@ public:
 	CharMap charMap;
 
 	FT_Vector currentPoint;
+	FT_Vector firstPoint;
 	FT_Vector advance;
 
 	float scaleFactor = 200.0f;

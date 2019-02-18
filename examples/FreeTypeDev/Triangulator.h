@@ -127,7 +127,10 @@ public:
 		/*   zero (z),  */
 		/*   neighbor list (n).                                              */
 
-		triangulate("Vzp", &in, &mid, nullptr);
+		triangulate("zp", &in, &mid, nullptr);
+
+		xprintf("Triangulator()\n");
+		Dump(in);
 
 		RenderTriangles(mid);
 
@@ -177,20 +180,19 @@ public:
 		}
 	}
 
-	void Dump() {
-		xprintf("          Number of points: %d\n", numberofpoints);
-		xprintf("Number of point attributes: %d\n", numberofpointattributes);
-		for (int i = 0; i < numberofpoints; i++)
-			xprintf("Point %d: %0.6f, %0.6f\n", i, pointlist[i * 2], pointlist[i * 2 + 1]);
+	void Dump(triangulateio& in) {
+		xprintf("%d 2 %d 0\n", in.numberofpoints, in.numberofpointattributes);
+		for (int i = 0; i < in.numberofpoints; i++)
+			xprintf("%d %0.6f %0.6f\n", i + 1, in.pointlist[i * 2], in.pointlist[i * 2 + 1]);
 
-		xprintf("Number of segments: %d\n", numberofsegments);
-		for (int i = 0; i < numberofsegments; i++)
-			xprintf("Segment %d: %d,%d\n", i, segmentlist[i * 2], segmentlist[i * 2 + 1]);
+		xprintf("%d 0\n", in.numberofsegments);
+		for (int i = 0; i < in.numberofsegments; i++)
+			xprintf("%d %d %d\n", i + 1, in.segmentlist[i * 2] + 1, in.segmentlist[i * 2 + 1] + 1);
 	}
 
 	void SetDrawCount(GLsizei count){ drawCount = (count<v.size()) ? count : v.size(); }
 private:
-	GLuint drawMode = GL_TRIANGLES; // could also be GL_LINES
+	GLuint drawMode = GL_LINES; // GL_LINES or GL_TRIANGES (for filling in)
 	GLsizei drawCount;
 };
 
