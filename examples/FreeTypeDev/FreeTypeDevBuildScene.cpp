@@ -260,7 +260,7 @@ public:
 			drawCurves = true;
 
 			FT_Outline_Decompose(&g->outline, &fdc, this);
-			contourEndPoints.push_back((int)v.size()-1);
+			contourEndPoints.push_back((int)tIn.size()-1);
 
 			xprintf("There are %d contours:\n", contourEndPoints.size());
 			for (auto c : contourEndPoints)
@@ -270,20 +270,21 @@ public:
 			advance.y += g->advance.y;
 		}
 
-		numPoints = v.size();
-		num2draw = numPoints;
-
 		xprintf("found %d points\n", numPoints);
 
 		// It's vital that these are initialized to empty!
 		triangulateio in{ 0 }, out{ 0 };
 
-		Triangulator t(v, contourEndPoints, in);
+		Triangulator t(tIn, contourEndPoints, in);
 
 		xprintf("XGLFreeType::Triangulator()\n");
 		t.Dump(in);
 
 		triangulate("Vzp", &in, &out, nullptr);
+		RenderTriangles(out);
+		numPoints = v.size();
+		num2draw = numPoints;
+
 	};
 
 	~XGLFreeType() {
@@ -293,16 +294,11 @@ public:
 
 	void Draw() {
 		if (v.size()) {
-			int i = 0;
-			for (auto c : contourEndPoints) {
-				GLsizei count = c - i;
-				count = num2draw;
-				glDrawArrays(GL_LINE_LOOP, i, count);
-				GL_CHECK("glDrawArrays() failed");
-				i = c + 1;
-			}
+			glDrawArrays(drawMode, 0, num2draw);
+			GL_CHECK("glDrawArrays() failed");
 		}
 	}
+
 
 	FT_Vector Advance(const FT_Vector* vector) {
 		return{ advance.x + vector->x, advance.y + vector->y };
@@ -313,21 +309,21 @@ public:
 		xprintf("MoveTo: %d %d\n", to->x, to->y);
 		currentPoint = *to;
 
-		if (v.size() == 0)
+		if (tIn.size() == 0)
 			firstPoint = *to;
 
 		// if this isn't the very first vertex...
-		if (v.size() > 0) {
+		if (tIn.size() > 0) {
 			//...we've seen vertices, is this the very first contour?...
 			if (contourEndPoints.empty())
-				contourEndPoints.push_back((int)v.size());
+				contourEndPoints.push_back((int)tIn.size());
 			// not first contour ever, ensure it isn't the first contour of new glyph
-			else if (v.size() > contourEndPoints.back())
-				contourEndPoints.push_back((int)v.size());
+			else if (tIn.size() > contourEndPoints.back())
+				contourEndPoints.push_back((int)tIn.size());
 		}
 
 		// add the first point of the new contour
-		v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
+		tIn.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
 
 		return 0;
 	}
@@ -335,7 +331,7 @@ public:
 	int LineTo(const FT_Vector* to) {
 		if (to->x != firstPoint.x || to->y != firstPoint.y) {
 			xprintf("LineTo: %d %d\n", to->x, to->y);
-			v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
+			tIn.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
 			currentPoint = *to;
 		}
 		else
@@ -349,7 +345,7 @@ public:
 		if (drawCurves)
 			EvaluateQuadraticBezier(Advance(&currentPoint), Advance(control), Advance(to));
 		else
-			v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
+			tIn.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
 		currentPoint = *to;
 		return 0;
 	}
@@ -359,7 +355,7 @@ public:
 		if (drawCurves)
 			EvaluateCubicBezier(Advance(&currentPoint), Advance(control1), Advance(control2), Advance(to));
 		else
-			v.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
+			tIn.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
 		currentPoint = *to;
 		return 0;
 	}
@@ -385,7 +381,7 @@ public:
 			x = GetInterpolatedPoint(xa, xb, interpolant);
 			y = GetInterpolatedPoint(ya, yb, interpolant);
 
-			v.push_back({ { x / scaleFactor, y / scaleFactor, 0 }, {}, {}, pointsColor });
+			tIn.push_back({ { x / scaleFactor, y / scaleFactor, 0 }, {}, {}, pointsColor });
 		}
 	}
 
@@ -412,14 +408,39 @@ public:
 			x = GetInterpolatedPoint(xm, xn, interpolant);
 			y = GetInterpolatedPoint(ym, yn, interpolant);
 
-			v.push_back({ { x / scaleFactor, y / scaleFactor, 0 }, {}, {}, curvesColor });
+			tIn.push_back({ { x / scaleFactor, y / scaleFactor, 0 }, {}, {}, curvesColor });
+		}
+	}
+
+	void RenderTriangles(triangulateio& in) {
+		for (int i = 0; i < in.numberoftriangles; i++) {
+			for (int j = 0; j < 3; j++) {
+				int idx = in.trianglelist[i * 3 + j];
+				// modulo trick: get the next (possibly wrapped) vertex of *this* triangle
+				int idxNext = in.trianglelist[(i * 3 + ((j + 1) % 3))];
+
+				// first point of the line segment of this triangle's edge
+				REAL x = in.pointlist[idx * 2];
+				REAL y = in.pointlist[idx * 2 + 1];
+				v.push_back({ { x, y, 1 }, {}, {}, { XGLColors::white } });
+
+				// for debugging during dev
+				if (drawMode == GL_LINES) {
+					REAL x2 = in.pointlist[idxNext * 2];
+					REAL y2 = in.pointlist[idxNext * 2 + 1];
+					v.push_back({ { x2, y2, 1 }, {}, {}, { XGLColors::white } });
+				}
+			}
 		}
 	}
 
 	bool drawCurves;
+	GLuint drawMode = GL_LINES; // GL_LINES or GL_TRIANGES (for filling in)
+
 	XGLColor pointsColor = XGLColors::yellow;
 	XGLColor curvesColor = XGLColors::cyan;
 	XGLColor controlColor = XGLColors::magenta;
+	XGLVertexList tIn;  //trianulator() input
 
 	std::string textToRender;
 	FreeTypeDecomposer fdc;
