@@ -17,7 +17,7 @@
 #undef FONT_NAME
 #endif
 
-#define FONT_NAME "C:/windows/fonts/arial.ttf"
+#define FONT_NAME "C:/windows/fonts/times.ttf"
 
 
 int numPoints = 0;
@@ -61,93 +61,6 @@ public:
 	// use the "Triangle" package from http://www.cs.cmu.edu/~quake/triangle.html
 	class Triangulator {
 	public:
-		void ReadPolyFile(std::string fileName, triangulateio& in) {
-			std::ifstream file(fileName);
-			std::string line;
-			polyParseState ps = GET_POINTS_HEADER;
-			int numberPointMarkers = 0;
-			int numberSegmentMarkers = 0;
-			double x, y;
-			int lineNum{ 0 };
-
-			while (std::getline(file, line)) {
-				std::stringstream ss(line);
-				std::vector<std::string> tokens;
-				std::string token;
-				int index, p1, p2, p3;
-
-				// we know our input is tokenized with whitespace, so the following works.
-				while (ss >> token)
-					tokens.push_back(token);
-
-				lineNum++;
-				switch (ps) {
-				case GET_POINTS_HEADER:
-					in.numberofpoints = std::stoi(tokens[0]);
-					in.numberofpointattributes = std::stoi(tokens[2]);
-					numberPointMarkers = std::stoi(tokens[3]);
-					in.pointlist = (REAL *)malloc(in.numberofpoints * 2 * sizeof(REAL));
-					in.pointattributelist = (REAL *)malloc(in.numberofpoints * in.numberofpointattributes *	sizeof(REAL));
-					ps = GET_POINTS;
-					break;
-
-				case GET_POINTS:
-					index = std::stoi(tokens[0]) - 1;
-					x = std::stod(tokens[1]);
-					y = std::stod(tokens[2]);
-					in.pointlist[index * 2] = x;
-					in.pointlist[index * 2 + 1] = y;
-
-					for (int i = 0; i < in.numberofpointattributes; i++)
-						in.pointattributelist[index * in.numberofpointattributes + i] = std::stod(tokens[3 + i]);
-
-					if ((1 + index) == in.numberofpoints) {
-						ps = GET_SEGMENTS_HEADER;
-					}
-					break;
-
-				case GET_SEGMENTS_HEADER:
-					in.numberofsegments = std::stoi(tokens[0]);
-					numberSegmentMarkers = std::stoi(tokens[1]);
-					in.segmentlist = (int*)malloc(in.numberofsegments * 2 * sizeof(int));
-					ps = GET_SEGMENTS;
-					break;
-
-				case GET_SEGMENTS:
-					index = std::stoi(tokens[0]) - 1;
-					p1 = std::stoi(tokens[1]);
-					p2 = std::stoi(tokens[2]);
-					// we're using "start from zero" triangulation, input poly file starts from one,
-					// so compensate by subtracting 1 from all input point indexes.
-					in.segmentlist[index * 2] = p1 - 1;
-					in.segmentlist[index * 2 + 1] = p2 - 1;
-					if ((1 + index) == in.numberofsegments)
-						ps = GET_HOLES_HEADER;
-					break;
-
-				case GET_HOLES_HEADER:
-					in.numberofholes = std::stoi(tokens[0]);
-					in.holelist = (REAL*)malloc(2 * in.numberofholes * sizeof(REAL));
-					ps = GET_HOLES;
-					break;
-
-				case GET_HOLES:
-					index = std::stoi(tokens[0]) - 1;
-					x = std::stod(tokens[1]);
-					y = std::stod(tokens[2]);
-					in.holelist[index * 2] = x;
-					in.holelist[index * 2 + 1] = y;
-					if ((1 + index) == in.numberofholes)
-						ps = GET_REGION_HEADER;
-					break;
-
-				default:
-					xprintf("The line is: %s\n", line.c_str());
-					break;
-				}
-			}
-		}
-
 		void Init(triangulateio& in) {
 			in.pointlist = nullptr;
 			in.pointattributelist = nullptr;
@@ -280,7 +193,7 @@ public:
 		xprintf("XGLFreeType::Triangulator()\n");
 		t.Dump(in);
 
-		triangulate("Vzp", &in, &out, nullptr);
+		triangulate("qa0.01zp", &in, &out, nullptr);
 		RenderTriangles(out);
 		numPoints = v.size();
 		num2draw = numPoints;
@@ -422,20 +335,20 @@ public:
 				// first point of the line segment of this triangle's edge
 				REAL x = in.pointlist[idx * 2];
 				REAL y = in.pointlist[idx * 2 + 1];
-				v.push_back({ { x, y, 1 }, {}, {}, { XGLColors::white } });
+				v.push_back({ { x, y, 0 }, {}, {}, { XGLColors::yellow } });
 
 				// for debugging during dev
 				if (drawMode == GL_LINES) {
 					REAL x2 = in.pointlist[idxNext * 2];
 					REAL y2 = in.pointlist[idxNext * 2 + 1];
-					v.push_back({ { x2, y2, 1 }, {}, {}, { XGLColors::white } });
+					v.push_back({ { x2, y2, 0 }, {}, {}, { XGLColors::yellow } });
 				}
 			}
 		}
 	}
 
 	bool drawCurves;
-	GLuint drawMode = GL_LINES; // GL_LINES or GL_TRIANGES (for filling in)
+	GLuint drawMode = GL_TRIANGLES; // GL_LINES or GL_TRIANGES (for filling in)
 
 	XGLColor pointsColor = XGLColors::yellow;
 	XGLColor curvesColor = XGLColors::cyan;
@@ -455,7 +368,7 @@ public:
 	FT_Vector advance;
 
 	float scaleFactor = 200.0f;
-	float interpolationFactor = 0.5f;
+	float interpolationFactor = 0.1f;
 
 	struct triangulateio in, mid, out;
 };
@@ -467,11 +380,13 @@ void ExampleXGL::BuildScene() {
 	AddShape("shaders/000-simple", [&](){ shape = new XGLFreeType(config.WideToBytes(config.Find(L"FreeTypeText")->AsString())); return shape; });
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 1.0));
 	shape->model = translate;
-
+	
+	/*
 	AddShape("shaders/000-simple", [&](){ t = new Triangulator(); return t; });
 	translate = glm::translate(glm::mat4(), glm::vec3(5, 10, 1.0));
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(4, 4, 4));
 	t->model = translate * scale;
+	*/
 
 	// now hook up the GUI sliders to the rotating torus thingy to control it's speeds.
 	XGLGuiSlider *hs, *hs2;
