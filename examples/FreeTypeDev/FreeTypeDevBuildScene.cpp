@@ -193,7 +193,7 @@ public:
 		xprintf("XGLFreeType::Triangulator()\n");
 		t.Dump(in);
 
-		triangulate("qa0.3zp", &in, &out, nullptr);
+		triangulate("qa0.1zp", &in, &out, nullptr);
 		RenderTriangles(out);
 		numPoints = v.size();
 		num2draw = numPoints;
@@ -374,7 +374,7 @@ public:
 	FT_Vector advance;
 
 	float scaleFactor = 200.0f;
-	float interpolationFactor = 0.5f;
+	float interpolationFactor = 0.2f;
 
 	struct triangulateio in, mid, out;
 };
@@ -384,7 +384,7 @@ void ExampleXGL::BuildScene() {
 	//Triangulator *t;
 
 	// Initialize the Camera matrix
-	glm::vec3 cameraPosition(0, -0.1, 6.5);
+	glm::vec3 cameraPosition(0, -0.1, 14);
 	glm::vec3 cameraDirection = glm::normalize(cameraPosition*-1.0f);
 	glm::vec3 cameraUp = { 0, 0, 1 };
 	camera.Set(cameraPosition, cameraDirection, cameraUp);
