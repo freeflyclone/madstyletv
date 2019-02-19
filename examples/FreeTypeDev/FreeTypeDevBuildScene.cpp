@@ -152,7 +152,7 @@ public:
 		//       The second pair are DPI numbers.
 		//       Both pairs ought to be fairly large, so that
 		//		 FreeType's internal math doesn't bodge the precision of the outline.
-		FT_Set_Char_Size(face, 256, 0, 512, 0);
+		FT_Set_Char_Size(face, ftSize, ftSize, ftResolution, ftResolution);
 
 		FT_GlyphSlot g = face->glyph;
 
@@ -193,7 +193,7 @@ public:
 		xprintf("XGLFreeType::Triangulator()\n");
 		t.Dump(in);
 
-		triangulate("qa0.01zp", &in, &out, nullptr);
+		triangulate("qa0.3zp", &in, &out, nullptr);
 		RenderTriangles(out);
 		numPoints = v.size();
 		num2draw = numPoints;
@@ -228,8 +228,10 @@ public:
 		// if this isn't the very first vertex...
 		if (tIn.size() > 0) {
 			//...we've seen vertices, is this the very first contour?...
-			if (contourEndPoints.empty())
-				contourEndPoints.push_back((int)tIn.size());
+			if (contourEndPoints.empty()) {
+				contourEndPoints.push_back((int)tIn.size()-1);
+				return 1;
+			}
 			// not first contour ever, ensure it isn't the first contour of new glyph
 			else if (tIn.size() > contourEndPoints.back())
 				contourEndPoints.push_back((int)tIn.size());
@@ -347,6 +349,9 @@ public:
 		}
 	}
 
+	const FT_F26Dot6 ftSize{ 256 };
+	const FT_UInt ftResolution{ 512 };
+
 	bool drawCurves;
 	GLuint drawMode = GL_TRIANGLES; // GL_LINES or GL_TRIANGES (for filling in)
 
@@ -354,6 +359,7 @@ public:
 	XGLColor curvesColor = XGLColors::cyan;
 	XGLColor controlColor = XGLColors::magenta;
 	XGLVertexList tIn;  //trianulator() input
+	XGLVertexList contoursEnds;
 
 	std::string textToRender;
 	FreeTypeDecomposer fdc;
@@ -368,26 +374,25 @@ public:
 	FT_Vector advance;
 
 	float scaleFactor = 200.0f;
-	float interpolationFactor = 0.1f;
+	float interpolationFactor = 0.5f;
 
 	struct triangulateio in, mid, out;
 };
 
 void ExampleXGL::BuildScene() {
 	XGLFreeType *shape;
-	Triangulator *t;
+	//Triangulator *t;
+
+	// Initialize the Camera matrix
+	glm::vec3 cameraPosition(0, -0.1, 6.5);
+	glm::vec3 cameraDirection = glm::normalize(cameraPosition*-1.0f);
+	glm::vec3 cameraUp = { 0, 0, 1 };
+	camera.Set(cameraPosition, cameraDirection, cameraUp);
 
 	AddShape("shaders/000-simple", [&](){ shape = new XGLFreeType(config.WideToBytes(config.Find(L"FreeTypeText")->AsString())); return shape; });
-	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 1.0));
+	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(-2, -2, 1.0));
 	shape->model = translate;
 	
-	/*
-	AddShape("shaders/000-simple", [&](){ t = new Triangulator(); return t; });
-	translate = glm::translate(glm::mat4(), glm::vec3(5, 10, 1.0));
-	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(4, 4, 4));
-	t->model = translate * scale;
-	*/
-
 	// now hook up the GUI sliders to the rotating torus thingy to control it's speeds.
 	XGLGuiSlider *hs, *hs2;
 
@@ -397,7 +402,6 @@ void ExampleXGL::BuildScene() {
 			hs->AddMouseEventListener([hs](float x, float y, int flags) {
 				if (hs->HasMouse()) {
 					num2draw = (int)(hs->Position()*numPoints);
-					xprintf("Position: %d\n", num2draw);
 				}
 			});
 		}
@@ -405,7 +409,6 @@ void ExampleXGL::BuildScene() {
 			hs2->AddMouseEventListener([hs2](float x, float y, int flags) {
 				if (hs2->HasMouse()) {
 					num2draw2 = (int)(hs2->Position()*numPoints2);
-					xprintf("Position: %d\n", num2draw2);
 				}
 			});
 		}
