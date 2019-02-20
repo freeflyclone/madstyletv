@@ -35,23 +35,25 @@ namespace FT {
 	private:
 		static int _MoveToFunc(const FT_Vector* to, void *pCtx) { return ((GlyphDecomposer*)pCtx)->MoveTo(*to); }
 		static int _LineToFunc(const FT_Vector* to, void *pCtx) { return ((GlyphDecomposer*)pCtx)->LineTo(*to); }
-		static int _ConicToFunc(const FT_Vector* control, const FT_Vector* to, void *pCtx) { return ((GlyphDecomposer*)pCtx)->ConicTo(*control, *to); }
-		static int _CubicToFunc(const FT_Vector* control1, const FT_Vector*	control2, const FT_Vector* to, void *pCtx) { return ((GlyphDecomposer*)pCtx)->CubicTo(*control1, *control2, *to); }
+		static int _ConicToFunc(const FT_Vector* c, const FT_Vector* to, void *pCtx) { return ((GlyphDecomposer*)pCtx)->ConicTo(*c, *to); }
+		static int _CubicToFunc(const FT_Vector* c1, const FT_Vector* c2, const FT_Vector* to, void *pCtx) { return ((GlyphDecomposer*)pCtx)->CubicTo(*c1, *c2, *to); }
 
-		int MoveTo(const FT_Vector& to);
-		int LineTo(const FT_Vector& to);
-		int ConicTo(const FT_Vector& control, const FT_Vector& to);
-		int CubicTo(const FT_Vector& control1, const FT_Vector& control2, const FT_Vector& to);
+		int MoveTo(const FT_Vector&);
+		int LineTo(const FT_Vector&);
+		int ConicTo(const FT_Vector&, const FT_Vector&);
+		int CubicTo(const FT_Vector&, const FT_Vector&, const FT_Vector&);
 
-		int contourIdx{ 0 };
+		const FT_Vector& Interpolate(const FT_Vector&, const FT_Vector&, float);
+		void EvaluateQuadraticBezier(const FT_Vector&, const FT_Vector&, const FT_Vector&);
+		void EvaluateCubicBezier(const FT_Vector&, const FT_Vector&, const FT_Vector&, const FT_Vector&);
+
 		GlyphOutline glyphOutline;
+		int contourIdx{ 0 };
 		FT_Vector firstPoint;
 		FT_Vector currentPoint;
 		bool drawCurves = true;
+		float interpolationFactor = 0.25f;
 	};
-
-
-
-} // namespace FreeType
+} // namespace FT
 
 #endif

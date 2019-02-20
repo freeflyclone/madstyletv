@@ -106,8 +106,6 @@ public:
 		currentPoint = { 0, 0 };
 		advance = { 0, 0 };
 
-		drawCurves = true;
-
 		for (auto c : textToRender) {
 			gindex = charMap[c];
 
@@ -116,14 +114,15 @@ public:
 
 			FT::GlyphOutline glyph = fdc.Outline();
 			int i = 0;
-			for (auto c : glyph) {
-				xprintf("Countour %d has %d points\n", i, c.size());
-				for (auto vec : c) {
-					v.push_back({ { vec.x / scaleFactor, vec.y / scaleFactor, 0 }, {}, {}, { XGLColors::yellow } });
-					xprintf(" %0.4f,%0.4f\n", vec.x/scaleFactor, vec.y/scaleFactor);
+			for (auto contour : glyph) {
+				xprintf("Countour %d has %d points\n", i++, contour.size());
+				for (int j = 0; j < contour.size(); j++) {
+					// wrap around to first point (when we get to the end)
+					int k = (j + 1) % contour.size();
+
+					v.push_back({ { contour[j].x / scaleFactor, contour[j].y / scaleFactor, 0 }, {}, {}, { XGLColors::yellow } });
+					v.push_back({ { contour[k].x / scaleFactor, contour[k].y / scaleFactor, 0 }, {}, {}, { XGLColors::yellow } });
 				}
-				break;
-				i++;
 			}
 
 			advance.x += g->advance.x;
@@ -141,7 +140,7 @@ public:
 
 	void Draw() {
 		if (v.size()) {
-			glDrawArrays(GL_LINE_STRIP, 0, num2draw);
+			glDrawArrays(GL_LINES, 0, num2draw);
 			GL_CHECK("glDrawArrays() failed");
 		}
 	}
