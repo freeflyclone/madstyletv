@@ -30,6 +30,9 @@
     <ClCompile Include="..\..\xclass\3rdParty\Triangle\triangle.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="XGLFreeType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\A.poly">
@@ -44,6 +47,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Triangulator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="XGLFreeType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

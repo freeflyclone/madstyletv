@@ -210,6 +210,8 @@
 
 /* #define SINGLE */
 
+#define printf xprintf
+
 #ifdef SINGLE
 #define REAL float
 #else /* not SINGLE */

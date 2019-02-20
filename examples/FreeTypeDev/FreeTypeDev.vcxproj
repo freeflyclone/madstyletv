@@ -181,6 +181,7 @@
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
     <ClCompile Include="FreeTypeDevBuildScene.cpp" />
+    <ClCompile Include="XGLFreeType.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\A.poly" />
@@ -189,6 +190,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Triangulator.h" />
+    <ClInclude Include="XGLFreeType.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -41,7 +41,7 @@ public:
 			std::stringstream ss(line);
 			std::vector<std::string> tokens;
 			std::string token;
-			int index, p1, p2, p3;
+			int index, p1, p2;
 
 			// we know our input is tokenized with whitespace, so the following works.
 			while (ss >> token)
@@ -134,7 +134,7 @@ public:
 
 		RenderTriangles(mid);
 
-		drawCount = v.size();
+		drawCount = (GLsizei)v.size();
 		num2draw2 = drawCount;
 		numPoints2 = drawCount;
 	}
@@ -190,7 +190,7 @@ public:
 			xprintf("%d %d %d\n", i + 1, in.segmentlist[i * 2] + 1, in.segmentlist[i * 2 + 1] + 1);
 	}
 
-	void SetDrawCount(GLsizei count){ drawCount = (count<v.size()) ? count : v.size(); }
+	void SetDrawCount(GLsizei count){ drawCount = (count<v.size()) ? count : (GLsizei)v.size(); }
 private:
 	GLuint drawMode = GL_LINES; // GL_LINES or GL_TRIANGES (for filling in)
 	GLsizei drawCount;

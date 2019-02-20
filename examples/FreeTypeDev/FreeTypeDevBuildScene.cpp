@@ -9,6 +9,7 @@
 #include <string>
 
 #include "Triangulator.h"
+#include "XGLFreeType.h"
 
 #include FT_OUTLINE_H
 
@@ -31,75 +32,14 @@ public:
 	typedef std::map<FT_ULong, FT_UInt> CharMap;
 	typedef std::vector<GLsizei> ContourEndPoints;
 
-	// A class to map static C callback functions called by 
-	// FT_Outline_Decompose() to XGLFreeType instance methods.
-	class FreeTypeDecomposer : public FT_Outline_Funcs {
-	public:
-		static int _MoveToFunc(const FT_Vector* to, void *pCtx) {
-			return ((XGLFreeType*)pCtx)->MoveTo(to);
-		}
-		static int _LineToFunc(const FT_Vector* to, void *pCtx) {
-			return ((XGLFreeType*)pCtx)->LineTo(to);
-		}
-		static int _ConicToFunc(const FT_Vector*	control, const FT_Vector* to, void *pCtx) {
-			return ((XGLFreeType*)pCtx)->ConicTo(control, to);
-		}
-		static int _CubicToFunc(const FT_Vector*	control1, const FT_Vector*	control2, const FT_Vector* to, void *pCtx) {
-			return ((XGLFreeType*)pCtx)->CubicTo(control1, control2, to);
-		}
-
-		FreeTypeDecomposer() {
-			move_to = _MoveToFunc;
-			line_to = _LineToFunc;
-			conic_to = _ConicToFunc;
-			cubic_to = _CubicToFunc;
-			shift = 0;
-			delta = 0;
-		}
-	};
-
 	// use the "Triangle" package from http://www.cs.cmu.edu/~quake/triangle.html
 	class Triangulator {
 	public:
-		void Init(triangulateio& in) {
-			in.pointlist = nullptr;
-			in.pointattributelist = nullptr;
-			in.pointmarkerlist = nullptr;
-			in.numberofpoints = 0;
-			in.numberofpointattributes = 0;
-
-			in.trianglelist = nullptr;
-			in.triangleattributelist = nullptr;
-			in.trianglearealist = nullptr;
-			in.neighborlist = nullptr;
-			in.numberoftriangles = 0;
-			in.numberofcorners = 0;
-			in.numberoftriangleattributes = 0;
-
-			in.segmentlist = nullptr;
-			in.segmentmarkerlist = nullptr;
-			in.numberofsegments = 0;
-
-			in.holelist = nullptr;
-			in.numberofholes = 0;
-
-			in.regionlist = nullptr;
-			in.numberofregions = 0;
-
-			in.edgelist = nullptr;
-			in.edgemarkerlist = nullptr;
-			in.normlist = nullptr;
-			in.numberofedges = 0;
-		};
-
-		Triangulator(triangulateio& in) { Init(in); }
-
 		Triangulator(const XGLVertexList& v, ContourEndPoints& ce, triangulateio& in) {
-			Init(in);
-			in.numberofpoints = v.size();
+			in.numberofpoints = (int)v.size();
 			in.pointlist = (REAL*)malloc(sizeof(REAL) * 2 * in.numberofpoints);
 
-			in.numberofsegments = v.size();
+			in.numberofsegments = (int)v.size();
 			in.segmentlist = (int*)malloc(sizeof(int) * 2 * in.numberofsegments);
 
 			// build pointlist from XGLVertexList "v"
@@ -166,38 +106,32 @@ public:
 		currentPoint = { 0, 0 };
 		advance = { 0, 0 };
 
+		drawCurves = true;
+
 		for (auto c : textToRender) {
 			gindex = charMap[c];
 
 			FT_Load_Glyph(face, gindex, FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL);
-			drawCurves = true;
+			FT_Outline_Decompose(&g->outline, &fdc, &fdc);
 
-			FT_Outline_Decompose(&g->outline, &fdc, this);
-			contourEndPoints.push_back((int)tIn.size()-1);
-
-			xprintf("There are %d contours:\n", contourEndPoints.size());
-			for (auto c : contourEndPoints)
-				xprintf("Contour@ %d\n", c);
+			FT::GlyphOutline glyph = fdc.Outline();
+			int i = 0;
+			for (auto c : glyph) {
+				xprintf("Countour %d has %d points\n", i, c.size());
+				for (auto vec : c) {
+					v.push_back({ { vec.x / scaleFactor, vec.y / scaleFactor, 0 }, {}, {}, { XGLColors::yellow } });
+					xprintf(" %0.4f,%0.4f\n", vec.x/scaleFactor, vec.y/scaleFactor);
+				}
+				break;
+				i++;
+			}
 
 			advance.x += g->advance.x;
 			advance.y += g->advance.y;
 		}
 
-		xprintf("found %d points\n", numPoints);
-
-		// It's vital that these are initialized to empty!
-		triangulateio in{ 0 }, out{ 0 };
-
-		Triangulator t(tIn, contourEndPoints, in);
-
-		xprintf("XGLFreeType::Triangulator()\n");
-		t.Dump(in);
-
-		triangulate("qa0.1zp", &in, &out, nullptr);
-		RenderTriangles(out);
-		numPoints = v.size();
+		numPoints = (int)v.size();
 		num2draw = numPoints;
-
 	};
 
 	~XGLFreeType() {
@@ -207,74 +141,14 @@ public:
 
 	void Draw() {
 		if (v.size()) {
-			glDrawArrays(drawMode, 0, num2draw);
+			glDrawArrays(GL_LINE_STRIP, 0, num2draw);
 			GL_CHECK("glDrawArrays() failed");
 		}
 	}
 
-
 	FT_Vector Advance(const FT_Vector* vector) {
 		return{ advance.x + vector->x, advance.y + vector->y };
 	}
-
-	int MoveTo(const FT_Vector* to) {
-		// mark our progress along the outline
-		xprintf("MoveTo: %d %d\n", to->x, to->y);
-		currentPoint = *to;
-
-		if (tIn.size() == 0)
-			firstPoint = *to;
-
-		// if this isn't the very first vertex...
-		if (tIn.size() > 0) {
-			//...we've seen vertices, is this the very first contour?...
-			if (contourEndPoints.empty()) {
-				contourEndPoints.push_back((int)tIn.size()-1);
-				return 1;
-			}
-			// not first contour ever, ensure it isn't the first contour of new glyph
-			else if (tIn.size() > contourEndPoints.back())
-				contourEndPoints.push_back((int)tIn.size());
-		}
-
-		// add the first point of the new contour
-		tIn.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
-
-		return 0;
-	}
-
-	int LineTo(const FT_Vector* to) {
-		if (to->x != firstPoint.x || to->y != firstPoint.y) {
-			xprintf("LineTo: %d %d\n", to->x, to->y);
-			tIn.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
-			currentPoint = *to;
-		}
-		else
-			xprintf("LineTo: %d %d (coincident with firstPoint, ignoring)\n", to->x, to->y);
-
-		return 0;
-	}
-
-	int ConicTo(const FT_Vector* control, const FT_Vector* to) {
-		xprintf(" ConTo: %d %d\n", to->x, to->y);
-		if (drawCurves)
-			EvaluateQuadraticBezier(Advance(&currentPoint), Advance(control), Advance(to));
-		else
-			tIn.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
-		currentPoint = *to;
-		return 0;
-	}
-
-	int CubicTo(const FT_Vector* control1, const FT_Vector* control2, const FT_Vector* to) {
-		xprintf("CubeTo: %d %d\n", to->x, to->y);
-		if (drawCurves)
-			EvaluateCubicBezier(Advance(&currentPoint), Advance(control1), Advance(control2), Advance(to));
-		else
-			tIn.push_back({ { Advance(to).x / scaleFactor, Advance(to).y / scaleFactor, 0 }, {}, {}, pointsColor });
-		currentPoint = *to;
-		return 0;
-	}
-
 	float GetInterpolatedPoint(float n1, float n2, float percent) {
 		float diff = n2 - n1;
 		return n1 + (diff * percent);
@@ -298,6 +172,10 @@ public:
 
 			tIn.push_back({ { x / scaleFactor, y / scaleFactor, 0 }, {}, {}, pointsColor });
 		}
+		if (p2.x != firstPoint.x || p2.y != firstPoint.y)
+			tIn.push_back({ { p2.x / scaleFactor, p2.y / scaleFactor, 0 }, {}, {}, pointsColor });
+		else
+			xprintf("Final point of Quadratic Bezier is coincident with contour start, ignoring\n");
 	}
 
 	void EvaluateCubicBezier(FT_Vector p0, FT_Vector p1, FT_Vector p2, FT_Vector p3) {
@@ -325,6 +203,10 @@ public:
 
 			tIn.push_back({ { x / scaleFactor, y / scaleFactor, 0 }, {}, {}, curvesColor });
 		}
+		if (p3.x != firstPoint.x || p3.y != firstPoint.y)
+			tIn.push_back({ { p3.x / scaleFactor, p3.y / scaleFactor, 0 }, {}, {}, pointsColor });
+		else
+			xprintf("Final point of Cubic Bezier is coincident with contour start, ignoring\n");
 	}
 
 	void RenderTriangles(triangulateio& in) {
@@ -362,7 +244,7 @@ public:
 	XGLVertexList contoursEnds;
 
 	std::string textToRender;
-	FreeTypeDecomposer fdc;
+	FT::GlyphDecomposer fdc;
 	ContourEndPoints contourEndPoints;
 	FT_Library ft;
 	FT_Face face;
