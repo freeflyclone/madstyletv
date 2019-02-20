@@ -35,7 +35,7 @@ public:
 	// use the "Triangle" package from http://www.cs.cmu.edu/~quake/triangle.html
 	class Triangulator {
 	public:
-		Triangulator(const XGLVertexList& v, ContourEndPoints& ce, triangulateio& in) {
+		Triangulator(const XGLVertexList& v, triangulateio& in) {
 			in.numberofpoints = (int)v.size();
 			in.pointlist = (REAL*)malloc(sizeof(REAL) * 2 * in.numberofpoints);
 
@@ -102,32 +102,33 @@ public:
 			charMap.emplace(charcode, gindex);
 
 		const int numGlyphs = (const int)(charMap.size());
-
-		currentPoint = { 0, 0 };
 		advance = { 0, 0 };
 
 		for (auto c : textToRender) {
 			gindex = charMap[c];
 
+			// load the glyph from the font
 			FT_Load_Glyph(face, gindex, FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL);
+
+			// decompose the outline using the spiffy new GlyphDecomposer class
 			FT_Outline_Decompose(&g->outline, &fdc, &fdc);
 
-			FT::GlyphOutline glyph = fdc.Outline();
-			int i = 0;
-			for (auto contour : glyph) {
-				xprintf("Countour %d has %d points\n", i++, contour.size());
-				for (int j = 0; j < contour.size(); j++) {
-					// wrap around to first point (when we get to the end)
-					int k = (j + 1) % contour.size();
+			// get the GlyphDecomposer's GlyphOutline (consisting of 1 or more Contours)
+			FT::GlyphOutline glyphOutline = fdc.Outline();
 
-					v.push_back({ { contour[j].x / scaleFactor, contour[j].y / scaleFactor, 0 }, {}, {}, { XGLColors::yellow } });
-					v.push_back({ { contour[k].x / scaleFactor, contour[k].y / scaleFactor, 0 }, {}, {}, { XGLColors::yellow } });
-				}
+			for (auto contour : glyphOutline) {
+				for (auto vec : contour)
+					tIn.push_back({ { vec.x / scaleFactor, vec.y / scaleFactor, 0 }, {}, {}, { XGLColors::yellow } });
+				break;
 			}
-
 			advance.x += g->advance.x;
 			advance.y += g->advance.y;
 		}
+
+		triangulateio in{ 0 }, out{ 0 };
+		Triangulator t(tIn, in);
+		triangulate("q30a0.5zp", &in, &out, nullptr);
+		RenderTriangles(out);
 
 		numPoints = (int)v.size();
 		num2draw = numPoints;
@@ -140,72 +141,13 @@ public:
 
 	void Draw() {
 		if (v.size()) {
-			glDrawArrays(GL_LINES, 0, num2draw);
+			glDrawArrays(GL_TRIANGLES, 0, num2draw);
 			GL_CHECK("glDrawArrays() failed");
 		}
 	}
 
-	FT_Vector Advance(const FT_Vector* vector) {
-		return{ advance.x + vector->x, advance.y + vector->y };
-	}
-	float GetInterpolatedPoint(float n1, float n2, float percent) {
-		float diff = n2 - n1;
-		return n1 + (diff * percent);
-	}
-
-	void EvaluateQuadraticBezier(FT_Vector p0, FT_Vector p1, FT_Vector p2) {
-		float xa, xb, ya, yb;
-		float x, y;
-		float interpolant;
-
-		// the triangulator() fails when there are coincident points, so avoid starting the curve at 0th point
-		for (interpolant = interpolationFactor; interpolant < 1.0f; interpolant += interpolationFactor) {
-			xa = GetInterpolatedPoint((float)p0.x, (float)p1.x, interpolant);
-			ya = GetInterpolatedPoint((float)p0.y, (float)p1.y, interpolant);
-
-			xb = GetInterpolatedPoint((float)p1.x, (float)p2.x, interpolant);
-			yb = GetInterpolatedPoint((float)p1.y, (float)p2.y, interpolant);
-
-			x = GetInterpolatedPoint(xa, xb, interpolant);
-			y = GetInterpolatedPoint(ya, yb, interpolant);
-
-			tIn.push_back({ { x / scaleFactor, y / scaleFactor, 0 }, {}, {}, pointsColor });
-		}
-		if (p2.x != firstPoint.x || p2.y != firstPoint.y)
-			tIn.push_back({ { p2.x / scaleFactor, p2.y / scaleFactor, 0 }, {}, {}, pointsColor });
-		else
-			xprintf("Final point of Quadratic Bezier is coincident with contour start, ignoring\n");
-	}
-
-	void EvaluateCubicBezier(FT_Vector p0, FT_Vector p1, FT_Vector p2, FT_Vector p3) {
-		float xa, xb, xc, ya, yb, yc;
-		float xm, xn, ym, yn;
-		float x, y;
-		float interpolant;
-
-		// the triangulator() fails when there are coincident points, so avoid starting the curve at 0th point
-		for (interpolant = interpolationFactor; interpolant < 1.0f; interpolant += interpolationFactor) {
-			xa = GetInterpolatedPoint((float)p0.x, (float)p1.x, interpolant);
-			ya = GetInterpolatedPoint((float)p0.y, (float)p1.y, interpolant);
-			xb = GetInterpolatedPoint((float)p1.x, (float)p2.x, interpolant);
-			yb = GetInterpolatedPoint((float)p1.y, (float)p2.y, interpolant);
-			xc = GetInterpolatedPoint((float)p2.x, (float)p3.x, interpolant);
-			yc = GetInterpolatedPoint((float)p2.y, (float)p3.y, interpolant);
-
-			xm = GetInterpolatedPoint(xa, xb, interpolant);
-			ym = GetInterpolatedPoint(ya, yb, interpolant);
-			xn = GetInterpolatedPoint(xb, xc, interpolant);
-			yn = GetInterpolatedPoint(yb, yc, interpolant);
-
-			x = GetInterpolatedPoint(xm, xn, interpolant);
-			y = GetInterpolatedPoint(ym, yn, interpolant);
-
-			tIn.push_back({ { x / scaleFactor, y / scaleFactor, 0 }, {}, {}, curvesColor });
-		}
-		if (p3.x != firstPoint.x || p3.y != firstPoint.y)
-			tIn.push_back({ { p3.x / scaleFactor, p3.y / scaleFactor, 0 }, {}, {}, pointsColor });
-		else
-			xprintf("Final point of Cubic Bezier is coincident with contour start, ignoring\n");
+	FT_Vector Advance(const FT_Vector& vector) {
+		return{ advance.x + vector.x, advance.y + vector.y };
 	}
 
 	void RenderTriangles(triangulateio& in) {
@@ -230,42 +172,31 @@ public:
 		}
 	}
 
-	const FT_F26Dot6 ftSize{ 256 };
-	const FT_UInt ftResolution{ 512 };
+	const FT_F26Dot6 ftSize{ 1026 };
+	const FT_UInt ftResolution{ 2048 };
 
-	bool drawCurves;
 	GLuint drawMode = GL_TRIANGLES; // GL_LINES or GL_TRIANGES (for filling in)
-
-	XGLColor pointsColor = XGLColors::yellow;
-	XGLColor curvesColor = XGLColors::cyan;
-	XGLColor controlColor = XGLColors::magenta;
 	XGLVertexList tIn;  //trianulator() input
-	XGLVertexList contoursEnds;
 
 	std::string textToRender;
 	FT::GlyphDecomposer fdc;
-	ContourEndPoints contourEndPoints;
 	FT_Library ft;
 	FT_Face face;
 	FT_GlyphSlot g;
 	CharMap charMap;
 
-	FT_Vector currentPoint;
-	FT_Vector firstPoint;
 	FT_Vector advance;
 
-	float scaleFactor = 200.0f;
-	float interpolationFactor = 0.2f;
+	float scaleFactor = 1600.0f;
 
-	struct triangulateio in, mid, out;
+	struct triangulateio in, out;
 };
 
 void ExampleXGL::BuildScene() {
 	XGLFreeType *shape;
-	//Triangulator *t;
 
 	// Initialize the Camera matrix
-	glm::vec3 cameraPosition(0, -0.1, 14);
+	glm::vec3 cameraPosition(0, -5, 14);
 	glm::vec3 cameraDirection = glm::normalize(cameraPosition*-1.0f);
 	glm::vec3 cameraUp = { 0, 0, 1 };
 	camera.Set(cameraPosition, cameraDirection, cameraUp);
@@ -275,7 +206,7 @@ void ExampleXGL::BuildScene() {
 	shape->model = translate;
 	
 	// now hook up the GUI sliders to the rotating torus thingy to control it's speeds.
-	XGLGuiSlider *hs, *hs2;
+	XGLGuiSlider *hs;
 
 	XGLGuiCanvas *sliders = (XGLGuiCanvas *)(GetGuiManager()->FindObject("HorizontalSliderWindow"));
 	if (sliders != nullptr) {
@@ -283,13 +214,6 @@ void ExampleXGL::BuildScene() {
 			hs->AddMouseEventListener([hs](float x, float y, int flags) {
 				if (hs->HasMouse()) {
 					num2draw = (int)(hs->Position()*numPoints);
-				}
-			});
-		}
-		if ((hs2 = (XGLGuiSlider *)sliders->FindObject("Horizontal Slider 2")) != nullptr) {
-			hs2->AddMouseEventListener([hs2](float x, float y, int flags) {
-				if (hs2->HasMouse()) {
-					num2draw2 = (int)(hs2->Position()*numPoints2);
 				}
 			});
 		}

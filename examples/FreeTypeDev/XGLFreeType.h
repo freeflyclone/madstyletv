@@ -52,7 +52,7 @@ namespace FT {
 		FT_Vector firstPoint;
 		FT_Vector currentPoint;
 		bool drawCurves = true;
-		float interpolationFactor = 0.25f;
+		float interpolationFactor = 0.1f;
 	};
 } // namespace FT
 
