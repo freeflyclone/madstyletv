@@ -8,7 +8,14 @@
 #include "ExampleXGL.h"
 #include <string>
 
-#include "Triangulator.h"
+#define REAL double
+#define TRILIBRARY
+#define ANSI_DECLARATORS
+
+extern "C" {
+#include "triangle.h"
+}
+
 #include "XGLFreeType.h"
 
 #include FT_OUTLINE_H
@@ -33,43 +40,70 @@ public:
 	typedef std::vector<GLsizei> ContourEndPoints;
 
 	// use the "Triangle" package from http://www.cs.cmu.edu/~quake/triangle.html
-	class Triangulator {
+	class TriangulatorConverter : public triangulateio {
 	public:
-		Triangulator(const XGLVertexList& v, triangulateio& in) {
-			in.numberofpoints = (int)v.size();
-			in.pointlist = (REAL*)malloc(sizeof(REAL) * 2 * in.numberofpoints);
+		void Init() {
+			pointlist = 0;
+			pointattributelist = 0;
+			pointmarkerlist = 0;
+			numberofpoints = 0;
+			numberofpointattributes = 0;
+			trianglelist = 0;
+			triangleattributelist = 0;
+			trianglearealist = 0; 
+			neighborlist = 0;     
+			numberoftriangles = 0;
+			numberofcorners = 0;
+			numberoftriangleattributes = 0;
+			segmentlist = 0;
+			segmentmarkerlist = 0;
+			numberofsegments = 0;
+			holelist = 0;
+			numberofholes = 0;
+			regionlist = 0;
+			numberofregions = 0;
+			edgelist = 0;
+			edgemarkerlist = 0;
+			normlist = 0;
+			numberofedges = 0;
 
-			in.numberofsegments = (int)v.size();
-			in.segmentlist = (int*)malloc(sizeof(int) * 2 * in.numberofsegments);
-
-			// build pointlist from XGLVertexList "v"
-			unsigned int idx = 0;
-			for (auto vrtx : v) {
-				in.pointlist[idx * 2] = vrtx.v.x;
-				in.pointlist[idx * 2 + 1] = vrtx.v.y;
-				idx++;
-			}
-			
-			//xyzzy
-			int idx1 = 0;
-			int idx2 = 1;
-			idx = 0;
-			for (auto vrtx : v) {
-				in.segmentlist[idx * 2] = idx1;
-				in.segmentlist[idx * 2 + 1] = idx2;
-				idx++;
-				idx1 = (idx1 + 1) % v.size();
-				idx2 = (idx2 + 1) % v.size();
-			}
 		}
-		void Dump(triangulateio& in) {
-			xprintf("%d 2 %d 0\n", in.numberofpoints, in.numberofpointattributes);
-			for (int i = 0; i < in.numberofpoints; i++)
-				xprintf("%d %0.6f %0.6f\n", i+1, in.pointlist[i * 2], in.pointlist[i * 2 + 1]);
+		TriangulatorConverter(FT::GlyphOutline& go, REAL scaleFactor) {
+			Init();
 
-			xprintf("%d 0\n", in.numberofsegments);
-			for (int i = 0; i < in.numberofsegments; i++)
-				xprintf("%d %d %d\n", i+1, in.segmentlist[i * 2]+1, in.segmentlist[i * 2 + 1]+1);
+			int numPoints = 0, numSegments;
+
+			for (auto c : go)
+				numPoints += c.size();
+
+			numSegments = numPoints;
+
+			pointlist = (REAL*)malloc(2 * sizeof(REAL) * numPoints);
+			segmentlist = (int*)malloc(2 * sizeof(int) * numSegments);
+			holelist = (REAL*)malloc(2 * sizeof(REAL) * 20);
+
+			int contourOffset = 0;
+			//FT::Contour c = go[0];
+			for (auto c : go)
+			{
+				int numPoints = c.size();
+				int numSegments = numPoints;
+
+				for (int i = 0; i < numPoints; i++) {
+					pointlist[i * 2 + contourOffset] = (REAL)c[i].x / scaleFactor;
+					pointlist[i * 2 + 1 + contourOffset] = (REAL)c[i].y / scaleFactor;
+				}
+
+				for (int i = 0; i < numPoints; i++) {
+					int j = (i + 1) % numPoints;
+					segmentlist[i * 2 + contourOffset] = i;
+					segmentlist[i * 2 + 1 + contourOffset] = j;
+				}
+				numberofpoints += numPoints;
+				numberofsegments += numSegments;
+
+				contourOffset += numPoints;
+			}
 		}
 	};
 
@@ -116,19 +150,17 @@ public:
 			// get the GlyphDecomposer's GlyphOutline (consisting of 1 or more Contours)
 			FT::GlyphOutline glyphOutline = fdc.Outline();
 
-			for (auto contour : glyphOutline) {
-				for (auto vec : contour)
-					tIn.push_back({ { vec.x / scaleFactor, vec.y / scaleFactor, 0 }, {}, {}, { XGLColors::yellow } });
-				break;
-			}
+			TriangulatorConverter t(glyphOutline, scaleFactor);
+
+			out = {};
+
+			triangulate("qzp", (triangulateio*)&t, &out, NULL);
+
+			RenderTriangles(out);
+
 			advance.x += g->advance.x;
 			advance.y += g->advance.y;
 		}
-
-		triangulateio in{ 0 }, out{ 0 };
-		Triangulator t(tIn, in);
-		triangulate("q30a0.5zp", &in, &out, nullptr);
-		RenderTriangles(out);
 
 		numPoints = (int)v.size();
 		num2draw = numPoints;

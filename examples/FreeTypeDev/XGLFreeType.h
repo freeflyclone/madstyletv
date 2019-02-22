@@ -28,9 +28,11 @@ namespace FT {
 			return glyphOutline;
 		}
 
-		bool IsEqual(FT_Vector a, FT_Vector b) { 
+		bool IsEqual(FT_Vector a, FT_Vector b) {
 			return (a.x == b.x) && (a.y == b.y); 
 		}
+
+		void DrawCurves(bool enable) { drawCurves = enable; }
 
 	private:
 		static int _MoveToFunc(const FT_Vector* to, void *pCtx) { return ((GlyphDecomposer*)pCtx)->MoveTo(*to); }

@@ -4,7 +4,7 @@
 	"SharedMemory" : false,
 	"VideoFile" : "H:/Hero6/GH010058-slomo.mp4",
 	"VideoFile2" : "assets/GH010033.mp4",
-	"FreeTypeText" : "a",
+	"FreeTypeText" : "S",
 	"Encoder" : {
 		"enabled" : false,
 		"preset" : "faster",

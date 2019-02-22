@@ -50,14 +50,19 @@ int GlyphDecomposer::ConicTo(const FT_Vector& control, const FT_Vector& to) {
 
 int GlyphDecomposer::CubicTo(const FT_Vector& control1, const FT_Vector& control2, const FT_Vector& to) {
 	xprintf(" CubeTo: %d %d - %d %d - %d %d\n", control1.x, control1.y, control2.x, control2.y, to.x, to.y);
-	glyphOutline[contourIdx].push_back(control1);
-	glyphOutline[contourIdx].push_back(control2);
-	currentPoint = control2;
+	if (drawCurves) {
+		EvaluateCubicBezier(currentPoint, control1, control2, to);
+	}
+	else {
+		glyphOutline[contourIdx].push_back(control1);
+		glyphOutline[contourIdx].push_back(control2);
+		currentPoint = control2;
 
-	if (IsEqual(to, firstPoint))
-		return 0;
+		if (IsEqual(to, firstPoint))
+			return 0;
 
-	glyphOutline[contourIdx].push_back(to);
+		glyphOutline[contourIdx].push_back(to);
+	}
 	currentPoint = to;
 	return 0;
 }
@@ -111,3 +116,23 @@ void GlyphDecomposer::EvaluateCubicBezier(const FT_Vector& p0, const FT_Vector& 
 	}
 	glyphOutline[contourIdx].push_back(p3);
 }
+/*
+function IsClockwise(feature)
+{
+	if (feature.geometry == null)
+		return -1;
+
+	var vertices = feature.geometry.getVertices();
+	var area = 0;
+
+	for (var i = 0; i < (vertices.length); i++) {
+		j = (i + 1) % vertices.length;
+
+		area += vertices[i].x * vertices[j].y;
+		area -= vertices[j].x * vertices[i].y;
+		// console.log(area);
+	}
+
+	return (area < 0);
+}
+*/
