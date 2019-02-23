@@ -4,10 +4,11 @@
 #include "ft2build.h"
 #include FT_OUTLINE_H
 #include <vector>
+#include "xgl.h"
 #include "xutils.h"
 
 namespace FT {
-	typedef std::vector<FT_Vector> Contour;
+	typedef XGLVertexList Contour;
 	typedef std::vector<Contour> GlyphOutline;
 
 	class GlyphDecomposer : public FT_Outline_Funcs {
@@ -28,31 +29,46 @@ namespace FT {
 			return glyphOutline;
 		}
 
-		bool IsEqual(FT_Vector a, FT_Vector b) {
+		bool IsEqual(XGLVertex a, XGLVertex b) {
 			return (a.x == b.x) && (a.y == b.y); 
 		}
 
 		void DrawCurves(bool enable) { drawCurves = enable; }
 
 	private:
-		static int _MoveToFunc(const FT_Vector* to, void *pCtx) { return ((GlyphDecomposer*)pCtx)->MoveTo(*to); }
-		static int _LineToFunc(const FT_Vector* to, void *pCtx) { return ((GlyphDecomposer*)pCtx)->LineTo(*to); }
-		static int _ConicToFunc(const FT_Vector* c, const FT_Vector* to, void *pCtx) { return ((GlyphDecomposer*)pCtx)->ConicTo(*c, *to); }
-		static int _CubicToFunc(const FT_Vector* c1, const FT_Vector* c2, const FT_Vector* to, void *pCtx) { return ((GlyphDecomposer*)pCtx)->CubicTo(*c1, *c2, *to); }
+		static int _MoveToFunc(const FT_Vector* to, void *pCtx) { 
+			XGLVertex xto(to->x, to->y, 0);
+			return ((GlyphDecomposer*)pCtx)->MoveTo(xto);
+		}
+		static int _LineToFunc(const FT_Vector* to, void *pCtx) { 
+			XGLVertex xto(to->x, to->y, 0);
+			return ((GlyphDecomposer*)pCtx)->LineTo(xto);
+		}
+		static int _ConicToFunc(const FT_Vector* c, const FT_Vector* to, void *pCtx) { 
+			XGLVertex xc(c->x, c->y, 0);
+			XGLVertex xto(to->x, to->y, 0);
+			return ((GlyphDecomposer*)pCtx)->ConicTo(xc, xto);
+		}
+		static int _CubicToFunc(const FT_Vector* c1, const FT_Vector* c2, const FT_Vector* to, void *pCtx) { 
+			XGLVertex xc1(c1->x, c1->y, 0);
+			XGLVertex xc2(c2->x, c2->y, 0);
+			XGLVertex xto(to->x, to->y, 0);
+			return ((GlyphDecomposer*)pCtx)->CubicTo(xc1, xc2, xto); 
+		}
 
-		int MoveTo(const FT_Vector&);
-		int LineTo(const FT_Vector&);
-		int ConicTo(const FT_Vector&, const FT_Vector&);
-		int CubicTo(const FT_Vector&, const FT_Vector&, const FT_Vector&);
+		int MoveTo(const XGLVertex&);
+		int LineTo(const XGLVertex&);
+		int ConicTo(const XGLVertex&, const XGLVertex&);
+		int CubicTo(const XGLVertex&, const XGLVertex&, const XGLVertex&);
 
-		const FT_Vector& Interpolate(const FT_Vector&, const FT_Vector&, float);
-		void EvaluateQuadraticBezier(const FT_Vector&, const FT_Vector&, const FT_Vector&);
-		void EvaluateCubicBezier(const FT_Vector&, const FT_Vector&, const FT_Vector&, const FT_Vector&);
+		const XGLVertex& Interpolate(const XGLVertex&, const XGLVertex&, float);
+		void EvaluateQuadraticBezier(const XGLVertex&, const XGLVertex&, const XGLVertex&);
+		void EvaluateCubicBezier(const XGLVertex&, const XGLVertex&, const XGLVertex&, const XGLVertex&);
 
 		GlyphOutline glyphOutline;
 		int contourIdx{ 0 };
-		FT_Vector firstPoint;
-		FT_Vector currentPoint;
+		XGLVertex firstPoint;
+		XGLVertex currentPoint;
 		bool drawCurves = true;
 		float interpolationFactor = 0.1f;
 	};

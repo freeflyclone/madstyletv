@@ -90,8 +90,8 @@ public:
 				int numSegments = numPoints;
 
 				for (int i = 0; i < numPoints; i++) {
-					pointlist[i * 2 + contourOffset] = (REAL)c[i].x / scaleFactor;
-					pointlist[i * 2 + 1 + contourOffset] = (REAL)c[i].y / scaleFactor;
+					pointlist[i * 2 + contourOffset] = c[i].v.x / scaleFactor;
+					pointlist[i * 2 + 1 + contourOffset] = c[i].v.y / scaleFactor;
 				}
 
 				for (int i = 0; i < numPoints; i++) {
