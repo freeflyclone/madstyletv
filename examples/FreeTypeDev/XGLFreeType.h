@@ -8,7 +8,16 @@
 #include "xutils.h"
 
 namespace FT {
-	typedef XGLVertexList Contour;
+	class Contour {
+	public:
+		Contour() { xprintf("Contour::Contour()\n"); }
+
+		void CheckWinding();
+		XGLVertex ComputeCentroid(bool *);
+
+		XGLVertex centroid;
+		XGLVertexList v;
+	};
 	typedef std::vector<Contour> GlyphOutline;
 
 	class GlyphDecomposer : public FT_Outline_Funcs {
@@ -25,7 +34,7 @@ namespace FT {
 			glyphOutline.push_back(*(new Contour()));
 		}
 
-		const GlyphOutline& Outline() {
+		GlyphOutline& Outline() {
 			return glyphOutline;
 		}
 

@@ -40,70 +40,92 @@ public:
 	typedef std::vector<GLsizei> ContourEndPoints;
 
 	// use the "Triangle" package from http://www.cs.cmu.edu/~quake/triangle.html
-	class TriangulatorConverter : public triangulateio {
+	class TriangulatorConverter {
 	public:
-		void Init() {
-			pointlist = 0;
-			pointattributelist = 0;
-			pointmarkerlist = 0;
-			numberofpoints = 0;
-			numberofpointattributes = 0;
-			trianglelist = 0;
-			triangleattributelist = 0;
-			trianglearealist = 0; 
-			neighborlist = 0;     
-			numberoftriangles = 0;
-			numberofcorners = 0;
-			numberoftriangleattributes = 0;
-			segmentlist = 0;
-			segmentmarkerlist = 0;
-			numberofsegments = 0;
-			holelist = 0;
-			numberofholes = 0;
-			regionlist = 0;
-			numberofregions = 0;
-			edgelist = 0;
-			edgemarkerlist = 0;
-			normlist = 0;
-			numberofedges = 0;
+		void Init(triangulateio& in) {
+			in.pointlist = 0;
+			in.pointattributelist = 0;
+			in.pointmarkerlist = 0;
+			in.numberofpoints = 0;
+			in.numberofpointattributes = 0;
+			in.trianglelist = 0;
+			in.triangleattributelist = 0;
+			in.trianglearealist = 0;
+			in.neighborlist = 0;
+			in.numberoftriangles = 0;
+			in.numberofcorners = 0;
+			in.numberoftriangleattributes = 0;
+			in.segmentlist = 0;
+			in.segmentmarkerlist = 0;
+			in.numberofsegments = 0;
+			in.holelist = 0;
+			in.numberofholes = 0;
+			in.regionlist = 0;
+			in.numberofregions = 0;
+			in.edgelist = 0;
+			in.edgemarkerlist = 0;
+			in.normlist = 0;
+			in.numberofedges = 0;
 
 		}
-		TriangulatorConverter(FT::GlyphOutline& go, REAL scaleFactor) {
-			Init();
+		TriangulatorConverter(FT::GlyphOutline& go, triangulateio&  in, REAL scaleFactor) {
+			Init(in);
 
 			int numPoints = 0, numSegments;
 
 			for (auto c : go)
-				numPoints += c.size();
+				numPoints += c.v.size();
 
 			numSegments = numPoints;
 
-			pointlist = (REAL*)malloc(2 * sizeof(REAL) * numPoints);
-			segmentlist = (int*)malloc(2 * sizeof(int) * numSegments);
-			holelist = (REAL*)malloc(2 * sizeof(REAL) * 20);
+			in.pointlist = (REAL*)malloc(2 * sizeof(REAL) * numPoints);
+			in.segmentlist = (int*)malloc(2 * sizeof(int) * numSegments);
+			in.holelist = (REAL*)malloc(2 * sizeof(REAL) * 20);
 
 			int contourOffset = 0;
+			int pIdx = 0;
+			int sIdx = 0;
 			//FT::Contour c = go[0];
 			for (auto c : go)
 			{
-				int numPoints = c.size();
+				int numPoints = c.v.size();
 				int numSegments = numPoints;
 
 				for (int i = 0; i < numPoints; i++) {
-					pointlist[i * 2 + contourOffset] = c[i].v.x / scaleFactor;
-					pointlist[i * 2 + 1 + contourOffset] = c[i].v.y / scaleFactor;
+					in.pointlist[pIdx++] = c.v[i].v.x / scaleFactor;
+					in.pointlist[pIdx++] = c.v[i].v.y / scaleFactor;
 				}
 
 				for (int i = 0; i < numPoints; i++) {
 					int j = (i + 1) % numPoints;
-					segmentlist[i * 2 + contourOffset] = i;
-					segmentlist[i * 2 + 1 + contourOffset] = j;
+					in.segmentlist[sIdx++] = i + contourOffset;
+					in.segmentlist[sIdx++] = j + contourOffset;
 				}
-				numberofpoints += numPoints;
-				numberofsegments += numSegments;
+				in.numberofpoints += numPoints;
+				in.numberofsegments += numSegments;
 
+				bool isClockwise;
+				XGLVertex v = c.ComputeCentroid(&isClockwise);
+				if (!isClockwise) {
+					in.holelist[in.numberofholes * 2] = v.x / scaleFactor;
+					in.holelist[in.numberofholes * 2 + 1] = v.y / scaleFactor;
+					in.numberofholes++;
+				}
 				contourOffset += numPoints;
 			}
+		}
+		void Dump(triangulateio& in) {
+			xprintf("numberofpoints: %d\n", in.numberofpoints);
+			for (int i = 0; i < in.numberofpoints; i++)
+				xprintf("  %0.5f, %0.5f\n", in.pointlist[i * 2], in.pointlist[i * 2 + 1]);
+
+			xprintf("numberofsegments: %d\n", in.numberofsegments);
+			for (int i = 0; i < in.numberofsegments; i++)
+				xprintf("  %d, %d\n", in.segmentlist[i * 2], in.segmentlist[i * 2 + 1]);
+
+			xprintf("numberofholes: %d\n", in.numberofholes);
+			for (int i = 0; i < in.numberofholes; i++)
+				xprintf("  %0.5f, %0.5f\n", in.holelist[i * 2], in.segmentlist[i * 2 + 1]);
 		}
 	};
 
@@ -148,13 +170,18 @@ public:
 			FT_Outline_Decompose(&g->outline, &fdc, &fdc);
 
 			// get the GlyphDecomposer's GlyphOutline (consisting of 1 or more Contours)
-			FT::GlyphOutline glyphOutline = fdc.Outline();
+			FT::GlyphOutline& glyphOutline = fdc.Outline();
 
-			TriangulatorConverter t(glyphOutline, scaleFactor);
+			bool isClockwise;
 
+			in = {};
+
+			TriangulatorConverter t(glyphOutline, in, scaleFactor);
+
+			t.Dump(in);
 			out = {};
 
-			triangulate("qzp", (triangulateio*)&t, &out, NULL);
+			triangulate("qzp", &in, &out, NULL);
 
 			RenderTriangles(out);
 
