@@ -10,12 +10,7 @@
 namespace FT {
 	class Contour {
 	public:
-		Contour() { xprintf("Contour::Contour()\n"); }
-
-		void CheckWinding();
 		XGLVertex ComputeCentroid(bool *);
-
-		XGLVertex centroid;
 		XGLVertexList v;
 	};
 	typedef std::vector<Contour> GlyphOutline;
@@ -79,7 +74,7 @@ namespace FT {
 		XGLVertex firstPoint;
 		XGLVertex currentPoint;
 		bool drawCurves = true;
-		float interpolationFactor = 0.1f;
+		float interpolationFactor = 0.2f;
 	};
 } // namespace FT
 

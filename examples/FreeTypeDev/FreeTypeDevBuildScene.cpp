@@ -68,7 +68,7 @@ public:
 			in.numberofedges = 0;
 
 		}
-		TriangulatorConverter(FT::GlyphOutline& go, triangulateio&  in, REAL scaleFactor) {
+		TriangulatorConverter(FT::GlyphOutline& go, triangulateio&  in, XGLVertex& a, REAL scaleFactor) {
 			Init(in);
 
 			int numPoints = 0, numSegments;
@@ -85,15 +85,14 @@ public:
 			int contourOffset = 0;
 			int pIdx = 0;
 			int sIdx = 0;
-			//FT::Contour c = go[0];
 			for (auto c : go)
 			{
 				int numPoints = c.v.size();
 				int numSegments = numPoints;
 
 				for (int i = 0; i < numPoints; i++) {
-					in.pointlist[pIdx++] = c.v[i].v.x / scaleFactor;
-					in.pointlist[pIdx++] = c.v[i].v.y / scaleFactor;
+					in.pointlist[pIdx++] = c.v[i].v.x / scaleFactor + a.x;
+					in.pointlist[pIdx++] = c.v[i].v.y / scaleFactor + a.y;
 				}
 
 				for (int i = 0; i < numPoints; i++) {
@@ -158,7 +157,7 @@ public:
 			charMap.emplace(charcode, gindex);
 
 		const int numGlyphs = (const int)(charMap.size());
-		advance = { 0, 0 };
+		advance = { 0, 0, 0 };
 
 		for (auto c : textToRender) {
 			gindex = charMap[c];
@@ -172,21 +171,17 @@ public:
 			// get the GlyphDecomposer's GlyphOutline (consisting of 1 or more Contours)
 			FT::GlyphOutline& glyphOutline = fdc.Outline();
 
-			bool isClockwise;
-
 			in = {};
-
-			TriangulatorConverter t(glyphOutline, in, scaleFactor);
-
-			t.Dump(in);
 			out = {};
+			TriangulatorConverter t(glyphOutline, in, advance, scaleFactor);
 
-			triangulate("qzp", &in, &out, NULL);
+			//t.Dump(in);
+			triangulate("q25.0a0.01zp", &in, &out, NULL);
 
 			RenderTriangles(out);
 
-			advance.x += g->advance.x;
-			advance.y += g->advance.y;
+			advance.x += g->advance.x / scaleFactor;
+			advance.y += g->advance.y / scaleFactor;
 		}
 
 		numPoints = (int)v.size();
@@ -205,8 +200,8 @@ public:
 		}
 	}
 
-	FT_Vector Advance(const FT_Vector& vector) {
-		return{ advance.x + vector.x, advance.y + vector.y };
+	XGLVertex Advance(const XGLVertex& vector) {
+		return { advance.x + vector.x, advance.y + vector.y, 0 };
 	}
 
 	void RenderTriangles(triangulateio& in) {
@@ -231,8 +226,8 @@ public:
 		}
 	}
 
-	const FT_F26Dot6 ftSize{ 1026 };
-	const FT_UInt ftResolution{ 2048 };
+	const FT_F26Dot6 ftSize{ 1024 };
+	const FT_UInt ftResolution{ 1024 };
 
 	GLuint drawMode = GL_TRIANGLES; // GL_LINES or GL_TRIANGES (for filling in)
 	XGLVertexList tIn;  //trianulator() input
@@ -244,7 +239,7 @@ public:
 	FT_GlyphSlot g;
 	CharMap charMap;
 
-	FT_Vector advance;
+	XGLVertex advance;
 
 	float scaleFactor = 1600.0f;
 
@@ -255,7 +250,7 @@ void ExampleXGL::BuildScene() {
 	XGLFreeType *shape;
 
 	// Initialize the Camera matrix
-	glm::vec3 cameraPosition(0, -5, 14);
+	glm::vec3 cameraPosition(0, -5, 8);
 	glm::vec3 cameraDirection = glm::normalize(cameraPosition*-1.0f);
 	glm::vec3 cameraUp = { 0, 0, 1 };
 	camera.Set(cameraPosition, cameraDirection, cameraUp);

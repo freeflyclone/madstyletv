@@ -50,7 +50,7 @@ XGLVertex Contour::ComputeCentroid(bool *isClockwise)
 }
 
 int GlyphDecomposer::MoveTo(const XGLVertex& to) {
-	xprintf(" MoveTo: %0.4f %0.4f\n", to.x, to.y);
+	//xprintf(" MoveTo: %0.4f %0.4f\n", to.x, to.y);
 	firstPoint = to;
 
 	// if the current Contour has XGLVertex data, this MoveTo is a new Contour
@@ -65,10 +65,10 @@ int GlyphDecomposer::MoveTo(const XGLVertex& to) {
 }
 
 int GlyphDecomposer::LineTo(const XGLVertex& to) {
-	xprintf(" LineTo: %0.4f %0.4f\n", to.x, to.y);
+	//xprintf(" LineTo: %0.4f %0.4f\n", to.x, to.y);
 
 	if (IsEqual(to, firstPoint)) {
-		xprintf(" LineTo: %0.4f %0.4f is coincident with Contour start, ignoring\n");
+		//xprintf(" LineTo: %0.4f %0.4f is coincident with Contour start, ignoring\n");
 		return 0;
 	}
 
@@ -78,7 +78,7 @@ int GlyphDecomposer::LineTo(const XGLVertex& to) {
 }
 
 int GlyphDecomposer::ConicTo(const XGLVertex& control, const XGLVertex& to) {
-	xprintf("ConicTo: %0.4f %0.4f - %0.4f %0.4f\n", control.x, control.y, to.x, to.y);
+	//xprintf("ConicTo: %0.4f %0.4f - %0.4f %0.4f\n", control.x, control.y, to.x, to.y);
 	if (drawCurves) {
 		EvaluateQuadraticBezier(currentPoint, control, to);
 	}
@@ -96,7 +96,7 @@ int GlyphDecomposer::ConicTo(const XGLVertex& control, const XGLVertex& to) {
 }
 
 int GlyphDecomposer::CubicTo(const XGLVertex& control1, const XGLVertex& control2, const XGLVertex& to) {
-	xprintf(" CubeTo: %0.4f %0.4f - %0.4f %0.4f - %0.4f %0.4f\n", control1.x, control1.y, control2.x, control2.y, to.x, to.y);
+	//xprintf(" CubeTo: %0.4f %0.4f - %0.4f %0.4f - %0.4f %0.4f\n", control1.x, control1.y, control2.x, control2.y, to.x, to.y);
 	if (drawCurves) {
 		EvaluateCubicBezier(currentPoint, control1, control2, to);
 	}
@@ -136,7 +136,7 @@ void GlyphDecomposer::EvaluateQuadraticBezier(const XGLVertex& p0, const XGLVert
 		glyphOutline[contourIdx].v.push_back({ out });
 	}
 	if (IsEqual(p2, firstPoint)) {
-		xprintf("Final point of Quadratic Bezier is coincident with contour start, ignoring\n");
+		//xprintf("Final point of Quadratic Bezier is coincident with contour start, ignoring\n");
 		return;
 	}
 	glyphOutline[contourIdx].v.push_back({ p2 });
@@ -158,28 +158,8 @@ void GlyphDecomposer::EvaluateCubicBezier(const XGLVertex& p0, const XGLVertex& 
 		glyphOutline[contourIdx].v.push_back({ out });
 	}
 	if (IsEqual(p3, firstPoint)) {
-		xprintf("Final point of Cubic Bezier is coincident with contour start, ignoring\n");
+		//xprintf("Final point of Cubic Bezier is coincident with contour start, ignoring\n");
 		return;
 	}
 	glyphOutline[contourIdx].v.push_back({ p3 });
 }
-/*
-function IsClockwise(feature)
-{
-	if (feature.geometry == null)
-		return -1;
-
-	var vertices = feature.geometry.getVertices();
-	var area = 0;
-
-	for (var i = 0; i < (vertices.length); i++) {
-		j = (i + 1) % vertices.length;
-
-		area += vertices[i].x * vertices[j].y;
-		area -= vertices[j].x * vertices[i].y;
-		// console.log(area);
-	}
-
-	return (area < 0);
-}
-*/
