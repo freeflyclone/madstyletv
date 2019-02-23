@@ -49,6 +49,14 @@ XGLVertex Contour::ComputeCentroid(bool *isClockwise)
 	return centroid;
 }
 
+void GlyphDecomposer::Reset() {
+	for (auto c : glyphOutline)
+		c.v.clear();
+
+	glyphOutline.clear();
+	glyphOutline.push_back(*(new Contour()));
+	contourIdx = 0;
+}
 int GlyphDecomposer::MoveTo(const XGLVertex& to) {
 	//xprintf(" MoveTo: %0.4f %0.4f\n", to.x, to.y);
 	firstPoint = to;

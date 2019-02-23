@@ -106,8 +106,8 @@ public:
 				bool isClockwise;
 				XGLVertex v = c.ComputeCentroid(&isClockwise);
 				if (!isClockwise) {
-					in.holelist[in.numberofholes * 2] = v.x / scaleFactor;
-					in.holelist[in.numberofholes * 2 + 1] = v.y / scaleFactor;
+					in.holelist[in.numberofholes * 2] = v.x / scaleFactor + a.x;
+					in.holelist[in.numberofholes * 2 + 1] = v.y / scaleFactor + a.y;
 					in.numberofholes++;
 				}
 				contourOffset += numPoints;
@@ -160,26 +160,30 @@ public:
 		advance = { 0, 0, 0 };
 
 		for (auto c : textToRender) {
-			gindex = charMap[c];
+			if (c != ' ') {
+				gindex = charMap[c];
 
-			// load the glyph from the font
-			FT_Load_Glyph(face, gindex, FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL);
+				// load the glyph from the font
+				FT_Load_Glyph(face, gindex, FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL);
 
-			// decompose the outline using the spiffy new GlyphDecomposer class
-			FT_Outline_Decompose(&g->outline, &fdc, &fdc);
+				// decompose the outline using the spiffy new GlyphDecomposer class
+				fdc.Reset();
+				FT_Outline_Decompose(&g->outline, &fdc, &fdc);
 
-			// get the GlyphDecomposer's GlyphOutline (consisting of 1 or more Contours)
-			FT::GlyphOutline& glyphOutline = fdc.Outline();
+				// get the GlyphDecomposer's GlyphOutline (consisting of 1 or more Contours)
+				FT::GlyphOutline& glyphOutline = fdc.Outline();
 
-			in = {};
-			out = {};
-			TriangulatorConverter t(glyphOutline, in, advance, scaleFactor);
+				in = {};
+				out = {};
+				TriangulatorConverter t(glyphOutline, in, advance, scaleFactor);
+				t.Init(out);
 
-			//t.Dump(in);
-			triangulate("q25.0a0.01zp", &in, &out, NULL);
+				t.Dump(in);
+				triangulate("q25.0a0.1zp", &in, &out, NULL);
+				//triangulate("zp", &in, &out, NULL);
 
-			RenderTriangles(out);
-
+				RenderTriangles(out);
+			}
 			advance.x += g->advance.x / scaleFactor;
 			advance.y += g->advance.y / scaleFactor;
 		}

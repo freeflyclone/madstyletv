@@ -26,8 +26,10 @@ namespace FT {
 			delta = 0;
 
 			// add initial Contour, which is empty, to the outline
-			glyphOutline.push_back(*(new Contour()));
+			//glyphOutline.push_back(*(new Contour()));
 		}
+
+		void Reset();
 
 		GlyphOutline& Outline() {
 			return glyphOutline;
