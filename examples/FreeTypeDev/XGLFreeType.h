@@ -76,7 +76,7 @@ namespace FT {
 		XGLVertex firstPoint;
 		XGLVertex currentPoint;
 		bool drawCurves = true;
-		float interpolationFactor = 0.2f;
+		float interpolationFactor = 0.1f;
 	};
 } // namespace FT
 

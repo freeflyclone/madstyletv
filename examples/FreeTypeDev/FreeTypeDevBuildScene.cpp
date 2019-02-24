@@ -9,11 +9,9 @@
 #include <string>
 
 #define REAL double
-#define TRILIBRARY
-#define ANSI_DECLARATORS
 
 extern "C" {
-#include "triangle.h"
+  #include "triangle.h"
 }
 
 #include "XGLFreeType.h"
@@ -71,7 +69,7 @@ public:
 		TriangulatorConverter(FT::GlyphOutline& go, triangulateio&  in, XGLVertex& a, REAL scaleFactor) {
 			Init(in);
 
-			int numPoints = 0, numSegments;
+			size_t numPoints = 0, numSegments;
 
 			for (auto c : go)
 				numPoints += c.v.size();
@@ -87,8 +85,8 @@ public:
 			int sIdx = 0;
 			for (auto c : go)
 			{
-				int numPoints = c.v.size();
-				int numSegments = numPoints;
+				size_t numPoints = c.v.size();
+				size_t numSegments = numPoints;
 
 				for (int i = 0; i < numPoints; i++) {
 					in.pointlist[pIdx++] = c.v[i].v.x / scaleFactor + a.x;
@@ -100,8 +98,8 @@ public:
 					in.segmentlist[sIdx++] = i + contourOffset;
 					in.segmentlist[sIdx++] = j + contourOffset;
 				}
-				in.numberofpoints += numPoints;
-				in.numberofsegments += numSegments;
+				in.numberofpoints += (int)numPoints;
+				in.numberofsegments += (int)numSegments;
 
 				bool isClockwise;
 				XGLVertex v = c.ComputeCentroid(&isClockwise);
@@ -110,7 +108,7 @@ public:
 					in.holelist[in.numberofholes * 2 + 1] = v.y / scaleFactor + a.y;
 					in.numberofholes++;
 				}
-				contourOffset += numPoints;
+				contourOffset += (int)numPoints;
 			}
 		}
 		void Dump(triangulateio& in) {
@@ -179,7 +177,7 @@ public:
 				t.Init(out);
 
 				t.Dump(in);
-				triangulate("q25.0a0.1zp", &in, &out, NULL);
+				triangulate("q25zp", &in, &out, NULL);
 				//triangulate("zp", &in, &out, NULL);
 
 				RenderTriangles(out);
@@ -245,7 +243,7 @@ public:
 
 	XGLVertex advance;
 
-	float scaleFactor = 1600.0f;
+	float scaleFactor = 3276.80f;
 
 	struct triangulateio in, out;
 };
@@ -260,7 +258,7 @@ void ExampleXGL::BuildScene() {
 	camera.Set(cameraPosition, cameraDirection, cameraUp);
 
 	AddShape("shaders/000-simple", [&](){ shape = new XGLFreeType(config.WideToBytes(config.Find(L"FreeTypeText")->AsString())); return shape; });
-	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(-2, -2, 1.0));
+	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(-2, 0, 0));
 	shape->model = translate;
 	
 	// now hook up the GUI sliders to the rotating torus thingy to control it's speeds.
