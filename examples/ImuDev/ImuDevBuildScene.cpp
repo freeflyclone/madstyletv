@@ -96,7 +96,7 @@ void ExampleXGL::BuildScene() {
 	accelRateGraph->model = translate;
 
 	try {
-		xuart = new XUartAscii("/dev/ttyUSB0");
+		xuart = new XUartAscii("\\\\.\\COM20");
 		shape->AddChild((XGLShape*)xuart);
 		xuart->AddListener([&](unsigned char *line){
 			static long int count = 0;

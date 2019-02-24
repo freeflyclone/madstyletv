@@ -24,8 +24,11 @@ XGLHmd::XGLHmd(XGL *p, int w, int h) :
 	if (!OVR_SUCCESS(ovr_Initialize(nullptr)))
 		throw std::runtime_error("Failed to initialize libOVR");
 
-	if (!OVR_SUCCESS(ovr_Create(&session, &luid)))
+	ovrResult result;
+	if ((result = ovr_Create(&session, &luid)) < 0) {
+		xprintf("ovr_Create() failed: %d\n", result);
 		throw std::runtime_error("Failed to create OVR Session");
+	}
 
 	if (Compare(luid, GetDefaultAdapterLuid())) // If luid that the Rift is on is not the default adapter LUID...
 		throw std::runtime_error("OpenGL supports only the default graphics adapter.");

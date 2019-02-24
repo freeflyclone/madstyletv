@@ -175,6 +175,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "triangle", "xclass\3rdParty\Triangle\triangle.vcxproj", "{19FAEE08-386E-42E2-AF62-A91BE5A66FBF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IMUDev", "examples\IMUDev\IMUDev.vcxproj", "{4687140E-08DB-4F8D-A57A-84D95D880C37}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -591,6 +593,18 @@ Global
 		{19FAEE08-386E-42E2-AF62-A91BE5A66FBF}.Release|Win32.ActiveCfg = Release|Win32
 		{19FAEE08-386E-42E2-AF62-A91BE5A66FBF}.Release|Win32.Build.0 = Release|Win32
 		{19FAEE08-386E-42E2-AF62-A91BE5A66FBF}.Release|x64.ActiveCfg = Release|x64
+		{4687140E-08DB-4F8D-A57A-84D95D880C37}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{4687140E-08DB-4F8D-A57A-84D95D880C37}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{4687140E-08DB-4F8D-A57A-84D95D880C37}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4687140E-08DB-4F8D-A57A-84D95D880C37}.Debug|Win32.Build.0 = Debug|Win32
+		{4687140E-08DB-4F8D-A57A-84D95D880C37}.Debug|x64.ActiveCfg = Debug|x64
+		{4687140E-08DB-4F8D-A57A-84D95D880C37}.Debug|x64.Build.0 = Debug|x64
+		{4687140E-08DB-4F8D-A57A-84D95D880C37}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{4687140E-08DB-4F8D-A57A-84D95D880C37}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{4687140E-08DB-4F8D-A57A-84D95D880C37}.Release|Win32.ActiveCfg = Release|Win32
+		{4687140E-08DB-4F8D-A57A-84D95D880C37}.Release|Win32.Build.0 = Release|Win32
+		{4687140E-08DB-4F8D-A57A-84D95D880C37}.Release|x64.ActiveCfg = Release|x64
+		{4687140E-08DB-4F8D-A57A-84D95D880C37}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -630,5 +644,6 @@ Global
 		{EB4BFA4A-D7A5-4518-8BF3-B3CE9D589303} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 		{EBFE4111-B324-4144-929E-01E41DAE575E} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 		{19FAEE08-386E-42E2-AF62-A91BE5A66FBF} = {C14291D8-7D09-49F4-9D35-ED370CEFA893}
+		{4687140E-08DB-4F8D-A57A-84D95D880C37} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 	EndGlobalSection
 EndGlobal

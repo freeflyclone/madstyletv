@@ -255,7 +255,7 @@ void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
 	initHmd = false;
-	preferredSwapInterval = 0;
+	preferredSwapInterval = 1;
 
 	// Initialize the Camera matrix
 	glm::vec3 cameraPosition(5, -20, 20);
@@ -393,6 +393,6 @@ void ExampleXGL::BuildScene() {
 #endif // DATA_STREAMS_ENGAGE
 	
 		pavp->Start();
-		videoTimer.SetStepFrequency(120);
+		videoTimer.SetStepFrequency(60);
 	}
 }
