@@ -192,4 +192,11 @@ public:
 	DrawFn drawFn;
 };
 
+class XGLCameraFlyer : public XGLSled {
+public:
+	XGLCameraFlyer(XGL* xgl);
+	void MoveFunc(XGL*, float);
+	void SetCamera(XGL*);
+};
+
 #endif // XGLSHAPES_H
