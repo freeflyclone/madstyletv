@@ -8,6 +8,7 @@ SUBDIRS=Example02 \
 	MqttMav \
 	PhysXTest \
 	ComputeShaderTest \
+	ComputeShaderParticles \
 	SDFTest \
 	GUIDev \
 	ImuDev \
