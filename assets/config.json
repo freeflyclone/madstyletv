@@ -2,6 +2,7 @@
 	"AssetFolder" : "assets",
 	"ShaderFolder" : "shaders",
 	"SharedMemory" : false,
+	"SvgFile" : "assets/tiger.svg",
 	"VideoFile" : "assets/CulturalPhenomenon.mp4",
 	"VideoFile2" : "assets/GH010033.mp4",
 	"FreeTypeText" : "MadStyle TV",
