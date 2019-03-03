@@ -92,10 +92,24 @@ public:
 				// can close each outline's loop, otherwise Triangle will misbehave.
 				auto tmpPath = (*pathOutline)[pathIdx];
 				size_t pathLength = tmpPath->vl.size();
-				for (int i = 0; i < pathLength; i++) {
+				for (int i = 0; i < pathLength-1; i++) {
 					int j = (i + 1) % pathLength;
 					v.push_back({ { tmpPath->vl[i].v }, {}, {}, { xColor } });
 					v.push_back({ { tmpPath->vl[j].v }, {}, {}, { xColor } });
+
+					// add path normals along the way, leading to thick paths using triangle strips
+					XGLVertex v1 = tmpPath->vl[i].v;
+					XGLVertex v2 = tmpPath->vl[j].v;
+					XGLVertex n1 = { -(v2.y - v1.y), (v2.x - v1.x), 0 };
+					XGLVertex n2 = { (v2.y - v1.y), -(v2.x - v1.x), 0 };
+					XGLVertex nn1 = 0.1f * glm::normalize(n1) + v1;
+					XGLVertex nn2 = 0.1f * glm::normalize(n2) + v1;
+					v.push_back({ { nn1 }, {}, {}, { xColor } });
+					v.push_back({ { nn2 }, {}, {}, { xColor } });
+					nn1 = 0.1f * glm::normalize(n1) + v2;
+					nn2 = 0.1f * glm::normalize(n2) + v2;
+					v.push_back({ { nn1 }, {}, {}, { xColor } });
+					v.push_back({ { nn2 }, {}, {}, { xColor } });
 				}
 				pathIdx++;
 			}
