@@ -1,9 +1,12 @@
 /**************************************************************
 ** NanoSvgTestBuildScene.cpp
 **
-** Just to demonstrate instantiation of a "ground"
-** plane and a single triangle, with default camera manipulation
-** via keyboard and mouse.
+** Use NanoSVG library to parse SVG files and draw them with
+** OpenGL. Is *mostly* correct (near as I can tell) at getting
+** the outlines right, but filling outlines isn't done yet.
+** There's a LOT that needs doing, but this is at least a
+** start!  I'll hook this up to Triangle for filling in the
+** next iteration of the code.
 **************************************************************/
 #include "ExampleXGL.h"
 
@@ -15,6 +18,8 @@
 int numPoints = 0;
 int num2draw;
 
+// derive from XGLShape an object that will hold the geometry
+// for an SVG rendering instance.
 class NanoSVGShape : public XGLShape {
 public:
 	class Path {
@@ -24,26 +29,8 @@ public:
 	};
 	typedef std::vector<Path> PathOutline;
 
-	void Points2XGLVertices(float *p, int npts) {
-		//xprintf("npts: %d, %d curves, %d remaining points\n", npts, npts / 4, npts % 4);
-
-		for (auto i = 0; i < npts - 1; i++) {
-			auto j = (i + 1) % npts;
-			XGLVertex p1 = { -p[i * 2], p[i * 2 + 1], 0 };
-			XGLVertex p2 = { -p[j * 2], p[j * 2 + 1], 0 };
-
-			//xprintf("  %0.3f, %03f\n", p1.x, p1.y);
-
-			pathOutline[pathIdx].vl.push_back({ { p1.x, p1.y, 0 } });
-			pathOutline[pathIdx].vl.push_back({ { p2.x, p2.y, 0 } });
-
-			numPoints += 2;
-		}
-	}
-
+	// generate PSLG shapes for input to Triangle
 	void PathToPoints(float *p, int npts) {
-		//xprintf("npts: %d, %d curves, %d remaining points\n", npts, npts / 4, npts % 4);
-
 		for (auto i = 0; i < npts-1; i+=3) {
 			auto j = (i + 1) % npts;
 			auto k = (j + 1) % npts;
@@ -54,49 +41,75 @@ public:
 			XGLVertex c2 = { p[k * 2], -p[k * 2 + 1], 0 };
 			XGLVertex p2 = { p[l * 2], -p[l * 2 + 1], 0 };
 
-			//xprintf("  %0.3f, %03f - %0.3f, %03f - %0.3f, %03f - %0.3f, %03f", p1.x, p1.y, c1.x, c1.y, c2.x, c2.y, p2.x, p2.y);
-
+			// emperically discovered that Inkscape font outlines have a degenerate curve at final point
+			// AND it's the same point as the start of the path.  Triangle doesn't like coincident points.
 			if (IsEqual(p1, c1) && IsEqual(c1, c2) && IsEqual(c2, p2)) {
-				//xprintf(" - degenerate cubic bezier\n");
 				pathOutline[pathIdx].vl.push_back({ p2 });
 				break;
 			}
-			else
-				//xprintf("\n");
 
 			EvaluateCubicBezier(p1, c1, c2, p2);
 		}
 	}
 
+	// make a white "canvas" to display the SVG geometry against.
+	void PageBackground(int w, int h) {
+		// 2 triangles to make a quad as page background
+		// (the XGLShape::Draw() method is coded to treat the first 4 vertices as a GL_TRIANGLE_STRIP)
+		v.push_back({ { image->width / 100.0f, 0, -0.01 }, {}, {}, { XGLColors::white } });
+		v.push_back({ { 0, 0, -0.01 }, {}, {}, { XGLColors::white } });
+		v.push_back({ { image->width / 100.0f, -image->height / 100.0f, -0.01 }, {}, {}, { XGLColors::white } });
+		v.push_back({ { 0, -image->height / 100.0f, -0.01 }, {}, {}, { XGLColors::white } });
+	}
+
 	NanoSVGShape(std::string fileName) {
-		image = nsvgParseFromFile(fileName.c_str(), "in", 100);
 		numPoints = 0;
 		pathIdx = 0;
-		Reset();
 		int numShapes{ 0 };
+
+		Reset();
+
+		image = nsvgParseFromFile(fileName.c_str(), "in", 100);
+		PageBackground(image->width, image->height);
+
 		for (NSVGshape* shape = image->shapes; shape != NULL; shape = shape->next) {
 			int numPaths{ 0 };
+			auto color = shape->stroke.color;
+			XGLColor xColor{ (color & 0xFF), (color & 0xFF00) >> 8, (color & 0xFF0000) >> 16, (color & 0xFF000000) >> 24 };
 			for (NSVGpath* path = shape->paths; path != NULL; path = path->next) {
 				if (pathIdx)
 					pathOutline.push_back(*(new Path()));
 
+				// Convert NanoSVG paths to XGLVertex paths (with Z-axis set to zero)
+				// evaluating the Bezier curves with piece-wise interpolation.
 				PathToPoints(path->pts, path->npts);
 
+				// Copy the XGLVertex version of the converted paths to this objects
+				// rendering XGLVertex set for rendering, specifically so that we
+				// can close each outline's loop, otherwise Triangle will misbehave.
 				auto tmpPath = pathOutline[pathIdx];
 				size_t pathLength = tmpPath.vl.size();
-				for (int i = 0; i < pathLength - 1; i++) {
+				for (int i = 0; i < pathLength; i++) {
 					int j = (i + 1) % pathLength;
-					v.push_back({ { tmpPath.vl[i].v }, {}, {}, { XGLColors::yellow } });
-					v.push_back({ { tmpPath.vl[j].v }, {}, {}, { XGLColors::yellow } });
+					v.push_back({ { tmpPath.vl[i].v }, {}, {}, { xColor } });
+					v.push_back({ { tmpPath.vl[j].v }, {}, {}, { xColor } });
 				}
 				pathIdx++;
 			}
 		}
-		num2draw = numPoints = v.size();
+		// total number of points we need to tell OpenGL about
+		numPoints += v.size();
+
+		// initialize the number of points to *actually* draw
+		// to "all of them"
+		num2draw = numPoints;
 	}
 
 	void Draw() {
-		glDrawArrays(GL_LINES, 0, GLsizei(num2draw));
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		GL_CHECK("glDrawPoints() failed");
+
+		glDrawArrays(GL_LINES, 4, num2draw-4);
 		GL_CHECK("glDrawPoints() failed");
 	}
 
@@ -104,6 +117,7 @@ public:
 		nsvgDelete(image);
 	}
 
+	// Reset our internal data structure
 	void Reset() {
 		for (auto p : pathOutline)
 			p.vl.clear();
@@ -113,10 +127,13 @@ public:
 		pathIdx = 0;
 	}
 
+	// compare two points in 2D
 	bool IsEqual(XGLVertex a, XGLVertex b) {
 		return (a.x == b.x) && (a.y == b.y);
 	}
 
+	// get a point that lies on a line segment some percentage between it's two endpoints
+	// (used by Bezier evaluator)
 	const XGLVertex& Interpolate(const XGLVertex& p1, const XGLVertex& p2, float percent) {
 		XGLVertex v;
 		float diff;
@@ -129,6 +146,7 @@ public:
 		return v;
 	}
 
+	// NanoSVG always oututs cubic Bezier paths (2 ctrl points)
 	void EvaluateCubicBezier(const XGLVertex& p0, const XGLVertex& p1, const XGLVertex& p2, const XGLVertex& p3) {
 		float interpolant;
 		XGLVertex i0, i1, i2, m0, m1, out;
@@ -153,7 +171,7 @@ public:
 
 private:
 	struct NSVGimage* image;
-	const float interpolationFactor{ 0.01 };
+	const float interpolationFactor{ 0.025 };
 	PathOutline pathOutline;
 	int pathIdx;
 	XGLVertex firstPoint;
@@ -166,6 +184,8 @@ void ExampleXGL::BuildScene() {
 	std::string svgFile = "../" + config.WideToBytes(config.Find(L"SvgFile")->AsString());
 
 	AddShape("shaders/000-simple", [&](){ svgShape = new NanoSVGShape(svgFile); return svgShape; });
+	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 0.1));
+	svgShape->model = translate;
 
 	// now hook up a GUI slider to control the number of primitives drawn by NanoSVGShape.Draw() method.
 	XGLGuiCanvas *sliders = (XGLGuiCanvas *)(GetGuiManager()->FindObject("HorizontalSliderWindow"));
@@ -175,6 +195,8 @@ void ExampleXGL::BuildScene() {
 			hs->AddMouseEventListener([hs](float x, float y, int flags) {
 				if (hs->HasMouse()) {
 					num2draw = (int)(hs->Position()*numPoints);
+					if (num2draw < 4)
+						num2draw = 4;
 				}
 			});
 		}
