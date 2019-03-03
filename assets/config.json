@@ -2,7 +2,7 @@
 	"AssetFolder" : "assets",
 	"ShaderFolder" : "shaders",
 	"SharedMemory" : false,
-	"SvgFile" : "assets/curve.svg",
+	"SvgFile" : "assets/triangle.svg",
 	"VideoFile" : "assets/CulturalPhenomenon.mp4",
 	"VideoFile2" : "assets/GH010033.mp4",
 	"FreeTypeText" : "MadStyle TV",

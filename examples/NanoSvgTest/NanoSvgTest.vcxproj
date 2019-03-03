@@ -171,9 +171,9 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\common\ExampleGUI.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
+    <ClCompile Include="NanoSggGui.cpp" />
     <ClCompile Include="NanoSvgTestBuildScene.cpp" />
   </ItemGroup>
   <ItemGroup>

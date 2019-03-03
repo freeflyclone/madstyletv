@@ -26,8 +26,14 @@ public:
 	public:
 		XGLVertex ComputeCentroid(bool *);
 		XGLVertexList vl;
+		bool isClosed{ false };
 	};
 	typedef std::vector<Path*> PathOutline;
+
+	// compare two points in 2D for equality
+	bool IsEqual(XGLVertex a, XGLVertex b) {
+		return (a.x == b.x) && (a.y == b.y);
+	}
 
 	// generate PSLG shapes for input to Triangle
 	void PathToPoints(float *p, int npts) {
@@ -53,6 +59,12 @@ public:
 			// (control points are collinear with endpoints)
 			EvaluateCubicBezier(p1, c1, c2, p2);
 		}
+
+		// closed (looping) path check
+		if (IsEqual((*pathOutline)[pathIdx]->vl.front().v, (*pathOutline)[pathIdx]->vl.back().v)) {
+			(*pathOutline)[pathIdx]->isClosed = true;
+			xprintf("path is closed\n");
+		}
 	}
 
 	// make a white "canvas" to display the SVG geometry against.
@@ -63,6 +75,21 @@ public:
 		v.push_back({ { 0, 0, -0.01 }, {}, {}, { XGLColors::white } });
 		v.push_back({ { image->width / 100.0f, -image->height / 100.0f, -0.01 }, {}, {}, { XGLColors::white } });
 		v.push_back({ { 0, -image->height / 100.0f, -0.01 }, {}, {}, { XGLColors::white } });
+	}
+
+	XGLVertex ZExtrude(XGLVertex v1, XGLVertex v2) {
+		XGLVertex n;
+
+		// this would be useful for extruding...
+		n = 0.25f * glm::normalize(glm::cross(v1, v2)) + v1;
+
+		// make vertex input order irrelevant
+		n.z = abs(n.z);
+
+		v.push_back({ { v1 }, {}, {}, { XGLColors::blue } });
+		v.push_back({ { n }, {}, {}, { XGLColors::blue } });
+
+		return n;
 	}
 
 	NanoSVGShape(std::string fileName) {
@@ -92,24 +119,35 @@ public:
 				// can close each outline's loop, otherwise Triangle will misbehave.
 				auto tmpPath = (*pathOutline)[pathIdx];
 				size_t pathLength = tmpPath->vl.size();
-				for (int i = 0; i < pathLength-1; i++) {
+				for (int i = 0; i < pathLength -1; i++) {
 					int j = (i + 1) % pathLength;
-					v.push_back({ { tmpPath->vl[i].v }, {}, {}, { xColor } });
-					v.push_back({ { tmpPath->vl[j].v }, {}, {}, { xColor } });
+					int k = (i - 1) % pathLength;
 
-					// add path normals along the way, leading to thick paths using triangle strips
-					XGLVertex v1 = tmpPath->vl[i].v;
-					XGLVertex v2 = tmpPath->vl[j].v;
-					XGLVertex n1 = { -(v2.y - v1.y), (v2.x - v1.x), 0 };
-					XGLVertex n2 = { (v2.y - v1.y), -(v2.x - v1.x), 0 };
-					XGLVertex nn1 = 0.1f * glm::normalize(n1) + v1;
-					XGLVertex nn2 = 0.1f * glm::normalize(n2) + v1;
-					v.push_back({ { nn1 }, {}, {}, { xColor } });
-					v.push_back({ { nn2 }, {}, {}, { xColor } });
-					nn1 = 0.1f * glm::normalize(n1) + v2;
-					nn2 = 0.1f * glm::normalize(n2) + v2;
-					v.push_back({ { nn1 }, {}, {}, { xColor } });
-					v.push_back({ { nn2 }, {}, {}, { xColor } });
+					XGLVertex vPrev = tmpPath->vl[k].v;
+					XGLVertex vCurr = tmpPath->vl[i].v;
+					XGLVertex vNext = tmpPath->vl[j].v;
+
+					//if (tmpPath->isClosed)
+					{
+						XGLVertex v1 = vNext - vCurr;
+						XGLVertex v2 = vPrev - vCurr;
+						XGLVertex b;
+						if (i)
+							b = 0.25f * glm::normalize(glm::normalize(v1) + glm::normalize(v2));
+						else
+							b = 0.25f * glm::normalize(XGLVertex(v1.y, -v1.x, 0));
+
+						v.push_back({ { vCurr + b }, {}, {}, { XGLColors::red } });
+						v.push_back({ { vCurr - b }, {}, {}, { XGLColors::red } });
+					}
+
+
+					// always add the current point on the path to the rendering list
+					v.push_back({ { vCurr }, {}, {}, { xColor } });
+
+					// only add the next point if this is a close path OR we're not at the end of the path.
+					if ( tmpPath->isClosed || j != 0 )
+						v.push_back({ { vNext }, {}, {}, { xColor } });
 				}
 				pathIdx++;
 			}
@@ -128,8 +166,14 @@ public:
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		GL_CHECK("glDrawPoints() failed");
 
-		glDrawArrays(GL_LINES, 4, GLsizei(num2draw-4));
-		GL_CHECK("glDrawPoints() failed");
+		glDrawArrays(GL_LINES, 4, GLsizei(num2draw - 4));
+		GL_CHECK("glDrawArrays() failed");
+
+		glPointSize(8.0f);
+		GL_CHECK("glPointSize() failed");
+
+		glDrawArrays(GL_POINTS, 4, GLsizei(num2draw - 4));
+		GL_CHECK("glDrawArrays() failed");
 	}
 
 	~NanoSVGShape() {
@@ -149,11 +193,6 @@ public:
 		}
 		pathOutline = new PathOutline();
 		pathOutline->push_back(new Path());
-	}
-
-	// compare two points in 2D for equality
-	bool IsEqual(XGLVertex a, XGLVertex b) {
-		return (a.x == b.x) && (a.y == b.y);
 	}
 
 	// return a point that lies on a line segment some percentage between it's two endpoints
@@ -187,7 +226,7 @@ public:
 
 private:
 	struct NSVGimage* image;
-	const float interpolationFactor{ 0.025f };
+	const float interpolationFactor{ 0.25f };
 	PathOutline* pathOutline = nullptr;
 	int pathIdx{0};
 	XGLVertex firstPoint;
@@ -207,7 +246,7 @@ void ExampleXGL::BuildScene() {
 	XGLGuiCanvas *sliders = (XGLGuiCanvas *)(GetGuiManager()->FindObject("HorizontalSliderWindow"));
 	if (sliders != nullptr) {
 		XGLGuiSlider *hs;
-		if ((hs = (XGLGuiSlider *)sliders->FindObject("Horizontal Slider 1")) != nullptr) {
+		if ((hs = (XGLGuiSlider *)sliders->FindObject("Draw Count")) != nullptr) {
 			hs->AddMouseEventListener([hs](float x, float y, int flags) {
 				if (hs->HasMouse())
 					num2draw = std::max((int)(hs->Position()*numPoints),4);
