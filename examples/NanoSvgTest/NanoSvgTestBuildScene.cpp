@@ -24,8 +24,16 @@ class NanoSVGShape : public XGLShape {
 public:
 	class Path {
 	public:
+		Path(int s, int p) : shape(s), pathIdx(p) {
+			xprintf(" Path::Path(%d,%d)\n", shape, pathIdx);
+		}
+		~Path() {
+			xprintf("Path::~Path(%d,%d)\n", shape, pathIdx);
+		}
 		XGLVertex ComputeCentroid(bool *);
 		XGLVertexList vl;
+
+		int shape, pathIdx;
 	};
 	typedef std::vector<Path> PathOutline;
 
@@ -78,7 +86,7 @@ public:
 			XGLColor xColor{ (color & 0xFF), (color & 0xFF00) >> 8, (color & 0xFF0000) >> 16, (color & 0xFF000000) >> 24 };
 			for (NSVGpath* path = shape->paths; path != NULL; path = path->next) {
 				if (pathIdx)
-					pathOutline.push_back(*(new Path()));
+					pathOutline.push_back(*(new Path(numShapes, pathIdx)));
 
 				// Convert NanoSVG paths to XGLVertex paths (with Z-axis set to zero)
 				// evaluating the Bezier curves with piece-wise interpolation.
@@ -96,6 +104,7 @@ public:
 				}
 				pathIdx++;
 			}
+			numShapes++;
 		}
 		// total number of points we need to tell OpenGL about
 		numPoints += v.size();
@@ -123,7 +132,7 @@ public:
 			p.vl.clear();
 
 		pathOutline.clear();
-		pathOutline.push_back(*(new Path()));
+		pathOutline.push_back(*(new Path(0,0)));
 		pathIdx = 0;
 	}
 
