@@ -171,10 +171,10 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
     <ClCompile Include="OVRTestBuildScene.cpp" />
     <ClCompile Include="OVRTestGUI.cpp" />
-    <ClCompile Include="OVRTestXGL.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\shaders\diffuse.frag" />

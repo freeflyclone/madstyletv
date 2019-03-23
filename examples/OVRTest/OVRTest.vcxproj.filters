@@ -24,10 +24,10 @@
     <ClCompile Include="OVRTestGUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OVRTestXGL.cpp">
+    <ClCompile Include="..\common\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\common\main.cpp">
+    <ClCompile Include="..\common\ExampleXGL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

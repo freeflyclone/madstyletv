@@ -7,11 +7,53 @@ XGLHmd::XGLHmd(XGL *p, int w, int h) :
 	width(w),
 	height(h)
 {
+	XGLShape *shape, *leftFinger, *leftThumb, *rightFinger, *rightThumb;
+
 	handNames[0] = "LeftHand0";
 	handNames[1] = "RightHand0";
 
 	whichHand[0] = "Left";
 	whichHand[1] = "Right";
+
+	// LeftHand, anchored to the cockpit
+	pXgl->CreateShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 64); shape->SetName("LeftHand"); return shape; });
+	pXgl->hmdSled->AddChild(shape);
+
+	// Left Finger, child of LeftHand
+	pXgl->CreateShape("shaders/specular", [&]() { leftFinger = new XGLCapsule(0.01f, 0.1f, 32); leftFinger->SetName("LeftFinger"); return leftFinger; });
+	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0.0, 0.0, -0.1));
+	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+	leftFinger->model = translate * rotate;
+	shape->AddChild(leftFinger);
+
+	// LeftThumb, child of LeftHand
+	pXgl->CreateShape("shaders/specular", [&]() { leftThumb = new XGLCapsule(0.01f, 0.075f, 32); leftThumb->SetName("LeftThumb"); return leftThumb; });
+	translate = glm::translate(glm::mat4(), glm::vec3(0.06, 0.0, -0.06));
+	rotate = glm::rotate(glm::mat4(), glm::radians(45.0f), glm::vec3(0.0, 1.0, 0.0));
+	leftThumb->model = translate * rotate;
+	shape->AddChild(leftThumb);
+
+
+	// RightHand, anchored to the cockpit
+	pXgl->CreateShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 64); shape->SetName("RightHand"); return shape; });
+	pXgl->hmdSled->AddChild(shape);
+
+	// RightFinger, child of RightHand
+	pXgl->CreateShape("shaders/specular", [&]() { rightFinger = new XGLCapsule(0.01f, 0.1f, 32); rightFinger->SetName("RightFinger"); return rightFinger; });
+	translate = glm::translate(glm::mat4(), glm::vec3(0.0, 0.0, -0.1));
+	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
+	rightFinger->model = translate * rotate;
+	shape->AddChild(rightFinger);
+
+	// RightThumb, child of Right Hand
+	pXgl->CreateShape("shaders/specular", [&]() { rightThumb = new XGLCapsule(0.01f, 0.075f, 32); rightThumb->SetName("RightThumb"); return rightThumb; });
+	translate = glm::translate(glm::mat4(), glm::vec3(-0.06, 0.0, -0.06));
+	rotate = glm::rotate(glm::mat4(), glm::radians(135.0f), glm::vec3(0.0, 1.0, 0.0));
+	rightThumb->model = translate * rotate;
+	shape->AddChild(rightThumb);
+
+	// attach HUD to sled
+	//hmdSled->AddChild(appGuiManager);
 
 	// Fetch the current XGLShapes for the hands
 	hands[0] = (XGLShape *)pXgl->FindObject(handNames[0]);

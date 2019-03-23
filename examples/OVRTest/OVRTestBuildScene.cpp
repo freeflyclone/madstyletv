@@ -11,9 +11,7 @@
 // be valid.  If they're local variables, "capture by reference" doesn't work
 // if the lambda is being called outside the scope of the function that created
 // it.  Which is almost always the case the way lambda's get used herein.
-XGLSphere *sphere;
-XGLSled *hmdSled;
-XGLShape *rightFinger, *rightThumb, *leftFinger, *leftThumb;
+//XGLSphere *sphere;
 
 const float constSpeed1 = 60.0f * 4.0f;
 const float constSpeed2 = 45.0f * 4.0f;
@@ -28,14 +26,13 @@ extern XGLGuiManager *appGuiManager;
 
 const XGLColor gray = { 0.005, 0.005, 0.005, 1 };
 
+extern bool initHmd;
+
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 	glm::mat4 rotate, translate;
 
-	// Create a cockpit that can be flown in the world, put it in layer 2 to override world object rendering
-	// (Turns out the layers hack only works between top level shapes right now)
-	AddShape("shaders/000-simple", [&]() { hmdSled = new XGLSled(); return hmdSled; }, 2);
-	hmdSled->SetName("HmdSled", false);
+	initHmd = true;
 
 	// create spinny torus thingy...
 	if (true) {
@@ -124,67 +121,4 @@ void ExampleXGL::BuildScene() {
 		}
 	};
 	AddKeyFunc('h', toggleHud);
-
-	// LeftHand, anchored to the cockpit
-	CreateShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 64); shape->SetName("LeftHand"); return shape; });
-	hmdSled->AddChild(shape);
-
-	// Left Finger, child of LeftHand
-	CreateShape("shaders/specular", [&]() { leftFinger = new XGLCapsule(0.01f, 0.1f, 32); leftFinger->SetName("LeftFinger"); return leftFinger; });
-	translate = glm::translate(glm::mat4(), glm::vec3(0.0, 0.0, -0.1));
-	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
-	leftFinger->model = translate * rotate;
-	shape->AddChild(leftFinger);
-
-	// LeftThumb, child of LeftHand
-	CreateShape("shaders/specular", [&]() { leftThumb = new XGLCapsule(0.01f, 0.075f, 32); leftThumb->SetName("LeftThumb"); return leftThumb; });
-	translate = glm::translate(glm::mat4(), glm::vec3(0.06, 0.0, -0.06));
-	rotate = glm::rotate(glm::mat4(), glm::radians(45.0f), glm::vec3(0.0, 1.0, 0.0));
-	leftThumb->model = translate * rotate;
-	shape->AddChild(leftThumb);
-
-
-	// RightHand, anchored to the cockpit
-	CreateShape("shaders/specular", [&]() { shape = new XGLSphere(0.05f, 64); shape->SetName("RightHand"); return shape; });
-	hmdSled->AddChild(shape);
-
-	// RightFinger, child of RightHand
-	CreateShape("shaders/specular", [&]() { rightFinger = new XGLCapsule(0.01f, 0.1f, 32); rightFinger->SetName("RightFinger"); return rightFinger; });
-	translate = glm::translate(glm::mat4(), glm::vec3(0.0, 0.0, -0.1));
-	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
-	rightFinger->model = translate * rotate;
-	shape->AddChild(rightFinger);
-
-	// RightThumb, child of Right Hand
-	CreateShape("shaders/specular", [&]() { rightThumb = new XGLCapsule(0.01f, 0.075f, 32); rightThumb->SetName("RightThumb"); return rightThumb; });
-	translate = glm::translate(glm::mat4(), glm::vec3(-0.06, 0.0, -0.06));
-	rotate = glm::rotate(glm::mat4(), glm::radians(135.0f), glm::vec3(0.0, 1.0, 0.0));
-	rightThumb->model = translate * rotate;
-	shape->AddChild(rightThumb);
-
-	// attach HUD to sled
-	hmdSled->AddChild(appGuiManager);
-
-	// move forward
-	AddProportionalFunc("LeftIndexTrigger", [this](float v) {
-		glm::vec4 forward = glm::toMat4(hmdSled->o) * glm::vec4(0.0, v / 10.0f, 0.0, 0.0);
-		hmdSled->p += glm::vec3(forward);
-		hmdSled->model = hmdSled->GetFinalMatrix();
-	});
-
-	// move backward
-	AddProportionalFunc("LeftHandTrigger", [this](float v) {
-		glm::vec4 backward = glm::toMat4(hmdSled->o) * glm::vec4(0.0, -v / 10.0f, 0.0, 0.0);
-		hmdSled->p += glm::vec3(backward);
-		hmdSled->model = hmdSled->GetFinalMatrix();
-	});
-
-	// yaw (rudder)
-	AddProportionalFunc("LeftThumbStick.x", [this](float v) { hmdSled->SampleInput(-v, 0.0f, 0.0f); });
-
-	// pitch (elevator)
-	AddProportionalFunc("RightThumbStick.y", [this](float v) { hmdSled->SampleInput(0.0f, -v, 0.0f); });
-
-	// roll (ailerons)
-	AddProportionalFunc("RightThumbStick.x", [this](float v) { hmdSled->SampleInput(0.0f, 0.0f, v); });
 }
