@@ -233,7 +233,9 @@ void PhysXXGL::RayCast(glm::vec3 o, glm::vec3 d) {
 	physx::PxVec3 orig(o.x, o.y, o.z);
 	physx::PxVec3 dir(d.x, d.y, d.z);
 	physx::PxReal length = 1000.0;
+	physx::PxRaycastHit hitBuffer[2];
 	physx::PxRaycastHit hit;
+	physx::PxRaycastBuffer buff(hitBuffer, 2);
 	physx::PxActor *actor;
 
 	if (activeActor == NULL) {
@@ -241,9 +243,12 @@ void PhysXXGL::RayCast(glm::vec3 o, glm::vec3 d) {
 		dir.normalize();
 
 		//xyzzy - TODO: fix final argument to this call to make physx grabbing object work
-		//mScene->raycast(orig, dir, length, (physx::PxRaycastCallback&)hit);
+		mScene->raycast(orig, dir, length, buff);
+		if (buff.nbTouches > 1) {
+			hit = buff.touches[1];
+		}
 
-		if ((actor = hit.actor) != NULL) {
+		if ((buff.nbTouches > 1) && (actor = hit.actor) != NULL) {
 			if (actor->is<physx::PxRigidDynamic>()) {
 				activeActor = actor;
 				((UserData *)actor->userData)->active = true;
