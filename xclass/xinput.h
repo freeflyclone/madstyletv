@@ -12,6 +12,7 @@
 #include <functional>
 #include <map>
 #include <vector>
+#include <string>
 
 #include "xutils.h"
 

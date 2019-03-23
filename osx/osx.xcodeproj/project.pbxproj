@@ -1934,7 +1934,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.XAVTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx10.11;
+				SDKROOT = macosx;
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
 			};
 			name = Debug;
@@ -1998,7 +1998,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.XAVTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx10.11;
+				SDKROOT = macosx;
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
 			};
 			name = Release;
@@ -2321,7 +2321,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.OpenALTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx10.11;
+				SDKROOT = macosx;
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
 			};
 			name = Debug;
@@ -2381,7 +2381,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.OpenALTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx10.11;
+				SDKROOT = macosx;
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
 			};
 			name = Release;
@@ -2446,7 +2446,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.OpenCVWebcam;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx10.11;
+				SDKROOT = macosx;
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
 			};
 			name = Debug;
@@ -2508,7 +2508,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.OpenCVWebcam;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx10.11;
+				SDKROOT = macosx;
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
 			};
 			name = Release;
@@ -2571,7 +2571,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.Example02;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx10.11;
+				SDKROOT = macosx;
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
 			};
 			name = Debug;
@@ -2626,7 +2626,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.Example02;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx10.11;
+				SDKROOT = macosx;
 				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
 			};
 			name = Release;
