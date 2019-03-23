@@ -37,7 +37,7 @@ public:
 
 	// generate PSLG shapes for input to Triangle
 	void PathToPoints(float *p, int npts) {
-		for (auto i = 0; i < npts-1; i+=3) {
+		for (auto i = 0; i < npts-3; i+=3) {
 			auto j = (i + 1) % npts;
 			auto k = (j + 1) % npts;
 			auto l = (k + 1) % npts;
@@ -63,7 +63,6 @@ public:
 		// closed (looping) path check
 		if (IsEqual((*pathOutline)[pathIdx]->vl.front().v, (*pathOutline)[pathIdx]->vl.back().v)) {
 			(*pathOutline)[pathIdx]->isClosed = true;
-			xprintf("path is closed\n");
 		}
 	}
 
@@ -92,6 +91,23 @@ public:
 		return n;
 	}
 
+	void MakeCrossbar(XGLVertex vp, XGLVertex vc, XGLVertex vn) {
+		XGLVertex tc = { vc.x, vc.y, 0.33f };
+		XGLVertex an = 0.25f * glm::normalize(vn - vc);
+		XGLVertex ap = 0.25f * glm::normalize(vp - vc);
+
+		an.z += 0.2f;
+		ap.z += 0.2f;
+		//v.push_back({ { tc }, {}, {}, { XGLColors::blue } });
+		//v.push_back({ { vc }, {}, {}, { XGLColors::blue } });
+
+		v.push_back({ { vc }, {}, {}, { XGLColors::red } });
+		v.push_back({ { vc + an }, {}, {}, { XGLColors::red } });
+
+		v.push_back({ { vc }, {}, {}, { XGLColors::green } });
+		v.push_back({ { vc + ap }, {}, {}, { XGLColors::green } });
+	}
+
 	NanoSVGShape(std::string fileName) {
 		numPoints = 0;
 		pathIdx = 0;
@@ -114,33 +130,18 @@ public:
 				// evaluating the Bezier curves with piece-wise interpolation.
 				PathToPoints(path->pts, path->npts);
 
-				// Copy the XGLVertex version of the converted paths to this objects
-				// rendering XGLVertex set for rendering, specifically so that we
+				// Copy the XGLVertex version of the converted paths to this object's
+				// XGLVertex set for rendering, specifically so that we
 				// can close each outline's loop, otherwise Triangle will misbehave.
 				auto tmpPath = (*pathOutline)[pathIdx];
 				size_t pathLength = tmpPath->vl.size();
-				for (int i = 0; i < pathLength -1; i++) {
+				for (int i = 0; i < pathLength; i++) {
 					int j = (i + 1) % pathLength;
-					int k = (i - 1) % pathLength;
+					int k = (i + pathLength - 1) % pathLength;
 
 					XGLVertex vPrev = tmpPath->vl[k].v;
 					XGLVertex vCurr = tmpPath->vl[i].v;
 					XGLVertex vNext = tmpPath->vl[j].v;
-
-					//if (tmpPath->isClosed)
-					{
-						XGLVertex v1 = vNext - vCurr;
-						XGLVertex v2 = vPrev - vCurr;
-						XGLVertex b;
-						if (i)
-							b = 0.25f * glm::normalize(glm::normalize(v1) + glm::normalize(v2));
-						else
-							b = 0.25f * glm::normalize(XGLVertex(v1.y, -v1.x, 0));
-
-						v.push_back({ { vCurr + b }, {}, {}, { XGLColors::red } });
-						v.push_back({ { vCurr - b }, {}, {}, { XGLColors::red } });
-					}
-
 
 					// always add the current point on the path to the rendering list
 					v.push_back({ { vCurr }, {}, {}, { xColor } });
@@ -148,6 +149,8 @@ public:
 					// only add the next point if this is a close path OR we're not at the end of the path.
 					if ( tmpPath->isClosed || j != 0 )
 						v.push_back({ { vNext }, {}, {}, { xColor } });
+
+					MakeCrossbar(vPrev, vCurr, vNext);
 				}
 				pathIdx++;
 			}
@@ -169,11 +172,13 @@ public:
 		glDrawArrays(GL_LINES, 4, GLsizei(num2draw - 4));
 		GL_CHECK("glDrawArrays() failed");
 
-		glPointSize(8.0f);
-		GL_CHECK("glPointSize() failed");
+		if (drawPoints) {
+			glPointSize(8.0f);
+			GL_CHECK("glPointSize() failed");
 
-		glDrawArrays(GL_POINTS, 4, GLsizei(num2draw - 4));
-		GL_CHECK("glDrawArrays() failed");
+			glDrawArrays(GL_POINTS, 4, GLsizei(num2draw - 4));
+			GL_CHECK("glDrawArrays() failed");
+		}
 	}
 
 	~NanoSVGShape() {
@@ -230,6 +235,7 @@ private:
 	PathOutline* pathOutline = nullptr;
 	int pathIdx{0};
 	XGLVertex firstPoint;
+	bool drawPoints = true;
 };
 
 void ExampleXGL::BuildScene() {
@@ -240,7 +246,9 @@ void ExampleXGL::BuildScene() {
 
 	AddShape("shaders/000-simple", [&](){ svgShape = new NanoSVGShape(svgFile); return svgShape; });
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 0.1));
-	svgShape->model = translate;
+	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(4.0, 4.0, 1.0));
+
+	svgShape->model = translate*scale;
 
 	// now hook up a GUI slider to control the number of primitives drawn by NanoSVGShape.Draw() method.
 	XGLGuiCanvas *sliders = (XGLGuiCanvas *)(GetGuiManager()->FindObject("HorizontalSliderWindow"));
