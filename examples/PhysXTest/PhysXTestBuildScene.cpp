@@ -10,7 +10,7 @@ XGLSphere *sphere;
 extern bool initHmd;
 
 void ExampleXGL::BuildScene() {
-	initHmd = false;
+	initHmd = true;
 }
 
 void PhysXXGL::BuildScene() {
