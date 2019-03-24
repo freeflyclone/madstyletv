@@ -3,7 +3,20 @@
 XGLPhysX::XGLPhysX(XGL* px) : pXgl(px), dynamicsSerialNumber(-1), activeActor(NULL), mouseSphere(NULL), mouseJoint(NULL) {
 	initPhysics(true);
 
-	px->AddPreRenderFunction([&](float clock) {	stepPhysics(true); });
+	px->AddPreRenderFunction([&](float clock) {
+		// currently this gets called once for each eye if HMD is running,
+		// so only step physics if the "clock" actually changed.
+		if (pXgl->useHmd) {
+			static float previousClock = 0.0f;
+			if (clock != previousClock) {
+				stepPhysics(true);
+				previousClock = clock;
+			}
+		}
+		else {
+			stepPhysics(true);
+		}
+	});
 }
 
 void XGLPhysX::initPhysics(bool interactive)

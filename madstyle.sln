@@ -183,6 +183,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CameraFlyer", "examples\CameraFlyer\CameraFlyer.vcxproj", "{3AC8132D-0702-4EDA-8C33-B8F30A09BF68}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameDev01", "examples\GameDev01\GameDev01.vcxproj", "{B5CD721C-131E-4CED-811F-279B9D6225B7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AC4080D2-1C42-4812-943D-79CA13A1D86C} = {AC4080D2-1C42-4812-943D-79CA13A1D86C}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
