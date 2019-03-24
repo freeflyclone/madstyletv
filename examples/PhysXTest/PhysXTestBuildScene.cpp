@@ -8,12 +8,16 @@
 XGLSphere *sphere;
 
 extern bool initHmd;
+XGLAxis* fingerRay;
 
 void ExampleXGL::BuildScene() {
 	initHmd = true;
+	xprintf("ExampleXGL::BuildScene()\n");
 }
 
 void PhysXXGL::BuildScene() {
+	xprintf("PhysXXGL::BuildScene()\n");
+
 	XInputKeyFunc renderMod = [&](int key, int flags) {
 		const bool isDown = (flags & 0x8000) == 0;
 		const bool isRepeat = (flags & 0x4000) != 0;
@@ -111,4 +115,19 @@ void PhysXXGL::BuildScene() {
 			ResetActive();
 	};
 	AddMouseFunc(worldCursorMouse);
+
+	// if VR mode...
+	if (initHmd) {
+		// make a "ray" to shoot out of the right finger, just to illustrate how to do so.
+		CreateShape("shaders/000-simple", [&]() { fingerRay = new XGLAxis(3.0f, XGLColors::white, { 1.0f, 0.0f, 0.0f }); fingerRay->SetName("RightFingerAxis");  return fingerRay; });
+
+		XGLShape* hand = (XGLShape*)FindObject("RightHand0");
+		if (hand) {
+			XGLShape *finger = (XGLShape*)hand->FindObject("RightFinger0");
+			if (finger)
+				finger->AddChild(fingerRay);
+		}
+	}
+
+	return;
 }
