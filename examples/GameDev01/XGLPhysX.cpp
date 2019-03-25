@@ -317,3 +317,98 @@ void XGLPhysX::ResetActive() {
 		mouseSphere->release();
 	mouseSphere = NULL;
 }
+
+physx::PxMat44 glmMat4ToPhysxMat4(const glm::mat4& mat4)
+{
+	physx::PxMat44 newMat;
+
+	newMat[0][0] = mat4[0][0];
+	newMat[0][1] = mat4[0][1];
+	newMat[0][2] = mat4[0][2];
+	newMat[0][3] = mat4[0][3];
+
+	newMat[1][0] = mat4[1][0];
+	newMat[1][1] = mat4[1][1];
+	newMat[1][2] = mat4[1][2];
+	newMat[1][3] = mat4[1][3];
+
+	newMat[2][0] = mat4[2][0];
+	newMat[2][1] = mat4[2][1];
+	newMat[2][2] = mat4[2][2];
+	newMat[2][3] = mat4[2][3];
+
+	newMat[3][0] = mat4[3][0];
+	newMat[3][1] = mat4[3][1];
+	newMat[3][2] = mat4[3][2];
+	newMat[3][3] = mat4[3][3];
+
+	return newMat;
+}
+
+typedef struct { physx::PxU32 i1, i2, i3; } TRIANGLE;
+
+void XGLPhysX::ShapeToActor(XGLShape *s) {
+	int size = (int)(s->v.size());
+	physx::PxVec3* points = (physx::PxVec3*)malloc(size*sizeof(physx::PxVec3));
+	XGLVertexList::iterator vrtx;
+	XGLIndexList::iterator idx;
+	int i;
+	physx::PxTriangleMeshDesc md;
+	TRIANGLE* tri = (TRIANGLE *)malloc(size * 3 * sizeof(TRIANGLE));
+
+	i = 0;
+	for (vrtx = s->v.begin(); vrtx != s->v.end(); vrtx++) {
+		points[i].x = vrtx->v.x;
+		points[i].y = vrtx->v.y;
+		points[i].z = vrtx->v.z;
+		i++;
+	}
+
+	i = 0;
+
+	for (idx = s->idx.begin(); idx != s->idx.end() - 2; idx++)
+	{
+		if ((i & 1) == 0) {
+			tri[i].i1 = *idx;
+			tri[i].i2 = *(idx + 1);
+			tri[i].i3 = *(idx + 2);
+			i++;
+		}
+		else {
+			tri[i].i1 = *idx;
+			tri[i].i2 = *(idx + 2);
+			tri[i].i3 = *(idx + 1);
+			i++;
+		}
+	}
+
+	md.points.count = size;
+	md.points.stride = sizeof(physx::PxVec3);
+	md.points.data = points;
+	md.triangles.count = i;
+	md.triangles.stride = sizeof(TRIANGLE);
+	md.triangles.data = tri;
+
+	physx::PxDefaultMemoryOutputStream buf;
+	bool status = gCooking->cookTriangleMesh(md, buf);
+	if (!status)
+		throwXGLException("cookTriangleMesh() failed");
+
+	physx::PxDefaultMemoryInputData rbuf(buf.getData(), buf.getSize());
+
+	physx::PxTriangleMesh *triMesh = mPhysics->createTriangleMesh(rbuf);
+	if (triMesh == NULL)
+		throwXGLException("createTriangleMesh() failed");
+
+	physx::PxTriangleMeshGeometry tmg(triMesh);
+
+	physx::PxShape* shape = mPhysics->createShape(tmg, *mMaterial);
+	if (!shape)
+		throwXGLException("createShape() failed");
+
+	physx::PxRigidStatic *stat = PxCreateStatic(*mPhysics, physx::PxTransform(glmMat4ToPhysxMat4(s->model)), *shape);
+	if (!stat)
+		throwXGLException("PxCreateStatic() failed");
+
+	mScene->addActor(*stat);
+}

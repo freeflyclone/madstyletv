@@ -12,9 +12,26 @@ extern bool initHmd;
 XGLPhysX* px;
 
 void ExampleXGL::BuildScene() {
-	initHmd = false;
+	XGLShape *shape;
+	initHmd = true;
 
 	px = new XGLPhysX(this);
+
+	const int limit = 40;
+	const int step = 10;
+	int x = 0, y = 0;
+
+	for (int y = -limit; y <= limit; y += step)	{
+		for (int x = -limit; x <= limit; x += step)
+		{
+			AddShape("shaders/specular", [&]() { shape = new XGLTorus(5.0, 1.0, 54, 32); return shape; });
+			shape->attributes.diffuseColor = XGLColors::red;
+			shape->attributes.specularColor = XGLColors::white;
+			glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3((float)x * 2, (float)y * 2, 1));
+			shape->model = translate;
+			px->ShapeToActor(shape);
+		}
+	}
 
 	XInputKeyFunc fireKey = [&](int key, int flags) {
 		const bool isDown = (flags & 0x8000) == 0;
