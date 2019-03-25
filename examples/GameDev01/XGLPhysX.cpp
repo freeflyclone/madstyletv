@@ -3,7 +3,7 @@
 XGLPhysX::XGLPhysX(XGL* px) : pXgl(px), dynamicsSerialNumber(-1), activeActor(NULL), mouseSphere(NULL), mouseJoint(NULL) {
 	initPhysics(true);
 
-	px->AddPreRenderFunction([&](float clock) {
+	pXgl->AddPreRenderFunction([&](float clock) {
 		// currently this gets called once for each eye if HMD is running,
 		// so only step physics if the "clock" actually changed.
 		if (pXgl->useHmd) {
@@ -51,7 +51,7 @@ void XGLPhysX::initPhysics(bool interactive)
 	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
 	mScene = mPhysics->createScene(sceneDesc);
 
-	mMaterial = mPhysics->createMaterial(0.9f, 0.9f, 0.01f);
+	mMaterial = mPhysics->createMaterial(0.5f, 0.5f, 0.5f);
 
 	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*mPhysics, physx::PxPlane(0, 0, 1, 0), *mMaterial);
 	mScene->addActor(*groundPlane);
@@ -63,15 +63,6 @@ void XGLPhysX::initPhysics(bool interactive)
 	std::string shaderName = "shaders/specular";
 	pXgl->AddShape(shaderName, [&]() { renderer = new PhysxRenderer(this); return renderer; });
 	renderer->Init(pXgl->GetShader(shaderName));
-	/*
-	// Doing this here will result in this being called once for each eye if HMD, which we don't want
-	renderer->SetAnimationFunction([this](float clock) {
-	if (clock > renderer->prevClock) {
-	stepPhysics(true);
-	renderer->prevClock = clock;
-	}
-	});
-	*/
 
 	//if(false)
 	for (int i = -20; i < 20; i += 5) {
@@ -114,8 +105,8 @@ physx::PxRigidDynamic* XGLPhysX::createDynamic(const physx::PxTransform& t, cons
 	return rd;
 }
 
-physx::PxRigidDynamic* XGLPhysX::createDynamic(const physx::PxTransform& t, const physx::PxGeometry& geometry, const physx::PxVec3& velocity) {
-	physx::PxRigidDynamic* dynamic = createDynamic(t, geometry, *mMaterial, 10.0f);
+physx::PxRigidDynamic* XGLPhysX::createDynamic(const physx::PxTransform& t, const physx::PxGeometry& g, const physx::PxVec3& velocity) {
+	physx::PxRigidDynamic* dynamic = createDynamic(t, g, *mMaterial, 1.0f);
 	dynamic->setAngularDamping(0.5f);
 	dynamic->setLinearDamping(0.5f);
 	dynamic->setLinearVelocity(velocity);
