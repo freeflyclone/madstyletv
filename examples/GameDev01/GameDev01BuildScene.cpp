@@ -8,12 +8,18 @@
 #include "ExampleXGL.h"
 #include "XGLPhysX.h"
 
-extern bool initHmd;
 XGLPhysX* px;
+XGLShape *hand = nullptr;
+XGLShape *worldCursor = nullptr;
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
-	initHmd = true;
+
+	//InitHmd();
+
+	//hand = (XGLShape*)hmdSled->FindObject("RightHand0");
+	if (hand)
+		xprintf("Found Right Hand\n");
 
 	px = new XGLPhysX(this);
 
@@ -39,32 +45,37 @@ void ExampleXGL::BuildScene() {
 		if (isDown) {
 			physx::PxVec3 pos, dir;
 
-			pos.x = camera.pos.x;
-			pos.y = camera.pos.y;
-			pos.z = camera.pos.z - 2.0f;
-
 			if (hmdSled) {
-				glm::vec4 forward = glm::toMat4(hmdSled->o) * glm::vec4(0.0, 1.0, 0.0, 0.0);
+				glm::vec4 forward = glm::toMat4(hmdSled->o) * glm::toMat4(hand->o) * glm::vec4(0.0, 1.0, 0.0, 0.0);
+
 				dir.x = forward.x;
 				dir.y = forward.y;
 				dir.z = forward.z;
 
+				pos.x = hmdSled->p.x + hand->p.x;
+				pos.y = hmdSled->p.y + hand->p.y;
+				pos.z = hmdSled->p.z + hand->p.z;
 			}
 			else {
 				dir.x = camera.front.x;
 				dir.y = camera.front.y;
 				dir.z = camera.front.z;
+
+				pos.x = camera.pos.x;
+				pos.y = camera.pos.y;
+				pos.z = camera.pos.z - 2.0f;
 			}
 
-			dir *= 80.0;
+			dir *= 40.0;
 
-			px->createDynamic(physx::PxTransform(pos), physx::PxSphereGeometry(1), dir);
+			auto g = physx::PxSphereGeometry(1.0f);
+			px->createDynamic(physx::PxTransform(pos), g, dir);
 		}
 	};
 	AddKeyFunc(' ', fireKey);
 
 	// can't use "hmdSled", it gets made AFTER this function is run.
-	if (initHmd) {
+	if (hmdSled) {
 		// fire forward
 		AddProportionalFunc("RightIndexTrigger", [this](float v) {
 			// 90Hz is way too fast, slow it down to 10Hz
@@ -93,4 +104,28 @@ void ExampleXGL::BuildScene() {
 		}
 	};
 	AddKeyFunc('B', blocksKey);
+
+	AddShape("shaders/specular", [&]() { worldCursor = new XGLSphere(0.5, 32); return worldCursor; });
+	XInputMouseFunc worldCursorMouse = [&](int x, int y, int flags) {
+		if (mt.IsTrackingRightButton()) {
+			XGLWorldCoord *out = wc.Unproject(projector, x, y);
+
+			px->RayCast(out[0], out[1]);
+
+			// project the worldCursor ray onto the X/Y (Z=0) plane
+			// TODO: Figure this out.  I found it on StackOverflow.
+			float f = out[0].z / (out[1].z - out[0].z);
+			float x2d = out[0].x - f * (out[1].x - out[0].x);
+			float y2d = out[0].y - f * (out[1].y - out[0].y);
+			float z2d = -0.002f;
+
+			if (worldCursor) {
+				glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(x2d, y2d, z2d));
+				worldCursor->model = translate;
+			}
+		}
+		else
+			px->ResetActive();
+	};
+	AddMouseFunc(worldCursorMouse);
 }

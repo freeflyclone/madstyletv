@@ -81,6 +81,17 @@ public:
 		XGLPhysX *container;
 		void Draw();
 		void Init(XGLShader *shader) {
+			// This duplicates what XGL::CreateShape() does with regard to
+			// setting up an XGLShape with its requisite OpenGL stuff
+			// (ie: geometry, shader, and uniforms) but does NOT add it
+			// to the normal shapes map, keeping these shapes out of the
+			// normal XGL rendering pipeline.  This is done so that PhysX
+			// simulation can be stepped and results applied to these
+			// shapes, and THEN they are rendered by XGLPhysX::RenderActors()
+			//
+			// I'm not convinced this is optimal in any way, and maybe
+			// it's even fundamentally wrong. But it makes for an interesting
+			// demo for now.
 			box->Load(shader, box->v, box->idx);
 			box->uniformLocations = shader->materialLocations;
 
@@ -102,6 +113,7 @@ public:
 	public:
 		UserData(int i) : active(false), id(i) {};
 		bool active;
+		physx::PxReal radius;
 		int id;
 	};
 

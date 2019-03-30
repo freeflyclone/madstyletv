@@ -97,7 +97,7 @@ void PhysXXGL::BuildScene() {
 		if (mt.IsTrackingRightButton()) {
 			XGLWorldCoord *out = wc.Unproject(projector, x, y);
 
-			RayCast(out[1], out[0]);
+			RayCast(out[0], out[1]);
 
 			// project the worldCursor ray onto the X/Y (Z=0) plane
 			// TODO: Figure this out.  I found it on StackOverflow.

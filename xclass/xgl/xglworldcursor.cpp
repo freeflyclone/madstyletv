@@ -12,13 +12,13 @@ XGLWorldCoord* XGLWorldCursor::Unproject(XGLProjector p, int x, int y) {
 	glm::mat4 proj = smd->projection;
 	glm::vec3 pos;
 
-	// the first point is the window mouse x,y projected to far Z plane
-	pos = { x, p.height - y, 1 };
-	out[1] = glm::unProject(pos, view, proj, viewport);
-
-	// the second point is the center of the XGLCamera projected to near Z plane
+	// the first point is the center of the XGLCamera projected to near Z plane
 	pos = { p.width / 2, p.height / 2, 0 };
 	out[0] = glm::unProject(pos, view, proj, viewport);
+
+	// the second point is the window mouse x,y projected to far Z plane
+	pos = { x, p.height - y, 1 };
+	out[1] = glm::unProject(pos, view, proj, viewport);
 
 	// return a ray (2 points) projected to world space.
 	// (We'll let some other method decide what to do with it)

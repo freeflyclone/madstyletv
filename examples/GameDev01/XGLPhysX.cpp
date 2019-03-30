@@ -100,7 +100,10 @@ void  XGLPhysX::createChain(const physx::PxTransform& t, physx::PxU32 length, co
 physx::PxRigidDynamic* XGLPhysX::createDynamic(const physx::PxTransform& t, const physx::PxGeometry& g, physx::PxMaterial& m, float d) {
 	physx::PxRigidDynamic *rd = PxCreateDynamic(*mPhysics, t, g, m, d);
 
-	rd->userData = new UserData(++dynamicsSerialNumber);
+	UserData *ud = new UserData(++dynamicsSerialNumber);
+	ud->radius = d;
+
+	rd->userData = ud;
 
 	return rd;
 }
@@ -246,7 +249,12 @@ void XGLPhysX::RayCast(glm::vec3 o, glm::vec3 d) {
 		dir -= orig;
 		dir.normalize();
 
-		//xyzzy - TODO: fix final argument to this call to make physx grabbing object work
+		// This has been modified slightly for PhysX 4.0, to make the final argument
+		// to raycast compatible with that API version. Without being *completely* sure,
+		// I've observed there's always at least one actor that's been hit. Not sure
+		// if it's the mouseSphere or the ground plane, but it doesn't seem to matter.
+		// Using the second actor in the list of actors returned by raycast() is the
+		// actor we want to actually manipulate.
 		mScene->raycast(orig, dir, length, buff);
 		if (buff.nbTouches > 1) {
 			hit = buff.touches[1];
