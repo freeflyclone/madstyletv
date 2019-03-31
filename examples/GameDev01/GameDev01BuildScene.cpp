@@ -15,9 +15,11 @@ XGLShape *worldCursor = nullptr;
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
-	//InitHmd();
+	// 2 options: set "initHmd" to true, and InitHmd() runs after this method,
+	// -or- simply call it here and do NOT set initHmd to true.
+	InitHmd();
 
-	//hand = (XGLShape*)hmdSled->FindObject("RightHand0");
+	hand = (XGLShape*)hmdSled->FindObject("RightHand0");
 	if (hand)
 		xprintf("Found Right Hand\n");
 
@@ -43,43 +45,28 @@ void ExampleXGL::BuildScene() {
 		const bool isDown = (flags & 0x8000) == 0;
 		const bool isRepeat = (flags & 0x4000) != 0;
 		if (isDown) {
-			physx::PxVec3 pos, dir;
+			XPhyPoint p;
+			XPhyVelocity v;
 
 			if (hmdSled) {
-				glm::vec4 forward = glm::toMat4(hmdSled->o) * glm::toMat4(hand->o) * glm::vec4(0.0, 1.0, 0.0, 0.0);
-
-				dir.x = forward.x;
-				dir.y = forward.y;
-				dir.z = forward.z;
-
-				pos.x = hmdSled->p.x + hand->p.x;
-				pos.y = hmdSled->p.y + hand->p.y;
-				pos.z = hmdSled->p.z + hand->p.z;
+				p = hmdSled->p + hand->p;
+				v = 40.0f * glm::toMat3(hmdSled->o) * glm::toMat3(hand->o) * glm::vec3(0.0, 1.0, 0.0);
 			}
 			else {
-				dir.x = camera.front.x;
-				dir.y = camera.front.y;
-				dir.z = camera.front.z;
-
-				pos.x = camera.pos.x;
-				pos.y = camera.pos.y;
-				pos.z = camera.pos.z - 2.0f;
+				p = camera.pos;
+				v = 40.0f * camera.front;
 			}
 
-			dir *= 40.0;
-
-			auto g = physx::PxSphereGeometry(1.0f);
-			px->createDynamic(physx::PxTransform(pos), g, dir);
+			px->CreateDynamicSphere(0.3f, p, v);
 		}
 	};
 	AddKeyFunc(' ', fireKey);
 
-	// can't use "hmdSled", it gets made AFTER this function is run.
 	if (hmdSled) {
 		// fire forward
 		AddProportionalFunc("RightIndexTrigger", [this](float v) {
 			// 90Hz is way too fast, slow it down to 10Hz
-			if (fmod(clock, 9.0f) == 1.0f) {
+			if (fmod(clock, 4.5f) == 1.0f) {
 				if (v > 0.5f)
 					KeyEvent(' ', 0);
 				else

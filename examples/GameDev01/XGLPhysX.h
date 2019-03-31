@@ -29,6 +29,14 @@ typedef std::function<physx::PxJoint *(physx::PxRigidActor *, const physx::PxTra
 
 class XGLPhysX : public physx::PxUserControllerHitReport {
 public:
+	class UserData {
+	public:
+		UserData(int i) : active(false), id(i) {};
+		bool active;
+		int id;
+		XGLShape *shape{ nullptr };
+	};
+
 	XGLPhysX(XGL*);
 	//void BuildScene();
 
@@ -46,8 +54,10 @@ public:
 	physx::PxReal						stackY = 10.f;
 	physx::PxCooking*					gCooking;
 
-	physx::PxRigidDynamic *createDynamic(const physx::PxTransform& t, const physx::PxGeometry& g, const physx::PxVec3& velocity = physx::PxVec3(0));
-	physx::PxRigidDynamic *createDynamic(const physx::PxTransform &, const physx::PxGeometry &, physx::PxMaterial &, float);
+	physx::PxRigidDynamic *createDynamic(const physx::PxTransform&, const physx::PxGeometry&, const physx::PxVec3& velocity = physx::PxVec3(0));
+	physx::PxRigidDynamic *createDynamic(const physx::PxTransform&, const physx::PxGeometry&, physx::PxMaterial &, float);
+
+	physx::PxRigidDynamic *CreateDynamicSphere(float radius, const XPhyPoint& pos, const XPhyVelocity& velocity = XPhyVelocity(0));
 
 	void createStack(const physx::PxTransform& t, physx::PxU32 size, physx::PxReal halfExtent);
 
@@ -57,7 +67,7 @@ public:
 	void initPhysics(bool interactive);
 	void stepPhysics(bool interactive);
 	void cleanupPhysics(bool interactive);
-	void renderGeometry(physx::PxGeometryHolder, physx::PxMat44, bool);
+	void renderGeometry(physx::PxGeometryHolder, physx::PxMat44, bool, UserData*);
 
 	void RenderActors(physx::PxRigidActor** actors, const physx::PxU32 numActors, bool shadows = false, const physx::PxVec3 & color = physx::PxVec3(0.0f, 0.75f, 0.0f));
 
@@ -107,14 +117,6 @@ public:
 		XGLCapsule *capsule;
 		GLuint program;
 		float prevClock;
-	};
-
-	class UserData {
-	public:
-		UserData(int i) : active(false), id(i) {};
-		bool active;
-		physx::PxReal radius;
-		int id;
 	};
 
 	XGL* pXgl;

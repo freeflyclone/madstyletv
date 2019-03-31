@@ -101,8 +101,6 @@ physx::PxRigidDynamic* XGLPhysX::createDynamic(const physx::PxTransform& t, cons
 	physx::PxRigidDynamic *rd = PxCreateDynamic(*mPhysics, t, g, m, d);
 
 	UserData *ud = new UserData(++dynamicsSerialNumber);
-	ud->radius = d;
-
 	rd->userData = ud;
 
 	return rd;
@@ -115,6 +113,33 @@ physx::PxRigidDynamic* XGLPhysX::createDynamic(const physx::PxTransform& t, cons
 	dynamic->setLinearVelocity(velocity);
 	mScene->addActor(*dynamic);
 	return dynamic;
+}
+
+physx::PxRigidDynamic* XGLPhysX::CreateDynamicSphere(float radius, const XPhyPoint& p, const XPhyVelocity& v) {
+	physx::PxVec3 pos(p.x, p.y, p.z);
+	physx::PxTransform t(pos);
+	physx::PxVec3 velocity(v.x, v.y, v.z);
+
+	physx::PxSphereGeometry g(radius);
+	physx::PxRigidDynamic* prd = PxCreateDynamic(*mPhysics, t, g, *mMaterial, radius);
+
+	if (!prd)
+		return nullptr;
+
+	prd->setAngularDamping(0.5f);
+	prd->setLinearDamping(0.5f);
+	prd->setLinearVelocity(velocity);
+	mScene->addActor(*prd);
+
+	UserData* pud = new UserData(++dynamicsSerialNumber);
+	pud->shape = new XGLSphere(radius, 32);
+
+	pud->shape->Load(renderer->shader, pud->shape->v, pud->shape->idx);
+	pud->shape->uniformLocations = renderer->shader->materialLocations;
+
+	prd->userData = pud;
+
+	return prd;
 }
 
 void XGLPhysX::createStack(const physx::PxTransform& t, physx::PxU32 size, physx::PxReal halfExtent) {
@@ -156,6 +181,8 @@ void XGLPhysX::RenderActors(physx::PxRigidActor** actors, const physx::PxU32 num
 		if (actor == mouseSphere)
 			continue;
 		actor->getShapes(shapes, nbShapes);
+		UserData *pud = (UserData*)actor->userData;
+
 		//bool sleeping = actor->isRigidDynamic() ? actor->isRigidDynamic()->isSleeping() : false;
 		bool isHit = false;
 
@@ -170,47 +197,56 @@ void XGLPhysX::RenderActors(physx::PxRigidActor** actors, const physx::PxU32 num
 			physx::PxGeometryHolder h = shapes[j]->getGeometry();
 
 			// rendering the geometry
-			renderGeometry(h, shapePose, isHit);
+			renderGeometry(h, shapePose, isHit, pud);
 		}
 	}
 }
-void XGLPhysX::renderGeometry(physx::PxGeometryHolder h, physx::PxMat44 shapePose, bool isHit) {
-	switch (h.getType())
-	{
-	case physx::PxGeometryType::eBOX:
-		renderer->box->XGLBuffer::Bind();
-		renderer->box->attributes.diffuseColor = XGLColors::cyan;
-		renderer->box->XGLMaterial::Bind(renderer->box->shader->programId);
-
+void XGLPhysX::renderGeometry(physx::PxGeometryHolder h, physx::PxMat44 shapePose, bool isHit, UserData* pud) {
+	if (pud && pud->shape) {
+		pud->shape->XGLBuffer::Bind();
+		pud->shape->XGLMaterial::Bind(pud->shape->shader->programId);
 		glProgramUniformMatrix4fv(renderer->shader->programId, renderer->shader->modelUniformLocation, 1, false, (GLfloat *)&shapePose);
-		glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(renderer->box->idx.size()), XGLIndexType, 0);
+		pud->shape->Draw();
+		pud->shape->XGLBuffer::Unbind();
+	}
+	else {
+		switch (h.getType())
+		{
+		case physx::PxGeometryType::eBOX:
+			renderer->box->XGLBuffer::Bind();
+			renderer->box->attributes.diffuseColor = XGLColors::cyan;
+			renderer->box->XGLMaterial::Bind(renderer->box->shader->programId);
 
-		renderer->box->XGLBuffer::Unbind();
-		break;
+			glProgramUniformMatrix4fv(renderer->shader->programId, renderer->shader->modelUniformLocation, 1, false, (GLfloat *)&shapePose);
+			glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(renderer->box->idx.size()), XGLIndexType, 0);
 
-	case physx::PxGeometryType::eSPHERE:
-		renderer->ball->XGLBuffer::Bind();
-		renderer->ball->attributes.diffuseColor = XGLColors::yellow;
-		renderer->ball->XGLMaterial::Bind(renderer->ball->shader->programId);
+			renderer->box->XGLBuffer::Unbind();
+			break;
 
-		glProgramUniformMatrix4fv(renderer->shader->programId, renderer->shader->modelUniformLocation, 1, false, (GLfloat *)&shapePose);
-		glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(renderer->ball->idx.size()), XGLIndexType, 0);
+		case physx::PxGeometryType::eSPHERE:
+			renderer->ball->XGLBuffer::Bind();
+			renderer->ball->attributes.diffuseColor = XGLColors::yellow;
+			renderer->ball->XGLMaterial::Bind(renderer->ball->shader->programId);
 
-		renderer->ball->XGLBuffer::Unbind();
+			glProgramUniformMatrix4fv(renderer->shader->programId, renderer->shader->modelUniformLocation, 1, false, (GLfloat *)&shapePose);
+			glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(renderer->ball->idx.size()), XGLIndexType, 0);
 
-		break;
+			renderer->ball->XGLBuffer::Unbind();
 
-	case physx::PxGeometryType::eCAPSULE:
-		break;
+			break;
 
-	case physx::PxGeometryType::eCONVEXMESH:
-		break;
+		case physx::PxGeometryType::eCAPSULE:
+			break;
 
-	case physx::PxGeometryType::eTRIANGLEMESH:
-		break;
+		case physx::PxGeometryType::eCONVEXMESH:
+			break;
 
-	default:
-		break;
+		case physx::PxGeometryType::eTRIANGLEMESH:
+			break;
+
+		default:
+			break;
+		}
 	}
 }
 
@@ -358,17 +394,17 @@ typedef struct { physx::PxU32 i1, i2, i3; } TRIANGLE;
 void XGLPhysX::ShapeToActor(XGLShape *s) {
 	int size = (int)(s->v.size());
 	physx::PxVec3* points = (physx::PxVec3*)malloc(size*sizeof(physx::PxVec3));
-	XGLVertexList::iterator vrtx;
+
 	XGLIndexList::iterator idx;
 	int i;
 	physx::PxTriangleMeshDesc md;
 	TRIANGLE* tri = (TRIANGLE *)malloc(size * 3 * sizeof(TRIANGLE));
 
 	i = 0;
-	for (vrtx = s->v.begin(); vrtx != s->v.end(); vrtx++) {
-		points[i].x = vrtx->v.x;
-		points[i].y = vrtx->v.y;
-		points[i].z = vrtx->v.z;
+	for (auto vrtx : s->v) {
+		points[i].x = vrtx.v.x;
+		points[i].y = vrtx.v.y;
+		points[i].z = vrtx.v.z;
 		i++;
 	}
 
