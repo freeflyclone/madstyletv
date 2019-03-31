@@ -84,7 +84,7 @@ void XGLShape::Render(glm::mat4 modelChain) {
 	}
 }
 
-XGLAxis::XGLAxis(float length, XGLColor color, XGLVertex vertex) {
+XGLAxis::XGLAxis(XGLVertex vertex, float length, XGLColor color) {
 	SetName("XGLAxis");
 
 	v.push_back({ glm::vec3(0), {}, {}, color });
