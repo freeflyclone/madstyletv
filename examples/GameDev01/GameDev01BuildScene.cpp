@@ -10,19 +10,31 @@
 
 XGLPhysX* px;
 XGLShape *hand = nullptr;
+XGLShape *finger = nullptr;
+XGLShape *tip = nullptr;
 XGLShape *worldCursor = nullptr;
+XGLSphere *fireSource = nullptr;
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
+	AddShape("shaders/specular", [&]() { fireSource = new XGLSphere(0.03f, 32); return fireSource; });
+	fireSource->attributes.diffuseColor = XGLColors::magenta;
+
 	// 2 options: set "initHmd" to true, and InitHmd() runs after this method,
 	// -or- simply call it here and do NOT set initHmd to true.
-	InitHmd();
+	if (false)
+	{
+		InitHmd();
 
-	hand = (XGLShape*)hmdSled->FindObject("RightHand0");
-	if (hand)
-		xprintf("Found Right Hand\n");
-
+		if ((hand = (XGLShape*)hmdSled->FindObject("RightHand0"))) {
+			if ((finger = (XGLShape*)hand->FindObject("RightFinger0"))) {
+				if ((tip = (XGLShape*)finger->FindObject("RightFingerTip0"))) {
+					xprintf("Found right finger tip\n");
+				}
+			}
+		}
+	}
 	px = new XGLPhysX(this);
 
 	const int limit = 40;
@@ -45,19 +57,21 @@ void ExampleXGL::BuildScene() {
 		const bool isDown = (flags & 0x8000) == 0;
 		const bool isRepeat = (flags & 0x4000) != 0;
 		if (isDown) {
+			float speed = 40.0f;
 			XPhyPoint p;
 			XPhyVelocity v;
 
 			if (hmdSled) {
 				p = hmdSled->p + hand->p;
-				v = 40.0f * glm::toMat3(hmdSled->o) * glm::toMat3(hand->o) * glm::vec3(0.0, 1.0, 0.0);
+				v = speed * glm::toMat3(hand->o) * glm::toMat3(hmdSled->o) * glm::vec3(0.0, 1.0, 0.0);
+				fireSource->model = hmdSled->model * hand->model * finger->model * tip->model;
 			}
 			else {
 				p = camera.pos;
-				v = 40.0f * camera.front;
+				v = speed * camera.front;
 			}
 
-			px->CreateDynamicSphere(0.3f, p, v);
+			px->CreateDynamicSphere(0.03f, p, v);
 		}
 	};
 	AddKeyFunc(' ', fireKey);
@@ -65,13 +79,13 @@ void ExampleXGL::BuildScene() {
 	if (hmdSled) {
 		// fire forward
 		AddProportionalFunc("RightIndexTrigger", [this](float v) {
-			// 90Hz is way too fast, slow it down to 10Hz
-			if (fmod(clock, 4.5f) == 1.0f) {
+			// 90Hz is way too fast, slow it down
+			//if (fmod(clock, 4.5f) == 1.0f) {
 				if (v > 0.5f)
 					KeyEvent(' ', 0);
 				else
 					KeyEvent(' ', 0x8000);
-			}
+			//}
 		});
 
 		// drop stack of boxes
@@ -92,27 +106,29 @@ void ExampleXGL::BuildScene() {
 	};
 	AddKeyFunc('B', blocksKey);
 
-	AddShape("shaders/specular", [&]() { worldCursor = new XGLSphere(0.5, 32); return worldCursor; });
-	XInputMouseFunc worldCursorMouse = [&](int x, int y, int flags) {
-		if (mt.IsTrackingRightButton()) {
-			XGLWorldCoord *out = wc.Unproject(projector, x, y);
+	if (true) {
+		AddShape("shaders/specular", [&]() { worldCursor = new XGLSphere(0.5, 32); return worldCursor; });
+		XInputMouseFunc worldCursorMouse = [&](int x, int y, int flags) {
+			if (mt.IsTrackingRightButton()) {
+				XGLWorldCoord *out = wc.Unproject(projector, x, y);
 
-			px->RayCast(out[0], out[1]);
+				px->RayCast(out[0], out[1]);
 
-			// project the worldCursor ray onto the X/Y (Z=0) plane
-			// TODO: Figure this out.  I found it on StackOverflow.
-			float f = out[0].z / (out[1].z - out[0].z);
-			float x2d = out[0].x - f * (out[1].x - out[0].x);
-			float y2d = out[0].y - f * (out[1].y - out[0].y);
-			float z2d = -0.002f;
+				// project the worldCursor ray onto the X/Y (Z=0) plane
+				// TODO: Figure this out.  I found it on StackOverflow.
+				float f = out[0].z / (out[1].z - out[0].z);
+				float x2d = out[0].x - f * (out[1].x - out[0].x);
+				float y2d = out[0].y - f * (out[1].y - out[0].y);
+				float z2d = -0.002f;
 
-			if (worldCursor) {
-				glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(x2d, y2d, z2d));
-				worldCursor->model = translate;
+				if (worldCursor) {
+					glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(x2d, y2d, z2d));
+					worldCursor->model = translate;
+				}
 			}
-		}
-		else
-			px->ResetActive();
-	};
-	AddMouseFunc(worldCursorMouse);
+			else
+				px->ResetActive();
+		};
+		AddMouseFunc(worldCursorMouse);
+	}
 }
