@@ -16,3 +16,6 @@
 [submodule "xclass/3rdParty/delaunator-cpp"]
 	path = xclass/3rdParty/delaunator-cpp
 	url = https://github.com/delfrrr/delaunator-cpp.git
+[submodule "xclass/3rdParty/vaserenderer"]
+	path = xclass/3rdParty/vaserenderer
+	url = https://github.com/freeflyclone/vaserenderer.git
