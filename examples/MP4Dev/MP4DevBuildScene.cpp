@@ -68,8 +68,8 @@ class XAVDemux : public XThread {
 public:
 	class Sequencer : public XThread, public SteppedTimer {
 	public:
-		Sequencer(XAVDemux& dmx) : XThread("XAVDemux::SequncerThread"), dmx(dmx) {
-			SetStepFrequency(30);
+		Sequencer(XAVDemux& dmx) : XThread("XAVDemux::SequencerThread"), dmx(dmx) {
+			SetStepFrequency(60);
 		};
 
 		void Run() {
@@ -407,7 +407,7 @@ void ExampleXGL::BuildScene() {
 		initHmd = false;
 	}
 	else {
-		preferredSwapInterval = 1;
+		preferredSwapInterval = 0;
 		preferredWidth = 1920;
 		preferredHeight = 1080;
 	}
