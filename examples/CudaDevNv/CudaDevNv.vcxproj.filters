@@ -12,7 +12,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="kernel.cu">
+    <CudaCompile Include="loader.cu">
       <Filter>Source Files</Filter>
     </CudaCompile>
   </ItemGroup>
@@ -29,5 +29,10 @@
     <ClCompile Include="CudaDevNvBuildScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="XGLCuda.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -87,13 +87,16 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="kernel.cu" />
+    <CudaCompile Include="loader.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\common\ExampleGUI.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
     <ClCompile Include="CudaDevNvBuildScene.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="XGLCuda.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
