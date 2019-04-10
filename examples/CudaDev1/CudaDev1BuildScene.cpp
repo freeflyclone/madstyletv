@@ -100,7 +100,7 @@ void XGLCuda::Draw() {
 }
 
 void ExampleXGL::BuildScene() {
-	XGLShape *shape;
+	XGLCuda *shape;
 
-	AddShape("shaders/000-simple", [&](){ shape = new XGLTriangle(); return shape; });
+	AddShape("shaders/000-simple", [&](){ shape = new XGLCuda(this); return shape; });
 }
