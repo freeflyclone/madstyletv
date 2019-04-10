@@ -21,18 +21,21 @@
     <ClCompile Include="..\common\ExampleXGL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ExampleTemplateBuildScene.cpp">
+    <ClCompile Include="..\common\ExampleGUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CudaDev1BuildScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="CudaVboDevKernel.cu">
-      <Filter>Source Files</Filter>
-    </CudaCompile>
+    <ClInclude Include="XGLCuda.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="XGLCuda.h" >
-	  <Filter>Header Files</Filter>
-	</ClInclude>
+    <CudaCompile Include="CudaDev1Kernel.cu">
+      <Filter>Source Files</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>
