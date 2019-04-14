@@ -1,18 +1,18 @@
 #include "ExampleXGL.h"
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
+#include "XGLCudaInterop.h"
 
-extern int cuda_main();
-extern cudaError_t LoadKernel(int *dev_a, int *dev_b, int *dev_c, int n);
-const int dataSize = 16;
+extern cudaError_t LaunchKernel(XGLVertexAttributes*, int, int, float);
 
 class XGLCuda : public XGLShape {
 public:
 	XGLCuda(XGL *px);
+	void RunKernel(float);
 	void Draw();
 
-	int a[dataSize], b[dataSize], c[dataSize];
 private:
 	XGL* pXgl;
+	cudaGraphicsResource *cudaVboResource;
+	XGLVertexAttributes* dptr;
+	size_t numBytes;
 };
 

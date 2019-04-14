@@ -30,8 +30,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="XGLCuda.h">
-	  <Filter>Header Files</Filter>
-	</ClInclude>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="XGLCudaInterop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="CudaDev1Kernel.cu">

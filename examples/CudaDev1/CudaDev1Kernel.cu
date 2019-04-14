@@ -1,24 +1,39 @@
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
-#include "xutils.h"
+#include "XGLCudaInterop.h"
 
-// this is a CUDA kernel that adds "a" to "b" with results in "c"
-__global__ void addKernel(int *c, const int *a, const int *b)
+// derived from simpleGL CUDA sample
+__global__ void simple_vbo_kernel(XGLVertexAttributes *pos, unsigned int width, unsigned int height, float time)
 {
-	int i = threadIdx.x;
-	c[i] = a[i] + b[i];
+	unsigned int x = blockIdx.x*blockDim.x + threadIdx.x;
+	unsigned int y = blockIdx.y*blockDim.y + threadIdx.y;
+
+	// calculate uv coordinates
+	float u = x / (float)width;
+	float v = y / (float)height;
+	u = u*2.0f - 1.0f;
+	v = v*2.0f - 1.0f;
+
+	// calculate simple sine wave pattern
+	float freq = 4.0f;
+	float w = sinf(u*freq + time) * cosf(v*freq + time) * 0.5f;
+
+	// write output vertex
+	pos[y*width + x].v.x = u;
+	pos[y*width + x].v.y = v;
+	pos[y*width + x].v.z = w;
 }
 
-cudaError_t LoadKernel(int *dev_a, int *dev_b, int *dev_c, int n) {
+cudaError_t LaunchKernel(XGLVertexAttributes* v, int width, int height, float clock) {
 	cudaError_t cudaStatus;
 
-	// Launch a kernel on the GPU with one thread for each element.
-	addKernel <<<1, n>>> (dev_c, dev_a, dev_b);
+	// execute the kernel
+	dim3 block(8, 8, 1);
+	dim3 grid(width / block.x, height / block.y, 1);
+	simple_vbo_kernel << < grid, block >> >(v, width, height, clock);
 
 	// Check for any errors launching the kernel
 	cudaStatus = cudaGetLastError();
 	if (cudaStatus != cudaSuccess) {
-		xprintf("addKernel launch failed: %s\n", cudaGetErrorString(cudaStatus));
+		xprintf("simple_vbo_kernel launch failed: %s\n", cudaGetErrorString(cudaStatus));
 		goto Error;
 	}
 	return cudaSuccess;

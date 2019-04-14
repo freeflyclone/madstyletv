@@ -192,6 +192,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CudaDevNv", "examples\CudaDevNv\CudaDevNv.vcxproj", "{05FD7C5E-5653-458F-88DA-C047CE80207E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CudaDev1", "examples\CudaDev1\CudaDev1.vcxproj", "{9E0AA65F-F792-4349-89D8-945F3B96497B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AC4080D2-1C42-4812-943D-79CA13A1D86C} = {AC4080D2-1C42-4812-943D-79CA13A1D86C}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

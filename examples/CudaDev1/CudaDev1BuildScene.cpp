@@ -1,106 +1,99 @@
 /**************************************************************
 ** CudaDev1BuildScene.cpp
 **
-** Just to demonstrate instantiation of a "ground"
-** plane and a single triangle, with default camera manipulation
-** via keyboard and mouse, with the framework for CUDA
-** API integration in place.
+** CUDA/OpenGL interop example,  from simpleGL CUDA sample.
+**
+** The CUDA kernel twiddles vertex positions, making a grid
+** mesh and modulating the Z position with a 2D sine wave
+** function, producing a traveling wave across the mesh.
+**
+** Rendered as a pixel point cloud.
 **************************************************************/
 #include "ExampleXGL.h"
 #include "XGLCuda.h"
 
+const int meshWidth = 256;
+const int meshHeight = 256;
+
 XGLCuda::XGLCuda(XGL *px) : pXgl(px) {
 	xprintf("XGLCuda::XGLCuda()\n");
-	//cuda_main();
 
-	int *dev_a = 0;
-	int *dev_b = 0;
-	int *dev_c = 0;
 	cudaError_t cudaStatus;
 
-	for (int i = 0; i < dataSize; i++) {
-		a[i] = i % 8;
-		b[i] = 2;
+	v.resize(meshWidth*meshHeight);
+	xprintf("v.size(): %d\n", v.size());
+	for (auto& vrtx : v) {
+		vrtx.v = { 0, 0, 0 };
+		vrtx.t = { 0, 0 };
+		vrtx.n = { 0, 0, 1 };
+		vrtx.c = XGLColors::yellow;
 	}
+
+	// our VBO may not be bound.
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	GL_CHECK("glBindBuffer() failed");
+
+	// this loads the actual XGLVertexAttributes into the bound "vbo"
+	glBufferData(GL_ARRAY_BUFFER, v.size()*sizeof(XGLVertexAttributes), v.data(), GL_STATIC_DRAW);
+	GL_CHECK("glBufferData() failed");
 
 	// Choose which GPU to run on, change this on a multi-GPU system.
 	cudaStatus = cudaSetDevice(0);
 	if (cudaStatus != cudaSuccess) {
 		xprintf("cudaSetDevice failed!  Do you have a CUDA-capable GPU installed?");
-		goto Error;
+		return;
 	}
 
-	// Allocate GPU buffers for three vectors (two input, one output)    .
-	cudaStatus = cudaMalloc((void**)&dev_c, sizeof(c));
+	// Register VBO with CUDA.
+	cudaStatus = cudaGraphicsGLRegisterBuffer(&cudaVboResource, vbo, cudaGraphicsMapFlagsWriteDiscard);
 	if (cudaStatus != cudaSuccess) {
-		xprintf("cudaMalloc failed!");
-		goto Error;
+		xprintf("cudaGraphicsGLRegisterBuffer failed: %s\n", cudaGetErrorString(cudaStatus));
+		return;
 	}
 
-	cudaStatus = cudaMalloc((void**)&dev_a, sizeof(a));
+	// our VBO is bound, let's unbind it so it doesn't get polluted. (just in case)
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	GL_CHECK("glBindBuffer() failed");
+}
+
+void XGLCuda::RunKernel(float clock) {
+	cudaError_t cudaStatus;
+
+	// Step 3: map VBO resource for writing from CUDA
+	cudaStatus = cudaGraphicsMapResources(1, &cudaVboResource, 0);
 	if (cudaStatus != cudaSuccess) {
-		xprintf("cudaMalloc failed!\n");
-		goto Error;
+		xprintf("cudaGraphicsMapResources() failed: %s\n", cudaGetErrorString(cudaStatus));
+		return;
 	}
 
-	cudaStatus = cudaMalloc((void**)&dev_b, sizeof(b));
+	cudaStatus = cudaGraphicsResourceGetMappedPointer((void **)&dptr, &numBytes, cudaVboResource);
 	if (cudaStatus != cudaSuccess) {
-		xprintf("cudaMalloc failed!\n");
-		goto Error;
+		xprintf("cudaGraphicsResourceGetMappedPointer() failed: %s\n", cudaGetErrorString(cudaStatus));
+		return;
 	}
 
-	// Copy input vectors from host memory to GPU buffers.
-	cudaStatus = cudaMemcpy(dev_a, a, sizeof(a), cudaMemcpyHostToDevice);
+	LaunchKernel(dptr, meshWidth, meshHeight, clock);
+
+	cudaStatus = cudaGraphicsUnmapResources(1, &cudaVboResource, 0);
 	if (cudaStatus != cudaSuccess) {
-		xprintf("cudaMemcpy failed!");
-		goto Error;
+		xprintf("cudaGraphicsResourceGetMappedPointer() failed: %s\n", cudaGetErrorString(cudaStatus));
+		return;
 	}
-
-	cudaStatus = cudaMemcpy(dev_b, b, sizeof(b), cudaMemcpyHostToDevice);
-	if (cudaStatus != cudaSuccess) {
-		xprintf("cudaMemcpy failed!");
-		goto Error;
-	}
-
-	cudaStatus = LoadKernel(dev_a, dev_b, dev_c, dataSize);
-
-	// Check for any errors launching the kernel
-	cudaStatus = cudaGetLastError();
-	if (cudaStatus != cudaSuccess) {
-		xprintf("addKernel launch failed: %s\n", cudaGetErrorString(cudaStatus));
-		goto Error;
-	}
-
-	// cudaDeviceSynchronize waits for the kernel to finish, and returns
-	// any errors encountered during the launch.
-	cudaStatus = cudaDeviceSynchronize();
-	if (cudaStatus != cudaSuccess) {
-		xprintf("cudaDeviceSynchronize returned error code %d after launching addKernel!\n", cudaStatus);
-		goto Error;
-	}
-
-	// Copy output vector from GPU buffer to host memory.
-	cudaStatus = cudaMemcpy(c, dev_c, sizeof(c), cudaMemcpyDeviceToHost);
-	if (cudaStatus != cudaSuccess) {
-		xprintf("cudaMemcpy failed!");
-		goto Error;
-	}
-
-	for (int i = 0; i < dataSize; i++)
-		xprintf("%d, ", c[i]);
-	xprintf("\n");
-
-Error:
-	cudaFree(dev_c);
-	cudaFree(dev_a);
-	cudaFree(dev_b);
 }
 
 void XGLCuda::Draw() {
+	glDrawArrays(GL_POINTS, 0, GLsizei(v.size()));
+	GL_CHECK("glDrawPoints() failed");
 }
 
 void ExampleXGL::BuildScene() {
 	XGLCuda *shape;
 
-	AddShape("shaders/000-simple", [&](){ shape = new XGLCuda(this); return shape; });
+	AddShape("shaders/specular", [&](){ shape = new XGLCuda(this); return shape; });
+	shape->attributes.diffuseColor = XGLColors::yellow;
+	shape->model = glm::scale(glm::mat4(), glm::vec3(10, 10, 10));
+
+	shape->SetAnimationFunction([shape](float clock) {
+		shape->RunKernel(clock / 100.0f);
+	});
 }
