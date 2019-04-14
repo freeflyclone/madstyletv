@@ -95,9 +95,16 @@ void XGLBuffer::Load(XGLShader *s, std::vector<XGLVertexAttributes> va, std::vec
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     GL_CHECK("glBindBuffer() failed");
 
-    // this loads the actual XGLVertexAttributes into the bound "vbo"
-    glBufferData(GL_ARRAY_BUFFER, va.size()*sizeof(XGLVertexAttributes), va.data(), GL_STATIC_DRAW);
-    GL_CHECK("glBufferData() failed");
+	// Check for pre-allocated buffer data in the VBO.
+	GLint size;
+	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
+
+	// If the VBO size > 0, constructor already allocated it, so don't overwrite it.
+	if (size == 0) {
+		// this loads the actual XGLVertexAttributes into the bound "vbo"
+		glBufferData(GL_ARRAY_BUFFER, va.size()*sizeof(XGLVertexAttributes), va.data(), GL_STATIC_DRAW);
+		GL_CHECK("glBufferData() failed");
+	}
 
     // Tell the bound Vertex Attribute Object about how the "vbo" is layed out
     // the first arg is an index to XGLVertex. XGLNormal, XGLTexCoord or XGLColor 
