@@ -7,7 +7,7 @@ __global__ void simple_vbo_kernel(XGLVertexAttributes *pos, unsigned int width, 
 	unsigned int y = blockIdx.y*blockDim.y + threadIdx.y;
 
 	// calculate uv coordinates
-	float u = x / (float)width;
+	float u = x / (float)height;
 	float v = y / (float)height;
 	u = u*2.0f - 1.0f;
 	v = v*2.0f - 1.0f;

@@ -12,13 +12,15 @@
 #include "ExampleXGL.h"
 #include "XGLCuda.h"
 
-const int meshWidth = 256;
-const int meshHeight = 256;
+const int meshWidth = 160;
+const int meshHeight = 88; // multiple of 8, because of triangle strip rendering
 
 XGLCuda::XGLCuda(XGL *px) : pXgl(px) {
 	xprintf("XGLCuda::XGLCuda()\n");
 
 	cudaError_t cudaStatus;
+	int y, x;
+
 
 	v.resize(meshWidth*meshHeight);
 	xprintf("v.size(): %d\n", v.size());
@@ -27,6 +29,26 @@ XGLCuda::XGLCuda(XGL *px) : pXgl(px) {
 		vrtx.t = { 0, 0 };
 		vrtx.n = { 0, 0, 1 };
 		vrtx.c = XGLColors::yellow;
+	}
+
+	for (y = 0; y < meshHeight-2; ) {
+		for (x = 0; x < meshWidth; x++) {
+			idx.push_back(x + ((y + 1) * meshWidth));
+			idx.push_back(x + (y*meshWidth));
+		}
+		idx.push_back((x - 1) + ((y + 1) * meshWidth));
+		y++;
+		for (x = meshWidth-1; x >= 0; x--) {
+			idx.push_back(x + (y * meshWidth));
+			idx.push_back(x + ((y + 1) * meshWidth));
+		}
+		x++;
+		idx.push_back((x) + ((y+1) * meshWidth));
+		y++;
+	}
+	for (x = 0; x < meshWidth; x++) {
+		idx.push_back(x + ((y + 1) * meshWidth));
+		idx.push_back(x + (y*meshWidth));
 	}
 
 	// our VBO may not be bound.
@@ -84,6 +106,9 @@ void XGLCuda::RunKernel(float clock) {
 void XGLCuda::Draw() {
 	glDrawArrays(GL_POINTS, 0, GLsizei(v.size()));
 	GL_CHECK("glDrawPoints() failed");
+
+	glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
+	GL_CHECK("glDrawElements() failed");
 }
 
 void ExampleXGL::BuildScene() {
@@ -94,6 +119,6 @@ void ExampleXGL::BuildScene() {
 	shape->model = glm::scale(glm::mat4(), glm::vec3(10, 10, 10));
 
 	shape->SetAnimationFunction([shape](float clock) {
-		shape->RunKernel(clock / 100.0f);
+		shape->RunKernel(clock / 20.0f);
 	});
 }
