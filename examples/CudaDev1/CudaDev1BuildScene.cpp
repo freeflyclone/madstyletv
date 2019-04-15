@@ -114,11 +114,16 @@ void XGLCuda::Draw() {
 void ExampleXGL::BuildScene() {
 	XGLCuda *shape;
 
-	AddShape("shaders/specular", [&](){ shape = new XGLCuda(this); return shape; });
-	shape->attributes.diffuseColor = XGLColors::yellow;
-	shape->model = glm::scale(glm::mat4(), glm::vec3(10, 10, 10));
+	for (int y = -2; y <= 2; y++) {
+		for (int i = -2; i <= 2; i++) {
+			AddShape("shaders/specular", [&](){ shape = new XGLCuda(this); return shape; });
+			shape->attributes.diffuseColor = XGLColors::yellow;
+			shape->model = glm::scale(glm::mat4(), glm::vec3(4, 4, 4)) * glm::translate(glm::mat4(), glm::vec3(i * 4, y*4, 0));
 
-	shape->SetAnimationFunction([shape](float clock) {
-		shape->RunKernel(clock / 20.0f);
-	});
+			shape->SetAnimationFunction([shape](float clock) {
+				shape->RunKernel(clock / 200.0f);
+			});
+		}
+	}
+	preferredSwapInterval = 0;
 }

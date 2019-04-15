@@ -5,7 +5,7 @@
 	"SvgFile" : "assets/triangle.svg",
 	"VideoFile" : "H:\\Hero6\\GH010033.mp4",
 	"VideoFile2" : "assets/GH010033.mp4",
-	"FreeTypeText" : "MadStyle TV",
+	"FreeTypeText" : "e-man.tv",
 	"Encoder" : {
 		"enabled" : false,
 		"preset" : "faster",
