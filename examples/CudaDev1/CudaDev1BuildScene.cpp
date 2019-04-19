@@ -104,8 +104,8 @@ void XGLCuda::RunKernel(float clock) {
 }
 
 void XGLCuda::Draw() {
-	glDrawArrays(GL_POINTS, 0, GLsizei(v.size()));
-	GL_CHECK("glDrawPoints() failed");
+	//glDrawArrays(GL_POINTS, 0, GLsizei(v.size()));
+	//GL_CHECK("glDrawPoints() failed");
 
 	glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
 	GL_CHECK("glDrawElements() failed");
@@ -113,17 +113,20 @@ void XGLCuda::Draw() {
 
 void ExampleXGL::BuildScene() {
 	XGLCuda *shape;
+	float scaleFactor = 4.0f;
 
-	for (int y = -2; y <= 2; y++) {
-		for (int i = -2; i <= 2; i++) {
+//	for (int y = -2; y <= 2; y++) {
+//		for (int i = -2; i <= 2; i++) {
+	for (int y = 0; y < 1; y++) {
+		for (int x = 0; x < 1; x++) {
 			AddShape("shaders/specular", [&](){ shape = new XGLCuda(this); return shape; });
 			shape->attributes.diffuseColor = XGLColors::yellow;
-			shape->model = glm::scale(glm::mat4(), glm::vec3(4, 4, 4)) * glm::translate(glm::mat4(), glm::vec3(i * 4, y*4, 0));
+			shape->model = glm::scale(glm::mat4(), glm::vec3(scaleFactor, scaleFactor, scaleFactor)) * glm::translate(glm::mat4(), glm::vec3(x * scaleFactor, y * scaleFactor, 0));
 
 			shape->SetAnimationFunction([shape](float clock) {
-				shape->RunKernel(clock / 200.0f);
+				shape->RunKernel(clock / 33.3333f);
 			});
 		}
 	}
-	preferredSwapInterval = 0;
+	preferredSwapInterval = 1;
 }
