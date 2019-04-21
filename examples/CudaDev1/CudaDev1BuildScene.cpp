@@ -21,9 +21,13 @@ XGLCuda::XGLCuda(XGL *px) : pXgl(px) {
 	cudaError_t cudaStatus;
 	int y, x;
 
-
+	// Not positioning vertices in CPU code, but we still need a VBO,
+	// so force a VBO with (meshWidth*meshHeight) vertices to be created.
 	v.resize(meshWidth*meshHeight);
+
 	xprintf("v.size(): %d\n", v.size());
+
+	// Init all the XGLVertexAttribute members
 	for (auto& vrtx : v) {
 		vrtx.v = { 0, 0, 0 };
 		vrtx.t = { 0, 0 };
@@ -31,6 +35,7 @@ XGLCuda::XGLCuda(XGL *px) : pXgl(px) {
 		vrtx.c = XGLColors::yellow;
 	}
 
+	// build a GL_TRIANGLE_STRIP that covers the mesh points
 	for (y = 0; y < meshHeight-2; ) {
 		for (x = 0; x < meshWidth; x++) {
 			idx.push_back(x + ((y + 1) * meshWidth));
@@ -51,7 +56,7 @@ XGLCuda::XGLCuda(XGL *px) : pXgl(px) {
 		idx.push_back(x + (y*meshWidth));
 	}
 
-	// our VBO may not be bound.
+	// our VBO may not be bound, so bind it now
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	GL_CHECK("glBindBuffer() failed");
 
@@ -88,14 +93,17 @@ void XGLCuda::RunKernel(float clock) {
 		return;
 	}
 
+	// the CUDA kernel needs a buffer to work on, so map our previously registered VBO as that buffer
 	cudaStatus = cudaGraphicsResourceGetMappedPointer((void **)&dptr, &numBytes, cudaVboResource);
 	if (cudaStatus != cudaSuccess) {
 		xprintf("cudaGraphicsResourceGetMappedPointer() failed: %s\n", cudaGetErrorString(cudaStatus));
 		return;
 	}
 
+	// run the CUDA kernel on that buffer
 	LaunchKernel(dptr, meshWidth, meshHeight, clock);
 
+	// unmap the VBO, (ostensibly so that OpenGL driver can use it - untested theory)
 	cudaStatus = cudaGraphicsUnmapResources(1, &cudaVboResource, 0);
 	if (cudaStatus != cudaSuccess) {
 		xprintf("cudaGraphicsResourceGetMappedPointer() failed: %s\n", cudaGetErrorString(cudaStatus));
