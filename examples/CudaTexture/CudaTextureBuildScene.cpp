@@ -22,7 +22,7 @@ XGLCuda::XGLCuda(XGL *px, std::string fn) : XGLTexQuad(fn), pXgl(px) {
 	GL_CHECK("glBindBuffer() didn't work");
 
 	// tell OpenGL to allocate the pixel buffer, (without giving it any initial data)
-	glBufferData(GL_PIXEL_UNPACK_BUFFER, width * height * sizeof(XGLRGBA), NULL, GL_STREAM_COPY);
+	glBufferData(GL_PIXEL_UNPACK_BUFFER, width * height * sizeof(XGLRGBA), NULL, GL_DYNAMIC_DRAW);
 	GL_CHECK("glBufferData() didn't work");
 
 	// Choose which GPU to run on
@@ -105,7 +105,7 @@ void ExampleXGL::BuildScene() {
 	shape->model = translate * rotate * scale;
 
 	shape->SetAnimationFunction([shape](float clock) {
-		shape->RunKernel(clock / 16.3333f);
+		shape->RunKernel(clock / 5.000f);
 	});
 
 	preferredSwapInterval = 1;
