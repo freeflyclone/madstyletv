@@ -69,6 +69,13 @@ public:
 		usedBuffs.notify();
 	};
 
+	void Flush() {
+		usedBuffs(0);
+		freeBuffs(numFrames);
+		freeIdx = 0;
+		usedIdx = 0;
+	}
+
 	VideoFrameBuffer *frames[numFrames];
 	XSemaphore freeBuffs, usedBuffs;
 	uint64_t freeIdx{ 0 };
@@ -235,22 +242,18 @@ public:
 		av_shrink_packet(&packet, 0);
 	}
 
-	int64_t GetFullness() { return nFramesDecoded - nFramesDisplayed; }
-
 	// this is run by the sequencer thread, at PTS/DTS interval
 	void UpdateDisplay() {
-		if (pFrames->usedBuffs.wait_for(100)) {
+		VideoFrameBuffer* pvfb = pFrames->NextUsed();
+
+		if (pvfb) {
 			std::lock_guard<std::mutex> lock(displayMutex);
-			VideoFrameBuffer* pvfb = pFrames->frames[nFramesDisplayed & (numFrames - 1)];
 
 			memcpy(vFrameBuffer.y, pvfb->y, vFrameBuffer.ySize);
 			memcpy(vFrameBuffer.u, pvfb->u, vFrameBuffer.uvSize);
 			memcpy(vFrameBuffer.v, pvfb->v, vFrameBuffer.uvSize);
 
-			if (nFramesDecoded > nFramesDisplayed)
-				nFramesDisplayed++;
-
-			pFrames->freeBuffs.notify();
+			pFrames->NotifyFree();
 		}
 	}
 
@@ -283,7 +286,6 @@ public:
 								memcpy(pvf->u, pFrame->data[1], uvSize);
 								memcpy(pvf->v, pFrame->data[2], uvSize);
 
-								nFramesDecoded++;
 								pFrames->NotifyUsed();
 							}
 
@@ -309,10 +311,8 @@ private:
 		wasPlaying = playing;
 		playing = false;
 
-		pFrames->freeBuffs(0);
-		pFrames->usedBuffs(0);
-		nFramesDecoded = 0;
-		nFramesDisplayed = 0;
+		pFrames->Flush();
+
 		retVal = avformat_seek_file(pFormatCtx, -1, INT64_MIN, timeOffset, INT64_MAX, 0);
 		avcodec_flush_buffers(pCodecCtx);
 		showFrameStatus = true;
@@ -337,9 +337,7 @@ public:
 		if (ended) {
 			GetAllTheThings();
 			ended = false;
-			nFramesDecoded = nFramesDisplayed = 0;
-			pFrames->usedBuffs(0);
-			pFrames->freeBuffs(numFrames);
+			pFrames->Flush();
 		}
 		sequencer.Start();
 		playing = true;
@@ -382,8 +380,6 @@ public:
 	FrameBufferPool *pFrames = nullptr;
 	VideoFrameBuffer vFrameBuffer{ vWidth*vHeight, (vWidth / 2)*(vHeight / 2) };
 
-	int	nFramesDecoded{ 0 };
-	int nFramesDisplayed{ 0 };
 	int	chromaWidth{ 0 }, chromaHeight{ 0 };
 	bool playing{ false };
 	bool ended{ false };
