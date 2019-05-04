@@ -5,6 +5,13 @@
 ** & rendering GoPro files shot in HD @ 120 FPS
 **
 ** At present: 1920x1080 120 fps specifically.  All else: YMMV
+**
+** NOTE!:
+**   Uh... at present (4/26/19) this requires an old version of
+** libavcodec, libavformat, etc in order to achieve satisfying
+** decode frame rates.  I don't know what's changed in later versions,
+** and it's quite possibly pilot error on my part, but I'm 
+** looking at it.
 **************************************************************/
 #include "ExampleXGL.h"
 #include "xav.h"
@@ -69,7 +76,7 @@ public:
 	class Sequencer : public XThread, public SteppedTimer {
 	public:
 		Sequencer(XAVDemux& dmx) : XThread("XAVDemux::SequencerThread"), dmx(dmx) {
-			SetStepFrequency(60);
+			SetStepFrequency(120);
 		};
 
 		void Run() {
@@ -164,7 +171,11 @@ public:
 	}
 
 	void ReleaseAllTheThings(){
-		avcodec_close(pCodecCtx);
+		if (pCodecCtx) {
+			avcodec_close(pCodecCtx);
+			pCodecCtx = nullptr;
+		}
+
 		avformat_close_input(&pFormatCtx);
 
 		if (pFrames){
@@ -363,31 +374,35 @@ public:
 	}
 
 	void Draw() {
-		if (dmx.pFrames->usedBuffs.get_count() > 2) {
-			std::lock_guard<std::mutex> lock(dmx.displayMutex);
-			VideoFrameBuffer *pFrame = &dmx.vFrameBuffer;
+		if (dmx.pFrames) {
+			if (dmx.pFrames->usedBuffs.get_count() > 2) {
+				std::lock_guard<std::mutex> lock(dmx.displayMutex);
+				VideoFrameBuffer *pFrame = &dmx.vFrameBuffer;
 
-			glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit0"), 0);
-			glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit1"), 1);
-			glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit2"), 2);
+				glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit0"), 0);
+				glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit1"), 1);
+				glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit2"), 2);
 
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, texIds[0]);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, vWidth, vHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->y);
-			GL_CHECK("glGetTexImage() didn't work");
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, texIds[0]);
+				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, vWidth, vHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->y);
+				GL_CHECK("glGetTexImage() didn't work");
 
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, texIds[1]);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dmx.chromaWidth, dmx.chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->u);
-			GL_CHECK("glGetTexImage() didn't work");
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, texIds[1]);
+				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dmx.chromaWidth, dmx.chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->u);
+				GL_CHECK("glGetTexImage() didn't work");
 
-			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, texIds[2]);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dmx.chromaWidth, dmx.chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->v);
-			GL_CHECK("glGetTexImage() didn't work");
+				glActiveTexture(GL_TEXTURE2);
+				glBindTexture(GL_TEXTURE_2D, texIds[2]);
+				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dmx.chromaWidth, dmx.chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->v);
+				GL_CHECK("glGetTexImage() didn't work");
+				/*
+				*/
+			}
+
+			XGLTexQuad::Draw();
 		}
-
-		XGLTexQuad::Draw();
 	}
 
 	XAVDemux dmx;

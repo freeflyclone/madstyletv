@@ -216,7 +216,6 @@ void XGLBuffer::AddTexture(int width, int height, int channels, GLubyte *img, bo
 }
 
 void XGLBuffer::AddTexture(int width, int height, int channels) {
-	GLenum format = GL_RGBA;
 	GLuint texId;
 
 	glGenTextures(1, &texId);
