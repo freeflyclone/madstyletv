@@ -47,8 +47,32 @@ public:
 			delete frames[i];
 	}
 
+	VideoFrameBuffer* NextFree() { 
+		if (!freeBuffs.wait_for(100))
+			return nullptr;
+
+		return frames[(freeIdx++)&(numFrames - 1)];
+	};
+	
+	VideoFrameBuffer* NextUsed() {
+		if (!usedBuffs.wait_for(100))
+			return nullptr;
+
+		return frames[(usedIdx++)&(numFrames - 1)];
+	};
+
+	void NotifyFree(){
+		freeBuffs.notify();
+	};
+
+	void NotifyUsed() {
+		usedBuffs.notify();
+	};
+
 	VideoFrameBuffer *frames[numFrames];
 	XSemaphore freeBuffs, usedBuffs;
+	uint64_t freeIdx{ 0 };
+	uint64_t usedIdx{ 0 };
 };
 
 // XAVPacket derives from AVPacket soley to add the assignment operator
@@ -108,6 +132,21 @@ public:
 			ReleaseAllTheThings();
 	}
 
+	static int GetBuffer2(struct AVCodecContext *s, AVFrame *frame, int flags) {
+		XAVDemux *self = (XAVDemux *)s->opaque;
+		int ret;
+		int count = 0;
+
+		ret = avcodec_default_get_buffer2(s, frame, flags);
+		for (int i = 0; i < AV_NUM_DATA_POINTERS; i++)
+			if (frame->data[i])
+				count++;
+
+		xprintf("GetBuffer2(): fmt: %d, w: %d, h: %d, %d planes, flags: 0x%08X\n", frame->format, frame->width, frame->height, count, flags);
+
+		return  ret;
+	}
+
 	void GetAllTheThings() {
 		if ((pFrame = av_frame_alloc()) == nullptr)
 			throwXAVException("Unable to allocate AVFrame for: " + fileName + "");
@@ -143,6 +182,8 @@ public:
 			throwXAVException("No video stream found in " + fileName);
 
 		pCodecCtx = pFormatCtx->streams[vStreamIdx]->codec;
+		pCodecCtx->get_buffer2 = GetBuffer2;
+		pCodecCtx->opaque = this;
 
 		if ((pCodec = avcodec_find_decoder(pCodecCtx->codec_id)) == nullptr)
 			throwXAVException("Unsupported codec " + fileName + "!\n");
@@ -231,9 +272,10 @@ public:
 								xprintf("pts: %d, %0.4f, %d, pict_type: %d%s\n", pFrame->pkt_pts, currentPlayTime, pts, pFrame->pict_type, pFrame->key_frame ? " key frame" : "");
 								showFrameStatus = false;
 							}
-							if (pFrames->freeBuffs.wait_for(100)) {
-								VideoFrameBuffer *pvf = pFrames->frames[nFramesDecoded & (numFrames - 1)];
 
+							VideoFrameBuffer *pvf = pFrames->NextFree();
+
+							if (pvf) {
 								int ySize = pFrame->height * pFrame->linesize[0];
 								int uvSize = chromaWidth * chromaHeight;
 
@@ -242,8 +284,9 @@ public:
 								memcpy(pvf->v, pFrame->data[2], uvSize);
 
 								nFramesDecoded++;
-								pFrames->usedBuffs.notify();
+								pFrames->NotifyUsed();
 							}
+
 							av_frame_unref(pFrame);
 						}
 					}
@@ -339,7 +382,8 @@ public:
 	FrameBufferPool *pFrames = nullptr;
 	VideoFrameBuffer vFrameBuffer{ vWidth*vHeight, (vWidth / 2)*(vHeight / 2) };
 
-	int	nFramesDecoded{ 0 }, nFramesDisplayed{ 0 };
+	int	nFramesDecoded{ 0 };
+	int nFramesDisplayed{ 0 };
 	int	chromaWidth{ 0 }, chromaHeight{ 0 };
 	bool playing{ false };
 	bool ended{ false };
@@ -423,8 +467,8 @@ void ExampleXGL::BuildScene() {
 	}
 	else {
 		preferredSwapInterval = 0;
-		preferredWidth = 1920;
-		preferredHeight = 1080;
+		preferredWidth = 1280;
+		preferredHeight = 720;
 	}
 	
 	glm::vec3 cameraPosition(0, -40, 9);
