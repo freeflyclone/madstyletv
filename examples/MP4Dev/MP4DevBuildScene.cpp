@@ -16,7 +16,7 @@
 #include "ExampleXGL.h"
 #include "xav.h"
 
-static const int numFrames = 8;
+static const int numFrames = 4;
 static const int vWidth = 1920;
 static const int vHeight = 1080;
 
@@ -139,19 +139,37 @@ public:
 			ReleaseAllTheThings();
 	}
 
+	// might need some PBO mapping wizardry here, eventually.
+	static void our_buffer_default_free(void *opaque, uint8_t *data) {
+
+	}
+
+	// AVCodecContext.get_buffer2() override: force use of our supplied buffers
+	// for decoder output - ie: decode straight into texture map memory (eventually)
+	// For now, just getting it to use FrameBufferPool buffers is proof that 
+	// this can work.  Eventually, will be PBO buffers with intent to remove
+	// any CPU -> GPU copying of decoder results
 	static int GetBuffer2(struct AVCodecContext *s, AVFrame *frame, int flags) {
 		XAVDemux *self = (XAVDemux *)s->opaque;
-		int ret;
+		int ret = 0;
 		int count = 0;
 
-		ret = avcodec_default_get_buffer2(s, frame, flags);
-		for (int i = 0; i < AV_NUM_DATA_POINTERS; i++)
-			if (frame->data[i])
-				count++;
+		VideoFrameBuffer* pvfb = self->pFrames->NextFree();
+		if (pvfb) {
+			frame->data[0] = pvfb->y;
+			frame->data[1] = pvfb->u;
+			frame->data[2] = pvfb->v;
 
-		xprintf("GetBuffer2(): fmt: %d, w: %d, h: %d, %d planes, flags: 0x%08X\n", frame->format, frame->width, frame->height, count, flags);
+			frame->linesize[0] = s->width;
+			frame->linesize[1] = self->chromaWidth;
+			frame->linesize[2] = self->chromaWidth;
 
-		return  ret;
+			frame->buf[0] = av_buffer_create(frame->data[0], frame->linesize[0] * frame->height, our_buffer_default_free, self, 0);
+			frame->buf[1] = av_buffer_create(frame->data[1], frame->linesize[1] * frame->height / 2, our_buffer_default_free, self, 0);
+			frame->buf[2] = av_buffer_create(frame->data[2], frame->linesize[2] * frame->height / 2, our_buffer_default_free, self, 0);
+
+			self->pFrames->NotifyUsed();
+		}
 	}
 
 	void GetAllTheThings() {
@@ -172,6 +190,7 @@ public:
 		vPkt.data = vPacketBuff;
 		vPkt.size = sizeof(vPacketBuff);
 
+		// find video & audio streams, save their indexes
 		for (unsigned int i = 0; i<pFormatCtx->nb_streams; i++) {
 			if (pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
 				vStreamIdx = i;
@@ -188,6 +207,9 @@ public:
 		if (vStreamIdx == -1)
 			throwXAVException("No video stream found in " + fileName);
 
+		// get AVCodecContext for video stream, override its get_buffer2() method with
+		// ours, and save "this" in its "opaque" pointer, for use by our GetBuffer2();
+		// (override must be done before codec is opened)
 		pCodecCtx = pFormatCtx->streams[vStreamIdx]->codec;
 		pCodecCtx->get_buffer2 = GetBuffer2;
 		pCodecCtx->opaque = this;
@@ -198,6 +220,7 @@ public:
 		if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0)
 			throwXAVException("Unable to open codec " + fileName + "");
 
+		// save timing information (so we stand a chance of appropriate playback speed)
 		timeBase = pCodecCtx->time_base;
 		ticksPerFrame = pCodecCtx->ticks_per_frame;
 
@@ -211,7 +234,8 @@ public:
 		chromaWidth = pCodecCtx->width / (1 << pixDesc->log2_chroma_w);
 		chromaHeight = pCodecCtx->height / (1 << pixDesc->log2_chroma_h);
 
-		if ((pFrames = new FrameBufferPool(pCodecCtx->width, pCodecCtx->height)) == nullptr) {
+		// get new FrameBufferPool(), and tell it the coded size needed
+		if ((pFrames = new FrameBufferPool(pCodecCtx->coded_width, pCodecCtx->coded_height)) == nullptr) {
 			avcodec_close(pCodecCtx);
 			avformat_close_input(&pFormatCtx);
 			throwXAVException("Unable to allocate new FrameBufferPool " + fileName + "");
@@ -242,7 +266,9 @@ public:
 		av_shrink_packet(&packet, 0);
 	}
 
-	// this is run by the sequencer thread, at PTS/DTS interval
+	// this is run by the sequencer thread, at PTS/DTS interval.
+	// This copies into vFrameBuffer at the above interval,
+	// INDEPENDENT of display refresh rate.
 	void UpdateDisplay() {
 		VideoFrameBuffer* pvfb = pFrames->NextUsed();
 
@@ -262,35 +288,11 @@ public:
 			if (playing) {
 				std::lock_guard<std::mutex> lock(playMutex);
 				if ((retVal = av_read_frame(pFormatCtx, &packet)) == 0) {
-					// Video stream...
 					if (packet.stream_index == vStreamIdx) {
 						// copy the XAVPacket
 						vPkt = packet;
 						int frameFinished;
 						avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &vPkt);
-						if (frameFinished) {
-							currentPlayTime = Pts2Time(pFrame->pkt_dts);
-							int64_t pts = Time2Pts(currentPlayTime);
-							if (showFrameStatus) {
-								xprintf("pts: %d, %0.4f, %d, pict_type: %d%s\n", pFrame->pkt_pts, currentPlayTime, pts, pFrame->pict_type, pFrame->key_frame ? " key frame" : "");
-								showFrameStatus = false;
-							}
-
-							VideoFrameBuffer *pvf = pFrames->NextFree();
-
-							if (pvf) {
-								int ySize = pFrame->height * pFrame->linesize[0];
-								int uvSize = chromaWidth * chromaHeight;
-
-								memcpy(pvf->y, pFrame->data[0], ySize);
-								memcpy(pvf->u, pFrame->data[1], uvSize);
-								memcpy(pvf->v, pFrame->data[2], uvSize);
-
-								pFrames->NotifyUsed();
-							}
-
-							av_frame_unref(pFrame);
-						}
 					}
 					av_free_packet(&packet);
 				}
