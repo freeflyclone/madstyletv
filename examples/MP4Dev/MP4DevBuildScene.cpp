@@ -473,7 +473,7 @@ void ExampleXGL::BuildScene() {
 		preferredHeight = 720;
 	}
 	
-	glm::vec3 cameraPosition(0, -40, 9);
+	glm::vec3 cameraPosition(0, -21, 9);
 	glm::vec3 cameraDirection(0, 1, 0);
 	glm::vec3 cameraUp = { 0, 0, 1 };
 	camera.Set(cameraPosition, cameraDirection, cameraUp);
@@ -492,7 +492,7 @@ void ExampleXGL::BuildScene() {
 	AddShape("shaders/yuv", [&](){ pPlayer = new XAVPlayer(videoPath); return pPlayer; });
 
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(16.0f, 9.0f, 1.0f));
-	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(-8.0f, 0.0f, 9.0f));
+	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 9.0f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	pPlayer->model = translate * rotate *scale;
 
