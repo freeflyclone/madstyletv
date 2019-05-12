@@ -170,6 +170,10 @@ public:
 
 			self->pFrames->NotifyUsed();
 		}
+
+		// must return 0!  can't remember where I saw it, but 0 means NOT ref counted. (I think)
+		// (basically, we want to tell libavcodec to NOT fuck with management of these buffers.)
+		return 0;
 	}
 
 	void GetAllTheThings() {
