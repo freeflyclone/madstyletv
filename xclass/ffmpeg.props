@@ -5,7 +5,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <IncludePath>$(FFMPEG_DIR)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(FFMPEG_DIR)\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(FFMPEG_DIR)\lib;$(FFMPEG_DIR)\lib\$(PlatformTarget);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
