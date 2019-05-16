@@ -23,13 +23,26 @@ static const int vHeight = 1080;
 class VideoFrameBuffer {
 public:
 	VideoFrameBuffer(int ySize, int uvSize) : ySize(ySize), uvSize(uvSize) {
-		y = new uint8_t[ySize];
-		u = new uint8_t[uvSize];
-		v = new uint8_t[uvSize];
+		glGenBuffers(1,&pboId);
+		GL_CHECK("glGenBuffers failed");
+
+		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboId);
+		GL_CHECK("glBindBuffer() failed");
+
+		glBufferData(GL_PIXEL_UNPACK_BUFFER, ySize + 2 * uvSize, nullptr, GL_STREAM_DRAW);
+		GL_CHECK("glBufferData() failed");
+
+		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+		GL_CHECK("glBindBuffer() failed");
+
+		y = new uint8_t[ySize+2*uvSize];
+		u = y + ySize;
+		v = u + uvSize;
 	}
 
 	uint8_t *y, *u, *v;
 	int ySize, uvSize;
+	GLuint pboId{ 0 };
 };
 
 class FrameBufferPool {
@@ -296,6 +309,8 @@ public:
 						// copy the XAVPacket
 						vPkt = packet;
 						int frameFinished;
+						// since we have our own AVFrame allocator we know when a new AVFrame
+						// is made, so we just need to run the decoder.
 						avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &vPkt);
 					}
 					av_free_packet(&packet);
@@ -445,6 +460,11 @@ public:
 				GL_CHECK("glGetTexImage() didn't work");
 				/*
 				*/
+				if (false)
+				{
+					static int count = 0;
+					xprintf("Draw(%d)\n", count++);
+				}
 			}
 
 			XGLTexQuad::Draw();
