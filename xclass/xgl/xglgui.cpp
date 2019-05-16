@@ -214,7 +214,7 @@ XGLGuiSlider::XGLGuiSlider(XGL *xgl, std::string name, Orientation o, int x, int
 	groove->model = glm::translate(glm::mat4(), glm::vec3(grooveOffset, grooveOffset, 0.0));
 
 	// the "thumb" is the thingy that moves according to mouse position
-	AddChildShape("shaders/ortho-rgb", [xgl, this, x, y, w, h]() { thumb = new XGLGuiCanvas(xgl, w, h, false); return thumb; });
+	AddChildShape("shaders/ortho-rgb", [xgl, this, x, y, w, h]() { thumb = new XGLGuiCanvas(xgl, thumbSize, thumbSize, false); return thumb; });
 	thumb->AddTexture(pathToAssets + "/assets/button-large.png");
 	thumb->attributes.ambientColor = XGLColors::transparent;
 	thumb->Reshape(0, 0, thumbSize, thumbSize);
