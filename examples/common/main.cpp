@@ -171,6 +171,10 @@ void InitGLDebugLog(GLFWwindow *window) {
 #endif
 }
 
+void GLLogString(const char* msg) {
+	glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_OTHER, 0, GL_DEBUG_SEVERITY_NOTIFICATION, 128, msg);
+}
+
 int main(void) {
 	GLFWwindow *window;
 	int width, height;
@@ -223,7 +227,7 @@ int main(void) {
 	pathToAssets = currentWorkingDir + "/..";
 
 	try {
-		glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_OTHER, 0, GL_DEBUG_SEVERITY_NOTIFICATION, 128, "Initializing XGL...");
+		GLLogString("Initializing XGL...");
 		exgl = new ExampleXGL();
 		enumerate_joysticks();
 		exgl->GetPreferredWindowSize(&width, &height);
@@ -233,7 +237,7 @@ int main(void) {
 
 		bool shouldQuit = false;
 
-		glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_OTHER, 0, GL_DEBUG_SEVERITY_NOTIFICATION, 128, "...XGL init complete, loop starting.");
+		GLLogString("...XGL init complete, loop starting.");
 
 		while (!glfwWindowShouldClose(window) && !shouldQuit) {
 			glfwPollEvents();
