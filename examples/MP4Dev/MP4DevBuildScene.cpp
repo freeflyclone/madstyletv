@@ -32,6 +32,13 @@ public:
 		glBufferData(GL_PIXEL_UNPACK_BUFFER, ySize + 2 * uvSize, nullptr, GL_STREAM_DRAW);
 		GL_CHECK("glBufferData() failed");
 
+		pboBuffer = (uint8_t*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_READ_WRITE);
+		GL_CHECK("glMapBuffer() failed");
+
+		if (pboBuffer == nullptr) {
+			xprintf("Doh! glMapBuffer() returned nullptr\n");
+		}
+
 		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 		GL_CHECK("glBindBuffer() failed");
 
@@ -41,6 +48,7 @@ public:
 	}
 
 	uint8_t *y, *u, *v;
+	uint8_t *pboBuffer;
 	int ySize, uvSize;
 	GLuint pboId{ 0 };
 };
@@ -313,27 +321,7 @@ public:
 						// is made, so we just need to run the decoder.
 						avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &vPkt);
 						if (frameFinished) {
-							VideoFrameBuffer *pvfb = (VideoFrameBuffer*)pFrame->opaque;
-							std::lock_guard<std::mutex> lock(displayMutex);
 
-							glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pvfb->pboId);
-							GL_CHECK("glBindBuffer() failed");
-
-							uint8_t* pboData = (uint8_t*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
-							GL_CHECK("glNamedBuffer() failed");
-
-							if (pboData != nullptr) {
-								memcpy(pboData, pvfb->y, pvfb->ySize + pvfb->uvSize * 2);
-
-								glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
-								GL_CHECK("glUnmapBuffer() failed");
-
-								glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-								GL_CHECK("glBindBuffer() failed");
-								xprintf("mapped\n");
-							}
-							else
-								xprintf("not mapped\n");
 						}
 					}
 					av_free_packet(&packet);
