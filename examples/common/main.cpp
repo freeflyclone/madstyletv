@@ -15,7 +15,7 @@
 
 static ExampleXGL *exgl = NULL;
 #ifndef OPENGL_MAJOR_VERSION
-#define OPENGL_MAJOR_VERSION 3
+#define OPENGL_MAJOR_VERSION 4
 #endif
 
 #ifndef OPENGL_MINOR_VERSION
@@ -68,7 +68,7 @@ void SetGlobalWorkingDirectoryName() {
 #endif
 
 void error_callback(int error, const char *description) {
-	fprintf(stderr, "Error: %s\n", description);
+	fprintf(stderr, "GLFW_ErrorCallback: %s\n", description);
 }
 
 static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
@@ -148,6 +148,29 @@ static void enumerate_joysticks() {
 	}
 }
 
+void GLAPIENTRY GLDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
+	GLFWwindow *window = (GLFWwindow*)userParam;
+	xprintf("%s(): %s\n", __FUNCTION__, message);
+}
+
+void InitGLDebugLog(GLFWwindow *window) {
+#ifdef OPENGL_DEBUG_LOG
+	if (GLEW_ARB_debug_output) {
+		xprintf("GLEW_ARB_debug_output available\n");
+
+		glDebugMessageCallback(GLDebugCallback, window);
+
+		glEnable(GL_DEBUG_OUTPUT);
+		if (glIsEnabled(GL_DEBUG_OUTPUT))
+			xprintf("GL_DEBUG_OUTPUT enabled\n");
+
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		if (glIsEnabled(GL_DEBUG_OUTPUT_SYNCHRONOUS))
+			xprintf("GL_DEBUG_OUTPUT_SYNCHRONOUS enabled\n");
+	}
+#endif
+}
+
 int main(void) {
 	GLFWwindow *window;
 	int width, height;
@@ -189,12 +212,15 @@ int main(void) {
 		exit(-1);
 	}
 
+	InitGLDebugLog(window);
+
 	glfwGetFramebufferSize(window, &width, &height);
 
 	SetGlobalWorkingDirectoryName();
 	pathToAssets = currentWorkingDir + "/..";
 
 	try {
+		glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_OTHER, 0, GL_DEBUG_SEVERITY_NOTIFICATION, 128, "Initializing XGL...");
 		exgl = new ExampleXGL();
 		enumerate_joysticks();
 		exgl->GetPreferredWindowSize(&width, &height);
@@ -203,6 +229,9 @@ int main(void) {
 		exgl->Reshape(width, height);
 
 		bool shouldQuit = false;
+
+		glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_OTHER, 0, GL_DEBUG_SEVERITY_NOTIFICATION, 128, "...XGL init complete, loop starting.");
+
 		while (!glfwWindowShouldClose(window) && !shouldQuit) {
 			glfwPollEvents();
 			exgl->PollJoysticks();
