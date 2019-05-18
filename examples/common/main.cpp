@@ -15,7 +15,7 @@
 
 static ExampleXGL *exgl = NULL;
 #ifndef OPENGL_MAJOR_VERSION
-#define OPENGL_MAJOR_VERSION 4
+#define OPENGL_MAJOR_VERSION 3
 #endif
 
 #ifndef OPENGL_MINOR_VERSION
@@ -190,6 +190,9 @@ int main(void) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, OPENGL_MAJOR_VERSION);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, OPENGL_MINOR_VERSION);
 	glfwWindowHint(GLFW_SAMPLES, 8);
+#ifdef OPENGL_DEBUG_LOG
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+#endif
 
 	window = glfwCreateWindow(1280, 720, GLFW_WINDOW_TITLE, NULL, NULL);
 	if (!window) {

@@ -150,6 +150,7 @@ public:
 	}
 
 	~XAVDemux() {
+		xprintf("%s()\n", __FUNCTION__);
 		if (playing)
 			StopPlaying();
 
@@ -268,6 +269,8 @@ public:
 	}
 
 	void ReleaseAllTheThings(){
+		xprintf("%s()\n", __FUNCTION__);
+
 		if (pCodecCtx) {
 			avcodec_close(pCodecCtx);
 			pCodecCtx = nullptr;
@@ -335,6 +338,7 @@ public:
 			else
 				std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
 		}
+		xprintf("%s() exiting\n", __FUNCTION__);
 	}
 
 private:
@@ -355,6 +359,7 @@ private:
 
 public:
 	void SeekPercent(float percent) {
+		xprintf("%s(): seeking to: %0.4f%%\n", __FUNCTION__, percent);
 		if (!ended) {
 			float duration = (float)pFormatCtx->duration;
 			int64_t timeOffset = (int64_t)(duration * percent / 100.0f);
@@ -376,6 +381,7 @@ public:
 	}
 
 	void StopPlaying() {
+		xprintf("%s()\n", __FUNCTION__);
 		sequencer.Stop();
 		playing = false;
 	}
