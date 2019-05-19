@@ -148,9 +148,43 @@ static void enumerate_joysticks() {
 	}
 }
 
+typedef std::map<GLenum, std::string> DebugSourceStrings;
+DebugSourceStrings debugSourceStrings = {
+	{ GL_DEBUG_SOURCE_API, "API" },
+	{ GL_DEBUG_SOURCE_WINDOW_SYSTEM, "Window System" },
+	{ GL_DEBUG_SOURCE_SHADER_COMPILER, "Shader Compiler" },
+	{ GL_DEBUG_SOURCE_THIRD_PARTY, "Third Party" },
+	{ GL_DEBUG_SOURCE_APPLICATION, "Application" },
+	{ GL_DEBUG_SOURCE_OTHER, "Other" },
+};
+typedef std::map<GLenum, std::string> DebugTypeStrings;
+DebugSourceStrings debugTypeStrings = {
+	{ GL_DEBUG_TYPE_ERROR, "Error" },
+	{ GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR, "Deprecated Behavior" },
+	{ GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR, "Undefined Behavior" },
+	{ GL_DEBUG_TYPE_PORTABILITY, "Portability" },
+	{ GL_DEBUG_TYPE_PERFORMANCE, "Performance" },
+	{ GL_DEBUG_TYPE_MARKER, "Marker" },
+	{ GL_DEBUG_TYPE_PUSH_GROUP, "Push Group" },
+	{ GL_DEBUG_TYPE_POP_GROUP, "Pop Group" },
+	{ GL_DEBUG_TYPE_OTHER, "Other" },
+};
+typedef std::map<GLenum, std::string> DebugSeverityStrings;
+DebugSourceStrings debugSeverityStrings = {
+	{ GL_DEBUG_SEVERITY_HIGH, "High" },
+	{ GL_DEBUG_SEVERITY_MEDIUM, "Medium" },
+	{ GL_DEBUG_SEVERITY_LOW, "Low" },
+	{ GL_DEBUG_SEVERITY_NOTIFICATION, "Notification" },
+};
+
 void GLAPIENTRY GLDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
 	GLFWwindow *window = (GLFWwindow*)userParam;
-	xprintf("%s(): %s\n", __FUNCTION__, message);
+	xprintf("%s(): %s:%s:%s\n\t%s\n", 
+		__FUNCTION__, 
+		debugSourceStrings[source].c_str(), 
+		debugTypeStrings[type].c_str(),
+		debugSeverityStrings[severity].c_str(),
+		message);
 }
 
 void InitGLDebugLog(GLFWwindow *window) {
@@ -167,6 +201,8 @@ void InitGLDebugLog(GLFWwindow *window) {
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		if (glIsEnabled(GL_DEBUG_OUTPUT_SYNCHRONOUS))
 			xprintf("GL_DEBUG_OUTPUT_SYNCHRONOUS enabled\n");
+
+		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 	}
 #endif
 }
