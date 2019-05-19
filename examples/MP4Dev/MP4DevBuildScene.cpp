@@ -453,7 +453,7 @@ public:
 
 	void Draw() {
 		if (dmx.pFrames) {
-			if (dmx.pFrames->usedBuffs.get_count() > 2) {
+			if (dmx.pFrames->usedBuffs.get_count()) {
 				std::lock_guard<std::mutex> lock(dmx.displayMutex);
 				VideoFrameBuffer *pFrame = &dmx.vFrameBuffer;
 
