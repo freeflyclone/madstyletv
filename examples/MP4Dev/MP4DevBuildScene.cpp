@@ -240,6 +240,13 @@ public:
 		pCodecCtx->get_buffer2 = GetBuffer2;
 		pCodecCtx->opaque = this;
 
+		// xyzzy: for now, assume my machine (Windows 7: quad core w/HT)
+		// apparently old FFMPEG did this automagically, whereas new does not
+		if (true) {
+			pCodecCtx->thread_count = 4;
+			pCodecCtx->thread_type = FF_THREAD_FRAME;
+		}
+
 		if ((pCodec = avcodec_find_decoder(pCodecCtx->codec_id)) == nullptr)
 			throwXAVException("Unsupported codec " + fileName + "!\n");
 
