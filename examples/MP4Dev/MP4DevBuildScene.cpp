@@ -32,7 +32,7 @@ public:
 		glBufferData(GL_PIXEL_UNPACK_BUFFER, ySize + 2 * uvSize, nullptr, GL_STREAM_DRAW);
 		GL_CHECK("glBufferData() failed");
 
-		pboBuffer = (uint8_t*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_READ_WRITE);
+		pboBuffer = (uint8_t*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
 		GL_CHECK("glMapBuffer() failed");
 
 		if (pboBuffer == nullptr) {
@@ -314,6 +314,8 @@ public:
 			memcpy(vFrameBuffer.u, pvfb->u, vFrameBuffer.uvSize);
 			memcpy(vFrameBuffer.v, pvfb->v, vFrameBuffer.uvSize);
 			
+			memcpy(vFrameBuffer.pboBuffer, pvfb->y, vFrameBuffer.ySize);
+
 			pFrames->NotifyFree();
 		}
 	}
@@ -470,9 +472,14 @@ public:
 
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, texIds[0]);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, vWidth, vHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->y);
-				GL_CHECK("glGetTexImage() didn't work");
+				glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pFrame->pboId);
+				glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
+				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, vWidth, vHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)0);
+				pFrame->pboBuffer = (uint8_t*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
+				glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
+				GL_CHECK("glGetTexImage() didn't work");
+				/*
 				glActiveTexture(GL_TEXTURE1);
 				glBindTexture(GL_TEXTURE_2D, texIds[1]);
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dmx.chromaWidth, dmx.chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->u);
@@ -482,7 +489,7 @@ public:
 				glBindTexture(GL_TEXTURE_2D, texIds[2]);
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dmx.chromaWidth, dmx.chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->v);
 				GL_CHECK("glGetTexImage() didn't work");
-				/*
+
 				*/
 				if (false)
 				{
@@ -533,7 +540,7 @@ void ExampleXGL::BuildScene() {
 	else
 		videoPath = pathToAssets + "/" + videoUrl;
 
-	AddShape("shaders/yuv", [&](){ pPlayer = new XAVPlayer(videoPath); return pPlayer; });
+	AddShape("shaders/yyy", [&](){ pPlayer = new XAVPlayer(videoPath); return pPlayer; });
 
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(16.0f, 9.0f, 1.0f));
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 9.0f));

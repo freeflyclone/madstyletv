@@ -22,7 +22,7 @@
 
 class ExampleXGL : public XGL {
 public:
-	ExampleXGL();
+	ExampleXGL(GLFWwindow*);
 	~ExampleXGL();
 
 	void BuildScene();
@@ -35,4 +35,6 @@ public:
 	MouseTracker mt;
 	KeyboardTracker kt;
 	XGLWorldCursor wc;
+
+	GLFWwindow* window;
 };

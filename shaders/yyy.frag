@@ -26,9 +26,9 @@ void main(void)
 	u = (u - 0.5) * 1.0;
 	v = (v - 0.5) * 1.0;
 
-	float r = y + (1.5958 * v);
-	float g = y - (0.39173 * u) - (0.81290 * v);
-	float b = y + (2.017 * u);
+	float r = y;
+	float g = y;
+	float b = y;
 
 	out_Color = vec4(r,g,b,ambient.a);
 }

@@ -5,7 +5,7 @@ bool initHmd = false;
 
 // TODO:  I don't think I need to initialize "wc" this way if I'm using
 // lambda functions for the world cursor.  Will investigate.
-ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
+ExampleXGL::ExampleXGL(GLFWwindow* w) : window(w), wc(&shaderMatrix) {
 	XGLShape *shape;
 
 	// add 2D shapes to the guiShapes list.

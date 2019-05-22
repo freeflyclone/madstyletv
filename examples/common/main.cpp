@@ -264,7 +264,7 @@ int main(void) {
 
 	try {
 		GLLogString("Initializing XGL...");
-		exgl = new ExampleXGL();
+		exgl = new ExampleXGL(window);
 		enumerate_joysticks();
 		exgl->GetPreferredWindowSize(&width, &height);
 		glfwSetWindowSize(window, width, height);
