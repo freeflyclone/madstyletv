@@ -28,21 +28,20 @@ public:
 		glGenBuffers(1, &pboId);
 		GL_CHECK("glGenBuffers failed");
 
+		xprintf("pboId: %d\n", pboId);
+
 		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboId);
 		GL_CHECK("glBindBuffer() failed");
 
-		glBufferData(GL_PIXEL_UNPACK_BUFFER, pboSize, nullptr, GL_STREAM_DRAW);
-		GL_CHECK("glBufferData() failed");
+		glBufferStorage(GL_PIXEL_UNPACK_BUFFER, pboSize, nullptr, pboFlags);
+		GL_CHECK("glBufferStorage() failed");
 
-		pboBuffer = (uint8_t*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
-		GL_CHECK("glMapBuffer() failed");
+		pboBuffer = (uint8_t*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, pboSize, pboFlags);
+		GL_CHECK("glMapBufferRange() failed");
 
 		if (pboBuffer == nullptr) {
-			xprintf("Doh! glMapBuffer() returned nullptr\n");
+			xprintf("Doh! glMapBufferRange() returned nullptr\n");
 		}
-
-		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-		GL_CHECK("glBindBuffer() failed");
 
 		glfwMakeContextCurrent(pXgl->window);
 
@@ -61,8 +60,13 @@ public:
 		glfwMakeContextCurrent(mWindow);
 
 		while (IsRunning()) {
-			xprintf("%s()\n", __FUNCTION__);
-			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(100));
+			if (frameNum & 1)
+				memcpy(pboBuffer, white, pboSize);
+			else
+				memcpy(pboBuffer, black, pboSize);
+
+			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
+			frameNum++;
 		}
 	}
 
@@ -70,18 +74,49 @@ public:
 	ExampleXGL* pXgl;
 	GLuint pboId;
 	uint8_t* pboBuffer;
+	GLbitfield pboFlags{ GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT };
 	int width, height, channels;
 	int pboSize;
-
+	uint64_t frameNum{ 0 };
 	uint8_t *black, *white;
 };
 
+class XGLContextImage : public XGLTexQuad {
+public:
+	XGLContextImage(std::string inName) : XGLTexQuad(inName) {
+		ta = texAttrs[0];
+		xprintf("imageSize: %d,%d,%d\n", ta.width, ta.height, ta.channels);
+	}
+
+	void SetContext(XGLContext *p) { pContext = p; }
+
+	void Draw() {
+		// the texture mapping setup for this draw call has already been done
+		// by the time we get here, so fiddling with the XGLContext generated
+		// PBO data won't get hosed by the default XGLTexQuad::Draw() method.
+		// So we can party on here with the async PBO here.
+
+		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pContext->pboId);
+		GL_CHECK("glBindBuffer() didn't work.");
+
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, ta.width, ta.height, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid *)0);
+		GL_CHECK("glTexSubImage2D() failed");
+
+		XGLTexQuad::Draw();
+	}
+
+	XGLContext *pContext{ nullptr };
+	TextureAttributes ta;
+};
+
 void ExampleXGL::BuildScene() {
-	XGLContext *ac = new XGLContext(this, 1920,1088,3);
-	XGLTexQuad *shape;
+	XGLContextImage *shape;
 	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
 
-	AddShape("shaders/tex", [&shape, imgPath](){ shape = new XGLTexQuad(imgPath); return shape; });
+	AddShape("shaders/tex", [&shape, imgPath](){ shape = new XGLContextImage(imgPath); return shape; });
+
+	XGLShape::TextureAttributes ta = shape->texAttrs[0];
+	XGLContext *ac = new XGLContext(this, ta.width, ta.height, ta.channels);
 
 	// have the upright texture scaled up and made 16:9 aspect, and orbiting the origin
 	// to highlight use of the callback function for animation of a shape.  Note that this function
@@ -96,5 +131,6 @@ void ExampleXGL::BuildScene() {
 		shape->model = translate * rotate * scale;
 	});
 
+	shape->SetContext(ac);
 	ac->Start();
 }
