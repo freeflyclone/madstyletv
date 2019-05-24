@@ -17,6 +17,12 @@
 
 class XGLBuffer {
 public:
+	struct TextureAttributes {
+		int width, height, channels;
+	};
+
+	typedef std::vector<TextureAttributes> TextureAttributesList;
+
     XGLBuffer();
     virtual void Bind(bool bindTextures=true);
     virtual void Unbind();
@@ -34,6 +40,7 @@ public:
     GLuint ibo;
 	GLint numTextures;
     std::vector<GLuint> texIds;
+	TextureAttributesList texAttrs;
     GLfloat clock;
 	XGLShader *shader;
 };

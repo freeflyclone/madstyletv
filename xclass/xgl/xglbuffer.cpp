@@ -212,6 +212,7 @@ void XGLBuffer::AddTexture(int width, int height, int channels, GLubyte *img, bo
     GL_CHECK("glTexImage2D() failed");
 
     texIds.push_back(texId);
+	texAttrs.push_back({ width, height, channels });
 	numTextures++;
 }
 
@@ -260,11 +261,13 @@ void XGLBuffer::AddTexture(int width, int height, int channels) {
 	GL_CHECK("glTexImage2D() failed");
 
 	texIds.push_back(texId);
+	texAttrs.push_back({ width, height, channels });
 	numTextures++;
 
 }
 
 void XGLBuffer::AddTexture(GLuint texId) {
 	texIds.push_back(texId);
+	texAttrs.push_back({ 0, 0, 0 });
 	numTextures++;
 }

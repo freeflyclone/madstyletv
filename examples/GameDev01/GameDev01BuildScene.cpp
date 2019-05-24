@@ -71,7 +71,7 @@ void ExampleXGL::BuildScene() {
 				v = speed * camera.front;
 			}
 
-			px->CreateDynamicSphere(0.03f, p, v);
+			px->CreateDynamicSphere(0.3f, p, v);
 		}
 	};
 	AddKeyFunc(' ', fireKey);

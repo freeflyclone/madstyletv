@@ -310,9 +310,9 @@ public:
 		if (pvfb) {
 			std::lock_guard<std::mutex> lock(displayMutex);
 
-			memcpy(vFrameBuffer.y, pvfb->y, vFrameBuffer.ySize);
-			memcpy(vFrameBuffer.u, pvfb->u, vFrameBuffer.uvSize);
-			memcpy(vFrameBuffer.v, pvfb->v, vFrameBuffer.uvSize);
+			//memcpy(vFrameBuffer.y, pvfb->y, vFrameBuffer.ySize);
+			//memcpy(vFrameBuffer.u, pvfb->u, vFrameBuffer.uvSize);
+			//memcpy(vFrameBuffer.v, pvfb->v, vFrameBuffer.uvSize);
 			
 			memcpy(vFrameBuffer.pboBuffer, pvfb->y, vFrameBuffer.ySize);
 
