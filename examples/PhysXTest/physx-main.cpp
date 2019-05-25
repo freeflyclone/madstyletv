@@ -201,7 +201,7 @@ int main(void) {
     pathToAssets = currentWorkingDir + "/..";
 
 	try {
-		pxgl = new PhysXXGL();
+		pxgl = new PhysXXGL(window);
 		pxgl->GetPreferredWindowSize(&width, &height);
 		glfwSetWindowSize(window, width, height);
 		glfwSwapInterval(pxgl->GetPreferredSwapInterval());

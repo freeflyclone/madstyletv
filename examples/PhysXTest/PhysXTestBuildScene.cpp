@@ -11,7 +11,7 @@ extern bool initHmd;
 XGLAxis* fingerRay;
 
 void ExampleXGL::BuildScene() {
-	initHmd = true;
+	//initHmd = true;
 	xprintf("ExampleXGL::BuildScene()\n");
 }
 
@@ -119,7 +119,7 @@ void PhysXXGL::BuildScene() {
 	// if VR mode...
 	if (initHmd) {
 		// make a "ray" to shoot out of the right finger, just to illustrate how to do so.
-		CreateShape("shaders/000-simple", [&]() { fingerRay = new XGLAxis(3.0f, XGLColors::white, { 1.0f, 0.0f, 0.0f }); fingerRay->SetName("RightFingerAxis");  return fingerRay; });
+		CreateShape("shaders/000-simple", [&]() { fingerRay = new XGLAxis({ 1.0f, 0.0f, 0.0f }, 3.0f, XGLColors::white); fingerRay->SetName("RightFingerAxis");  return fingerRay; });
 
 		XGLShape* hand = (XGLShape*)FindObject("RightHand0");
 		if (hand) {

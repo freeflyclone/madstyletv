@@ -182,6 +182,7 @@
     <ClCompile Include="PhysXTestBuildScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\common\ExampleXGL.h" />
     <ClInclude Include="physx-xgl.h" />
   </ItemGroup>
   <ItemGroup>

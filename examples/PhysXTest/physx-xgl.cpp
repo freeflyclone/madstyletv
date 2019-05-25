@@ -1,6 +1,6 @@
 #include "physx-xgl.h"
 
-PhysXXGL::PhysXXGL() : dynamicsSerialNumber(-1), activeActor(NULL), mouseSphere(NULL), mouseJoint(NULL) {
+PhysXXGL::PhysXXGL(GLFWwindow* w) : dynamicsSerialNumber(-1), activeActor(NULL), mouseSphere(NULL), mouseJoint(NULL), ExampleXGL(window) {
 	initPhysics(true);
 
 	BuildScene();

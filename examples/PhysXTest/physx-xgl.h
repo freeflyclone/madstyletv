@@ -30,7 +30,7 @@ typedef std::function<physx::PxJoint *(physx::PxRigidActor *, const physx::PxTra
 
 class PhysXXGL : public ExampleXGL, public physx::PxUserControllerHitReport {
 public:
-	PhysXXGL();
+	PhysXXGL(GLFWwindow*);
 	void BuildScene();
 
 	physx::PxDefaultAllocator			mAllocator;
