@@ -23,6 +23,7 @@
 class ExampleXGL : public XGL {
 public:
 	ExampleXGL(GLFWwindow*);
+	ExampleXGL();
 	~ExampleXGL();
 
 	void BuildScene();

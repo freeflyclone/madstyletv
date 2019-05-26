@@ -161,6 +161,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SemaphoreTest", "examples\S
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TimingTest", "examples\TimingTest\TimingTest.vcxproj", "{489EC3E4-ED7D-4646-BD56-6EB4AE5491F6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AC4080D2-1C42-4812-943D-79CA13A1D86C} = {AC4080D2-1C42-4812-943D-79CA13A1D86C}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MP4Dev", "examples\MP4Dev\MP4Dev.vcxproj", "{913656F0-B7A6-4CA3-9490-864ED433246A}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -168,6 +171,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MP4Dev", "examples\MP4Dev\M
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NanoSvgTest", "examples\NanoSvgTest\NanoSvgTest.vcxproj", "{EB4BFA4A-D7A5-4518-8BF3-B3CE9D589303}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AC4080D2-1C42-4812-943D-79CA13A1D86C} = {AC4080D2-1C42-4812-943D-79CA13A1D86C}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FreeTypeDev", "examples\FreeTypeDev\FreeTypeDev.vcxproj", "{EBFE4111-B324-4144-929E-01E41DAE575E}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -179,8 +185,14 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "triangle", "xclass\3rdParty\Triangle\triangle.vcxproj", "{19FAEE08-386E-42E2-AF62-A91BE5A66FBF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IMUDev", "examples\ImuDev\IMUDev.vcxproj", "{4687140E-08DB-4F8D-A57A-84D95D880C37}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AC4080D2-1C42-4812-943D-79CA13A1D86C} = {AC4080D2-1C42-4812-943D-79CA13A1D86C}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CameraFlyer", "examples\CameraFlyer\CameraFlyer.vcxproj", "{3AC8132D-0702-4EDA-8C33-B8F30A09BF68}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AC4080D2-1C42-4812-943D-79CA13A1D86C} = {AC4080D2-1C42-4812-943D-79CA13A1D86C}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameDev01", "examples\GameDev01\GameDev01.vcxproj", "{B5CD721C-131E-4CED-811F-279B9D6225B7}"
 	ProjectSection(ProjectDependencies) = postProject

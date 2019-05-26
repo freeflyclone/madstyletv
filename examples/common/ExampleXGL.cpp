@@ -3,9 +3,18 @@
 // change to global from const, so it can be changed on a per-project basis
 bool initHmd = false;
 
+// to allow XGL to create secondary OpenGL contexts, we need ptr to "parent"
+// context, which comes from GLFWwindow pointer.
+//
+// Additional constructor so as not to break WinMain() based ExampleXGL projects.
+// Although those could be deprecated and I wouldn't care.
+ExampleXGL::ExampleXGL(GLFWwindow* w) : window(w), wc(&shaderMatrix) {
+	ExampleXGL();
+}
+
 // TODO:  I don't think I need to initialize "wc" this way if I'm using
 // lambda functions for the world cursor.  Will investigate.
-ExampleXGL::ExampleXGL(GLFWwindow* w) : window(w), wc(&shaderMatrix) {
+ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
 	XGLShape *shape;
 
 	// add 2D shapes to the guiShapes list.
