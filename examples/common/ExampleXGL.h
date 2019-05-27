@@ -26,6 +26,8 @@ public:
 	ExampleXGL();
 	~ExampleXGL();
 
+	void Initialize(GLFWwindow*);
+
 	void BuildScene();
 	virtual void BuildGUI();
 	virtual bool Display();
