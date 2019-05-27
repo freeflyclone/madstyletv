@@ -17,7 +17,6 @@
 #include "ExampleXGL.h"
 
 static const int numFrames = 4;
-static const int numFramesMask = (numFrames - 1);
 #define INDEX(x) ( (x) % numFrames)
 
 class XGLContext : public XThread {
@@ -58,6 +57,10 @@ public:
 
 		white = new uint8_t[pboSize];
 		memset(white, 255, pboSize);
+
+		for (int i = 0; i < numFrames; i++) {
+			renderFences[i] = 0;
+		}
 	}
 
 	static void ErrorFunc(int code, const char *str) {
@@ -68,22 +71,46 @@ public:
 		glfwMakeContextCurrent(mWindow);
 
 		while (IsRunning()) {
-			xtimer.SinceLast();
-			int offset = INDEX(framesWritten) * pboSize;
+			int wIndex = INDEX(framesWritten);	// currently active frame for writing
+			int offset = wIndex * pboSize;		// where it is in PBO
 
+			if (renderFences[wIndex]) {
+				GLenum waitRet = glClientWaitSync(renderFences[wIndex], 0, 20000000);
+				switch (waitRet) {
+				case GL_ALREADY_SIGNALED:
+					xprintf("GL_ALREADY_SIGNALED\n");
+					break;
+
+				case GL_TIMEOUT_EXPIRED:
+					xprintf("GL_TIMEOUT_EXPIRED\n");
+					break;
+
+				case GL_CONDITION_SATISFIED:
+					xprintf("GL_CONDITION_SATISFIED\n");
+					break;
+
+				case GL_WAIT_FAILED:
+					xprintf("GL_WAIT_FAILED\n");
+					break;
+
+				default:
+					xprintf("invalid wait return\n");
+				}
+			}
+			xtimer.SinceLast();
 			if (framesWritten & 1)
 				memcpy(pboBuffer + offset, black, pboSize);
 			else
 				memcpy(pboBuffer + offset, white, pboSize);
+			double et = xtimer.SinceLast();
 
-			fences[INDEX(framesWritten)] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+			fillFences[INDEX(framesWritten)] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 			GL_CHECK("glFenceSync() failed");
 
-			double et = xtimer.SinceLast();
 			double bytesPerSecond = pboSize / et;
-			xprintf("et: %0.8f, GB/s: %0.4f\n", et, bytesPerSecond / 1000000000.0);
+			//xprintf("et: %0.8f, GB/s: %0.4f\n", et, bytesPerSecond / 1000000000.0);
 
-			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
+			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(2));
 			framesWritten++;
 		}
 	}
@@ -99,7 +126,8 @@ public:
 	uint64_t framesWritten{ 0 };
 	uint64_t framesRead{ 0 };
 	uint8_t *black, *white;
-	GLsync fences[numFrames];
+	GLsync fillFences[numFrames];
+	GLsync renderFences[numFrames];
 };
 
 class XGLContextImage : public XGLTexQuad {
@@ -131,9 +159,11 @@ public:
 		
 		int index = INDEX(pContext->framesRead++);
 
-		glWaitSync(pContext->fences[index], 0, GL_TIMEOUT_IGNORED);
+		glWaitSync(pContext->fillFences[index], 0, GL_TIMEOUT_IGNORED);
 
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, ta.width, ta.height, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid *)(index*pboSize));
+
+		pContext->renderFences[index] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 
 		double et = xferTimer.SinceLast();
 		double bytesPerSecond = pboSize / et;
@@ -154,6 +184,8 @@ public:
 void ExampleXGL::BuildScene() {
 	XGLContextImage *shape;
 
+	preferredSwapInterval = 1;
+
 	AddShape("shaders/tex", [&shape](){ shape = new XGLContextImage(); return shape; });
 
 	XGLShape::TextureAttributes ta = shape->texAttrs[0];
@@ -165,10 +197,11 @@ void ExampleXGL::BuildScene() {
 	// runs once per frame BEFORE the shape's geomentry is rendered.  A lot can
 	// be done here. Hint: scripting, physics(?)
 	shape->SetAnimationFunction([shape](float clock) {
-		float sinFunc = sin(clock / 40.0f) * 10.0f;
-		float cosFunc = cos(clock / 40.0f) * 10.0f;
-		glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(9.6f, 5.4f, 1.0f));
+		float sinFunc = 0.0f;// sin(clock / 100.0f) * 10.0f;
+		float cosFunc = 0.0f;// cos(clock / 100.0f) * 10.0f;
 		glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(cosFunc, sinFunc, 5.4f));
+
+		glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(9.6f, 5.4f, 1.0f));
 		glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		shape->model = translate * rotate * scale;
 	});
