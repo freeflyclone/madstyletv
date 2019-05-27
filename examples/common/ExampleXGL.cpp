@@ -8,14 +8,20 @@ bool initHmd = false;
 //
 // Additional constructor so as not to break WinMain() based ExampleXGL projects.
 // Although those could be deprecated and I wouldn't care.
-ExampleXGL::ExampleXGL(GLFWwindow* w) : window(w), wc(&shaderMatrix) {
-	ExampleXGL();
+ExampleXGL::ExampleXGL(GLFWwindow* w) : wc(&shaderMatrix) {
+	Initialize(w);
+}
+
+ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
+	Initialize(nullptr);
 }
 
 // TODO:  I don't think I need to initialize "wc" this way if I'm using
 // lambda functions for the world cursor.  Will investigate.
-ExampleXGL::ExampleXGL() : wc(&shaderMatrix) {
+void ExampleXGL::Initialize(GLFWwindow *w) {
 	XGLShape *shape;
+
+	window = w;
 
 	// add 2D shapes to the guiShapes list.
 	BuildGUI();
