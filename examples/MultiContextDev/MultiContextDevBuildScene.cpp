@@ -8,11 +8,18 @@
 ** multi-threaded OpenGL goodness.
 **
 ** Start with a background thread / GL context that repeatedly 
-** copies alternating frames to an oversized PBO to see what 
-** opengl debug output has to say about buffer usage.
+** copies alternating static frames to an oversized "circular"
+** PBO that is mapped persistently, so it's always available 
+** to CPU code.
 **
-** Use XTimer to measure transfer to PBO and and transfer from
-** PBO (via glTexSubImage2D())
+** The upload thread simulates the output of a video decoding 
+** thread from FFMpeg.
+**
+** The threads upload thread and main rendering thread use
+** OpenGL GLsync objects to stay in sync, thus no tearing
+** of the texture image is visible in the output.
+**
+** XTimer is used for precise timing measurements.
 **************************************************************/
 #include "ExampleXGL.h"
 
@@ -58,7 +65,12 @@ public:
 		glfwMakeContextCurrent(pXgl->window);
 
 		black = new uint8_t[pboSize];
-		memset(black, 0, pboSize);
+		{
+			uint32_t* bWords = (uint32_t*)black;
+			for (int i = 0; i < pboSize / 4; i++)
+				// layout: ABGR - little endian RGBA
+				bWords[i] = 0xFF000000;
+		}
 
 		white = new uint8_t[pboSize];
 		memset(white, 255, pboSize);
@@ -68,6 +80,24 @@ public:
 			fillFences[i] = 0;
 			renderFences[i] = 0;
 		}
+		GLuint texId[numFrames];
+
+		glActiveTexture(GL_TEXTURE0);
+		glGenTextures(numFrames, texId);
+
+		for (int i = 0; i < numFrames; i++) {
+			glBindTexture(GL_TEXTURE_2D, texId[i]);
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+			texIds.push_back(texId[i]);
+			numTextures++;
+		}
+		GL_CHECK("Eh, something went wrong with texture allocation");
 	}
 
 	static void ErrorFunc(int code, const char *str) {
@@ -81,25 +111,28 @@ public:
 			int wIndex = INDEX(framesWritten);	// currently active frame for writing
 			int offset = wIndex * pboSize;		// where it is in PBO
 
-			// make sure "renderFence" is actually valid before waiting for it
+			// make sure "renderFence" is actually valid before waiting for it w/200ms
+			// timeout.
 			if (renderFences[wIndex])
-				GLenum waitRet = glClientWaitSync(renderFences[wIndex], 0, 20000000);
+				glClientWaitSync(renderFences[wIndex], 0, 20000000);
 
-			// time the copy to the PBO
-			xtimer.SinceLast();
+			// simulate what an ffmpeg decoder thread would do per frame
 			if (framesWritten & 1)
 				memcpy(pboBuffer + offset, black, pboSize);
 			else
 				memcpy(pboBuffer + offset, white, pboSize);
-			double et = xtimer.SinceLast();
 
-			// put a fence in so renedering thread can know if we're done with this frame
+			glBindTexture(GL_TEXTURE_2D, texIds[wIndex]);
+			GL_CHECK("glBindTexture() failed");
+
+			// unless I'm mistaken,  I believe this will initiate a DMA from the PBO to the texture memory
+			// in this background context
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)(wIndex*pboSize));
+			GL_CHECK("glTexSubImage() failed");
+
+			// put a fence in so renedering context can know if we're done with this frame
 			fillFences[INDEX(framesWritten)] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 			GL_CHECK("glFenceSync() failed");
-
-			// calculate transfer rate
-			//double bytesPerSecond = pboSize / et;
-			//xprintf("et: %0.8f, GB/s: %0.4f\n", et, bytesPerSecond / 1000000000.0);
 
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(2));
 			framesWritten++;
@@ -107,18 +140,29 @@ public:
 	}
 
 	GLFWwindow* mWindow;
-	XTimer xtimer;
+	//XTimer xtimer;
 	ExampleXGL* pXgl;
+
+	// PBO stuff
 	GLuint pboId;
 	uint8_t* pboBuffer;
 	GLbitfield pboFlags{ GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT };
 	int width, height, channels;
 	int pboSize;
+
+	// "circular" image buffer management
 	uint64_t framesWritten{ 0 };
 	uint64_t framesRead{ 0 };
+	
 	uint8_t *black, *white;
+
+	// GL syncronization stuff
 	GLsync fillFences[numFrames];
 	GLsync renderFences[numFrames];
+
+	// texture management stuff
+	std::vector<GLuint> texIds;
+	GLuint numTextures{ 0 };
 };
 
 // derive from XGLTexQuad a class that allows us to overide it's Draw() call so
@@ -129,9 +173,6 @@ public:
 		ta = texAttrs[0];
 		pboSize = ta.width * ta.height * ta.channels;
 		xprintf("imageSize: %d,%d,%d\n", ta.width, ta.height, ta.channels);
-
-		glGenTextures(numFrames, textures);
-		GL_CHECK("glGenTextures() didn't work");
 	}
 
 	void SetXGLContext(XGLContext *p) { pContext = p; }
@@ -140,33 +181,20 @@ public:
 		if (pContext->framesWritten < numFrames)
 			return;
 
-		// the texture mapping setup for this draw call has already been done
-		// by the time we get here, so fiddling with the XGLContext generated
-		// PBO data won't get hosed by the default XGLTexQuad::Draw() method.
-		// So we can party on here with the async PBO here.
-		// Make sure the XGLContext's PBO is bound to UNPACK_BUFFER
-		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pContext->pboId);
-		GL_CHECK("glBindBuffer() didn't work.");
-
 		int rIndex = INDEX(pContext->framesRead++);		// currently active frame for reading
 
 		// wait till upload thread filling of buffer is complete.
 		glWaitSync(pContext->fillFences[rIndex], 0, GL_TIMEOUT_IGNORED);
 		GL_CHECK("glWaitSync() failed");
 
-		// initiate transfer from PBO to texture.  Yes, this makes pixel transfer synchronous with rendering.
-		xferTimer.SinceLast();
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, ta.width, ta.height, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid *)(rIndex*pboSize));
-		double et = xferTimer.SinceLast();
-		GL_CHECK("glTexSubImage2D() failed");
+		// True asynchronous texture upload... just bind the relevant texture
+		// that was uploaded by the upload thread of XGLContext
+		glBindTexture(GL_TEXTURE_2D, pContext->texIds[rIndex]);
+		GL_CHECK("glBindTexture() failed");
 
 		// signal upload thread we're done with this frame
 		pContext->renderFences[rIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 		GL_CHECK("glFenceSync() failed");
-
-		// calculate transfer rate
-		//double bytesPerSecond = pboSize / et;
-		//xprintf("xt: %0.8f, GB/s: %0.4f\n", et, bytesPerSecond / 1000000000.0);
 
 		// rely on base class for actual render of texture quad
 		XGLTexQuad::Draw();
@@ -191,10 +219,6 @@ void ExampleXGL::BuildScene() {
 	// use dimensions of XGLContextImage when creating XGLContext
 	XGLContext *ac = new XGLContext(this, ta.width, ta.height, ta.channels);
 
-	// have the upright texture scaled up and made 16:9 aspect, and orbiting the origin
-	// to highlight use of the callback function for animation of a shape.  Note that this function
-	// runs once per frame BEFORE the shape's geomentry is rendered.  A lot can
-	// be done here. Hint: scripting, physics(?)
 	shape->SetAnimationFunction([shape](float clock) {
 		glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 5.4f));
 		glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(9.6f, 5.4f, 1.0f));
