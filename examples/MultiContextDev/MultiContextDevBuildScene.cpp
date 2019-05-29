@@ -37,7 +37,12 @@ static const int nChannels = 4;
 // (hence the name)
 class XGLContextImage : public XGLTexQuad, public XThread {
 public:
-	XGLContextImage(ExampleXGL* pxgl, int w, int h, int c) : pXgl(pxgl), width(w), height(h), channels(c), XGLTexQuad(vWidth, vHeight, nChannels), XThread("XGLContextThread") {
+	XGLContextImage(ExampleXGL* pxgl, int w, int h, int c) : 
+		pXgl(pxgl), 
+		width(w), height(h), channels(c), 
+		XGLTexQuad(vWidth, vHeight, nChannels), 
+		XThread("XGLContextImageThread") 
+	{
 		glfwSetErrorCallback(ErrorFunc);
 
 		// need 2nd OpenGL context, which GLFW creates with glfwCreateWindow()
