@@ -24,11 +24,20 @@
 #include "ExampleXGL.h"
 
 static const int numFrames = 4;
+static const int vWidth = 1920;
+static const int vHeight = 1080;
+static const int nChannels = 4;
+
 #define INDEX(x) ( (x) % numFrames)
 
-class XGLContext : public XThread {
+// derive from XGLTexQuad a class. That allows us to overide it's Draw() call so
+// we can fiddle around with various asynchronous I/O transfer strategies.
+//
+// Also derive from XThread for async buffer upload in alternate OpenGL context.
+// (hence the name)
+class XGLContextImage : public XGLTexQuad, public XThread {
 public:
-	XGLContext(ExampleXGL* pxgl, int w, int h, int c) : pXgl(pxgl), width(w), height(h), channels(c), XThread("XGLContextThread") {
+	XGLContextImage(ExampleXGL* pxgl, int w, int h, int c) : pXgl(pxgl), width(w), height(h), channels(c), XGLTexQuad(vWidth, vHeight, nChannels), XThread("XGLContextThread") {
 		glfwSetErrorCallback(ErrorFunc);
 
 		// need 2nd OpenGL context, which GLFW creates with glfwCreateWindow()
@@ -46,24 +55,52 @@ public:
 		glGenBuffers(1, &pboId);
 		GL_CHECK("glGenBuffers failed");
 
-		xprintf("pboId: %d\n", pboId);
+		xprintf("pboId: %d\n", pboId); // aid in identifying our PBO in GL debug output
 
-		// bind our PBO to UNPACK_BUFFER, allocate multiple frames, make the whole damn thing, persistently
+		// Bind our PBO to UNPACK_BUFFER.
 		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboId);
 		GL_CHECK("glBindBuffer() failed");
 
+		// Allocate multiple frames.
 		glBufferStorage(GL_PIXEL_UNPACK_BUFFER, pboSize*numFrames, nullptr, pboFlags);
 		GL_CHECK("glBufferStorage() failed");
 
+		// Map the whole damn thing, persistently.
 		pboBuffer = (uint8_t*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, pboSize*numFrames, pboFlags);
 		GL_CHECK("glMapBufferRange() failed");
 
 		if (pboBuffer == nullptr)
-			xprintf("Doh! glMapBufferRange() returned nullptr\n");
+			throwXGLException("Doh! glMapBufferRange() returned nullptr\n");
 
-		// restore main OpenGL context.  (it can't be bound in 2 threads at once)
+		// restore main OpenGL context.  (new context can't be bound in 2 threads at once)
 		glfwMakeContextCurrent(pXgl->window);
 
+		// ensure a texture unit, 0th is safest
+		glActiveTexture(GL_TEXTURE0);
+
+		// get a texture buffer for each of "numFrames"
+		GLuint texId[numFrames];
+		glGenTextures(numFrames, texId);
+
+		for (int i = 0; i < numFrames; i++) {
+			glBindTexture(GL_TEXTURE_2D, texId[i]);
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+			texIds.push_back(texId[i]);
+			texAttrs.push_back({vWidth, vHeight, nChannels});
+			numTextures++;
+		}
+		GL_CHECK("XGLContextImage::XGLContextImage(): something went wrong with texture allocation");
+
+		ta = texAttrs[0];
+		xprintf("imageSize: %d,%d,%d\n", ta.width, ta.height, ta.channels);
+
+		// init a black image buffer
 		black = new uint8_t[pboSize];
 		{
 			uint32_t* bWords = (uint32_t*)black;
@@ -72,6 +109,7 @@ public:
 				bWords[i] = 0xFF000000;
 		}
 
+		// init a white image buffer
 		white = new uint8_t[pboSize];
 		memset(white, 255, pboSize);
 
@@ -80,24 +118,6 @@ public:
 			fillFences[i] = 0;
 			renderFences[i] = 0;
 		}
-		GLuint texId[numFrames];
-
-		glActiveTexture(GL_TEXTURE0);
-		glGenTextures(numFrames, texId);
-
-		for (int i = 0; i < numFrames; i++) {
-			glBindTexture(GL_TEXTURE_2D, texId[i]);
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-
-			texIds.push_back(texId[i]);
-			numTextures++;
-		}
-		GL_CHECK("Eh, something went wrong with texture allocation");
 	}
 
 	static void ErrorFunc(int code, const char *str) {
@@ -105,14 +125,14 @@ public:
 	}
 
 	void Run() {
+		// first up, bind the new OpenGL context, for 2nd GPU command queue
 		glfwMakeContextCurrent(mWindow);
 
 		while (IsRunning()) {
 			int wIndex = INDEX(framesWritten);	// currently active frame for writing
 			int offset = wIndex * pboSize;		// where it is in PBO
 
-			// make sure "renderFence" is actually valid before waiting for it w/200ms
-			// timeout.
+			// make sure "renderFence" is actually valid before waiting for it w/200ms timeout.
 			if (renderFences[wIndex])
 				glClientWaitSync(renderFences[wIndex], 0, 20000000);
 
@@ -125,8 +145,7 @@ public:
 			glBindTexture(GL_TEXTURE_2D, texIds[wIndex]);
 			GL_CHECK("glBindTexture() failed");
 
-			// unless I'm mistaken,  I believe this will initiate a DMA from the PBO to the texture memory
-			// in this background context
+			// Initiate a DMA from the PBO to the texture memory in the new context
 			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)(wIndex*pboSize));
 			GL_CHECK("glTexSubImage() failed");
 
@@ -139,6 +158,38 @@ public:
 		}
 	}
 
+	void Draw() {
+		if (framesWritten < numFrames)
+			return;
+
+		int rIndex = INDEX(framesRead++);		// currently active frame for reading
+
+		// wait till upload thread filling of buffer is complete.
+		glWaitSync(fillFences[rIndex], 0, GL_TIMEOUT_IGNORED);
+		GL_CHECK("glWaitSync() failed");
+
+		// True asynchronous texture upload... just bind the relevant texture
+		// that was uploaded by the upload thread of XGLContext
+		glBindTexture(GL_TEXTURE_2D, texIds[rIndex]);
+		GL_CHECK("glBindTexture() failed");
+
+		// signal upload thread we're done with this frame
+		renderFences[rIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+		GL_CHECK("glFenceSync() failed");
+
+		// rely on base class for actual render of texture quad
+		XGLTexQuad::Draw();
+	}
+
+	~XGLContextImage() {
+		WaitForStop();
+	}
+
+	TextureAttributes ta;
+	XTimer xferTimer;
+	int pboSize;
+	GLuint textures[numFrames];
+
 	GLFWwindow* mWindow;
 	//XTimer xtimer;
 	ExampleXGL* pXgl;
@@ -148,12 +199,11 @@ public:
 	uint8_t* pboBuffer;
 	GLbitfield pboFlags{ GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT };
 	int width, height, channels;
-	int pboSize;
 
 	// "circular" image buffer management
 	uint64_t framesWritten{ 0 };
 	uint64_t framesRead{ 0 };
-	
+
 	uint8_t *black, *white;
 
 	// GL syncronization stuff
@@ -163,69 +213,19 @@ public:
 	// texture management stuff
 	std::vector<GLuint> texIds;
 	GLuint numTextures{ 0 };
-};
 
-// derive from XGLTexQuad a class that allows us to overide it's Draw() call so
-// we can fiddle around with various asynchronous I/O transfer strategies.
-class XGLContextImage : public XGLTexQuad {
-public:
-	XGLContextImage() : XGLTexQuad(960,540,4) {
-		ta = texAttrs[0];
-		pboSize = ta.width * ta.height * ta.channels;
-		xprintf("imageSize: %d,%d,%d\n", ta.width, ta.height, ta.channels);
-	}
-
-	void SetXGLContext(XGLContext *p) { pContext = p; }
-
-	void Draw() {
-		if (pContext->framesWritten < numFrames)
-			return;
-
-		int rIndex = INDEX(pContext->framesRead++);		// currently active frame for reading
-
-		// wait till upload thread filling of buffer is complete.
-		glWaitSync(pContext->fillFences[rIndex], 0, GL_TIMEOUT_IGNORED);
-		GL_CHECK("glWaitSync() failed");
-
-		// True asynchronous texture upload... just bind the relevant texture
-		// that was uploaded by the upload thread of XGLContext
-		glBindTexture(GL_TEXTURE_2D, pContext->texIds[rIndex]);
-		GL_CHECK("glBindTexture() failed");
-
-		// signal upload thread we're done with this frame
-		pContext->renderFences[rIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-		GL_CHECK("glFenceSync() failed");
-
-		// rely on base class for actual render of texture quad
-		XGLTexQuad::Draw();
-	}
-
-	XGLContext *pContext{ nullptr };
-	TextureAttributes ta;
-	XTimer xferTimer;
-	int pboSize;
-	GLuint textures[numFrames];
 };
 
 void ExampleXGL::BuildScene() {
 	XGLContextImage *shape;
 
-	// get a new XGLContextImage() - currently hardcoded to 960 x 540 x 4 size
-	AddShape("shaders/tex", [&shape](){ shape = new XGLContextImage(); return shape; });
+	// get a new XGLContextImage()
+	AddShape("shaders/tex", [&shape,this](){ shape = new XGLContextImage(this, vWidth, vHeight, nChannels); return shape; });
 
-	// get the data that tells us the dimensions of the texture buffer
-	XGLShape::TextureAttributes ta = shape->texAttrs[0];
+	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 5.4f));
+	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(9.6f, 5.4f, 1.0f));
+	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	shape->model = translate * rotate * scale;
 
-	// use dimensions of XGLContextImage when creating XGLContext
-	XGLContext *ac = new XGLContext(this, ta.width, ta.height, ta.channels);
-
-	shape->SetAnimationFunction([shape](float clock) {
-		glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 5.4f));
-		glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(9.6f, 5.4f, 1.0f));
-		glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		shape->model = translate * rotate * scale;
-	});
-
-	shape->SetXGLContext(ac);
-	ac->Start();
+	shape->Start();
 }
