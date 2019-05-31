@@ -26,7 +26,7 @@
 static const int numFrames = 4;
 static const int vWidth = 1920;
 static const int vHeight = 1080;
-static const int nChannels = 4;
+static const int nChannels = 1;
 
 #define INDEX(x) ( (x) % numFrames)
 
@@ -94,7 +94,7 @@ public:
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 
 			texIds.push_back(texId[i]);
 			texAttrs.push_back({vWidth, vHeight, nChannels});
@@ -107,12 +107,15 @@ public:
 
 		// init a black image buffer
 		black = new uint8_t[pboSize];
+		if (false)
 		{
 			uint32_t* bWords = (uint32_t*)black;
 			for (int i = 0; i < pboSize / 4; i++)
 				// layout: ABGR - little endian RGBA
 				bWords[i] = 0xFF000000;
 		}
+		else
+			memset(black, 0, pboSize);
 
 		// init a white image buffer
 		white = new uint8_t[pboSize];
@@ -151,7 +154,7 @@ public:
 			GL_CHECK("glBindTexture() failed");
 
 			// Initiate a DMA from the PBO to the texture memory in the new context
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)(wIndex*pboSize));
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)(wIndex*pboSize));
 			GL_CHECK("glTexSubImage() failed");
 
 			// put a fence in so renedering context can know if we're done with this frame
@@ -225,7 +228,7 @@ void ExampleXGL::BuildScene() {
 	XGLContextImage *shape;
 
 	// get a new XGLContextImage()
-	AddShape("shaders/tex", [&shape,this](){ shape = new XGLContextImage(this, vWidth, vHeight, nChannels); return shape; });
+	AddShape("shaders/yyy", [&shape,this](){ shape = new XGLContextImage(this, vWidth, vHeight, nChannels); return shape; });
 
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 5.4f));
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(9.6f, 5.4f, 1.0f));
