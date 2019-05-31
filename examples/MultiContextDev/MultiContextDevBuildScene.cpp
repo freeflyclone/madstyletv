@@ -15,7 +15,7 @@
 ** The upload thread simulates the output of a video decoding 
 ** thread from FFMpeg.
 **
-** The threads upload thread and main rendering thread use
+** The threads "upload thread" and "main rendering thread" use
 ** OpenGL GLsync objects to stay in sync, thus no tearing
 ** of the texture image is visible in the output.
 **
@@ -24,9 +24,6 @@
 #include "ExampleXGL.h"
 
 static const int numFrames = 4;
-static const int vWidth = 1920;
-static const int vHeight = 1080;
-static const int nChannels = 1;
 
 #define INDEX(x) ( (x) % numFrames)
 
@@ -40,7 +37,7 @@ public:
 	XGLContextImage(ExampleXGL* pxgl, int w, int h, int c) : 
 		pXgl(pxgl), 
 		width(w), height(h), channels(c), 
-		XGLTexQuad(vWidth, vHeight, nChannels), 
+		XGLTexQuad(w, h, c), 
 		XThread("XGLContextImageThread") 
 	{
 		glfwSetErrorCallback(ErrorFunc);
@@ -97,7 +94,7 @@ public:
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 
 			texIds.push_back(texId[i]);
-			texAttrs.push_back({vWidth, vHeight, nChannels});
+			texAttrs.push_back({width, height, channels});
 			numTextures++;
 		}
 		GL_CHECK("XGLContextImage::XGLContextImage(): something went wrong with texture allocation");
@@ -228,7 +225,7 @@ void ExampleXGL::BuildScene() {
 	XGLContextImage *shape;
 
 	// get a new XGLContextImage()
-	AddShape("shaders/yyy", [&shape,this](){ shape = new XGLContextImage(this, vWidth, vHeight, nChannels); return shape; });
+	AddShape("shaders/yyy", [&shape,this](){ shape = new XGLContextImage(this, 1920, 1080, 1); return shape; });
 
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 5.4f));
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(9.6f, 5.4f, 1.0f));
