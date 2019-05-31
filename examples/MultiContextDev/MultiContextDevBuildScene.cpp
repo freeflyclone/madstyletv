@@ -24,8 +24,26 @@
 #include "ExampleXGL.h"
 
 static const int numFrames = 4;
-
 #define INDEX(x) ( (x) % numFrames)
+
+// a class for OpenGL TexImage texture map images
+class XGLPixelFormat {
+public:
+	typedef std::map<GLint, int> InternalFormatSizes;
+	XGLPixelFormat(GLint intfmt, GLenum f, GLenum t) : internalFormat(intfmt), format(f), type(t) {
+		ifs[GL_RED] = 1;
+		ifs[GL_RG] = 2;
+		ifs[GL_RGB] = 3;
+		ifs[GL_RGBA] = 4;
+	}
+
+	int PixelSize(GLint intformat) { return ifs[intformat]; }
+
+	GLint internalFormat;	// #color components, GL_RED, GL_RG, GL_RGB, GL_RGBA are preferred
+	GLenum format;			// format of pixel data
+	GLenum type;			// data type of pixel data
+	InternalFormatSizes ifs;
+};
 
 // derive from XGLTexQuad a class. That allows us to overide it's Draw() call so
 // we can fiddle around with various asynchronous I/O transfer strategies.
@@ -36,7 +54,7 @@ class XGLContextImage : public XGLTexQuad, public XThread {
 public:
 	XGLContextImage(ExampleXGL* pxgl, int w, int h, int c) : 
 		pXgl(pxgl), 
-		width(w), height(h), channels(c), 
+		width(w), height(h), components(c), 
 		XGLTexQuad(w, h, c), 
 		XThread("XGLContextImageThread") 
 	{
@@ -52,7 +70,7 @@ public:
 		glfwMakeContextCurrent(mWindow);
 
 		// calculate the size of one image
-		pboSize = width*height*channels;
+		pboSize = width*height*components;
 
 		glGenBuffers(1, &pboId);
 		GL_CHECK("glGenBuffers failed");
@@ -94,7 +112,7 @@ public:
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 
 			texIds.push_back(texId[i]);
-			texAttrs.push_back({width, height, channels});
+			texAttrs.push_back({width, height, components});
 			numTextures++;
 		}
 		GL_CHECK("XGLContextImage::XGLContextImage(): something went wrong with texture allocation");
@@ -203,7 +221,7 @@ public:
 	GLuint pboId;
 	uint8_t* pboBuffer;
 	GLbitfield pboFlags{ GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT };
-	int width, height, channels;
+	int width, height, components;
 
 	// "circular" image buffer management
 	uint64_t framesWritten{ 0 };
