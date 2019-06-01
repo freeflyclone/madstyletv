@@ -23,27 +23,11 @@
 **************************************************************/
 #include "ExampleXGL.h"
 
+#include "xglpixelformat.h"
+
 static const int numFrames = 4;
 #define INDEX(x) ( (x) % numFrames)
 
-// a class for OpenGL TexImage texture map images
-class XGLPixelFormat {
-public:
-	typedef std::map<GLint, int> InternalFormatSizes;
-	XGLPixelFormat(GLint intfmt, GLenum f, GLenum t) : internalFormat(intfmt), format(f), type(t) {
-		ifs[GL_RED] = 1;
-		ifs[GL_RG] = 2;
-		ifs[GL_RGB] = 3;
-		ifs[GL_RGBA] = 4;
-	}
-
-	int PixelSize(GLint intformat) { return ifs[intformat]; }
-
-	GLint internalFormat;	// #color components, GL_RED, GL_RG, GL_RGB, GL_RGBA are preferred
-	GLenum format;			// format of pixel data
-	GLenum type;			// data type of pixel data
-	InternalFormatSizes ifs;
-};
 
 // derive from XGLTexQuad a class. That allows us to overide it's Draw() call so
 // we can fiddle around with various asynchronous I/O transfer strategies.
@@ -69,8 +53,15 @@ public:
 		// make new OpenGL context current so we can set it up.
 		glfwMakeContextCurrent(mWindow);
 
+		// get pixel layout we expect from FFmpeg for GoPro footage
+		ppfd = new XGLPixelFormatDescriptor(AV_PIX_FMT_YUVJ420P);
+
 		// calculate the size of one image
-		pboSize = width*height*components;
+		chromaWidth = width >> ppfd->shiftRightW;
+		chromaHeight = height >> ppfd->shiftRightH;
+
+		pboSize = width*height*ppfd->depths[0];
+		pboSize += 2 * (chromaWidth*chromaHeight*ppfd->depths[1]);
 
 		glGenBuffers(1, &pboId);
 		GL_CHECK("glGenBuffers failed");
@@ -222,6 +213,7 @@ public:
 	uint8_t* pboBuffer;
 	GLbitfield pboFlags{ GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT };
 	int width, height, components;
+	int chromaWidth, chromaHeight;
 
 	// "circular" image buffer management
 	uint64_t framesWritten{ 0 };
@@ -237,6 +229,7 @@ public:
 	std::vector<GLuint> texIds;
 	GLuint numTextures{ 0 };
 
+	XGLPixelFormatDescriptor* ppfd{ nullptr };
 };
 
 void ExampleXGL::BuildScene() {

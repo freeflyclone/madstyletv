@@ -193,7 +193,7 @@ void XGLBuffer::AddTexture(int width, int height, int channels, GLubyte *img, bo
 
     switch (channels){
         case 1:
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, img);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, img);
             break;
         case 2:
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RG, width, height, 0, GL_RG, GL_UNSIGNED_BYTE, img);

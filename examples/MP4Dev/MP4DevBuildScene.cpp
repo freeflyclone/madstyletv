@@ -15,6 +15,7 @@
 **************************************************************/
 #include "ExampleXGL.h"
 #include "xav.h"
+#include "xglpixelformat.h"
 
 static const int numFrames = 4;
 static const int vWidth = 1920;
@@ -260,8 +261,10 @@ public:
 		xprintf("video context delay: %d, num: %d, den: %d\n", pCodecCtx->delay, timeBase.num, timeBase.den);
 
 		// figure out the chroma sub-sampling of the pixel format
-		int pixelFormat = pCodecCtx->pix_fmt;
-		const AVPixFmtDescriptor *pixDesc = av_pix_fmt_desc_get((AVPixelFormat)pixelFormat);
+		AVPixelFormat pixelFormat = pCodecCtx->pix_fmt;
+		const AVPixFmtDescriptor *pixDesc = av_pix_fmt_desc_get(pixelFormat);
+
+		XGLPixelFormatDescriptor* xpfd = new XGLPixelFormatDescriptor(pixelFormat);
 
 		// save it so our clients can know
 		chromaWidth = pCodecCtx->width / (1 << pixDesc->log2_chroma_w);
