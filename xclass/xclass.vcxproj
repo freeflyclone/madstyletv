@@ -254,6 +254,7 @@
     <ClInclude Include="xgl\xgllight.h" />
     <ClInclude Include="xgl\xglmaterial.h" />
     <ClInclude Include="xgl\xglpixelbuffer.h" />
+    <ClInclude Include="xgl\xglpixelformat.h" />
     <ClInclude Include="xgl\xglprimitives.h" />
     <ClInclude Include="xgl\xglprojector.h" />
     <ClInclude Include="xgl\xglshader.h" />
