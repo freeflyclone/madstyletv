@@ -313,11 +313,12 @@ public:
 		if (pvfb) {
 			std::lock_guard<std::mutex> lock(displayMutex);
 
-			//memcpy(vFrameBuffer.y, pvfb->y, vFrameBuffer.ySize);
-			//memcpy(vFrameBuffer.u, pvfb->u, vFrameBuffer.uvSize);
-			//memcpy(vFrameBuffer.v, pvfb->v, vFrameBuffer.uvSize);
-			
+			// Luma channel to PBO
 			memcpy(vFrameBuffer.pboBuffer, pvfb->y, vFrameBuffer.ySize);
+
+			// Chroma U,V to PBO
+			memcpy(vFrameBuffer.pboBuffer + vFrameBuffer.ySize, pvfb->u, vFrameBuffer.uvSize);
+			memcpy(vFrameBuffer.pboBuffer + vFrameBuffer.ySize + vFrameBuffer.uvSize, pvfb->v, vFrameBuffer.uvSize);
 
 			pFrames->NotifyFree();
 		}
@@ -473,27 +474,27 @@ public:
 				glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit1"), 1);
 				glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit2"), 2);
 
-				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, texIds[0]);
 				glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pFrame->pboId);
 				glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, vWidth, vHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)0);
-				pFrame->pboBuffer = (uint8_t*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
-				glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, texIds[0]);
+				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, vWidth, vHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)0);
 				GL_CHECK("glGetTexImage() didn't work");
-				/*
+
 				glActiveTexture(GL_TEXTURE1);
 				glBindTexture(GL_TEXTURE_2D, texIds[1]);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dmx.chromaWidth, dmx.chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->u);
+				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dmx.chromaWidth, dmx.chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)(pFrame->ySize));
 				GL_CHECK("glGetTexImage() didn't work");
 
 				glActiveTexture(GL_TEXTURE2);
 				glBindTexture(GL_TEXTURE_2D, texIds[2]);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dmx.chromaWidth, dmx.chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->v);
+				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dmx.chromaWidth, dmx.chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)(pFrame->ySize + pFrame->uvSize));
 				GL_CHECK("glGetTexImage() didn't work");
 
-				*/
+				pFrame->pboBuffer = (uint8_t*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
+				glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+
 				if (false)
 				{
 					static int count = 0;
@@ -543,7 +544,7 @@ void ExampleXGL::BuildScene() {
 	else
 		videoPath = pathToAssets + "/" + videoUrl;
 
-	AddShape("shaders/yyy", [&](){ pPlayer = new XAVPlayer(videoPath); return pPlayer; });
+	AddShape("shaders/yuv", [&](){ pPlayer = new XAVPlayer(videoPath); return pPlayer; });
 
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(16.0f, 9.0f, 1.0f));
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 9.0f));
