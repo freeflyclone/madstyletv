@@ -450,7 +450,7 @@ public:
 	}
 
 	~XAVPlayer() {
-		dmx.Stop();
+		dmx.WaitForStop();
 	}
 
 	void StartPlaying() {
@@ -474,32 +474,31 @@ public:
 				glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit1"), 1);
 				glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit2"), 2);
 
+				// Need PBO unmapped while using it for image transfer on GPU side.
 				glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pFrame->pboId);
 				glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
 
+				// Luma - Y
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, texIds[0]);
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, vWidth, vHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)0);
 				GL_CHECK("glGetTexImage() didn't work");
 
+				// Chroma - U
 				glActiveTexture(GL_TEXTURE1);
 				glBindTexture(GL_TEXTURE_2D, texIds[1]);
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dmx.chromaWidth, dmx.chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)(pFrame->ySize));
 				GL_CHECK("glGetTexImage() didn't work");
 
+				// Chroma - V
 				glActiveTexture(GL_TEXTURE2);
 				glBindTexture(GL_TEXTURE_2D, texIds[2]);
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dmx.chromaWidth, dmx.chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)(pFrame->ySize + pFrame->uvSize));
 				GL_CHECK("glGetTexImage() didn't work");
 
+				// OpenGL/GPU done with PBO, so map it again for background upload thread.
 				pFrame->pboBuffer = (uint8_t*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
 				glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-
-				if (false)
-				{
-					static int count = 0;
-					xprintf("Draw(%d)\n", count++);
-				}
 			}
 
 			XGLTexQuad::Draw();
