@@ -60,8 +60,9 @@ public:
 		chromaWidth = width >> ppfd->shiftRightW;
 		chromaHeight = height >> ppfd->shiftRightH;
 
-		pboSize = width*height*ppfd->depths[0];
-		pboSize += 2 * (chromaWidth*chromaHeight*ppfd->depths[1]);
+		ySize = width*height*ppfd->depths[0];
+		uvSize = chromaWidth*chromaHeight*ppfd->depths[1];
+		pboSize = ySize + (uvSize * 2);
 
 		glGenBuffers(1, &pboId);
 		GL_CHECK("glGenBuffers failed");
@@ -113,19 +114,11 @@ public:
 
 		// init a black image buffer
 		black = new uint8_t[pboSize];
-		if (false)
-		{
-			uint32_t* bWords = (uint32_t*)black;
-			for (int i = 0; i < pboSize / 4; i++)
-				// layout: ABGR - little endian RGBA
-				bWords[i] = 0xFF000000;
-		}
-		else
-			memset(black, 0, pboSize);
+		memset(black, 0, ySize);
 
 		// init a white image buffer
 		white = new uint8_t[pboSize];
-		memset(white, 255, pboSize);
+		memset(white, 255, ySize);
 
 		// initialize fill and render fences
 		for (int i = 0; i < numFrames; i++) {
@@ -151,10 +144,12 @@ public:
 				glClientWaitSync(renderFences[wIndex], 0, 20000000);
 
 			// simulate what an ffmpeg decoder thread would do per frame
-			if (framesWritten & 1)
-				memcpy(pboBuffer + offset, black, pboSize);
-			else
-				memcpy(pboBuffer + offset, white, pboSize);
+			if (framesWritten & 1) {
+				memcpy(pboBuffer + offset, black, ySize);
+			}
+			else {
+				memcpy(pboBuffer + offset, white, ySize);
+			}
 
 			glBindTexture(GL_TEXTURE_2D, texIds[wIndex]);
 			GL_CHECK("glBindTexture() failed");
@@ -230,13 +225,14 @@ public:
 	GLuint numTextures{ 0 };
 
 	XGLPixelFormatDescriptor* ppfd{ nullptr };
+	int ySize{ 0 }, uvSize{ 0 };
 };
 
 void ExampleXGL::BuildScene() {
 	XGLContextImage *shape;
 
 	// get a new XGLContextImage()
-	AddShape("shaders/yyy", [&shape,this](){ shape = new XGLContextImage(this, 1920, 1080, 1); return shape; });
+	AddShape("shaders/yuv", [&shape,this](){ shape = new XGLContextImage(this, 1920, 1080, 1); return shape; });
 
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 5.4f));
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(9.6f, 5.4f, 1.0f));

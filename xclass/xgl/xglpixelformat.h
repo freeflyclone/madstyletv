@@ -1,8 +1,19 @@
+// a class for OpenGL TexImage texture map images derived from FFmpeg pixel formats.
+//
+// FFmpeg supports multitudinous pixel formats for images.  This class provides
+// OpenGL texture buffer attributes for a subset of FFmpeg pixel formats of interest.
+// In particular, I care most about those FFmpeg pixel formats that occur in video
+// from consumer video cameras, without having a clear idea (yet) of exactly what
+// that subset encompasses.  So this class will likely evolve.
+//
+// Suggested usage is to create an instance of this class once the AVPixelFormat
+// of an AVCodecContext is determined, followed by allocation of appropriate OpenGL
+// texture resources.
+
 #ifndef XGLPIXELFORMAT_H
 #define XGLPIXELFORMAT_H
 #include "XGL.h"
 
-// a class for OpenGL TexImage texture map images
 class XGLPixelFormatDescriptor : public AVPixFmtDescriptor {
 public:
 	typedef std::map<GLint, int> InternalFormatSizes;
