@@ -25,8 +25,10 @@
 
 #include "xglpixelformat.h"
 
-static const int numFrames = 4;
-#define INDEX(x) ( (x) % numFrames)
+static const int numPlanes = 3;
+static const int numFrames = 2;
+
+#define INDEX(x) ((x) % numFrames)
 
 
 // derive from XGLTexQuad a class. That allows us to overide it's Draw() call so
@@ -90,22 +92,28 @@ public:
 		// ensure a texture unit, 0th is safest
 		glActiveTexture(GL_TEXTURE0);
 
-		// get a texture buffer for each of "numFrames"
-		GLuint texId[numFrames];
-		glGenTextures(numFrames, texId);
+		// get a texture buffer for each of "numFrames" * "numPlanes"
+		GLuint texId[numFrames*numPlanes];
+		glGenTextures(numFrames*numPlanes, texId);
 
 		for (int i = 0; i < numFrames; i++) {
-			glBindTexture(GL_TEXTURE_2D, texId[i]);
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
+			for (int j = 0; j < numPlanes; j++) {
+				int w = (j == 0) ? width : chromaWidth;
+				int h = (j == 0) ? height : chromaHeight;
+				int tIdx = i * numPlanes + j;
 
-			texIds.push_back(texId[i]);
-			texAttrs.push_back({width, height, components});
-			numTextures++;
+				glBindTexture(GL_TEXTURE_2D, texId[tIdx]);
+				glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
+
+				texIds.push_back(texId[tIdx]);
+				texAttrs.push_back({ w, h, components });
+				numTextures++;
+			}
 		}
 		GL_CHECK("XGLContextImage::XGLContextImage(): something went wrong with texture allocation");
 
@@ -151,7 +159,7 @@ public:
 				memcpy(pboBuffer + offset, white, ySize);
 			}
 
-			glBindTexture(GL_TEXTURE_2D, texIds[wIndex]);
+			glBindTexture(GL_TEXTURE_2D, texIds[wIndex*numPlanes]);
 			GL_CHECK("glBindTexture() failed");
 
 			// Initiate a DMA from the PBO to the texture memory in the new context
