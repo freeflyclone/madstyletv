@@ -133,9 +133,9 @@ public:
 
 		// init a white image buffer (YUV420)
 		white = new uint8_t[pboSize];
-		memset(white, 255, ySize);
-		memset(white + ySize, 127, uvSize);
-		memset(white + ySize + uvSize, 127, uvSize);
+		memset(white, 127, ySize);
+		memset(white + ySize, 255, uvSize);
+		memset(white + ySize + uvSize, 0, uvSize);
 
 		// initialize fill and render fences
 		for (int i = 0; i < numFrames; i++) {
@@ -197,16 +197,18 @@ public:
 
 		int rIndex = INDEX(framesRead++);		// currently active frame for reading
 
+		// proper set up of texUnit via Uniform is necessary, for reasons.  (can't hard code in shader?)
+		// "yuv" shader expects Y,U,V in texture unit 0, 1 and 2 respectively.
 		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit0"), 0);
 		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit1"), 1);
 		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit2"), 2);
 
-		// wait till upload thread filling of buffer is complete.
+		// wait till upload thread filling of buffer(s) is complete.
 		glWaitSync(fillFences[rIndex], 0, GL_TIMEOUT_IGNORED);
 		GL_CHECK("glWaitSync() failed");
 
-		// True asynchronous texture upload... just bind the relevant texture
-		// that was uploaded by the upload thread of XGLContext
+		// True asynchronous texture upload... just bind the relevant texture(s)
+		// that were uploaded by the upload thread
 		// Y
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, bgTexIds[rIndex*numPlanes]);
@@ -246,13 +248,18 @@ public:
 	GLuint pboId;
 	uint8_t* pboBuffer;
 	GLbitfield pboFlags{ GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT };
+
+	// image geometry luma & chroma
 	int width, height, components;
 	int chromaWidth, chromaHeight;
+	XGLPixelFormatDescriptor* ppfd{ nullptr };
+	int ySize{ 0 }, uvSize{ 0 };
 
 	// "circular" image buffer management
 	uint64_t framesWritten{ 0 };
 	uint64_t framesRead{ 0 };
 
+	// high contrast dummy frames
 	uint8_t *black, *white;
 
 	// GL syncronization stuff
@@ -263,9 +270,6 @@ public:
 	std::vector<GLuint> bgTexIds;
 	XGLBuffer::TextureAttributesList bgTexAttrs;
 	GLuint bgNumTextures{ 0 };
-
-	XGLPixelFormatDescriptor* ppfd{ nullptr };
-	int ySize{ 0 }, uvSize{ 0 };
 };
 
 void ExampleXGL::BuildScene() {
