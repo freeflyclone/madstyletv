@@ -101,9 +101,6 @@ public:
 		}
 		GL_CHECK("XGLContextImage::XGLContextImage(): something went wrong with texture allocation");
 
-		ta = texAttrs[0];
-		xprintf("imageSize: %d,%d,%d\n", ta.width, ta.height, ta.channels);
-
 		// init a black image buffer (YUV420)
 		black = new uint8_t[pboSize];
 		memset(black, 0, ySize);
@@ -147,18 +144,14 @@ public:
 				memcpy(pboBuffer + offset, white, pboSize);
 			}
 
-			glActiveTexture(GL_TEXTURE0);
+			// Initiate DMA transfers to Y,U and V textures individually.
+			// (it doesn't appear necessary to change texture units here)
 			glBindTexture(GL_TEXTURE_2D, bgTexIds[wIndex*numPlanes]);
 			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)(wIndex*pboSize));
-
-			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D, bgTexIds[wIndex*numPlanes + 1]);
 			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, chromaWidth, chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)(wIndex*pboSize + ySize));
-
-			glActiveTexture(GL_TEXTURE2);
 			glBindTexture(GL_TEXTURE_2D, bgTexIds[wIndex*numPlanes + 2]);
 			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, chromaWidth, chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)(wIndex*pboSize + ySize + uvSize));
-
 			GL_CHECK("glTexSubImage() failed");
 
 			// put a fence in so renedering context can know if we're done with this frame
@@ -214,16 +207,12 @@ public:
 		WaitForStop();
 	}
 
-	TextureAttributes ta;
-	XTimer xferTimer;
-	int pboSize;
-	GLuint textures[numFrames];
-
+	// alternate OpenGL context things
 	GLFWwindow* mWindow;
-	//XTimer xtimer;
 	ExampleXGL* pXgl;
 
 	// PBO stuff
+	int pboSize;
 	GLuint pboId;
 	uint8_t* pboBuffer;
 	GLbitfield pboFlags{ GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT };
