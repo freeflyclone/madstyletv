@@ -173,7 +173,7 @@
     <ClCompile Include="MultiContextDevBuildScene.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="xglcontextimage.h" />
+    <ClInclude Include="..\common\xglcontextimage.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
