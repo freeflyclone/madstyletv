@@ -7,10 +7,7 @@
 static const int numPlanes = 3;
 static const int numFrames = 4;
 
-uint8_t* gPboBuffer;
-
 #define INDEX(x) ((x) % numFrames)
-
 
 // derive from XGLTexQuad a class. That allows us to overide it's Draw() call so
 // we can fiddle around with various asynchronous I/O transfer strategies.
@@ -64,7 +61,7 @@ public:
 		GL_CHECK("glBufferStorage() failed");
 
 		// Map the whole damn thing, persistently.
-		gPboBuffer = pboBuffer = (uint8_t*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, pboSize*numFrames, pboFlags);
+		pboBuffer = (uint8_t*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, pboSize*numFrames, pboFlags);
 		GL_CHECK("glMapBufferRange() failed");
 
 		if (pboBuffer == nullptr)
@@ -80,6 +77,16 @@ public:
 		glGenTextures(numFrames*numPlanes, texId);
 
 		for (int i = 0; i < numFrames; i++) {
+			// for easier access from clients
+			{
+				uint8_t *y, *u, *v;
+				y = pboBuffer + (pboSize*i);
+				u = y + ySize;
+				v = u + uvSize;
+
+				yuv[i] = { y, u, v };
+			}
+
 			for (int j = 0; j < numPlanes; j++) {
 				int w = (j == 0) ? width : chromaWidth;
 				int h = (j == 0) ? height : chromaHeight;
@@ -235,6 +242,10 @@ public:
 	GLsync renderFences[numFrames];
 
 	// texture management stuff
+	typedef struct { uint8_t *y, *u, *v; } YUV;
+
+	YUV yuv[numFrames];
+
 	std::vector<GLuint> bgTexIds;
 	XGLBuffer::TextureAttributesList bgTexAttrs;
 	GLuint bgNumTextures{ 0 };

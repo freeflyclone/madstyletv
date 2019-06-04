@@ -15,9 +15,9 @@
 **************************************************************/
 #include "ExampleXGL.h"
 #include "xav.h"
-#include "xglpixelformat.h"
+#include "xglcontextimage.h"
 
-static const int numFrames = 4;
+//static const int numFrames = 4;
 static const int vWidth = 1920;
 static const int vHeight = 1080;
 
@@ -337,7 +337,7 @@ public:
 						// is made, so we just need to run the decoder.
 						avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &vPkt);
 						if (frameFinished) {
-
+							xprintf("frame finished()\n");
 						}
 					}
 					av_free_packet(&packet);
@@ -442,11 +442,9 @@ public:
 	std::mutex displayMutex;
 };
 
-class XAVPlayer : public XGLTexQuad {
+class XAVPlayer : public XGLContextImage {
 public:
-	XAVPlayer(std::string url) : dmx(url), XGLTexQuad(vWidth, vHeight, 1) {
-		AddTexture(vWidth / 2, vHeight / 2, 1);
-		AddTexture(vWidth / 2, vHeight / 2, 1);
+	XAVPlayer(ExampleXGL *pxgl, std::string url) : dmx(url), XGLContextImage(pxgl, vWidth, vHeight, 1) {
 	}
 
 	~XAVPlayer() {
@@ -458,51 +456,54 @@ public:
 			dmx.Start();
 
 		dmx.StartPlaying();
+		//Start();
 	}
 
 	void StopPlaying() {
+		//Stop();
 		dmx.StopPlaying();
 	}
 
 	void Draw() {
-		if (dmx.pFrames) {
-			if (dmx.pFrames->usedBuffs.get_count()) {
-				std::lock_guard<std::mutex> lock(dmx.displayMutex);
-				VideoFrameBuffer *pFrame = &dmx.vFrameBuffer;
+		if (!dmx.pFrames)
+			return;
 
-				glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit0"), 0);
-				glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit1"), 1);
-				glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit2"), 2);
+		if (dmx.pFrames->usedBuffs.get_count()) {
+			std::lock_guard<std::mutex> lock(dmx.displayMutex);
+			VideoFrameBuffer *pFrame = &dmx.vFrameBuffer;
 
-				// Need PBO unmapped while using it for image transfer on GPU side.
-				glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pFrame->pboId);
-				glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
+			glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit0"), 0);
+			glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit1"), 1);
+			glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit2"), 2);
 
-				// Luma - Y
-				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, texIds[0]);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, vWidth, vHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)0);
-				GL_CHECK("glGetTexImage() didn't work");
+			// Need PBO unmapped while using it for image transfer on GPU side.
+			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pFrame->pboId);
+			glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
 
-				// Chroma - U
-				glActiveTexture(GL_TEXTURE1);
-				glBindTexture(GL_TEXTURE_2D, texIds[1]);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dmx.chromaWidth, dmx.chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)(pFrame->ySize));
-				GL_CHECK("glGetTexImage() didn't work");
+			// Luma - Y
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texIds[0]);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, vWidth, vHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)0);
+			GL_CHECK("glGetTexImage() didn't work");
 
-				// Chroma - V
-				glActiveTexture(GL_TEXTURE2);
-				glBindTexture(GL_TEXTURE_2D, texIds[2]);
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dmx.chromaWidth, dmx.chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)(pFrame->ySize + pFrame->uvSize));
-				GL_CHECK("glGetTexImage() didn't work");
+			// Chroma - U
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, texIds[1]);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dmx.chromaWidth, dmx.chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)(pFrame->ySize));
+			GL_CHECK("glGetTexImage() didn't work");
 
-				// OpenGL/GPU done with PBO, so map it again for background upload thread.
-				pFrame->pboBuffer = (uint8_t*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
-				glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-			}
+			// Chroma - V
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, texIds[2]);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dmx.chromaWidth, dmx.chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)(pFrame->ySize + pFrame->uvSize));
+			GL_CHECK("glGetTexImage() didn't work");
 
-			XGLTexQuad::Draw();
+			// OpenGL/GPU done with PBO, so map it again for background upload thread.
+			pFrame->pboBuffer = (uint8_t*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
+			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 		}
+
+		XGLTexQuad::Draw();
 	}
 
 	XAVDemux dmx;
@@ -543,7 +544,7 @@ void ExampleXGL::BuildScene() {
 	else
 		videoPath = pathToAssets + "/" + videoUrl;
 
-	AddShape("shaders/yuv", [&](){ pPlayer = new XAVPlayer(videoPath); return pPlayer; });
+	AddShape("shaders/yuv", [&](){ pPlayer = new XAVPlayer(this, videoPath); return pPlayer; });
 
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(16.0f, 9.0f, 1.0f));
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 9.0f));

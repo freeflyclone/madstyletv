@@ -4,7 +4,9 @@
 // OpenGL texture buffer attributes for a subset of FFmpeg pixel formats of interest.
 // In particular, I care most about those FFmpeg pixel formats that occur in video
 // from consumer video cameras, without having a clear idea (yet) of exactly what
-// that subset encompasses.  So this class will likely evolve.
+// that subset encompasses.  So this class will likely evolve. Starting with GoPro,
+// DV, HDV, and whatever Sony and Canon are using for their formats, likely mp4
+// of some flavor(s);
 //
 // Suggested usage is to create an instance of this class once the AVPixelFormat
 // of an AVCodecContext is determined, followed by allocation of appropriate OpenGL
