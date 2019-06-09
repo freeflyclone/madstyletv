@@ -21,6 +21,8 @@
 static const int vWidth = 1920;
 static const int vHeight = 1080;
 
+uint8_t *pGlobalPboBuffer{ nullptr };
+
 class VideoFrameBuffer {
 public:
 	VideoFrameBuffer(int ySize, int uvSize) : ySize(ySize), uvSize(uvSize) {
@@ -523,7 +525,7 @@ void ExampleXGL::BuildScene() {
 		initHmd = false;
 	}
 	else {
-		preferredSwapInterval = 0;
+		preferredSwapInterval = 1;
 		preferredWidth = 1280;
 		preferredHeight = 720;
 	}

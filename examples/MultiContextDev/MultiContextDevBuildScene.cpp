@@ -25,6 +25,8 @@
 
 #include "xglcontextimage.h"
 
+uint8_t* pGlobalPboBuffer;
+
 void ExampleXGL::BuildScene() {
 	XGLContextImage *shape;
 

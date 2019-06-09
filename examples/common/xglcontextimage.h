@@ -18,11 +18,16 @@ extern uint8_t* pGlobalPboBuffer;
 // (hence the name)
 class XGLContextImage : public XGLTexQuad, public XThread {
 public:
+	// convenience ptrs to y,u,v buffers for each frame
+	typedef struct { uint8_t *y, *u, *v; } YUV;
+
 	XGLContextImage(ExampleXGL* pxgl, int w, int h, int c) :
 		pXgl(pxgl),
 		width(w), height(h), components(c),
+		freeBuffs(numFrames),
+		usedBuffs(0),
 		XGLTexQuad(w, h, c),
-		XThread("XGLContextImageThread")
+		XThread("XGLContextImageThread") 
 	{
 		xprintf("%s()\n", __FUNCTION__);
 
@@ -220,6 +225,13 @@ public:
 		WaitForStop();
 	}
 
+	YUV* NextFree() {
+		if (!freeBuffs.wait_for(100))
+			return nullptr;
+
+		return &yuv[(freeIdx++)&(numFrames - 1)];
+	};
+
 	// alternate OpenGL context things
 	GLFWwindow* mWindow;
 	ExampleXGL* pXgl;
@@ -239,6 +251,8 @@ public:
 	// "circular" image buffer management
 	uint64_t framesWritten{ 0 };
 	uint64_t framesRead{ 0 };
+	uint64_t freeIdx{ 0 };
+	uint64_t usedIdx{ 0 };
 
 	// high contrast dummy frames
 	uint8_t *black, *white;
@@ -248,13 +262,13 @@ public:
 	GLsync renderFences[numFrames];
 
 	// texture management stuff
-	typedef struct { uint8_t *y, *u, *v; } YUV;
-
 	YUV yuv[numFrames];
 
 	std::vector<GLuint> bgTexIds;
 	XGLBuffer::TextureAttributesList bgTexAttrs;
 	GLuint bgNumTextures{ 0 };
+
+	XSemaphore freeBuffs, usedBuffs;
 };
 
 
