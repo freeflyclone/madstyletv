@@ -9,6 +9,8 @@ static const int numFrames = 4;
 
 #define INDEX(x) ((x) % numFrames)
 
+extern uint8_t* pGlobalPboBuffer;
+
 // derive from XGLTexQuad a class. That allows us to overide it's Draw() call so
 // we can fiddle around with various asynchronous I/O transfer strategies.
 //
@@ -22,6 +24,8 @@ public:
 		XGLTexQuad(w, h, c),
 		XThread("XGLContextImageThread")
 	{
+		xprintf("%s()\n", __FUNCTION__);
+
 		// get pixel layout we expect from FFmpeg for GoPro footage
 		ppfd = new XGLPixelFormatDescriptor(AV_PIX_FMT_YUVJ420P);
 
@@ -61,7 +65,7 @@ public:
 		GL_CHECK("glBufferStorage() failed");
 
 		// Map the whole damn thing, persistently.
-		pboBuffer = (uint8_t*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, pboSize*numFrames, pboFlags);
+		pGlobalPboBuffer = pboBuffer = (uint8_t*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, pboSize*numFrames, pboFlags);
 		GL_CHECK("glMapBufferRange() failed");
 
 		if (pboBuffer == nullptr)
@@ -144,12 +148,14 @@ public:
 				glClientWaitSync(renderFences[wIndex], 0, 20000000);
 
 			// simulate what an ffmpeg decoder thread would do per frame
+			/*
 			if (framesWritten & 1) {
 				memcpy(pboBuffer + offset, black, pboSize);
 			}
 			else {
 				memcpy(pboBuffer + offset, white, pboSize);
 			}
+			*/
 
 			// Initiate DMA transfers to Y,U and V textures individually.
 			// (it doesn't appear necessary to change texture units here)
