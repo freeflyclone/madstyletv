@@ -134,33 +134,31 @@ public:
 			fillFences[i] = 0;
 			renderFences[i] = 0;
 		}
+
+		initDone = true;
 	}
 
 	static void ErrorFunc(int code, const char *str) {
 		xprintf("%s(): %d - %s\n", __FUNCTION__, code, str);
 	}
 
+	void InitiatePboTransfer() {
+
+	}
 	void Run() {
 		// first up, bind the new OpenGL context, for 2nd GPU command queue
 		glfwMakeContextCurrent(mWindow);
 
+		xprintf("%s\n", __FUNCTION__);
+
 		while (IsRunning()) {
+			InitiatePboTransfer();
 			int wIndex = INDEX(framesWritten);	// currently active frame for writing
 			int offset = wIndex * pboSize;		// where it is in PBO
 
 			// make sure "renderFence" is actually valid before waiting for it w/200ms timeout.
 			if (renderFences[wIndex])
 				glClientWaitSync(renderFences[wIndex], 0, 20000000);
-
-			// simulate what an ffmpeg decoder thread would do per frame
-			/*
-			if (framesWritten & 1) {
-				memcpy(pboBuffer + offset, black, pboSize);
-			}
-			else {
-				memcpy(pboBuffer + offset, white, pboSize);
-			}
-			*/
 
 			// Initiate DMA transfers to Y,U and V textures individually.
 			// (it doesn't appear necessary to change texture units here)
@@ -232,6 +230,28 @@ public:
 		return &yuv[(freeIdx++)&(numFrames - 1)];
 	};
 
+	YUV* NextUsed() {
+		if (!usedBuffs.wait_for(100))
+			return nullptr;
+
+		return &yuv[(usedIdx++)&(numFrames - 1)];
+	};
+
+	void NotifyFree(){
+		freeBuffs.notify();
+	};
+
+	void NotifyUsed() {
+		usedBuffs.notify();
+	};
+
+	void Flush() {
+		usedBuffs(0);
+		freeBuffs(numFrames);
+		freeIdx = 0;
+		usedIdx = 0;
+	}
+
 	// alternate OpenGL context things
 	GLFWwindow* mWindow;
 	ExampleXGL* pXgl;
@@ -269,6 +289,7 @@ public:
 	GLuint bgNumTextures{ 0 };
 
 	XSemaphore freeBuffs, usedBuffs;
+	bool initDone{ false };
 };
 
 

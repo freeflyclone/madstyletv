@@ -1,23 +1,24 @@
 /**************************************************************
-** MP4DevBuildScene.cpp
+** MP4Dev2BuildScene.cpp
 **
 ** Minimal libavcodec/libavformat demo, capable of decoding
 ** & rendering GoPro files shot in HD @ 120 FPS
 **
-** At present: 1920x1080 120 fps specifically.  All else: YMMV
+** 2nd pass: use persistent mapping to map an OpenGL PBO buffer
+** large enough for "numFrames" (4) of Y,U and V planes. Point
+** FFmpeg to said PBO with override of AVCodecContext.get_buffer2()
+** so that it decodes into 1 frame of video in each sequential
+** entry in the PBO.
 **
-** NOTE!:
-**   Uh... at present (4/26/19) this requires an old version of
-** libavcodec, libavformat, etc in order to achieve satisfying
-** decode frame rates.  I don't know what's changed in later versions,
-** and it's quite possibly pilot error on my part, but I'm 
-** looking at it.
+** Using 2nd OpenGL context, run FFmpeg decoder in background,
+** using FFmpeg's call to our GetBuffer2() and the "frameFinished"
+** arg of avcodec_decode_video2() to twiddle GL sync objects
+** as appropriate for display update in foreground thread.
 **************************************************************/
 #include "ExampleXGL.h"
 #include "xav.h"
 #include "xglcontextimage.h"
 
-//static const int numFrames = 4;
 static const int vWidth = 1920;
 static const int vHeight = 1080;
 
@@ -43,10 +44,21 @@ public:
 	std::mutex mutex;
 };
 
+// XAVDemux needs to know about XGLContextImage, because it needs access to its PBO buffer,
+// so as to provide the "upload thread" functionality.  Perhaps it should be derived
+// from it instead, that's a tomorrow experiment.  For now, just pass in a reference
+// to the one from XAVPlayer.  Smelly, not sure if order of creation is deterministic (reliable)
+// or not.  Another tomorrow investigation: it's working as coded at the moment.
 class XAVDemux : public XThread {
 public:
-	XAVDemux(std::string fn) : fileName(fn), XThread("XAVDemux") {
+	XAVDemux(std::string fn, XGLContextImage& xci) : fileName(fn), XThread("XAVDemux"), ctxImg(xci) {
+		xprintf("%s\n", __FUNCTION__);
 		av_register_all();
+
+		if (ctxImg.initDone)
+			xprintf("%s(): ctxImg initDone is true!\n", __FUNCTION__);
+		else
+			xprintf("%s(): ctxImage initDone = false.\n", __FUNCTION__);
 
 		ended = true;
 		StartPlaying();
@@ -69,26 +81,18 @@ public:
 
 	}
 
-	// AVCodecContext.get_buffer2() override: force use of our supplied buffers
-	// for decoder output - ie: decode straight into texture map memory (eventually)
-	// For now, just getting it to use FrameBufferPool buffers is proof that 
-	// this can work.  Eventually, will be PBO buffers with intent to remove
-	// any CPU -> GPU copying of decoder results
+	// AVCodecContext.get_buffer2() override: force use of our supplied PBO buffer
+	// to remove any CPU copying of decoder result images.
 	static int GetBuffer2(struct AVCodecContext *s, AVFrame *frame, int flags) {
 		XAVDemux *self = (XAVDemux *)s->opaque;
 		int ret = 0;
-		int count = 0;
-		int ySize = frame->width * frame->height;
-		int uvSize = ySize / 4;
 
-		uint8_t* y = pGlobalPboBuffer + INDEX(self->nDecoded++) * (ySize + (uvSize*2));
-		uint8_t* u = y + ySize;
-		uint8_t* v = u + uvSize;
+		XGLContextImage::YUV* pYuv = self->ctxImg.NextFree();
 
-		if (y) {
-			frame->data[0] = y;
-			frame->data[1] = u;
-			frame->data[2] = v;
+		if (pYuv) {
+			frame->data[0] = pYuv->y;
+			frame->data[1] = pYuv->u;
+			frame->data[2] = pYuv->v;
 
 			frame->linesize[0] = s->width;
 			frame->linesize[1] = self->chromaWidth;
@@ -98,6 +102,9 @@ public:
 			frame->buf[1] = av_buffer_create(frame->data[1], frame->linesize[1] * frame->height / 2, our_buffer_default_free, self, 0);
 			frame->buf[2] = av_buffer_create(frame->data[2], frame->linesize[2] * frame->height / 2, our_buffer_default_free, self, 0);
 		}
+
+		self->ctxImg.NotifyUsed();
+
 		// must return 0!  can't remember where I saw it, but 0 means NOT ref counted. (I think)
 		// (basically, we want to tell libavcodec to NOT fuck with management of these buffers.)
 		return 0;
@@ -198,6 +205,7 @@ public:
 	}
 
 	void Run() {
+		xprintf("%s()\n", __FUNCTION__);
 		while (IsRunning()) {
 			if (playing) {
 				std::lock_guard<std::mutex> lock(playMutex);
@@ -210,6 +218,7 @@ public:
 						// is made, so we just need to run the decoder.
 						avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &vPkt);
 						if (frameFinished) {
+							ctxImg.NotifyFree();
 							if (pGlobalPboBuffer)
 								xprintf("frame finished(): %d\n", nDecoded);
 						}
@@ -307,11 +316,12 @@ public:
 	std::mutex displayMutex;
 
 	uint64_t nDecoded{ 0 };
+	XGLContextImage& ctxImg;
 };
 
 class XAVPlayer : public XGLContextImage {
 public:
-	XAVPlayer(ExampleXGL *pxgl, std::string url) : dmx(url), XGLContextImage(pxgl, vWidth, vHeight, 1) {
+	XAVPlayer(ExampleXGL *pxgl, std::string url) : dmx(url, *this), XGLContextImage(pxgl, vWidth, vHeight, 1) {
 		xprintf("%s()\n", __FUNCTION__);
 	}
 
