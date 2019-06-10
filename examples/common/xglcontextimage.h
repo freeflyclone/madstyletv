@@ -217,6 +217,8 @@ public:
 
 		// rely on base class for actual render of texture quad
 		XGLTexQuad::Draw();
+
+		NotifyFree();
 	}
 
 	~XGLContextImage() {

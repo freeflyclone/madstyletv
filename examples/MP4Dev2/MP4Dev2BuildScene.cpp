@@ -218,14 +218,12 @@ public:
 						// copy the XAVPacket
 						vPkt = packet;
 						int frameFinished;
-						// since we have our own AVFrame allocator we know when a new AVFrame
-						// is made, so we just need to run the decoder.
-						avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &vPkt);
 
-						if (frameFinished) {
+						// run decoder, if we get a frame initiate PBO -> Texture transfer
+						avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &vPkt);
+						if (frameFinished)
 							ctxImg.InitiatePboTransfer();
-							ctxImg.NotifyFree();
-						}
+
 					}
 					av_free_packet(&packet);
 				}
