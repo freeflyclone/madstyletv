@@ -54,7 +54,7 @@ public:
 
 		ySize = width*height*ppfd->depths[0];
 		uvSize = chromaWidth*chromaHeight*ppfd->depths[1];
-		pboSize = ySize + (uvSize * 2);
+		pboSize = ySize + (uvSize * 2) + 1024;
 
 		glGenBuffers(1, &pboId);
 		GL_CHECK("glGenBuffers failed");
@@ -143,8 +143,31 @@ public:
 	}
 
 	void InitiatePboTransfer() {
+		int wIndex = INDEX(framesWritten);	// currently active frame for writing
+		int offset = wIndex * pboSize;		// where it is in PBO
 
+		// make sure "renderFence" is actually valid before waiting for it w/200ms timeout.
+		if (renderFences[wIndex])
+			glClientWaitSync(renderFences[wIndex], 0, 20000000);
+
+		// Initiate DMA transfers to Y,U and V textures individually.
+		// (it doesn't appear necessary to change texture units here)
+		glBindTexture(GL_TEXTURE_2D, bgTexIds[wIndex*numPlanes]);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)(wIndex*pboSize));
+		glBindTexture(GL_TEXTURE_2D, bgTexIds[wIndex*numPlanes + 1]);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, chromaWidth, chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)(wIndex*pboSize + ySize));
+		glBindTexture(GL_TEXTURE_2D, bgTexIds[wIndex*numPlanes + 2]);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, chromaWidth, chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)(wIndex*pboSize + ySize + uvSize));
+		GL_CHECK("glTexSubImage() failed");
+
+		// put a fence in so renedering context can know if we're done with this frame
+		fillFences[INDEX(framesWritten)] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+		GL_CHECK("glFenceSync() failed");
+
+		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(2));
+		framesWritten++;
 	}
+
 	void Run() {
 		// first up, bind the new OpenGL context, for 2nd GPU command queue
 		glfwMakeContextCurrent(mWindow);
@@ -153,29 +176,6 @@ public:
 
 		while (IsRunning()) {
 			InitiatePboTransfer();
-			int wIndex = INDEX(framesWritten);	// currently active frame for writing
-			int offset = wIndex * pboSize;		// where it is in PBO
-
-			// make sure "renderFence" is actually valid before waiting for it w/200ms timeout.
-			if (renderFences[wIndex])
-				glClientWaitSync(renderFences[wIndex], 0, 20000000);
-
-			// Initiate DMA transfers to Y,U and V textures individually.
-			// (it doesn't appear necessary to change texture units here)
-			glBindTexture(GL_TEXTURE_2D, bgTexIds[wIndex*numPlanes]);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)(wIndex*pboSize));
-			glBindTexture(GL_TEXTURE_2D, bgTexIds[wIndex*numPlanes + 1]);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, chromaWidth, chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)(wIndex*pboSize + ySize));
-			glBindTexture(GL_TEXTURE_2D, bgTexIds[wIndex*numPlanes + 2]);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, chromaWidth, chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)(wIndex*pboSize + ySize + uvSize));
-			GL_CHECK("glTexSubImage() failed");
-
-			// put a fence in so renedering context can know if we're done with this frame
-			fillFences[INDEX(framesWritten)] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-			GL_CHECK("glFenceSync() failed");
-
-			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(2));
-			framesWritten++;
 		}
 	}
 

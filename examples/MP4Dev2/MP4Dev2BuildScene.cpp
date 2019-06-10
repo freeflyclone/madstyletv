@@ -20,7 +20,7 @@
 #include "xglcontextimage.h"
 
 static const int vWidth = 1920;
-static const int vHeight = 1080;
+static const int vHeight = 1088;
 
 uint8_t* pGlobalPboBuffer = nullptr;
 
@@ -206,6 +206,10 @@ public:
 
 	void Run() {
 		xprintf("%s()\n", __FUNCTION__);
+
+		// first up, bind the new OpenGL context, for 2nd GPU command queue
+		glfwMakeContextCurrent(ctxImg.mWindow);
+
 		while (IsRunning()) {
 			if (playing) {
 				std::lock_guard<std::mutex> lock(playMutex);
@@ -217,10 +221,10 @@ public:
 						// since we have our own AVFrame allocator we know when a new AVFrame
 						// is made, so we just need to run the decoder.
 						avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &vPkt);
+
 						if (frameFinished) {
+							ctxImg.InitiatePboTransfer();
 							ctxImg.NotifyFree();
-							if (pGlobalPboBuffer)
-								xprintf("frame finished(): %d\n", nDecoded);
 						}
 					}
 					av_free_packet(&packet);
@@ -334,11 +338,11 @@ public:
 			dmx.Start();
 
 		dmx.StartPlaying();
-		Start();
+		//Start();
 	}
 
 	void StopPlaying() {
-		Stop();
+		//Stop();
 		dmx.StopPlaying();
 	}
 
