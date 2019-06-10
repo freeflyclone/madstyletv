@@ -338,9 +338,9 @@ public:
 						// since we have our own AVFrame allocator we know when a new AVFrame
 						// is made, so we just need to run the decoder.
 						avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &vPkt);
-						if (frameFinished) {
-							xprintf("frame finished()\n");
-						}
+						//if (frameFinished) {
+							//xprintf("frame finished()\n");
+						//}
 					}
 					av_free_packet(&packet);
 				}
