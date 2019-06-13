@@ -424,7 +424,7 @@ public:
 
 class XAVPlayer : public XGLContextImage {
 public:
-	XAVPlayer(ExampleXGL *pxgl, std::string url) : dmx(url), XGLContextImage(pxgl, vWidth, vHeight, 1) {
+	XAVPlayer(ExampleXGL *pxgl, std::string url) : dmx(url), XGLContextImage(pxgl, vWidth, vHeight) {
 	}
 
 	~XAVPlayer() {

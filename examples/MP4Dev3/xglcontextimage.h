@@ -19,10 +19,10 @@ uint8_t* gPboBuffer;
 // (hence the name)
 class XGLContextImage : public XGLTexQuad, public XThread {
 public:
-	XGLContextImage(ExampleXGL* pxgl, int w, int h, int c) :
+	XGLContextImage(ExampleXGL* pxgl, int w, int h) :
 		pXgl(pxgl),
-		width(w), height(h), components(c),
-		XGLTexQuad(w, h, c),
+		width(w), height(h),
+		XGLTexQuad(),
 		XThread("XGLContextImageThread")
 	{
 		// get pixel layout we expect from FFmpeg for GoPro footage
@@ -32,6 +32,7 @@ public:
 		chromaWidth = width >> ppfd->shiftRightW;
 		chromaHeight = height >> ppfd->shiftRightH;
 
+		AddTexture(width, height, 1);
 		AddTexture(chromaWidth, chromaHeight, 1);
 		AddTexture(chromaWidth, chromaHeight, 1);
 
@@ -95,7 +96,7 @@ public:
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 
 				bgTexIds.push_back(texId[tIdx]);
-				bgTexAttrs.push_back({ w, h, components });
+				bgTexAttrs.push_back({ w, h, 1 });
 				bgNumTextures++;
 			}
 		}
@@ -218,7 +219,7 @@ public:
 	GLbitfield pboFlags{ GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT };
 
 	// image geometry luma & chroma
-	int width, height, components;
+	int width, height;// , components;
 	int chromaWidth, chromaHeight;
 	XGLPixelFormatDescriptor* ppfd{ nullptr };
 	int ySize{ 0 }, uvSize{ 0 };
