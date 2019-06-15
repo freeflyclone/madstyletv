@@ -21,71 +21,6 @@
 static const int vWidth = 1920;
 static const int vHeight = 1080;
 
-uint8_t *pGlobalPboBuffer{ nullptr };
-
-class VideoFrameBuffer {
-public:
-	VideoFrameBuffer(int ySize, int uvSize) : ySize(ySize), uvSize(uvSize) {
-
-		y = new uint8_t[ySize+2*uvSize];
-		u = y + ySize;
-		v = u + uvSize;
-	}
-
-	uint8_t *y, *u, *v;
-	int ySize, uvSize;
-};
-
-class FrameBufferPool {
-public:
-	FrameBufferPool(int width, int height) : freeBuffs(numFrames), usedBuffs(0) {
-		int ySize = width * height;
-		int uvSize = (width / 2 * height / 2);
-
-		for (int i = 0; i < numFrames; i++)
-			frames[i] = new VideoFrameBuffer(ySize, uvSize);
-	}
-
-	~FrameBufferPool() {
-		for (int i = 0; i < numFrames; i++)
-			delete frames[i];
-	}
-
-	VideoFrameBuffer* NextFree() { 
-		if (!freeBuffs.wait_for(100))
-			return nullptr;
-
-		return frames[(freeIdx++)&(numFrames - 1)];
-	};
-	
-	VideoFrameBuffer* NextUsed() {
-		if (!usedBuffs.wait_for(100))
-			return nullptr;
-
-		return frames[(usedIdx++)&(numFrames - 1)];
-	};
-
-	void NotifyFree(){
-		freeBuffs.notify();
-	};
-
-	void NotifyUsed() {
-		usedBuffs.notify();
-	};
-
-	void Flush() {
-		usedBuffs(0);
-		freeBuffs(numFrames);
-		freeIdx = 0;
-		usedIdx = 0;
-	}
-
-	VideoFrameBuffer *frames[numFrames];
-	XSemaphore freeBuffs, usedBuffs;
-	uint64_t freeIdx{ 0 };
-	uint64_t usedIdx{ 0 };
-};
-
 // XAVPacket derives from AVPacket soley to add the assignment operator
 // (not copying side_data for now)
 class XAVPacket : public AVPacket {
@@ -108,24 +43,7 @@ public:
 
 class XAVDemux : public XThread {
 public:
-	class Sequencer : public XThread, public SteppedTimer {
-	public:
-		Sequencer(XAVDemux& dmx) : XThread("XAVDemux::SequencerThread"), dmx(dmx) {
-			SetStepFrequency(120);
-		};
-
-		void Run() {
-			while (IsRunning()) {
-				GameTime gameTime;
-				while (TryAdvance(gameTime))
-					dmx.UpdateDisplay();
-			}
-		}
-
-		XAVDemux& dmx;
-	} sequencer;
-
-	XAVDemux(std::string fn) : fileName(fn), XThread("XAVDemux"), sequencer(*this) {
+	XAVDemux(std::string fn, XGLContextImage* p) : fileName(fn), pci(p), XThread("XAVDemux") {
 		av_register_all();
 
 		ended = true;
@@ -134,6 +52,7 @@ public:
 
 	~XAVDemux() {
 		xprintf("%s()\n", __FUNCTION__);
+
 		if (playing)
 			StopPlaying();
 
@@ -142,43 +61,6 @@ public:
 
 		if (pCodecCtx)
 			ReleaseAllTheThings();
-	}
-
-	// might need some PBO mapping wizardry here, eventually.
-	static void our_buffer_default_free(void *opaque, uint8_t *data) {
-
-	}
-
-	// AVCodecContext.get_buffer2() override: force use of our supplied buffers
-	// for decoder output - ie: decode straight into texture map memory (eventually)
-	// For now, just getting it to use FrameBufferPool buffers is proof that 
-	// this can work.  Eventually, will be PBO buffers with intent to remove
-	// any CPU -> GPU copying of decoder results
-	static int GetBuffer2(struct AVCodecContext *s, AVFrame *frame, int flags) {
-		XAVDemux *self = (XAVDemux *)s->opaque;
-		int ret = 0;
-		int count = 0;
-
-		VideoFrameBuffer* pvfb = self->pFrames->NextFree();
-		if (pvfb) {
-			frame->data[0] = pvfb->y;
-			frame->data[1] = pvfb->u;
-			frame->data[2] = pvfb->v;
-
-			frame->linesize[0] = s->width;
-			frame->linesize[1] = self->chromaWidth;
-			frame->linesize[2] = self->chromaWidth;
-
-			frame->buf[0] = av_buffer_create(frame->data[0], frame->linesize[0] * frame->height, our_buffer_default_free, self, 0);
-			frame->buf[1] = av_buffer_create(frame->data[1], frame->linesize[1] * frame->height / 2, our_buffer_default_free, self, 0);
-			frame->buf[2] = av_buffer_create(frame->data[2], frame->linesize[2] * frame->height / 2, our_buffer_default_free, self, 0);
-
-			self->pFrames->NotifyUsed();
-		}
-
-		// must return 0!  can't remember where I saw it, but 0 means NOT ref counted. (I think)
-		// (basically, we want to tell libavcodec to NOT fuck with management of these buffers.)
-		return 0;
 	}
 
 	void GetAllTheThings() {
@@ -216,12 +98,8 @@ public:
 		if (vStreamIdx == -1)
 			throwXAVException("No video stream found in " + fileName);
 
-		// get AVCodecContext for video stream, override its get_buffer2() method with
-		// ours, and save "this" in its "opaque" pointer, for use by our GetBuffer2();
-		// (override must be done before codec is opened)
+		// get AVCodecContext for video stream
 		pCodecCtx = pFormatCtx->streams[vStreamIdx]->codec;
-		pCodecCtx->get_buffer2 = GetBuffer2;
-		pCodecCtx->opaque = this;
 
 		// xyzzy: for now, assume my machine (Windows 7: quad core w/HT)
 		// apparently old FFMPEG did this automagically, whereas new does not
@@ -251,13 +129,6 @@ public:
 		// save it so our clients can know
 		chromaWidth = pCodecCtx->width / (1 << pixDesc->log2_chroma_w);
 		chromaHeight = pCodecCtx->height / (1 << pixDesc->log2_chroma_h);
-
-		// get new FrameBufferPool(), and tell it the coded size needed
-		if ((pFrames = new FrameBufferPool(pCodecCtx->coded_width, pCodecCtx->coded_height)) == nullptr) {
-			avcodec_close(pCodecCtx);
-			avformat_close_input(&pFormatCtx);
-			throwXAVException("Unable to allocate new FrameBufferPool " + fileName + "");
-		}
 	}
 
 	void ReleaseAllTheThings(){
@@ -270,10 +141,6 @@ public:
 
 		avformat_close_input(&pFormatCtx);
 
-		if (pFrames){
-			delete pFrames;
-			pFrames = nullptr;
-		}
 		if (pFormatCtx) {
 			avformat_free_context(pFormatCtx);
 			pFormatCtx = nullptr;
@@ -286,39 +153,21 @@ public:
 		av_shrink_packet(&packet, 0);
 	}
 
-	// this is run by the sequencer thread, at PTS/DTS interval.
-	// This copies into vFrameBuffer at the above interval,
-	// INDEPENDENT of display refresh rate.
-	void UpdateDisplay() {
-		VideoFrameBuffer* pvfb = pFrames->NextUsed();
-
-		if (pvfb) {
-			std::lock_guard<std::mutex> lock(displayMutex);
-
-			// Luma channel to PBO
-			memcpy(vFrameBuffer.y, pvfb->y, vFrameBuffer.ySize);
-			memcpy(vFrameBuffer.u, pvfb->u, vFrameBuffer.uvSize);
-			memcpy(vFrameBuffer.v, pvfb->v, vFrameBuffer.uvSize);
-
-			pFrames->NotifyFree();
-		}
-	}
-
 	void Run() {
+		// make sure we're using XGLContextImage's secondary OpenGL context
+		pci->MakeContextCurrent();
+
 		while (IsRunning()) {
 			if (playing) {
 				std::lock_guard<std::mutex> lock(playMutex);
 				if ((retVal = av_read_frame(pFormatCtx, &packet)) == 0) {
 					if (packet.stream_index == vStreamIdx) {
-						// copy the XAVPacket
-						vPkt = packet;
 						int frameFinished;
-						// since we have our own AVFrame allocator we know when a new AVFrame
-						// is made, so we just need to run the decoder.
-						avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &vPkt);
-						//if (frameFinished) {
-							//xprintf("frame finished()\n");
-						//}
+
+						avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
+
+						if (frameFinished)
+							pci->UploadToTexture(pFrame->data[0], pFrame->data[1], pFrame->data[2]);
 					}
 					av_free_packet(&packet);
 				}
@@ -332,6 +181,8 @@ public:
 				std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
 		}
 		xprintf("%s() exiting\n", __FUNCTION__);
+		StopPlaying();
+		ended = true;
 	}
 
 private:
@@ -340,12 +191,10 @@ private:
 		wasPlaying = playing;
 		playing = false;
 
-		pFrames->Flush();
-
 		retVal = avformat_seek_file(pFormatCtx, -1, INT64_MIN, timeOffset, INT64_MAX, 0);
 		avcodec_flush_buffers(pCodecCtx);
 		showFrameStatus = true;
-		pFrames->freeBuffs(numFrames);
+
 		if (wasPlaying)
 			playing = true;
 	}
@@ -367,15 +216,12 @@ public:
 		if (ended) {
 			GetAllTheThings();
 			ended = false;
-			pFrames->Flush();
 		}
-		sequencer.Start();
 		playing = true;
 	}
 
 	void StopPlaying() {
 		xprintf("%s()\n", __FUNCTION__);
-		sequencer.Stop();
 		playing = false;
 	}
 
@@ -408,9 +254,6 @@ public:
 	uint8_t packetBuff[0x100000];
 	uint8_t vPacketBuff[0x100000];
 
-	FrameBufferPool *pFrames = nullptr;
-	VideoFrameBuffer vFrameBuffer{ vWidth*vHeight, (vWidth / 2)*(vHeight / 2) };
-
 	int	chromaWidth{ 0 }, chromaHeight{ 0 };
 	bool playing{ false };
 	bool ended{ false };
@@ -420,11 +263,16 @@ public:
 
 	std::mutex playMutex;
 	std::mutex displayMutex;
+
+	XGLContextImage* pci{ nullptr };
+	XTimer xtDecoder;
 };
 
 class XAVPlayer : public XGLContextImage {
 public:
-	XAVPlayer(ExampleXGL *pxgl, std::string url) : dmx(url), XGLContextImage(pxgl, vWidth, vHeight) {
+	XAVPlayer(ExampleXGL *pxgl, std::string url) : dmx(url, this), XGLContextImage(pxgl, vWidth, vHeight) {
+		AddTexture(vWidth, vHeight, 1);
+		AddTexture(vWidth, vHeight, 1);
 	}
 
 	~XAVPlayer() {
@@ -436,46 +284,10 @@ public:
 			dmx.Start();
 
 		dmx.StartPlaying();
-		//Start();
 	}
 
 	void StopPlaying() {
-		//Stop();
 		dmx.StopPlaying();
-	}
-
-	void Draw() {
-		if (!dmx.pFrames)
-			return;
-
-		if (dmx.pFrames->usedBuffs.get_count()) {
-			std::lock_guard<std::mutex> lock(dmx.displayMutex);
-			VideoFrameBuffer *pFrame = &dmx.vFrameBuffer;
-
-			glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit0"), 0);
-			glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit1"), 1);
-			glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit2"), 2);
-
-			// Luma - Y
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, texIds[0]);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, vWidth, vHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->y);
-			GL_CHECK("glGetTexImage() didn't work");
-
-			// Chroma - U
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, texIds[1]);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dmx.chromaWidth, dmx.chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->u);
-			GL_CHECK("glGetTexImage() didn't work");
-
-			// Chroma - V
-			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, texIds[2]);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dmx.chromaWidth, dmx.chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)pFrame->v);
-			GL_CHECK("glGetTexImage() didn't work");
-		}
-
-		XGLTexQuad::Draw();
 	}
 
 	XAVDemux dmx;

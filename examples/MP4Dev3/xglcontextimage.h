@@ -14,16 +14,12 @@ uint8_t* gPboBuffer;
 
 // derive from XGLTexQuad a class. That allows us to overide it's Draw() call so
 // we can fiddle around with various asynchronous I/O transfer strategies.
-//
-// Also derive from XThread for async buffer upload in alternate OpenGL context.
-// (hence the name)
-class XGLContextImage : public XGLTexQuad, public XThread {
+class XGLContextImage : public XGLTexQuad {
 public:
 	XGLContextImage(ExampleXGL* pxgl, int w, int h) :
 		pXgl(pxgl),
 		width(w), height(h),
-		XGLTexQuad(),
-		XThread("XGLContextImageThread")
+		XGLTexQuad()
 	{
 		// get pixel layout we expect from FFmpeg for GoPro footage
 		ppfd = new XGLPixelFormatDescriptor(AV_PIX_FMT_YUVJ420P);
@@ -49,27 +45,6 @@ public:
 
 		ySize = width*height*ppfd->depths[0];
 		uvSize = chromaWidth*chromaHeight*ppfd->depths[1];
-		pboSize = ySize + (uvSize * 2);
-
-		glGenBuffers(1, &pboId);
-		GL_CHECK("glGenBuffers failed");
-
-		xprintf("pboId: %d\n", pboId); // aid in identifying our PBO in GL debug output
-
-		// Bind our PBO to UNPACK_BUFFER.
-		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboId);
-		GL_CHECK("glBindBuffer() failed");
-
-		// Allocate multiple frames.
-		glBufferStorage(GL_PIXEL_UNPACK_BUFFER, pboSize*numFrames, nullptr, pboFlags);
-		GL_CHECK("glBufferStorage() failed");
-
-		// Map the whole damn thing, persistently.
-		gPboBuffer = pboBuffer = (uint8_t*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, pboSize*numFrames, pboFlags);
-		GL_CHECK("glMapBufferRange() failed");
-
-		if (pboBuffer == nullptr)
-			throwXGLException("Doh! glMapBufferRange() returned nullptr\n");
 
 		// restore main OpenGL context.  (new context can't be bound in 2 threads at once)
 		glfwMakeContextCurrent(pXgl->window);
@@ -102,18 +77,6 @@ public:
 		}
 		GL_CHECK("XGLContextImage::XGLContextImage(): something went wrong with texture allocation");
 
-		// init a black image buffer (YUV420)
-		black = new uint8_t[pboSize];
-		memset(black, 0, ySize);
-		memset(black + ySize, 127, uvSize);
-		memset(black + ySize + uvSize, 127, uvSize);
-
-		// init a white image buffer (YUV420)
-		white = new uint8_t[pboSize];
-		memset(white, 127, ySize);
-		memset(white + ySize, 255, uvSize);
-		memset(white + ySize + uvSize, 0, uvSize);
-
 		// initialize fill and render fences
 		for (int i = 0; i < numFrames; i++) {
 			fillFences[i] = 0;
@@ -125,43 +88,34 @@ public:
 		xprintf("%s(): %d - %s\n", __FUNCTION__, code, str);
 	}
 
-	void Run() {
-		// first up, bind the new OpenGL context, for 2nd GPU command queue
+	void MakeContextCurrent() { 
 		glfwMakeContextCurrent(mWindow);
+	}
 
-		while (IsRunning()) {
-			int wIndex = INDEX(framesWritten);	// currently active frame for writing
-			int offset = wIndex * pboSize;		// where it is in PBO
+	void UploadToTexture(uint8_t* y, uint8_t* u, uint8_t* v) {
+		xprintf("%s(): y: %p, u: %p, v:%p\n", __FUNCTION__, y, u, v);
 
-			// make sure "renderFence" is actually valid before waiting for it w/200ms timeout.
-			if (renderFences[wIndex])
-				glClientWaitSync(renderFences[wIndex], 0, 20000000);
+		int wIndex = INDEX(framesWritten);	// currently active frame for writing
 
-			// simulate what an ffmpeg decoder thread would do per frame
-			if (framesWritten & 1) {
-				memcpy(pboBuffer + offset, black, pboSize);
-			}
-			else {
-				memcpy(pboBuffer + offset, white, pboSize);
-			}
+		// make sure "renderFence" is actually valid before waiting for it w/200ms timeout.
+		if (renderFences[wIndex])
+			glClientWaitSync(renderFences[wIndex], 0, 20000000);
 
-			// Initiate DMA transfers to Y,U and V textures individually.
-			// (it doesn't appear necessary to change texture units here)
-			glBindTexture(GL_TEXTURE_2D, bgTexIds[wIndex*numPlanes]);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)(wIndex*pboSize));
-			glBindTexture(GL_TEXTURE_2D, bgTexIds[wIndex*numPlanes + 1]);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, chromaWidth, chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)(wIndex*pboSize + ySize));
-			glBindTexture(GL_TEXTURE_2D, bgTexIds[wIndex*numPlanes + 2]);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, chromaWidth, chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)(wIndex*pboSize + ySize + uvSize));
-			GL_CHECK("glTexSubImage() failed");
+		// Initiate DMA transfers to Y,U and V textures individually.
+		// (it doesn't appear necessary to change texture units here)
+		glBindTexture(GL_TEXTURE_2D, bgTexIds[wIndex*numPlanes]);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)y);
+		glBindTexture(GL_TEXTURE_2D, bgTexIds[wIndex*numPlanes + 1]);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, chromaWidth, chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)u);
+		glBindTexture(GL_TEXTURE_2D, bgTexIds[wIndex*numPlanes + 2]);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, chromaWidth, chromaHeight, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)v);
+		GL_CHECK("glTexSubImage() failed");
 
-			// put a fence in so renedering context can know if we're done with this frame
-			fillFences[INDEX(framesWritten)] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-			GL_CHECK("glFenceSync() failed");
+		// put a fence in so renedering context can know if we're done with this frame
+		fillFences[INDEX(framesWritten)] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+		GL_CHECK("glFenceSync() failed");
 
-			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(2));
-			framesWritten++;
-		}
+		framesWritten++;
 	}
 
 	void Draw() {
@@ -205,31 +159,22 @@ public:
 	}
 
 	~XGLContextImage() {
-		WaitForStop();
+		xprintf("%s()\n", __FUNCTION__);
 	}
 
 	// alternate OpenGL context things
 	GLFWwindow* mWindow;
 	ExampleXGL* pXgl;
 
-	// PBO stuff
-	int pboSize;
-	GLuint pboId;
-	uint8_t* pboBuffer;
-	GLbitfield pboFlags{ GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT };
-
 	// image geometry luma & chroma
-	int width, height;// , components;
-	int chromaWidth, chromaHeight;
+	int width{ 0 }, height{ 0 };
+	int chromaWidth{ 0 }, chromaHeight{ 0 };
 	XGLPixelFormatDescriptor* ppfd{ nullptr };
 	int ySize{ 0 }, uvSize{ 0 };
 
 	// "circular" image buffer management
 	uint64_t framesWritten{ 0 };
 	uint64_t framesRead{ 0 };
-
-	// high contrast dummy frames
-	uint8_t *black, *white;
 
 	// GL syncronization stuff
 	GLsync fillFences[numFrames];
