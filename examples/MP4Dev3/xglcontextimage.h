@@ -4,20 +4,13 @@
 #include "ExampleXGL.h"
 #include "xglpixelformat.h"
 
-static const int numPlanes = 3;
-static const int numFrames = 4;
-
-uint8_t* gPboBuffer;
-
 #define INDEX(x) ((x) % numFrames)
-
 
 // derive from XGLTexQuad a class. That allows us to overide it's Draw() call so
 // we can fiddle around with various asynchronous I/O transfer strategies.
 class XGLContextImage : public XGLTexQuad {
 public:
 	XGLContextImage(ExampleXGL* pxgl, int w, int h) :
-		pXgl(pxgl),
 		width(w), height(h),
 		XGLTexQuad()
 	{
@@ -34,20 +27,17 @@ public:
 
 		glfwSetErrorCallback(ErrorFunc);
 
-		// need 2nd OpenGL context, which GLFW creates with glfwCreateWindow()
-		// hint to GLFW that the window is not visible, and make it small to save memory
+		// Need 2nd OpenGL context, which GLFW creates with glfwCreateWindow().
+		// Hint to GLFW that the window is not visible, and make it small to save memory
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-		if ((mWindow = glfwCreateWindow(32, 32, "Offscreen", NULL, pXgl->window)) == nullptr)
+		if ((mWindow = glfwCreateWindow(32, 32, "Offscreen", NULL, pxgl->window)) == nullptr)
 			xprintf("Oops, glfwCreateWindow() failed\n");
 
 		// make new OpenGL context current so we can set it up.
 		glfwMakeContextCurrent(mWindow);
 
-		ySize = width*height*ppfd->depths[0];
-		uvSize = chromaWidth*chromaHeight*ppfd->depths[1];
-
 		// restore main OpenGL context.  (new context can't be bound in 2 threads at once)
-		glfwMakeContextCurrent(pXgl->window);
+		glfwMakeContextCurrent(pxgl->window);
 
 		// ensure a texture unit, 0th is safest
 		glActiveTexture(GL_TEXTURE0);
@@ -93,7 +83,7 @@ public:
 	}
 
 	void UploadToTexture(uint8_t* y, uint8_t* u, uint8_t* v) {
-		xprintf("%s(): y: %p, u: %p, v:%p\n", __FUNCTION__, y, u, v);
+		//xprintf("%s(): y: %p, u: %p, v:%p\n", __FUNCTION__, y, u, v);
 
 		int wIndex = INDEX(framesWritten);	// currently active frame for writing
 
@@ -164,17 +154,18 @@ public:
 
 	// alternate OpenGL context things
 	GLFWwindow* mWindow;
-	ExampleXGL* pXgl;
 
 	// image geometry luma & chroma
 	int width{ 0 }, height{ 0 };
 	int chromaWidth{ 0 }, chromaHeight{ 0 };
 	XGLPixelFormatDescriptor* ppfd{ nullptr };
-	int ySize{ 0 }, uvSize{ 0 };
 
 	// "circular" image buffer management
 	uint64_t framesWritten{ 0 };
 	uint64_t framesRead{ 0 };
+
+	static const int numPlanes{ 3 };
+	static const int numFrames{ 4 };
 
 	// GL syncronization stuff
 	GLsync fillFences[numFrames];

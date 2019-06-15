@@ -17,7 +17,6 @@
 #include "xav.h"
 #include "xglcontextimage.h"
 
-//static const int numFrames = 4;
 static const int vWidth = 1920;
 static const int vHeight = 1080;
 
@@ -123,8 +122,6 @@ public:
 		// figure out the chroma sub-sampling of the pixel format
 		AVPixelFormat pixelFormat = pCodecCtx->pix_fmt;
 		const AVPixFmtDescriptor *pixDesc = av_pix_fmt_desc_get(pixelFormat);
-
-		XGLPixelFormatDescriptor* xpfd = new XGLPixelFormatDescriptor(pixelFormat);
 
 		// save it so our clients can know
 		chromaWidth = pCodecCtx->width / (1 << pixDesc->log2_chroma_w);
@@ -262,7 +259,6 @@ public:
 	float currentPlayTime{ 0.0 };
 
 	std::mutex playMutex;
-	std::mutex displayMutex;
 
 	XGLContextImage* pci{ nullptr };
 	XTimer xtDecoder;
