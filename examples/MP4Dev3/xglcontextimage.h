@@ -12,7 +12,8 @@ class XGLContextImage : public XGLTexQuad {
 public:
 	XGLContextImage(ExampleXGL* pxgl, int w, int h) :
 		width(w), height(h),
-		XGLTexQuad()
+		XGLTexQuad(),
+		mMainContextWindow(pxgl->window)
 	{
 		// get pixel layout we expect from FFmpeg for GoPro footage
 		ppfd = new XGLPixelFormatDescriptor(AV_PIX_FMT_YUVJ420P);
@@ -30,14 +31,16 @@ public:
 		// Need 2nd OpenGL context, which GLFW creates with glfwCreateWindow().
 		// Hint to GLFW that the window is not visible, and make it small to save memory
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-		if ((mWindow = glfwCreateWindow(32, 32, "Offscreen", NULL, pxgl->window)) == nullptr)
+		if ((mWindow = glfwCreateWindow(32, 32, "Offscreen", NULL, mMainContextWindow)) == nullptr)
 			xprintf("Oops, glfwCreateWindow() failed\n");
 
-		// make new OpenGL context current so we can set it up.
-		glfwMakeContextCurrent(mWindow);
+		// Trying out: 3rd OpenGL context for accurate FPS throttling... it's a WAG right now.
+		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+		if ((mFpsWindow = glfwCreateWindow(32, 32, "Offscreen", NULL, mMainContextWindow)) == nullptr)
+			xprintf("Oops, glfwCreateWindow() failed\n");
 
 		// restore main OpenGL context.  (new context can't be bound in 2 threads at once)
-		glfwMakeContextCurrent(pxgl->window);
+		glfwMakeContextCurrent(mMainContextWindow);
 
 		// ensure a texture unit, 0th is safest
 		glActiveTexture(GL_TEXTURE0);
@@ -83,9 +86,9 @@ public:
 	}
 
 	void UploadToTexture(uint8_t* y, uint8_t* u, uint8_t* v) {
-		//xprintf("%s(): y: %p, u: %p, v:%p\n", __FUNCTION__, y, u, v);
+		//xprintf("%s(): %0.5f,  y: %p, u: %p, v:%p\n", __FUNCTION__, xtUpload.SinceLast(), y, u, v);
 
-		int wIndex = INDEX(framesWritten);	// currently active frame for writing
+		int wIndex = NextFree();	// currently active frame for writing
 
 		// make sure "renderFence" is actually valid before waiting for it w/200ms timeout.
 		if (renderFences[wIndex])
@@ -102,17 +105,18 @@ public:
 		GL_CHECK("glTexSubImage() failed");
 
 		// put a fence in so renedering context can know if we're done with this frame
-		fillFences[INDEX(framesWritten)] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+		fillFences[wIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 		GL_CHECK("glFenceSync() failed");
 
-		framesWritten++;
+		usedFrames.notify();
 	}
 
 	void Draw() {
-		if (framesWritten < numFrames)
+		static int prevIndex{ -1 };
+		if (framesWritten < 1)
 			return;
 
-		int rIndex = INDEX(framesRead++);		// currently active frame for reading
+		int rIndex = NextUsed();
 
 		// proper set up of texUnit via Uniform is necessary, for reasons.  (can't hard code in shader?)
 		// "yuv" shader expects Y,U,V in texture unit 0, 1 and 2 respectively.
@@ -144,6 +148,10 @@ public:
 		renderFences[rIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 		GL_CHECK("glFenceSync() failed");
 
+		if (rIndex != prevIndex) {
+			freeFrames.notify();
+		}
+
 		// rely on base class for actual render of texture quad
 		XGLTexQuad::Draw();
 	}
@@ -152,8 +160,27 @@ public:
 		xprintf("%s()\n", __FUNCTION__);
 	}
 
+	int NextFree() {
+		if (freeFrames.wait_for(100))
+			return INDEX(framesWritten++);
+		else
+			return INDEX(framesWritten);
+	}
+
+	int NextUsed() {
+		if (usedFrames.wait_for(1))
+			return INDEX(framesRead++);
+		else
+			return INDEX(framesRead);
+	}
+
+	static const int numPlanes{ 3 };
+	static const int numFrames{ 4 };
+
 	// alternate OpenGL context things
 	GLFWwindow* mWindow;
+	GLFWwindow* mFpsWindow;
+	GLFWwindow* mMainContextWindow;
 
 	// image geometry luma & chroma
 	int width{ 0 }, height{ 0 };
@@ -164,17 +191,20 @@ public:
 	uint64_t framesWritten{ 0 };
 	uint64_t framesRead{ 0 };
 
-	static const int numPlanes{ 3 };
-	static const int numFrames{ 4 };
+	XSemaphore usedFrames{ 0 };
+	XSemaphore freeFrames{ numFrames };
 
 	// GL syncronization stuff
 	GLsync fillFences[numFrames];
 	GLsync renderFences[numFrames];
+	GLsync fpsFence;
 
 	// texture management stuff
 	std::vector<GLuint> bgTexIds;
 	XGLBuffer::TextureAttributesList bgTexAttrs;
 	GLuint bgNumTextures{ 0 };
+
+	XTimer xtUpload;
 };
 
 
