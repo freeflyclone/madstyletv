@@ -303,7 +303,7 @@ void ExampleXGL::BuildScene() {
 		initHmd = false;
 	}
 	else {
-		preferredSwapInterval = 1;
+		preferredSwapInterval = 0;
 		preferredWidth = 1280;
 		preferredHeight = 720;
 	}
