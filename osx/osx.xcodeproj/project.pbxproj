@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5911DDCE22B6CF31004CB17F /* xphybody.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5911DDCD22B6CF31004CB17F /* xphybody.cpp */; };
 		5912EC5A1DB83DCB006837B9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3881D6B81D8006BCD52 /* main.m */; };
 		5912EC5B1DB83DCB006837B9 /* ExampleXGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 599FCC4A1D6645B300C57873 /* ExampleXGL.cpp */; };
 		5912EC5C1DB83DCB006837B9 /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5962D3841D6B80AB006BCD52 /* OpenGLView.mm */; };
@@ -138,6 +139,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5911DDC722B6C72E004CB17F /* xtimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xtimer.h; path = ../xclass/xtimer.h; sourceTree = "<group>"; };
+		5911DDCB22B6CF0E004CB17F /* xphybody.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xphybody.h; path = xphy/xphybody.h; sourceTree = "<group>"; };
+		5911DDCC22B6CF25004CB17F /* xphy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xphy.h; path = xphy/xphy.h; sourceTree = "<group>"; };
+		5911DDCD22B6CF31004CB17F /* xphybody.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xphybody.cpp; path = xphy/xphybody.cpp; sourceTree = "<group>"; };
+		5911DDCF22B6D23F004CB17F /* xglhmd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xglhmd.h; sourceTree = "<group>"; };
+		5911DDD022B6D25E004CB17F /* xglpixelbuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xglpixelbuffer.h; sourceTree = "<group>"; };
+		5911DDD122B6D25E004CB17F /* xglpixelformat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xglpixelformat.h; sourceTree = "<group>"; };
 		5912EC531DB83DC2006837B9 /* XAVTestBuildScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = XAVTestBuildScene.cpp; path = XAVTest/XAVTestBuildScene.cpp; sourceTree = "<group>"; };
 		5912EC691DB83DCB006837B9 /* XAVTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XAVTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5912EC6D1DB83EF6006837B9 /* xav.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xav.cpp; path = xav/xav.cpp; sourceTree = "<group>"; };
@@ -501,7 +509,6 @@
 		5919972E1D63F00D003F62FF /* xgllight.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xgllight.h; sourceTree = "<group>"; };
 		5919972F1D63F00D003F62FF /* xglmaterial.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = xglmaterial.cpp; sourceTree = "<group>"; };
 		591997301D63F00D003F62FF /* xglmaterial.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xglmaterial.h; sourceTree = "<group>"; };
-		591997321D63F00D003F62FF /* xglobject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xglobject.h; sourceTree = "<group>"; };
 		591997331D63F00D003F62FF /* xglprimitives.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xglprimitives.h; sourceTree = "<group>"; };
 		591997341D63F00D003F62FF /* xglprojector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = xglprojector.cpp; sourceTree = "<group>"; };
 		591997351D63F00D003F62FF /* xglprojector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xglprojector.h; sourceTree = "<group>"; };
@@ -631,6 +638,32 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5911DDC822B6CE63004CB17F /* xphy */ = {
+			isa = PBXGroup;
+			children = (
+				5911DDC922B6CEBD004CB17F /* Headers */,
+				5911DDCA22B6CEC9004CB17F /* Sources */,
+			);
+			name = xphy;
+			sourceTree = "<group>";
+		};
+		5911DDC922B6CEBD004CB17F /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				5911DDCC22B6CF25004CB17F /* xphy.h */,
+				5911DDCB22B6CF0E004CB17F /* xphybody.h */,
+			);
+			name = Headers;
+			sourceTree = "<group>";
+		};
+		5911DDCA22B6CEC9004CB17F /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				5911DDCD22B6CF31004CB17F /* xphybody.cpp */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
 		5912EC521DB83DA6006837B9 /* XAVTest */ = {
 			isa = PBXGroup;
 			children = (
@@ -658,6 +691,7 @@
 				599A91001DB7E37400EAD8C9 /* xal */,
 				5912EC6C1DB83E9B006837B9 /* xav */,
 				5919961D1D63F00D003F62FF /* xgl */,
+				5911DDC822B6CE63004CB17F /* xphy */,
 			);
 			name = xclass;
 			path = ../xclass;
@@ -1176,6 +1210,7 @@
 		597FDBA41E1A254000E449B0 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				5911DDC722B6C72E004CB17F /* xtimer.h */,
 				594FA8211DC6CCD60071DE06 /* socket.h */,
 				59DA3B8E1DB697E300767298 /* JSON.h */,
 				59DA3B901DB697E300767298 /* JSONValue.h */,
@@ -1224,9 +1259,11 @@
 				5919972C1D63F00D003F62FF /* xglfont.h */,
 				595642761DB6A166002A756F /* xglframebuffer.h */,
 				596F77A31E01FD9C0079D370 /* xglgui.h */,
+				5911DDCF22B6D23F004CB17F /* xglhmd.h */,
 				5919972E1D63F00D003F62FF /* xgllight.h */,
 				591997301D63F00D003F62FF /* xglmaterial.h */,
-				591997321D63F00D003F62FF /* xglobject.h */,
+				5911DDD022B6D25E004CB17F /* xglpixelbuffer.h */,
+				5911DDD122B6D25E004CB17F /* xglpixelformat.h */,
 				591997331D63F00D003F62FF /* xglprimitives.h */,
 				591997351D63F00D003F62FF /* xglprojector.h */,
 				591997371D63F00D003F62FF /* xglshader.h */,
@@ -1782,6 +1819,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5911DDCE22B6CF31004CB17F /* xphybody.cpp in Sources */,
 				596DEB901DDE7EC2001D604C /* ExampleGUI.cpp in Sources */,
 				5956427B1DB6A640002A756F /* Example01.cpp in Sources */,
 				5962D3891D6B81D8006BCD52 /* main.m in Sources */,
@@ -2053,7 +2091,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "$PROJECT_DIR/../xclass/3rdParty/freetype/include/freetype2/** $PROJECT_DIR/../xclass/3rdParty/NuclexTimer/Include $PROJECT_DIR/../xclass/3rdParty/mavlink/c_library_v1/ $PROJECT_DIR/../xclass/3rdParty/mosquitto/lib $PROJECT_DIR/../xclass/xgl $PROJECT_DIR/../xclass/3rdParty/OculusSDK/LibOVR/Include";
 			};
 			name = Debug;
 		};
@@ -2103,7 +2141,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "$PROJECT_DIR/../xclass/3rdParty/freetype/include/freetype2/** $PROJECT_DIR/../xclass/3rdParty/NuclexTimer/Include $PROJECT_DIR/../xclass/3rdParty/mavlink/c_library_v1/ $PROJECT_DIR/../xclass/3rdParty/mosquitto/lib $PROJECT_DIR/../xclass/xgl $PROJECT_DIR/../xclass/3rdParty/OculusSDK/LibOVR/Include";
 			};
 			name = Release;
 		};
@@ -2199,7 +2237,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.Example01;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "$PROJECT_DIR/../xclass/3rdParty/freetype/include/freetype2/** $PROJECT_DIR/../xclass/3rdParty/NuclexTimer/Include $PROJECT_DIR/../xclass/3rdParty/mavlink/c_library_v1/ $PROJECT_DIR/../xclass/3rdParty/mosquitto/lib $PROJECT_DIR/../xclass/xgl $PROJECT_DIR/../xclass/3rdParty/OculusSDK/LibOVR/Include";
 			};
 			name = Debug;
 		};
@@ -2259,7 +2297,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = tv.madstyle.Example01;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				"USER_HEADER_SEARCH_PATHS[arch=*]" = "../xclass/3rdParty/freetype/include/freetype2/**";
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "$PROJECT_DIR/../xclass/3rdParty/freetype/include/freetype2/** $PROJECT_DIR/../xclass/3rdParty/NuclexTimer/Include $PROJECT_DIR/../xclass/3rdParty/mavlink/c_library_v1/ $PROJECT_DIR/../xclass/3rdParty/mosquitto/lib $PROJECT_DIR/../xclass/xgl $PROJECT_DIR/../xclass/3rdParty/OculusSDK/LibOVR/Include";
 			};
 			name = Release;
 		};
