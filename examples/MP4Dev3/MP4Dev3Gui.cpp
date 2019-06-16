@@ -22,7 +22,7 @@ void ExampleXGL::BuildGUI() {
 	});
 
 	gm->AddChildShape("shaders/ortho", [&]() { gw = new XGLGuiWindow(this, "HorizontalSliderWindow", 20, 100, 360, 180); return gw; });
-	gw->AddChildShape("shaders/ortho", [&]() { return new XGLGuiSlider(this, "Horizontal Slider 1", XGLGuiSlider::Orientation::horizontal, 20, 20, 200, 16); });
+	gw->AddChildShape("shaders/ortho", [&]() { return new XGLGuiSlider(this, "Frames/Second", XGLGuiSlider::Orientation::horizontal, 20, 20, 200, 16); });
 	//gw->AddChildShape("shaders/ortho", [&]() { return new XGLGuiSlider(this, "Horizontal Slider 2", XGLGuiSlider::Orientation::horizontal, 20, 60, 200, 16); });
 	//gw->AddChildShape("shaders/ortho", [&]() { return new XGLGuiSlider(this, "Horizontal Slider 3", XGLGuiSlider::Orientation::horizontal, 20, 100, 200, 16); });
 	//gw->AddChildShape("shaders/ortho", [&]() { return new XGLGuiSlider(this, "Horizontal Slider 4", XGLGuiSlider::Orientation::horizontal, 20, 140, 200, 16); });

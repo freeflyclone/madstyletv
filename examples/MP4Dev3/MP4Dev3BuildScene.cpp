@@ -400,5 +400,18 @@ void ExampleXGL::BuildScene() {
 		slider->AddMouseEventListener(mel);
 	}
 
+	XGLGuiSlider *fpsSlider = (XGLGuiSlider *)(gm->FindObject("Frames/Second"));
+	if (fpsSlider != nullptr) {
+		XGLGuiCanvas::MouseEventListener mel = [fpsSlider](float x, float y, int flags) {
+			if (fpsSlider->HasMouse()) {
+				XGLGuiCanvas *thumb = (XGLGuiCanvas *)fpsSlider->Children()[1];
+				float percent = fpsSlider->Position() * 400.0f + 1;
+				pPlayer->SetStepFrequency((int)percent);
+			}
+		};
+
+		fpsSlider->AddMouseEventListener(mel);
+	}
+
 	pPlayer->StartPlaying();
 }
