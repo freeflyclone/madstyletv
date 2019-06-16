@@ -44,6 +44,7 @@ public:
 
 		// ensure a texture unit, 0th is safest
 		glActiveTexture(GL_TEXTURE0);
+
 		// get a texture buffer for each of "numFrames" * "numPlanes"
 		GLuint texId[numFrames*numPlanes];
 		glGenTextures(numFrames*numPlanes, texId);
@@ -76,7 +77,7 @@ public:
 			renderFences[i] = 0;
 		}
 
-		SetStepFrequency(60);
+		SetStepFrequency(120);
 	}
 
 	static void ErrorFunc(int code, const char *str) {
