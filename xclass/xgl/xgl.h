@@ -33,6 +33,7 @@
 		#pragma comment(lib,"legacy_stdio_definitions")
 	#endif
 #elif _APPLE_
+    #include "glew.h"
 	#include <OpenGL/gl3.h>
 	#define __gl_h_
 	#include <GLUT/glut.h>
