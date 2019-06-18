@@ -266,10 +266,7 @@ public:
 
 class XAVPlayer : public XGLContextImage {
 public:
-	XAVPlayer(ExampleXGL *pxgl, std::string url) : dmx(url, this), XGLContextImage(pxgl, vWidth, vHeight) {
-		AddTexture(vWidth, vHeight, 1);
-		AddTexture(vWidth, vHeight, 1);
-	}
+	XAVPlayer(ExampleXGL *pxgl, std::string url) : dmx(url, this), XGLContextImage(pxgl, vWidth, vHeight) {}
 
 	~XAVPlayer() {
 		dmx.WaitForStop();
@@ -289,7 +286,7 @@ public:
 	XAVDemux dmx;
 };
 
-XAVPlayer *pPlayer, *pPlayer2;
+XAVPlayer *pPlayer, *pPlayer2, *pPlayer3;
 bool step;
 
 extern bool initHmd;
@@ -315,9 +312,9 @@ void ExampleXGL::BuildScene() {
 
 	std::string videoUrl = config.WideToBytes(config.Find(L"VideoFile")->AsString());
 	std::string video2Url = config.WideToBytes(config.Find(L"VideoFile2")->AsString());
+	std::string video3Url = config.WideToBytes(config.Find(L"VideoFile3")->AsString());
 
-	std::string videoPath;
-	std::string video2Path;
+	std::string videoPath, video2Path, video3Path;
 
 	if (videoUrl.find("http") != videoUrl.npos)
 		videoPath = videoUrl;
@@ -333,17 +330,26 @@ void ExampleXGL::BuildScene() {
 	else
 		video2Path = pathToAssets + "/" + video2Url;
 
+	if (video3Url.find("http") != video3Url.npos)
+		video3Path = video3Url;
+	else if (video3Url.find(":", 1) != video3Url.npos)
+		video3Path = video3Url;
+	else
+		video3Path = pathToAssets + "/" + video2Url;
+
 	AddShape("shaders/yuv", [&](){ pPlayer = new XAVPlayer(this, videoPath); return pPlayer; });
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(16.0f, 9.0f, 1.0f));
-	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(-16.0f, 0.0f, 9.0f));
+	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 9.0f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	pPlayer->model = translate * rotate *scale;
 
-	AddShape("shaders/yuv", [&](){ pPlayer2 = new XAVPlayer(this, video2Path); return pPlayer2; });
-	scale = glm::scale(glm::mat4(), glm::vec3(16.0f, 9.0f, 1.0f));
-	translate = glm::translate(glm::mat4(), glm::vec3(16.0f, 0.0f, 9.0f));
-	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	pPlayer2->model = translate * rotate *scale;
+	//AddShape("shaders/yuv", [&](){ pPlayer2 = new XAVPlayer(this, video2Path); return pPlayer2; });
+	//translate = glm::translate(glm::mat4(), glm::vec3(16.0f, 0.0f, 9.0f));
+	//pPlayer2->model = translate * rotate *scale;
+
+	//AddShape("shaders/yuv", [&](){ pPlayer3 = new XAVPlayer(this, video3Path); return pPlayer3; });
+	//translate = glm::translate(glm::mat4(), glm::vec3(-16.0f, 0.0f, 27.0f));
+	//pPlayer3->model = translate * rotate *scale;
 
 	XInputKeyFunc seekPercentFunc = [&](int key, int flags) {
 		const bool isDown = (flags & 0x8000) == 0;
@@ -428,5 +434,6 @@ void ExampleXGL::BuildScene() {
 	}
 
 	pPlayer->StartPlaying();
-	pPlayer2->StartPlaying();
+	//pPlayer2->StartPlaying();
+	//pPlayer3->StartPlaying();
 }

@@ -3,9 +3,11 @@
 	"ShaderFolder" : "shaders",
 	"SharedMemory" : false,
 	"SvgFile" : "assets/triangle.svg",
-	"VideoFile1" : "F:/videos/evan/evan-dv.01-03-11_16-09.00.avi",
+	"VideoFile4" : "F:/videos/evan/evan-dv.01-03-11_16-09.00.avi",
 	"VideoFile" : "H:/Hero6/GH010150.mp4",
+	"VideoFile1" : "H:/Hero6/GH010150.mp4",
 	"VideoFile2" : "H:/Hero6/GH010141.mp4",
+	"VideoFile3" : "H:/Hero6/GH010149.mp4",
 	"FreeTypeText" : "e-man.tv",
 	"Encoder" : {
 		"enabled" : false,
