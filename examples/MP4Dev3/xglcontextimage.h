@@ -8,7 +8,7 @@
 
 // derive from XGLTexQuad a class. That allows us to overide it's Draw() call so
 // we can fiddle around with various asynchronous I/O transfer strategies.
-class XGLContextImage : public XGLTexQuad, public SteppedTimer {
+class XGLContextImage : public XGLTexQuad {
 public:
 	XGLContextImage(ExampleXGL* pxgl, int w, int h) :
 		width(w), height(h),
@@ -76,8 +76,6 @@ public:
 			fillFences[i] = 0;
 			renderFences[i] = 0;
 		}
-
-		SetStepFrequency(120);
 	}
 
 	static void ErrorFunc(int code, const char *str) {
@@ -153,12 +151,6 @@ public:
 
 		if (rIndex != prevIndex) {
 			freeFrames.notify();
-		}
-
-		{
-			GameTime gameTime;
-			while (!TryAdvance(gameTime))
-				std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
 		}
 
 		// rely on base class for actual render of texture quad

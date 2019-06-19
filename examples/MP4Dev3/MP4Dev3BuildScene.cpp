@@ -40,7 +40,7 @@ public:
 	std::mutex mutex;
 };
 
-class XAVDemux : public XThread {
+class XAVDemux : public XThread, public SteppedTimer {
 public:
 	XAVDemux(std::string fn, XGLContextImage* p) : fileName(fn), pci(p), XThread("XAVDemux") {
 		av_register_all();
@@ -85,7 +85,7 @@ public:
 			if (pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
 				vStreamIdx = i;
 				vStream = pFormatCtx->streams[i];
-				float frameRate = (float)vStream->r_frame_rate.num / (float)vStream->r_frame_rate.den;
+				frameRate = (float)vStream->r_frame_rate.num / (float)vStream->r_frame_rate.den;
 				float duration = (float)vStream->duration / frameRate;
 				xprintf("frameRate: %0.4f, %0.4f\n", frameRate, duration);
 			}
@@ -93,6 +93,8 @@ public:
 				aStreamIdx = i;
 			}
 		}
+
+		SetStepFrequency((size_t)frameRate);
 
 		if (vStreamIdx == -1)
 			throwXAVException("No video stream found in " + fileName);
@@ -163,8 +165,15 @@ public:
 
 						avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
 
-						if (frameFinished)
+						if (frameFinished) {
 							pci->UploadToTexture(pFrame->data[0], pFrame->data[1], pFrame->data[2]);
+
+							if ((true)) {
+								GameTime gameTime;
+								while (!TryAdvance(gameTime))
+									std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
+							}
+						}
 					}
 					av_free_packet(&packet);
 				}
@@ -262,6 +271,7 @@ public:
 
 	XGLContextImage* pci{ nullptr };
 	XTimer xtDecoder;
+	float frameRate;
 };
 
 class XAVPlayer : public XGLContextImage {
@@ -426,7 +436,7 @@ void ExampleXGL::BuildScene() {
 			if (fpsSlider->HasMouse()) {
 				XGLGuiCanvas *thumb = (XGLGuiCanvas *)fpsSlider->Children()[1];
 				float percent = fpsSlider->Position() * 400.0f + 1;
-				pPlayer->SetStepFrequency((int)percent);
+				pPlayer->dmx.SetStepFrequency((int)percent);
 			}
 		};
 
