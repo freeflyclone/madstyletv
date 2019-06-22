@@ -40,7 +40,7 @@ public:
 	std::mutex mutex;
 };
 
-class XAVDemux : public XThread, public SteppedTimer {
+class XAVDemux : public XThread {
 public:
 	XAVDemux(std::string fn, XGLContextImage* p) : fileName(fn), pci(p), XThread("XAVDemux") {
 		av_register_all();
@@ -94,10 +94,10 @@ public:
 			}
 		}
 
-		SetStepFrequency((size_t)frameRate);
-
 		if (vStreamIdx == -1)
 			throwXAVException("No video stream found in " + fileName);
+
+		pci->SetStepFrequency((int)frameRate);
 
 		// get AVCodecContext for video stream
 		pCodecCtx = pFormatCtx->streams[vStreamIdx]->codec;
@@ -167,12 +167,6 @@ public:
 
 						if (frameFinished) {
 							pci->UploadToTexture(pFrame->data[0], pFrame->data[1], pFrame->data[2]);
-
-							if ((true)) {
-								GameTime gameTime;
-								while (!TryAdvance(gameTime))
-									std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
-							}
 						}
 					}
 					av_free_packet(&packet);
@@ -224,10 +218,12 @@ public:
 			ended = false;
 		}
 		playing = true;
+		pci->Start();
 	}
 
 	void StopPlaying() {
 		xprintf("%s()\n", __FUNCTION__);
+		pci->Stop();
 		playing = false;
 	}
 
@@ -436,7 +432,7 @@ void ExampleXGL::BuildScene() {
 			if (fpsSlider->HasMouse()) {
 				XGLGuiCanvas *thumb = (XGLGuiCanvas *)fpsSlider->Children()[1];
 				float percent = fpsSlider->Position() * 400.0f + 1;
-				pPlayer->dmx.SetStepFrequency((int)percent);
+				pPlayer->SetStepFrequency((int)percent);
 			}
 		};
 

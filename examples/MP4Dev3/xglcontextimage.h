@@ -8,12 +8,13 @@
 
 // derive from XGLTexQuad a class. That allows us to overide it's Draw() call so
 // we can fiddle around with various asynchronous I/O transfer strategies.
-class XGLContextImage : public XGLTexQuad {
+class XGLContextImage : public XGLTexQuad , public XThread, public SteppedTimer {
 public:
 	XGLContextImage(ExampleXGL* pxgl, int w, int h) :
 		width(w), height(h),
 		XGLTexQuad(),
-		mMainContextWindow(pxgl->window)
+		mMainContextWindow(pxgl->window),
+		XThread("XGLContextFpsThread")
 	{
 		// get pixel layout we expect from FFmpeg for GoPro footage
 		ppfd = new XGLPixelFormatDescriptor(AV_PIX_FMT_YUVJ420P);
@@ -78,6 +79,15 @@ public:
 		}
 	}
 
+	void Run() {
+		while (IsRunning()) {
+			GameTime gameTime;
+			while (!TryAdvance(gameTime))
+				std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
+			freeFrames.notify();
+		}
+	}
+
 	static void ErrorFunc(int code, const char *str) {
 		xprintf("%s(): %d - %s\n", __FUNCTION__, code, str);
 	}
@@ -113,10 +123,15 @@ public:
 	}
 
 	void Draw() {
-		static int prevIndex{ -1 };
-		if (framesWritten < 2)
+		// wait until decoder has actually emitted it's 1st frame
+		if (framesWritten < 1)
 			return;
 
+		// coded to return the MRU index, for multiple frames if need be.
+		// So if preferredSwapInterval is set to 0, OpenGL goes full throttle,
+		// vastly exceeding the monitors ability to keep sync.  But... if you're
+		// desktop windowing system has a compositor, and these days most do, then
+		// full throttle OpenGL doesn't tear. It aint' pretty, but it works.
 		int rIndex = NextUsed();
 
 		// proper set up of texUnit via Uniform is necessary, for reasons.  (can't hard code in shader?)
@@ -149,10 +164,6 @@ public:
 		renderFences[rIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 		GL_CHECK("glFenceSync() failed");
 
-		if (rIndex != prevIndex) {
-			freeFrames.notify();
-		}
-
 		// rely on base class for actual render of texture quad
 		XGLTexQuad::Draw();
 	}
@@ -162,21 +173,25 @@ public:
 	}
 
 	int NextFree() {
-		if (freeFrames.wait_for(100))
-			return INDEX(framesWritten++);
-		else
+		if(!freeFrames.wait_for(100))
 			return INDEX(framesWritten);
+		return INDEX(framesWritten++);
 	}
 
 	int NextUsed() {
-		if (usedFrames.wait_for(1))
-			return INDEX(framesRead++);
-		else
+		if (!usedFrames.wait_for(1))
 			return INDEX(framesRead);
+
+		// leave at least on frame as "cushion" otherwise we end up waiting on the decoder
+		// instead of the fps timer.
+		if (framesWritten-framesRead <= 1)
+			return INDEX(framesRead);
+
+		return INDEX(framesRead++);
 	}
 
 	static const int numPlanes{ 3 };
-	static const int numFrames{ 4 };
+	static const int numFrames{ 2 };
 
 	// alternate OpenGL context things
 	GLFWwindow* mWindow;
