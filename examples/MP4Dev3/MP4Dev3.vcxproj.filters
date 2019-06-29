@@ -47,6 +47,12 @@
     <None Include="..\..\shaders\specular.vert">
       <Filter>shaders</Filter>
     </None>
+    <None Include="..\..\shaders\ortho.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\ortho.vert">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="xglcontextimage.h">

@@ -231,6 +231,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MP4Dev2", "examples\MP4Dev2\MP4Dev2.vcxproj", "{EE4E8F2A-E619-407B-8F8C-7C88BFF927F4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MP4Dev3", "examples\MP4Dev3\MP4Dev3.vcxproj", "{A637624F-7180-4F55-903C-F810B29ED59F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AC4080D2-1C42-4812-943D-79CA13A1D86C} = {AC4080D2-1C42-4812-943D-79CA13A1D86C}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -170,6 +170,8 @@ public:
 
 	~XGLContextImage() {
 		xprintf("%s()\n", __FUNCTION__);
+		if (IsRunning())
+			WaitForStop();
 	}
 
 	int NextFree() {

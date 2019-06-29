@@ -178,6 +178,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\config.json" />
+    <None Include="..\..\shaders\ortho.frag" />
+    <None Include="..\..\shaders\ortho.vert" />
     <None Include="..\..\shaders\specular.frag" />
     <None Include="..\..\shaders\specular.vert" />
     <None Include="..\..\shaders\yuv.frag" />
