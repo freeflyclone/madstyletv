@@ -82,9 +82,16 @@ public:
 	void Run() {
 		while (IsRunning()) {
 			GameTime gameTime;
-			while (!TryAdvance(gameTime))
+			while (!TryAdvance(gameTime)) {
 				std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
-			freeFrames.notify();
+				// Break out of loop if somebody stopped this thread (destructor will do that)
+				if (!IsRunning())
+					break;
+			}
+
+			// if still running free another frame.
+			if (IsRunning())
+				freeFrames.notify();
 		}
 	}
 

@@ -426,13 +426,27 @@ void ExampleXGL::BuildScene() {
 		slider->AddMouseEventListener(mel);
 	}
 
+	XGLGuiLabel *fpsValue = (XGLGuiLabel*)(gm->FindObject("FPSValue"));
+	if (fpsValue == nullptr) {
+		xprintf("Didn't find FPSValue\n");
+	}
+
 	XGLGuiSlider *fpsSlider = (XGLGuiSlider *)(gm->FindObject("Frames/Second"));
 	if (fpsSlider != nullptr) {
-		XGLGuiCanvas::MouseEventListener mel = [fpsSlider](float x, float y, int flags) {
+		XGLGuiCanvas::MouseEventListener mel = [fpsSlider,fpsValue](float x, float y, int flags) {
+			float percent;
+
 			if (fpsSlider->HasMouse()) {
 				XGLGuiCanvas *thumb = (XGLGuiCanvas *)fpsSlider->Children()[1];
-				float percent = fpsSlider->Position() * 400.0f + 1;
+				percent = fpsSlider->Position() * 399.0f + 1;
 				pPlayer->SetStepFrequency((int)percent);
+
+				if (fpsValue != nullptr) {
+					char tmp[32];
+					sprintf(tmp, "%0.4f", percent);
+					fpsValue->ClearText();
+					fpsValue->SetText(std::string(tmp));
+				}
 			}
 		};
 

@@ -120,6 +120,9 @@ class XGLGuiLabel : public XGLGuiCanvas {
 public:
 	XGLGuiLabel(XGL *xgl, std::string name, int x, int y);
 
+	void SetText(std::string t);
+	void ClearText();
+
 private:
 	XGLGuiCanvas *label;
 };
