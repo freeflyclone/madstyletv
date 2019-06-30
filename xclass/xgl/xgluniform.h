@@ -12,7 +12,7 @@
 
 class XGLUniformf {
 public:
-    XGLUniformf(GLint p, std::string n, glm::vec3 v);
+    XGLUniformf(GLint p, std::string n, glm::vec3& v);
     
     std::string name;
     GLint location;
