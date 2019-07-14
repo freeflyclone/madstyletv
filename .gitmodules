@@ -10,3 +10,6 @@
 [submodule "xclass/3rdParty/mosquitto"]
 	path = xclass/3rdParty/mosquitto
 	url = https://github.com/eclipse/mosquitto.git
+[submodule "xclass/3rdParty/glfw"]
+	path = xclass/3rdParty/glfw
+	url = https://github.com/freeflyclone/glfw
