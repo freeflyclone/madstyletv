@@ -8,3 +8,7 @@ examples/*/Release
 examples/*/Debug
 examples/*/x64
 bin/*.exe
+/.vs
+/x64
+
+
