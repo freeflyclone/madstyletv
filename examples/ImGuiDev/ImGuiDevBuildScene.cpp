@@ -23,8 +23,6 @@ public:
 
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		pImGuiIO = &io;
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
 
 		ImGui::StyleColorsDark();
 
@@ -41,21 +39,18 @@ public:
 		ImGui::NewFrame();
 
 		if (show_demo_window)
-			ImGui::ShowDemoWindow(&show_demo_window);
+		    ImGui::ShowDemoWindow(&show_demo_window);
+
+		{
+			static float v_rad{ 0.0f };
+
+			ImGui::Begin("MadStyle TV");
+			ImGui::SliderAngle("AngleSlider",&v_rad);
+			ImGui::End();
+		}
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-		// Update and Render additional Platform Windows
-		// (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
-		//  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
-		if (pImGuiIO->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-		{
-			GLFWwindow* backup_current_context = glfwGetCurrentContext();
-			ImGui::UpdatePlatformWindows();
-			ImGui::RenderPlatformWindowsDefault();
-			glfwMakeContextCurrent(backup_current_context);
-		}
 	}
 
 private:
