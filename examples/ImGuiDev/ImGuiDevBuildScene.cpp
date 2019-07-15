@@ -67,8 +67,8 @@ private:
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 	XGLImGui *pImGui;
+	XGLGuiManager* gm = GetGuiManager();;
 
-	AddShape("shaders/zzz", [&](){ pImGui = new XGLImGui(this); return pImGui; });
 
-	AddShape("shaders/000-simple", [&](){ shape = new XGLTriangle(); return shape; });
+	gm->AddChildShape("shaders/zzz", [&](){ pImGui = new XGLImGui(this); return pImGui; });
 }
