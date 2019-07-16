@@ -167,21 +167,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\xclass\3rdParty\imgui\examples\imgui_impl_glfw.cpp" />
-    <ClCompile Include="..\..\xclass\3rdParty\imgui\examples\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="..\..\xclass\3rdParty\imgui\imgui.cpp" />
-    <ClCompile Include="..\..\xclass\3rdParty\imgui\imgui_demo.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\xclass\3rdParty\imgui\imgui_draw.cpp" />
-    <ClCompile Include="..\..\xclass\3rdParty\imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\imgui_main.cpp" />
     <ClCompile Include="..\common\imgui_menu_bar.cpp" />

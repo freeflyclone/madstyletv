@@ -274,6 +274,21 @@
     <ClInclude Include="xutils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="3rdParty\imgui\examples\imgui_impl_glfw.cpp" />
+    <ClCompile Include="3rdParty\imgui\examples\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="3rdParty\imgui\imgui.cpp" />
+    <ClCompile Include="3rdParty\imgui\imgui_demo.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="3rdParty\imgui\imgui_draw.cpp" />
+    <ClCompile Include="3rdParty\imgui\imgui_widgets.cpp" />
     <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\Clock.cpp" />
     <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\GameTime.cpp" />
     <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\ManualClock.cpp" />

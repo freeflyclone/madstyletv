@@ -19,7 +19,7 @@ void main(void)
 	else
 		tc.a = 1.0;
 
-	tc.a *= smoothstep(0.2, 0.8, mask);
+	tc.a = smoothstep(0.499, 0.501, mask);
 
     out_Color = tc * ex_Color;
 }

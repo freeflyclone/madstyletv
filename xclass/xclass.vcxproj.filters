@@ -67,6 +67,9 @@
     <Filter Include="NuclexTimer\Header Files">
       <UniqueIdentifier>{e5839538-6589-4764-9350-4478dc8df7fd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="xgl\Source Files\imgui">
+      <UniqueIdentifier>{35ecff48-dde1-4285-9540-3597cbd52a61}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -397,6 +400,24 @@
     </ClCompile>
     <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\WindowsClock.cpp">
       <Filter>NuclexTimer\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\imgui\examples\imgui_impl_glfw.cpp">
+      <Filter>xgl\Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\imgui\examples\imgui_impl_opengl3.cpp">
+      <Filter>xgl\Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\imgui\imgui.cpp">
+      <Filter>xgl\Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\imgui\imgui_demo.cpp">
+      <Filter>xgl\Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\imgui\imgui_draw.cpp">
+      <Filter>xgl\Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\imgui\imgui_widgets.cpp">
+      <Filter>xgl\Source Files\imgui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
