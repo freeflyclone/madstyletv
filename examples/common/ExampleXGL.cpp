@@ -23,7 +23,7 @@ void ExampleXGL::Initialize(GLFWwindow *w) {
 
 	window = w;
 
-	// add 2D shapes to the guiShapes list.
+	// Build a 2D UI per application.  Multiple UI frameworks are available.
 	BuildGUI();
 
 	// Initialize the Camera matrix
@@ -78,11 +78,26 @@ void ExampleXGL::Initialize(GLFWwindow *w) {
 	});
 
 	// add mouse event handling (XInput class) function mapping
+	//
+	// As of 7/15/19: I'm introducing Dear ImGUI library, figuring out
+	// how to integrate it optimally, therefore this is experimental.
 	AddMouseFunc([this](int x, int y, int flags){
-		if (GuiIsActive())
-			GuiResolveMouseEvent(GetGuiManager(), x, y, flags);
-		else
+		if (!GuiIsActive()) {
 			mt.Event(x, y, flags);
+		}
+		else {
+			// XGLGuiManager is my old-school way of GUI stuff
+			XGLGuiManager *gm = GetGuiManager();
+			// if app choses to use XGLGuiManager
+			if (gm)
+				GuiResolveMouseEvent(gm, x, y, flags);
+			// renderGuiFn is expected to dispatch to ImGui renderer
+			else if (renderGuiFn)
+				renderGuiFn(this);
+			// if neither are available, pretend GUI presentation isn't on.
+			else
+				mt.Event(x, y, flags);
+		}
 	});
 
 	// add key event handling (XInput class) function mapping
@@ -145,7 +160,7 @@ void ExampleXGL::Reshape(int w, int h) {
 		height = (h<=0)?1:h;
 
 		projector.Reshape(width, height);
-		Display();
+		//Display();
 	}
 	catch (std::runtime_error e){
 		xprintf("Well that didn't work: %s\n", e.what());

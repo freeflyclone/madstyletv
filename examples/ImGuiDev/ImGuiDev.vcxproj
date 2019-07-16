@@ -183,9 +183,10 @@
     <ClCompile Include="..\..\xclass\3rdParty\imgui\imgui_draw.cpp" />
     <ClCompile Include="..\..\xclass\3rdParty\imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
-    <ClCompile Include="..\common\main.cpp" />
     <ClCompile Include="ImGuiDevBuildScene.cpp" />
     <ClCompile Include="ImGuiDevGUI.cpp" />
+    <ClCompile Include="imgui_main.cpp" />
+    <ClCompile Include="imgui_menu_bar.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
