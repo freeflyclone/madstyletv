@@ -70,6 +70,9 @@
     <Filter Include="xgl\Source Files\imgui">
       <UniqueIdentifier>{35ecff48-dde1-4285-9540-3597cbd52a61}</UniqueIdentifier>
     </Filter>
+    <Filter Include="xgl\Header Files\imgui">
+      <UniqueIdentifier>{e603856f-ff10-483c-be89-ecd548756287}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -260,6 +263,69 @@
     </ClInclude>
     <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\WindowsClock.h">
       <Filter>NuclexTimer\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\imconfig.h">
+      <Filter>xgl\Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\imgui.h">
+      <Filter>xgl\Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\imgui_internal.h">
+      <Filter>xgl\Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\imstb_rectpack.h">
+      <Filter>xgl\Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\imstb_textedit.h">
+      <Filter>xgl\Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\imstb_truetype.h">
+      <Filter>xgl\Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\examples\imgui_impl_allegro5.h">
+      <Filter>xgl\Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\examples\imgui_impl_dx9.h">
+      <Filter>xgl\Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\examples\imgui_impl_dx10.h">
+      <Filter>xgl\Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\examples\imgui_impl_dx11.h">
+      <Filter>xgl\Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\examples\imgui_impl_dx12.h">
+      <Filter>xgl\Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\examples\imgui_impl_glfw.h">
+      <Filter>xgl\Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\examples\imgui_impl_glut.h">
+      <Filter>xgl\Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\examples\imgui_impl_marmalade.h">
+      <Filter>xgl\Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\examples\imgui_impl_metal.h">
+      <Filter>xgl\Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\examples\imgui_impl_opengl2.h">
+      <Filter>xgl\Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\examples\imgui_impl_opengl3.h">
+      <Filter>xgl\Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\examples\imgui_impl_osx.h">
+      <Filter>xgl\Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\examples\imgui_impl_sdl.h">
+      <Filter>xgl\Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\examples\imgui_impl_vulkan.h">
+      <Filter>xgl\Header Files\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\examples\imgui_impl_win32.h">
+      <Filter>xgl\Header Files\imgui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
