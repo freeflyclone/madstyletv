@@ -50,8 +50,10 @@ void main() {
 	vel += attract(pos, attractor3.xyz) * attractor3.w;
 	vel += attract(pos, attractor4.xyz) * attractor4.w;
 
+	float speed = length(vel);
 	pos += vel;
 
 	verts[idx].pos = vec4(pos, 1.0);
 	verts[idx].vel = vec4(vel, 1.0);
+	verts[idx].color.a = speed;
 }

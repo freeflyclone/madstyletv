@@ -17,5 +17,5 @@ out vec4 ex_Color;
 void main(void)
 {
     gl_Position = projector * view * model * in_Position;
-    ex_Color = in_Color;
+    ex_Color = vec4(1,0,0,1);
 }
