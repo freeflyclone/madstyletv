@@ -23,7 +23,7 @@ void ExampleXGL::Initialize(GLFWwindow *w) {
 
 	window = w;
 
-	// add 2D shapes to the guiShapes list.
+	// Build a 2D UI per application.  Multiple UI frameworks are available.
 	BuildGUI();
 
 	// Initialize the Camera matrix
@@ -79,10 +79,14 @@ void ExampleXGL::Initialize(GLFWwindow *w) {
 
 	// add mouse event handling (XInput class) function mapping
 	AddMouseFunc([this](int x, int y, int flags){
-		if (GuiIsActive())
-			GuiResolveMouseEvent(GetGuiManager(), x, y, flags);
-		else
+		if (GuiIsActive()) {
+			XGLGuiManager *gm = GetGuiManager();
+			if (gm)
+				GuiResolveMouseEvent(gm, x, y, flags);
+		} 
+		else {
 			mt.Event(x, y, flags);
+		}
 	});
 
 	// add key event handling (XInput class) function mapping
@@ -145,7 +149,7 @@ void ExampleXGL::Reshape(int w, int h) {
 		height = (h<=0)?1:h;
 
 		projector.Reshape(width, height);
-		Display();
+		//Display();
 	}
 	catch (std::runtime_error e){
 		xprintf("Well that didn't work: %s\n", e.what());

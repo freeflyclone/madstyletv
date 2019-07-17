@@ -46,10 +46,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenCVWebcam", "examples\Op
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{1A5C1CC4-9FE3-496C-9856-D269B05C278E}"
-	ProjectSection(SolutionItems) = preProject
-		examples\common\ExampleXGL.h = examples\common\ExampleXGL.h
-		examples\common\InputTrackers.h = examples\common\InputTrackers.h
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ThreadsTest", "examples\ThreadsTest\ThreadsTest.vcxproj", "{536373B5-E6CC-47A9-8F52-00C34683D2A9}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -236,8 +232,26 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MP4Dev2", "examples\MP4Dev2\MP4Dev2.vcxproj", "{EE4E8F2A-E619-407B-8F8C-7C88BFF927F4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MP4Dev3", "examples\MP4Dev3\MP4Dev3.vcxproj", "{A637624F-7180-4F55-903C-F810B29ED59F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImGuiDev", "examples\ImGuiDev\ImGuiDev.vcxproj", "{C5721200-CCD8-4958-9C8A-4EA1F99EF10C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{AC4080D2-1C42-4812-943D-79CA13A1D86C} = {AC4080D2-1C42-4812-943D-79CA13A1D86C}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Header Files", "Header Files", "{DCE87CD9-B13B-4D53-B81F-67DC2E5BE5FD}"
+	ProjectSection(SolutionItems) = preProject
+		examples\common\ExampleXGL.h = examples\common\ExampleXGL.h
+		examples\common\InputTrackers.h = examples\common\InputTrackers.h
+		examples\common\WinMain.h = examples\common\WinMain.h
+		examples\common\xglcontextimage.h = examples\common\xglcontextimage.h
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source Files", "Source Files", "{7F74C7DF-1E26-448B-9952-31463567B8A3}"
+	ProjectSection(SolutionItems) = preProject
+		examples\common\ExampleGUI.cpp = examples\common\ExampleGUI.cpp
+		examples\common\ExampleXGL.cpp = examples\common\ExampleXGL.cpp
+		examples\common\main.cpp = examples\common\main.cpp
+		examples\common\WinMain.cpp = examples\common\WinMain.cpp
 	EndProjectSection
 EndProject
 Global
@@ -764,6 +778,18 @@ Global
 		{A637624F-7180-4F55-903C-F810B29ED59F}.Release|Win32.Build.0 = Release|Win32
 		{A637624F-7180-4F55-903C-F810B29ED59F}.Release|x64.ActiveCfg = Release|x64
 		{A637624F-7180-4F55-903C-F810B29ED59F}.Release|x64.Build.0 = Release|x64
+		{C5721200-CCD8-4958-9C8A-4EA1F99EF10C}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{C5721200-CCD8-4958-9C8A-4EA1F99EF10C}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{C5721200-CCD8-4958-9C8A-4EA1F99EF10C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C5721200-CCD8-4958-9C8A-4EA1F99EF10C}.Debug|Win32.Build.0 = Debug|Win32
+		{C5721200-CCD8-4958-9C8A-4EA1F99EF10C}.Debug|x64.ActiveCfg = Debug|x64
+		{C5721200-CCD8-4958-9C8A-4EA1F99EF10C}.Debug|x64.Build.0 = Debug|x64
+		{C5721200-CCD8-4958-9C8A-4EA1F99EF10C}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{C5721200-CCD8-4958-9C8A-4EA1F99EF10C}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{C5721200-CCD8-4958-9C8A-4EA1F99EF10C}.Release|Win32.ActiveCfg = Release|Win32
+		{C5721200-CCD8-4958-9C8A-4EA1F99EF10C}.Release|Win32.Build.0 = Release|Win32
+		{C5721200-CCD8-4958-9C8A-4EA1F99EF10C}.Release|x64.ActiveCfg = Release|x64
+		{C5721200-CCD8-4958-9C8A-4EA1F99EF10C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -813,5 +839,8 @@ Global
 		{04FC97F6-67AF-437A-8552-5FBE62B439E7} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 		{EE4E8F2A-E619-407B-8F8C-7C88BFF927F4} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 		{A637624F-7180-4F55-903C-F810B29ED59F} = {24EAE59C-1779-4D00-8819-415B4A41868E}
+		{C5721200-CCD8-4958-9C8A-4EA1F99EF10C} = {24EAE59C-1779-4D00-8819-415B4A41868E}
+		{DCE87CD9-B13B-4D53-B81F-67DC2E5BE5FD} = {1A5C1CC4-9FE3-496C-9856-D269B05C278E}
+		{7F74C7DF-1E26-448B-9952-31463567B8A3} = {1A5C1CC4-9FE3-496C-9856-D269B05C278E}
 	EndGlobalSection
 EndGlobal

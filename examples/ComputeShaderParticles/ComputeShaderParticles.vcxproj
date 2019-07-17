@@ -168,7 +168,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\common\ExampleXGL.cpp" />
-    <ClCompile Include="..\common\main.cpp" />
+    <ClCompile Include="..\common\imgui_main.cpp" />
+    <ClCompile Include="..\common\imgui_menu_bar.cpp" />
     <ClCompile Include="ComputeShaderGUI.cpp" />
     <ClCompile Include="ComputeShaderParticlesBuildScene.cpp" />
     <ClCompile Include="Particles.cpp" />
