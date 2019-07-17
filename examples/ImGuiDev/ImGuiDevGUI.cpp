@@ -1,8 +1,5 @@
 #include "ExampleXGL.h"
-
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
+#include "xglimgui.h"
 
 class XGLImGui : public XGLShape {
 public:
@@ -17,6 +14,22 @@ private:
 void ExampleXGL::BuildGUI() {
 	XGLGuiManager* gm;
 	XGLImGui* im;
+
+	ImGuiMenuFn fn = [this]() {
+		if (ImGui::BeginMainMenuBar())
+		{
+			if (ImGui::BeginMenu("Your Mom"))
+			{
+				if (ImGui::MenuItem("Undo", "CTRL+Z")) {
+					xprintf("she's been undone");
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::EndMainMenuBar();
+		}
+	};
+
+	menuFunctions.push_back(fn);
 
 	AddGuiShape("shaders/ortho", [&]() { gm = new XGLGuiManager(this); return gm; });
 

@@ -260,6 +260,7 @@
     <ClInclude Include="xfifo.h" />
     <ClInclude Include="xftdi.h" />
     <ClInclude Include="xglew.h" />
+    <ClInclude Include="xglimgui.h" />
     <ClInclude Include="xgl\GLAppUtil.h" />
     <ClInclude Include="xgl\glew.h" />
     <ClInclude Include="xgl\glxew.h" />
