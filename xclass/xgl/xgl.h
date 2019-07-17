@@ -83,6 +83,7 @@
 #include "xglshapes.h"
 #include "xglgui.h"
 #include "xglhmd.h"
+#include "xglimgui.h"
 
 // want to reference XGLShader by it's name, so use std::map for that
 typedef std::map<std::string, XGLShader *> XGLShaderMap;
@@ -98,6 +99,9 @@ typedef std::vector<XGLShapesMap*> XGLShapeLayers;
 // Global definition of animate function, and vector thereof
 typedef std::function<void(float)> AnimationFn;
 typedef std::vector<AnimationFn> AnimationFunctions;
+
+typedef std::function<void()> ImGuiMenuFn;
+typedef std::vector<ImGuiMenuFn> ImGuiMenuFunctions;
 
 // write code to set these before creating XGL instance, for XGLException messages
 // and to locate assets (ie: shaders) in the local filesystem
@@ -189,6 +193,9 @@ public:
 	int preferredSwapInterval;
 	XGLSled *hmdSled;
 	XGLHmd *pHmd;
+
+	// Dear ImGUI user add ons: mostly for appending to main menu bar. (?)
+	ImGuiMenuFunctions menuFunctions;
 
 private:
     // this is returned by GetShader().  Use of GetShader() feels funky, like my structure design blows chunks.

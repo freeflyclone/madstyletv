@@ -11,16 +11,12 @@
 #include <GLFW/glfw3.h>
 GLFWwindow *gMainWindow{ nullptr };
 
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-const char* glsl_version = "#version 150";
-extern void ShowExampleMenuFile();
-void ShowMainMenuBar();
-ImGuiIO* pIo{ nullptr };
-
 #include <xgl.h>
 #include <ExampleXGL.h>
+
+const char* glsl_version = "#version 150";
+void ShowMainMenuBar();
+ImGuiIO* pIo{ nullptr };
 
 static ExampleXGL *exgl = NULL;
 #ifndef OPENGL_MAJOR_VERSION
@@ -314,6 +310,11 @@ int main(void) {
 			shouldQuit = exgl->Display();
 
 			ShowMainMenuBar();
+
+			// do additional Dear ImGUI things
+			if (exgl->menuFunctions.size() > 0)
+				for (auto fn : exgl->menuFunctions)
+					fn();
 
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

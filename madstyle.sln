@@ -239,6 +239,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source Files", "Source File
 	ProjectSection(SolutionItems) = preProject
 		examples\common\ExampleGUI.cpp = examples\common\ExampleGUI.cpp
 		examples\common\ExampleXGL.cpp = examples\common\ExampleXGL.cpp
+		examples\common\imgui_main.cpp = examples\common\imgui_main.cpp
+		examples\common\imgui_menu_bar.cpp = examples\common\imgui_menu_bar.cpp
 		examples\common\main.cpp = examples\common\main.cpp
 		examples\common\WinMain.cpp = examples\common\WinMain.cpp
 	EndProjectSection

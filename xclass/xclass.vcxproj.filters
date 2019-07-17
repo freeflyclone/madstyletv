@@ -327,6 +327,9 @@
     <ClInclude Include="3rdParty\imgui\examples\imgui_impl_win32.h">
       <Filter>xgl\Header Files\imgui</Filter>
     </ClInclude>
+    <ClInclude Include="xglimgui.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xgl\xglbuffer.cpp">
