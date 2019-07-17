@@ -266,6 +266,7 @@
     </ClInclude>
     <ClInclude Include="xgl\xglpixelformat.h">
       <Filter>xgl\Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="3rdParty\imgui\imconfig.h">
       <Filter>xgl\Header Files\imgui</Filter>
     </ClInclude>
