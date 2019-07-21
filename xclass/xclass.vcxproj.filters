@@ -330,8 +330,8 @@
     <ClInclude Include="3rdParty\imgui\examples\imgui_impl_win32.h">
       <Filter>xgl\Header Files\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="xglimgui.h">
-      <Filter>xgl\Header Files</Filter>
+    <ClInclude Include="xgl\xglimgui.h">
+      <Filter>xgl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
