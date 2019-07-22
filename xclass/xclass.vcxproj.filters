@@ -333,6 +333,9 @@
     <ClInclude Include="xgl\xglimgui.h">
       <Filter>xgl</Filter>
     </ClInclude>
+    <ClInclude Include="3rdParty\imgui\misc\freetype\imgui_freetype.h">
+      <Filter>xgl\Header Files\imgui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xgl\xglbuffer.cpp">
@@ -489,6 +492,12 @@
       <Filter>xgl\Source Files\imgui</Filter>
     </ClCompile>
     <ClCompile Include="3rdParty\imgui\imgui_widgets.cpp">
+      <Filter>xgl\Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\imgui\misc\cpp\imgui_stdlib.cpp">
+      <Filter>xgl\Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\imgui\misc\freetype\imgui_freetype.cpp">
       <Filter>xgl\Source Files\imgui</Filter>
     </ClCompile>
   </ItemGroup>

@@ -13,7 +13,7 @@
     <LibOvrLibDir Condition="'$(PlatformTarget)'=='x86'">Win32</LibOvrLibDir>
   </PropertyGroup>
   <PropertyGroup>
-    <IncludePath>$(SolutionDir)\shaders;$(LIBOVR_DIR)\Include;$(XCLASS_DIR)\3rdParty\imgui\examples;$(XCLASS_DIR)\3rdParty\imgui;$(XCLASS_DIR)\3rdParty\NuclexTimer\Include;$(XCLASS_DIR)\3rdParty\gpmf-parser;$(XCLASS_DIR)\3rdParty\triangle;$(XCLASS_DIR);$(XCLASS_DIR)\xphy;$(XCLASS_DIR)\xav;$(XCLASS_DIR)\xal;$(XCLASS_DIR)\xgl;$(XCLASS_DIR)\xgl\glm;$(XCLASS_DIR)\xgl\glm\gtc;$(XCLASS_DIR)\include;$(XCLASS_DIR)\include\freetype2;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\shaders;$(LIBOVR_DIR)\Include;$(XCLASS_DIR)\3rdParty\imgui;$(XCLASS_DIR)\3rdParty\imgui\misc\cpp;$(XCLASS_DIR)\3rdParty\imgui\misc\freetype;$(XCLASS_DIR)\3rdParty\imgui\examples;$(XCLASS_DIR)\3rdParty\NuclexTimer\Include;$(XCLASS_DIR)\3rdParty\gpmf-parser;$(XCLASS_DIR)\3rdParty\triangle;$(XCLASS_DIR);$(XCLASS_DIR)\xphy;$(XCLASS_DIR)\xav;$(XCLASS_DIR)\xal;$(XCLASS_DIR)\xgl;$(XCLASS_DIR)\xgl\glm;$(XCLASS_DIR)\xgl\glm\gtc;$(XCLASS_DIR)\include;$(XCLASS_DIR)\include\freetype2;$(IncludePath)</IncludePath>
     <LibraryPath>$(LIBOVR_DIR)\Lib\Windows\$(LibOvrLibDir)\$(Configuration)\VS2013;$(XCLASS_DIR)\lib\$(PlatformTarget);$(XCLASS_DIR)\lib\$(PlatformTarget)\$(Configuration);$(LibraryPath);$(FFMPEG_DIR)\lib</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
