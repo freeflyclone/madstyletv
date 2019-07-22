@@ -16,3 +16,6 @@
 [submodule "xclass/3rdParty/imgui"]
 	path = xclass/3rdParty/imgui
 	url = https://github.com/freeflyclone/imgui.git
+[submodule "xclass/3rdParty/ImGuiFileDialog"]
+	path = xclass/3rdParty/ImGuiFileDialog
+	url = https://github.com/freeflyclone/ImGuiFileDialog.git
