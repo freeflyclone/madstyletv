@@ -100,6 +100,8 @@ typedef std::vector<XGLShapesMap*> XGLShapeLayers;
 typedef std::function<void(float)> AnimationFn;
 typedef std::vector<AnimationFn> AnimationFunctions;
 
+// so we can insert Dear ImGui code to be executed in the apropriate place in
+// main rendering loop.
 typedef std::function<void()> ImGuiMenuFn;
 typedef std::vector<ImGuiMenuFn> ImGuiMenuFunctions;
 

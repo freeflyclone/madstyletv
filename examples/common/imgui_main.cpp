@@ -282,7 +282,7 @@ int main(void) {
 	ImGui_ImplGlfw_InitForOpenGL(gMainWindow, true);
 	ImGui_ImplOpenGL3_Init(glsl_version);
 
-	ImFont* font = pIo->Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\Arial.ttf", 18.0f);
+	ImFont* font = pIo->Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\Arial.ttf", 16.0f);
 	IM_ASSERT(font != NULL);
 
 	try {

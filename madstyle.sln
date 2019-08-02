@@ -239,6 +239,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Header Files", "Header Files", "{DCE87CD9-B13B-4D53-B81F-67DC2E5BE5FD}"
 	ProjectSection(SolutionItems) = preProject
 		examples\common\ExampleXGL.h = examples\common\ExampleXGL.h
+		examples\common\ImGuiFileDialog.h = examples\common\ImGuiFileDialog.h
 		examples\common\InputTrackers.h = examples\common\InputTrackers.h
 		examples\common\WinMain.h = examples\common\WinMain.h
 		examples\common\xglcontextimage.h = examples\common\xglcontextimage.h
