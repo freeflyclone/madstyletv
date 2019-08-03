@@ -1,10 +1,20 @@
 #include "ExampleXGL.h"
 #include "xglimgui.h"
 
-class XGLImGui : public XGLShape {
+class XGLImGui : public XGLTexQuad {
 public:
+	XGLImGui(std::string fn) : XGLTexQuad(fn) {}
+
 	void Draw() {
-		ImGui::ShowDemoWindow(&demoWindow);
+		//ImGui::ShowDemoWindow(&demoWindow);
+		if (!ImGui::Begin("MadStyle TV Image Window Test", &demoWindow, 0))
+		{
+			// Early out if the window is collapsed, as an optimization.
+			ImGui::End();
+			return;
+		}
+		ImGui::Image((ImTextureID)texIds[0], ImVec2(320, 180));
+		ImGui::End();
 	}
 
 private:
@@ -29,8 +39,10 @@ void ExampleXGL::BuildGUI() {
 		}
 	});
 
+	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
+
 	AddGuiShape("shaders/ortho", [&]() { gm = new XGLGuiManager(this); return gm; });
-	gm->AddChildShape("shaders/zzz", [&](){ im = new XGLImGui(); return im; });
+	gm->AddChildShape("shaders/zzz", [&](){ im = new XGLImGui(imgPath); return im; });
 
 	ImGuiStyle& igStyle = ImGui::GetStyle();
 	ImVec4* colors = igStyle.Colors;
