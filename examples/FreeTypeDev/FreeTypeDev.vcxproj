@@ -175,7 +175,9 @@
     </ClCompile>
     <ClCompile Include="..\common\ExampleGUI.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
-    <ClCompile Include="..\common\main.cpp" />
+    <ClCompile Include="..\common\ImGuiFileDialog.cpp" />
+    <ClCompile Include="..\common\imgui_main.cpp" />
+    <ClCompile Include="..\common\imgui_menu_bar.cpp" />
     <ClCompile Include="FreeTypeDevBuildScene.cpp" />
     <ClCompile Include="XGLFreeType.cpp" />
   </ItemGroup>

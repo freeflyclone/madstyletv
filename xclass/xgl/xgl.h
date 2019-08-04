@@ -116,7 +116,6 @@ extern XGLFont font;
 class XGL : public XObject, public XInput
 {
 public:
-    // this one is for Windows (wgl)
     XGL(void);
 
     virtual ~XGL();

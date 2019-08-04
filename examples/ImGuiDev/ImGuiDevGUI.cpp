@@ -5,7 +5,23 @@ class XGLImGui : public XGLTexQuad {
 public:
 	// For reasons unknown, my icon files are not parsed correctly by SOIL... forceChannels says
 	// "I know how many channels there are, make it work."  Hence the "4" as the 2nd arg to XGLTexQuad ctor
-	XGLImGui(std::string fn) : XGLTexQuad(fn, 4) {
+	XGLImGui() : XGLTexQuad(pathToAssets + "/assets/icons-64.png", 4) {
+		ImGuiStyle& igStyle = ImGui::GetStyle();
+
+		igStyle.WindowRounding = 4.0f;
+		igStyle.ChildRounding = 4.0f;
+		igStyle.PopupRounding = 4.0f;
+		igStyle.FrameRounding = 4.0f;
+		igStyle.ScrollbarRounding = 4.0f;
+		igStyle.GrabRounding = 3.0f;
+		igStyle.TabRounding = 4.0f;
+
+		igStyle.WindowBorderSize = 1.0f;
+		igStyle.ChildBorderSize = 1.0f;
+		igStyle.PopupBorderSize = 1.0f;
+		igStyle.FrameBorderSize = 1.0f;
+		igStyle.TabBorderSize = 1.0f;
+
 		SetMadStyleTheme();
 	}
 
@@ -26,7 +42,7 @@ public:
 					ImVec2(iconX*dX, iconY*dY),
 					ImVec2(iconX*dX + dX, iconY*dY + dY),
 					iconTint,
-					ImVec4(0.7, 0.3, 0.3, 1.0));
+					ImVec4(0.7f, 0.3f, 0.3f, 1.0f));
 			}
 
 			if (ImGui::CollapsingHeader("Atlas")) {
@@ -53,7 +69,7 @@ public:
 		colors[ImGuiCol_Border] = ImVec4(0.00f, 0.00f, 0.00f, 0.30f);
 		colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		colors[ImGuiCol_FrameBg] = ImVec4(0.31f, 0.31f, 0.31f, 1.00f);
-		colors[ImGuiCol_FrameBgHovered] = ImVec4(0.41f, 0.41f, 0.41f, 0.52f);
+		colors[ImGuiCol_FrameBgHovered] = ImVec4(0.42f, 0.14f, 0.14f, 0.52f);
 		colors[ImGuiCol_FrameBgActive] = ImVec4(0.39f, 0.39f, 0.39f, 0.67f);
 		colors[ImGuiCol_TitleBg] = ImVec4(0.32f, 0.32f, 0.32f, 1.00f);
 		colors[ImGuiCol_TitleBgActive] = ImVec4(0.37f, 0.21f, 0.21f, 1.00f);
@@ -63,11 +79,11 @@ public:
 		colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.58f, 0.58f, 0.58f, 0.80f);
 		colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.73f, 0.73f, 0.73f, 0.80f);
 		colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.86f, 0.19f, 0.19f, 0.86f);
-		colors[ImGuiCol_CheckMark] = ImVec4(0.45f, 0.45f, 0.45f, 1.00f);
-		colors[ImGuiCol_SliderGrab] = ImVec4(0.21f, 0.21f, 0.21f, 0.78f);
+		colors[ImGuiCol_CheckMark] = ImVec4(0.76f, 0.76f, 0.76f, 1.00f);
+		colors[ImGuiCol_SliderGrab] = ImVec4(0.73f, 0.73f, 0.73f, 0.78f);
 		colors[ImGuiCol_SliderGrabActive] = ImVec4(0.70f, 0.70f, 0.70f, 0.60f);
 		colors[ImGuiCol_Button] = ImVec4(0.58f, 0.58f, 0.58f, 0.40f);
-		colors[ImGuiCol_ButtonHovered] = ImVec4(0.46f, 0.46f, 0.46f, 1.00f);
+		colors[ImGuiCol_ButtonHovered] = ImVec4(0.45f, 0.17f, 0.17f, 1.00f);
 		colors[ImGuiCol_ButtonActive] = ImVec4(0.45f, 0.45f, 0.45f, 1.00f);
 		colors[ImGuiCol_Header] = ImVec4(0.72f, 0.21f, 0.21f, 0.31f);
 		colors[ImGuiCol_HeaderHovered] = ImVec4(0.98f, 0.26f, 0.26f, 0.80f);
@@ -104,14 +120,14 @@ private:
 	const float dY{ 1.0f / 15.0f };
 	int iconX{ 0 };
 	int iconY{ 0 };
-	ImVec4 iconTint{ 0.5, 0.5, 0.5, 1.0 };
+	ImVec4 iconTint{ 0.75, 0.75, 0.75, 1.0 };
 	int iconPreviewSize{ 4 };
 };
 
 
 void ExampleXGL::BuildGUI() {
 	XGLGuiManager* gm;
-	XGLImGui* im;
+	XGLImGui* xig;
 
 	menuFunctions.push_back([this]() {
 		if (ImGui::BeginMainMenuBar())
@@ -127,29 +143,8 @@ void ExampleXGL::BuildGUI() {
 		}
 	});
 
-	std::string imgPath = pathToAssets + "/assets/icons-64.png";
-
 	AddGuiShape("shaders/ortho", [&]() { gm = new XGLGuiManager(this); return gm; });
-
-	gm->AddChildShape("shaders/zzz", [&](){ im = new XGLImGui(imgPath); return im; });
-	im->attributes.diffuseColor = XGLColors::red;
-
-	ImGuiStyle& igStyle = ImGui::GetStyle();
-	ImVec4* colors = igStyle.Colors;
-
-	igStyle.WindowRounding = 4.0f;
-	igStyle.ChildRounding = 4.0f;
-	igStyle.PopupRounding = 4.0f;
-	igStyle.FrameRounding = 4.0f;
-	igStyle.ScrollbarRounding = 4.0f;
-	igStyle.GrabRounding = 3.0f;
-	igStyle.TabRounding = 4.0f;
-
-	igStyle.WindowBorderSize = 1.0f;
-	igStyle.ChildBorderSize = 1.0f;
-	igStyle.PopupBorderSize = 1.0f;
-	igStyle.FrameBorderSize = 1.0f;
-	igStyle.TabBorderSize = 1.0f;
+	gm->AddChildShape("shaders/zzz", [&](){ xig = new XGLImGui(); return xig; });
 
 	return;
 }
