@@ -207,12 +207,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CudaTexture", "examples\Cud
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shaders", "Shaders", "{5CB0B469-1E60-474A-92D6-3D4F8041E571}"
 	ProjectSection(SolutionItems) = preProject
+		shaders\diffuse.frag = shaders\diffuse.frag
+		shaders\diffuse.vert = shaders\diffuse.vert
 		shaders\mono.frag = shaders\mono.frag
 		shaders\mono.vert = shaders\mono.vert
 		shaders\ortho-rgb.frag = shaders\ortho-rgb.frag
 		shaders\ortho-rgb.vert = shaders\ortho-rgb.vert
 		shaders\ortho-tex.frag = shaders\ortho-tex.frag
 		shaders\ortho-tex.vert = shaders\ortho-tex.vert
+		shaders\specular.frag = shaders\specular.frag
+		shaders\specular.vert = shaders\specular.vert
 		shaders\tex.frag = shaders\tex.frag
 		shaders\tex.vert = shaders\tex.vert
 		shaders\textShader.vert = shaders\textShader.vert

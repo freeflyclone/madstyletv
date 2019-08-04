@@ -3,22 +3,36 @@
 
 class XGLImGui : public XGLTexQuad {
 public:
-	XGLImGui(std::string fn, int fc = 0) : XGLTexQuad(fn, fc) {}
+	// For reasons unknown, my icon files are not parsed correctly by SOIL... forceChannels says
+	// "I know how many channels there are, make it work."  Hence the "4" as the 2nd arg to XGLTexQuad ctor
+	XGLImGui(std::string fn) : XGLTexQuad(fn, 4) {}
 
 	void Draw() {
 		//ImGui::ShowDemoWindow(&demoWindow);
-		if (!ImGui::Begin("MadStyle TV Image Window Test", &demoWindow, 0))
-		{
-			// Early out if the window is collapsed, as an optimization.
+
+		if (ImGui::Begin("Icon Preview", &demoWindow, 0)) {
+			ImVec4 tint = ImGui::GetStyle().Colors[ImGuiCol_CheckMark];
+			ImGui::Image((ImTextureID)texIds[0], ImVec2(336, 360), ImVec2(iconX*dX, iconY*dY), ImVec2(iconX*dX + wX, iconY*dY + wY), tint);
 			ImGui::End();
-			return;
 		}
-		ImGui::Image((ImTextureID)texIds[0], ImVec2(448, 480));
-		ImGui::End();
+
+		if (ImGui::Begin("Icon Controls", &demoWindow, 0)) {
+			ImGui::SliderInt("Column", &iconX, 0, 13);
+			ImGui::SliderInt("Row", &iconY, 0, 14);
+			ImGui::End();
+		}
 	}
 
 private:
 	bool demoWindow{ true };
+
+	// the Icon files are arranged in a 14 x 15 grid.
+	const float dX{ 1.0f / 14.0f };
+	const float dY{ 1.0f / 15.0f };
+	const float wX{ 1.0f / 13.9f };
+	const float wY{ 1.0f / 14.9f };
+	int iconX{ 1 };
+	int iconY{ 0 };
 };
 
 void ExampleXGL::BuildGUI() {
@@ -39,13 +53,12 @@ void ExampleXGL::BuildGUI() {
 		}
 	});
 
-	std::string imgPath = pathToAssets + "/assets/icons-32.png";
+	std::string imgPath = pathToAssets + "/assets/icons-64.png";
 
 	AddGuiShape("shaders/ortho", [&]() { gm = new XGLGuiManager(this); return gm; });
 
-	// for reasons unknown, my icon files are not parsed correctly by SOIL... forceChannels says
-	// "I know how many channels there are, make it work."  
-	gm->AddChildShape("shaders/zzz", [&](){ im = new XGLImGui(imgPath, 4); return im; });
+	gm->AddChildShape("shaders/zzz", [&](){ im = new XGLImGui(imgPath); return im; });
+	im->attributes.diffuseColor = XGLColors::red;
 
 	ImGuiStyle& igStyle = ImGui::GetStyle();
 	ImVec4* colors = igStyle.Colors;
