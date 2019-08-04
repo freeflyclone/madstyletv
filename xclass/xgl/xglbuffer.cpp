@@ -151,13 +151,14 @@ void XGLBuffer::Load(XGLShader *s, std::vector<XGLVertexAttributes> va, std::vec
     }
 }
 
-void XGLBuffer::AddTexture(std::string texName){
+void XGLBuffer::AddTexture(std::string texName, int forceChannels){
     int width, height, channels;
     unsigned char *img;
 
-    if ((img = SOIL_load_image(texName.c_str(), &width, &height, &channels, 0)) == NULL)
+    if ((img = SOIL_load_image(texName.c_str(), &width, &height, &channels, forceChannels)) == NULL)
         throwXGLException("SOIL_load_image() failed: " + texName);
 
+	channels = (forceChannels)?forceChannels:channels;
     AddTexture(width, height, channels, img);
 
     SOIL_free_image_data(img);

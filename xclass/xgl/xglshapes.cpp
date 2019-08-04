@@ -769,8 +769,8 @@ XGLTexQuad::XGLTexQuad(int w, int h) {
 	idx.push_back(3);
 }
 
-XGLTexQuad::XGLTexQuad(std::string fileName) : XGLTexQuad() {
-	AddTexture(fileName);
+XGLTexQuad::XGLTexQuad(std::string fileName, int forceChannels) : XGLTexQuad() {
+	AddTexture(fileName, forceChannels);
 }
 
 XGLTexQuad::XGLTexQuad(int width, int height, int channels, GLubyte *img, bool flipColors) : XGLTexQuad() {

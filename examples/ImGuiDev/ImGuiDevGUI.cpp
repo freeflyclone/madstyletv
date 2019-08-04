@@ -3,7 +3,7 @@
 
 class XGLImGui : public XGLTexQuad {
 public:
-	XGLImGui(std::string fn) : XGLTexQuad(fn) {}
+	XGLImGui(std::string fn, int fc = 0) : XGLTexQuad(fn, fc) {}
 
 	void Draw() {
 		//ImGui::ShowDemoWindow(&demoWindow);
@@ -13,7 +13,7 @@ public:
 			ImGui::End();
 			return;
 		}
-		ImGui::Image((ImTextureID)texIds[0], ImVec2(320, 180));
+		ImGui::Image((ImTextureID)texIds[0], ImVec2(448, 480));
 		ImGui::End();
 	}
 
@@ -39,10 +39,13 @@ void ExampleXGL::BuildGUI() {
 		}
 	});
 
-	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
+	std::string imgPath = pathToAssets + "/assets/icons-32.png";
 
 	AddGuiShape("shaders/ortho", [&]() { gm = new XGLGuiManager(this); return gm; });
-	gm->AddChildShape("shaders/zzz", [&](){ im = new XGLImGui(imgPath); return im; });
+
+	// for reasons unknown, my icon files are not parsed correctly by SOIL... forceChannels says
+	// "I know how many channels there are, make it work."  
+	gm->AddChildShape("shaders/zzz", [&](){ im = new XGLImGui(imgPath, 4); return im; });
 
 	ImGuiStyle& igStyle = ImGui::GetStyle();
 	ImVec4* colors = igStyle.Colors;
