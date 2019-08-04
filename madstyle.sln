@@ -260,6 +260,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source Files", "Source File
 		examples\common\ImGuiFileDialog.cpp = examples\common\ImGuiFileDialog.cpp
 		examples\common\main.cpp = examples\common\main.cpp
 		examples\common\WinMain.cpp = examples\common\WinMain.cpp
+		examples\common\xglimgui.cpp = examples\common\xglimgui.cpp
 	EndProjectSection
 EndProject
 Global

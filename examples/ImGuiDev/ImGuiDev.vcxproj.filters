@@ -33,6 +33,9 @@
     <ClCompile Include="..\common\ImGuiFileDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\common\xglimgui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\common\ImGuiFileDialog.h">
