@@ -263,6 +263,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source Files", "Source File
 		examples\common\xglimgui.cpp = examples\common\xglimgui.cpp
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FreeTypeDev2", "examples\FreeTypeDev2\FreeTypeDev2.vcxproj", "{D967F26C-8807-4CFD-8653-93DD6F4371C0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -787,6 +789,18 @@ Global
 		{C5721200-CCD8-4958-9C8A-4EA1F99EF10C}.Release|Win32.Build.0 = Release|Win32
 		{C5721200-CCD8-4958-9C8A-4EA1F99EF10C}.Release|x64.ActiveCfg = Release|x64
 		{C5721200-CCD8-4958-9C8A-4EA1F99EF10C}.Release|x64.Build.0 = Release|x64
+		{D967F26C-8807-4CFD-8653-93DD6F4371C0}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{D967F26C-8807-4CFD-8653-93DD6F4371C0}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{D967F26C-8807-4CFD-8653-93DD6F4371C0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D967F26C-8807-4CFD-8653-93DD6F4371C0}.Debug|Win32.Build.0 = Debug|Win32
+		{D967F26C-8807-4CFD-8653-93DD6F4371C0}.Debug|x64.ActiveCfg = Debug|x64
+		{D967F26C-8807-4CFD-8653-93DD6F4371C0}.Debug|x64.Build.0 = Debug|x64
+		{D967F26C-8807-4CFD-8653-93DD6F4371C0}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{D967F26C-8807-4CFD-8653-93DD6F4371C0}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{D967F26C-8807-4CFD-8653-93DD6F4371C0}.Release|Win32.ActiveCfg = Release|Win32
+		{D967F26C-8807-4CFD-8653-93DD6F4371C0}.Release|Win32.Build.0 = Release|Win32
+		{D967F26C-8807-4CFD-8653-93DD6F4371C0}.Release|x64.ActiveCfg = Release|x64
+		{D967F26C-8807-4CFD-8653-93DD6F4371C0}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -838,5 +852,6 @@ Global
 		{C5721200-CCD8-4958-9C8A-4EA1F99EF10C} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 		{DCE87CD9-B13B-4D53-B81F-67DC2E5BE5FD} = {1A5C1CC4-9FE3-496C-9856-D269B05C278E}
 		{7F74C7DF-1E26-448B-9952-31463567B8A3} = {1A5C1CC4-9FE3-496C-9856-D269B05C278E}
+		{D967F26C-8807-4CFD-8653-93DD6F4371C0} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 	EndGlobalSection
 EndGlobal
