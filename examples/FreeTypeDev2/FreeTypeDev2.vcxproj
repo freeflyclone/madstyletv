@@ -171,6 +171,10 @@
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
     <ClCompile Include="FreeTypeDev2BuildScene.cpp" />
+    <ClCompile Include="XGLFreeType.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="XGLFreeType.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

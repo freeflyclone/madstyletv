@@ -6,6 +6,7 @@
 ** via keyboard and mouse.
 **************************************************************/
 #include "ExampleXGL.h"
+#include "XGLFreeType.h"
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
