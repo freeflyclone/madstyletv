@@ -24,37 +24,43 @@ XGLImGui::XGLImGui() : XGLTexQuad(pathToAssets + "/assets/icons-64.png", 4) {
 }
 
 void XGLImGui::Draw() {
-	ImGui::ShowDemoWindow();
+	if (menuFuncs.size() == 0) {
+		ImGui::ShowDemoWindow();
 
-	if (ImGui::Begin("Icons", &demoWindow)) {
-		if (ImGui::CollapsingHeader("Controls")) {
-			ImGui::SliderInt("Column", &iconX, 0, 13);
-			ImGui::SliderInt("Row", &iconY, 0, 14);
-			ImGui::ColorEdit4("Tint", &iconTint.x);
-			ImGui::SliderInt("Size/32)", &iconPreviewSize, 1, 8);
+		if (ImGui::Begin("Icons", &demoWindow)) {
+			if (ImGui::CollapsingHeader("Controls")) {
+				ImGui::SliderInt("Column", &iconX, 0, 13);
+				ImGui::SliderInt("Row", &iconY, 0, 14);
+				ImGui::ColorEdit4("Tint", &iconTint.x);
+				ImGui::SliderInt("Size/32)", &iconPreviewSize, 1, 8);
+			}
+
+			if (ImGui::CollapsingHeader("Preview")) {
+				ImGui::Image((ImTextureID)texIds[0],
+					ImVec2(iconPreviewSize*32.0f, iconPreviewSize*32.0f),
+					ImVec2(iconX*dX, iconY*dY),
+					ImVec2(iconX*dX + dX, iconY*dY + dY),
+					iconTint,
+					ImVec4(0.7f, 0.3f, 0.3f, 1.0f));
+			}
+
+			if (ImGui::CollapsingHeader("Atlas")) {
+				ImGui::Image((ImTextureID)texIds[0],
+					ImVec2(512, 512),
+					ImVec2(0, 0),
+					ImVec2(1, 1),
+					iconTint);
+			}
+
+			ImGui::End();
 		}
-
-		if (ImGui::CollapsingHeader("Preview")) {
-			ImGui::Image((ImTextureID)texIds[0],
-				ImVec2(iconPreviewSize*32.0f, iconPreviewSize*32.0f),
-				ImVec2(iconX*dX, iconY*dY),
-				ImVec2(iconX*dX + dX, iconY*dY + dY),
-				iconTint,
-				ImVec4(0.7f, 0.3f, 0.3f, 1.0f));
-		}
-
-		if (ImGui::CollapsingHeader("Atlas")) {
-			ImGui::Image((ImTextureID)texIds[0],
-				ImVec2(512, 512),
-				ImVec2(0, 0),
-				ImVec2(1, 1),
-				iconTint);
-		}
-
-		ImGui::End();
+		else
+			ImGui::End();
 	}
-	else
-		ImGui::End();
+	else {
+		for (auto fn : menuFuncs)
+			fn();
+	}
 }
 
 void XGLImGui::SetMadStyleTheme() {

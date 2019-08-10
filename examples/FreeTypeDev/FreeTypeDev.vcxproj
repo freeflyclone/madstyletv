@@ -173,12 +173,13 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ANSI_DECLARATORS;TRILIBRARY;NO_TIMER;_USE_MATH_DEFINES;XML_STATIC;GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ANSI_DECLARATORS;TRILIBRARY;NO_TIMER;_USE_MATH_DEFINES;XML_STATIC;GLEW_STATIC;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="..\common\ExampleGUI.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\ImGuiFileDialog.cpp" />
     <ClCompile Include="..\common\imgui_main.cpp" />
     <ClCompile Include="..\common\imgui_menu_bar.cpp" />
+    <ClCompile Include="..\common\xglimgui.cpp" />
     <ClCompile Include="FreeTypeDevBuildScene.cpp" />
+    <ClCompile Include="FreeTypeDevGUI.cpp" />
     <ClCompile Include="XGLFreeType.cpp" />
   </ItemGroup>
   <ItemGroup>
