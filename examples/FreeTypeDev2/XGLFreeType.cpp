@@ -58,7 +58,7 @@ void GlyphDecomposer::Reset() {
 	contourIdx = 0;
 }
 int GlyphDecomposer::MoveTo(const XGLVertex& to) {
-	//xprintf(" MoveTo: %0.4f %0.4f\n", to.x, to.y);
+	xprintf(" MoveTo: %0.4f %0.4f\n", to.x, to.y);
 	firstPoint = to;
 
 	// if the current Contour has XGLVertex data, this MoveTo is a new Contour
@@ -73,7 +73,7 @@ int GlyphDecomposer::MoveTo(const XGLVertex& to) {
 }
 
 int GlyphDecomposer::LineTo(const XGLVertex& to) {
-	//xprintf(" LineTo: %0.4f %0.4f\n", to.x, to.y);
+	xprintf(" LineTo: %0.4f %0.4f\n", to.x, to.y);
 
 	if (IsEqual(to, firstPoint)) {
 		//xprintf(" LineTo: %0.4f %0.4f is coincident with Contour start, ignoring\n");
@@ -86,7 +86,7 @@ int GlyphDecomposer::LineTo(const XGLVertex& to) {
 }
 
 int GlyphDecomposer::ConicTo(const XGLVertex& control, const XGLVertex& to) {
-	//xprintf("ConicTo: %0.4f %0.4f - %0.4f %0.4f\n", control.x, control.y, to.x, to.y);
+	xprintf("ConicTo: %0.4f %0.4f - %0.4f %0.4f\n", control.x, control.y, to.x, to.y);
 	if (drawCurves) {
 		EvaluateQuadraticBezier(currentPoint, control, to);
 	}
@@ -104,7 +104,7 @@ int GlyphDecomposer::ConicTo(const XGLVertex& control, const XGLVertex& to) {
 }
 
 int GlyphDecomposer::CubicTo(const XGLVertex& control1, const XGLVertex& control2, const XGLVertex& to) {
-	//xprintf(" CubeTo: %0.4f %0.4f - %0.4f %0.4f - %0.4f %0.4f\n", control1.x, control1.y, control2.x, control2.y, to.x, to.y);
+	xprintf(" CubeTo: %0.4f %0.4f - %0.4f %0.4f - %0.4f %0.4f\n", control1.x, control1.y, control2.x, control2.y, to.x, to.y);
 	if (drawCurves) {
 		EvaluateCubicBezier(currentPoint, control1, control2, to);
 	}

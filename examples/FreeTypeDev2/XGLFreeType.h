@@ -24,9 +24,6 @@ namespace FT {
 			cubic_to = _CubicToFunc;
 			shift = 0;
 			delta = 0;
-
-			// add initial Contour, which is empty, to the outline
-			//glyphOutline.push_back(*(new Contour()));
 		}
 
 		void Reset();
