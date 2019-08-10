@@ -49,12 +49,24 @@ XGLVertex Contour::ComputeCentroid(bool *isClockwise)
 	return centroid;
 }
 
+void Contour::ExpandBoundingBox(XGLVertex vertex) {
+	if (vertex.x < bb.ul.x)
+		bb.ul.x = vertex.x;
+	if (vertex.y < bb.ul.y)
+		bb.ul.y = vertex.y;
+	if (vertex.x > bb.lr.x)
+		bb.lr.x = vertex.x;
+	if (vertex.y > bb.lr.y)
+		bb.lr.y = vertex.y;
+}
+
 void GlyphDecomposer::Reset() {
 	for (auto c : glyphOutline)
 		c.v.clear();
 
 	glyphOutline.clear();
 	glyphOutline.push_back(*(new Contour()));
+	currentContour = &glyphOutline.back();
 	contourIdx = 0;
 }
 int GlyphDecomposer::MoveTo(const XGLVertex& to) {
@@ -65,10 +77,12 @@ int GlyphDecomposer::MoveTo(const XGLVertex& to) {
 	if (glyphOutline[contourIdx].v.size()) {
 		contourIdx++;
 		glyphOutline.push_back(*(new Contour()));
+		currentContour = &glyphOutline.back();
 	}
 
 	glyphOutline[contourIdx].v.push_back({ to });
 	currentPoint = to;
+	currentContour->ExpandBoundingBox(currentPoint);
 	return 0;
 }
 
@@ -82,6 +96,7 @@ int GlyphDecomposer::LineTo(const XGLVertex& to) {
 
 	glyphOutline[contourIdx].v.push_back({ to });
 	currentPoint = to;
+	currentContour->ExpandBoundingBox(currentPoint);
 	return 0;
 }
 
@@ -93,6 +108,7 @@ int GlyphDecomposer::ConicTo(const XGLVertex& control, const XGLVertex& to) {
 	else {
 		glyphOutline[contourIdx].v.push_back({ control });
 		currentPoint = control;
+		currentContour->ExpandBoundingBox(currentPoint);
 
 		if (IsEqual(to, firstPoint))
 			return 0;
@@ -100,6 +116,7 @@ int GlyphDecomposer::ConicTo(const XGLVertex& control, const XGLVertex& to) {
 		glyphOutline[contourIdx].v.push_back({ to });
 	}
 	currentPoint = to;
+	currentContour->ExpandBoundingBox(currentPoint);
 	return 0;
 }
 
@@ -112,6 +129,7 @@ int GlyphDecomposer::CubicTo(const XGLVertex& control1, const XGLVertex& control
 		glyphOutline[contourIdx].v.push_back({ control1 });
 		glyphOutline[contourIdx].v.push_back({ control2 });
 		currentPoint = control2;
+		currentContour->ExpandBoundingBox(currentPoint);
 
 		if (IsEqual(to, firstPoint))
 			return 0;
@@ -119,6 +137,7 @@ int GlyphDecomposer::CubicTo(const XGLVertex& control1, const XGLVertex& control
 		glyphOutline[contourIdx].v.push_back({ to });
 	}
 	currentPoint = to;
+	currentContour->ExpandBoundingBox(currentPoint);
 	return 0;
 }
 

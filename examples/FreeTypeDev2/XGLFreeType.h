@@ -8,10 +8,21 @@
 #include "xutils.h"
 
 namespace FT {
+	class BoundingBox {
+	public:
+		XGLVertex ul, lr;  // upper-left, lower-right corner of the box
+	};
 	class Contour {
 	public:
+		Contour() {
+			bb.ul = { 10000000.0f, 10000000.0f, 0.0f };
+			bb.lr = { 0.0f, 0.0f, 0.0f };
+		}
 		XGLVertex ComputeCentroid(bool *);
+		void ExpandBoundingBox(XGLVertex vertex);
+
 		XGLVertexList v;
+		BoundingBox bb;
 	};
 	typedef std::vector<Contour> GlyphOutline;
 
@@ -70,6 +81,7 @@ namespace FT {
 
 		GlyphOutline glyphOutline;
 		int contourIdx{ 0 };
+		Contour* currentContour;
 		XGLVertex firstPoint;
 		XGLVertex currentPoint;
 		bool drawCurves = true;

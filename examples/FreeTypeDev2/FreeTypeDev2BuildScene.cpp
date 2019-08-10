@@ -50,6 +50,10 @@ public:
 			FT_Load_Glyph(face, charMap[c], FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL);
 			Reset();
 			FT_Outline_Decompose(&face->glyph->outline, (FT_Outline_Funcs*)this, (FT_Outline_Funcs*)this);
+
+			for (auto c : Outline()) {
+				xprintf("contour bb: {%0.4f, %0.4f}, {%0.4f, %0.4f}\n", c.bb.ul.x, c.bb.ul.y, c.bb.lr.x, c.bb.lr.y);
+			}
 		}
 	}
 
