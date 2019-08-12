@@ -14,7 +14,7 @@ XGLVertex Contour::ComputeCentroid(bool *isClockwise)
 
 	// For all vertices except last
 	int i = 0;
-	for (i = 0; i<this->v.size() - 1; ++i)
+	for (i = 0; i<v.size() - 1; ++i)
 	{
 		x0 = v[i].v.x;
 		y0 = v[i].v.y;
@@ -61,7 +61,7 @@ void Contour::ExpandBoundingBox(XGLVertex vertex) {
 }
 
 void GlyphDecomposer::Reset() {
-	for (auto c : glyphOutline)
+	for (FT::Contour c : glyphOutline)
 		c.v.clear();
 
 	glyphOutline.clear();

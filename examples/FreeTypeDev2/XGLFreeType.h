@@ -1,6 +1,7 @@
 #ifndef XGLFREETYPE_H
 #define XGLFREETYPE_H
 
+#define REAL double
 #include "ft2build.h"
 #include FT_OUTLINE_H
 #include <vector>
@@ -8,15 +9,15 @@
 #include "xutils.h"
 
 namespace FT {
-	class BoundingBox {
+	class BoundingBox : public std::numeric_limits<float>  {
 	public:
 		XGLVertex ul, lr;  // upper-left, lower-right corner of the box
 	};
 	class Contour {
 	public:
 		Contour() {
-			bb.ul = { 10000000.0f, 10000000.0f, 0.0f };
-			bb.lr = { 0.0f, 0.0f, 0.0f };
+			bb.ul = { bb.max(), bb.max(), bb.max() };
+			bb.lr = { bb.min(), bb.min(), bb.min() };
 		}
 		XGLVertex ComputeCentroid(bool *);
 		void ExpandBoundingBox(XGLVertex vertex);
@@ -47,7 +48,7 @@ namespace FT {
 			return (a.x == b.x) && (a.y == b.y); 
 		}
 
-		void DrawCurves(bool enable) { drawCurves = enable; }
+		void DrawCurvesEnable(bool enable) { drawCurves = enable; }
 
 	private:
 		static int _MoveToFunc(const FT_Vector* to, void *pCtx) { 
