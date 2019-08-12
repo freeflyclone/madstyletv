@@ -5,12 +5,12 @@ using namespace FT;
 XGLVertex Contour::ComputeCentroid(bool *isClockwise)
 {
 	XGLVertex centroid = {};
-	double signedArea = 0.0;
-	double x0 = 0.0; // Current vertex X
-	double y0 = 0.0; // Current vertex Y
-	double x1 = 0.0; // Next vertex X
-	double y1 = 0.0; // Next vertex Y
-	double a = 0.0;  // Partial signed area
+	REAL signedArea = 0.0;
+	REAL x0 = 0.0; // Current vertex X
+	REAL y0 = 0.0; // Current vertex Y
+	REAL x1 = 0.0; // Next vertex X
+	REAL y1 = 0.0; // Next vertex Y
+	REAL a = 0.0;  // Partial signed area
 
 	// For all vertices except last
 	int i = 0;
@@ -69,6 +69,7 @@ void GlyphDecomposer::Reset() {
 	currentContour = &glyphOutline.back();
 	contourIdx = 0;
 }
+
 int GlyphDecomposer::MoveTo(const XGLVertex& to) {
 	xprintf(" MoveTo: %0.4f %0.4f\n", to.x, to.y);
 	firstPoint = to;
@@ -143,7 +144,7 @@ int GlyphDecomposer::CubicTo(const XGLVertex& control1, const XGLVertex& control
 
 const XGLVertex GlyphDecomposer::Interpolate(const XGLVertex& p1, const XGLVertex& p2, float percent) {
 	XGLVertex v;
-	float diff;
+	REAL diff;
 
 	diff = p2.x - p1.x;
 	v.x = p1.x + (diff * percent);
@@ -152,8 +153,9 @@ const XGLVertex GlyphDecomposer::Interpolate(const XGLVertex& p1, const XGLVerte
 
 	return v;
 }
+
 void GlyphDecomposer::EvaluateQuadraticBezier(const XGLVertex& p0, const XGLVertex& p1, const XGLVertex& p2) {
-	float interpolant;
+	REAL interpolant;
 	XGLVertex i0, i1, out;
 
 	for (interpolant = interpolationFactor; interpolant < 1.0f; interpolant += interpolationFactor) {
@@ -170,7 +172,7 @@ void GlyphDecomposer::EvaluateQuadraticBezier(const XGLVertex& p0, const XGLVert
 }
 
 void GlyphDecomposer::EvaluateCubicBezier(const XGLVertex& p0, const XGLVertex& p1, const XGLVertex& p2, const XGLVertex& p3) {
-	float interpolant;
+	REAL interpolant;
 	XGLVertex i0, i1, i2, m0, m1, out;
 
 	for (interpolant = interpolationFactor; interpolant < 1.0f; interpolant += interpolationFactor) {
