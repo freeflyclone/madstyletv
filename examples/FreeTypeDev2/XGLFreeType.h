@@ -19,11 +19,12 @@ namespace FT {
 			bb.ul = { bb.max(), bb.max(), bb.max() };
 			bb.lr = { bb.min(), bb.min(), bb.min() };
 		}
-		XGLVertex ComputeCentroid(bool *);
+		XGLVertex ComputeCentroid();
 		void ExpandBoundingBox(XGLVertex vertex);
 
 		XGLVertexList v;
 		BoundingBox bb;
+		bool isClockwise;
 	};
 	typedef std::vector<Contour> GlyphOutline;
 

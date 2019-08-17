@@ -76,15 +76,29 @@ public:
 
 		advance = { 0.0f, 0.0f, 0.0f };
 
+		// for each char in string...
 		for (char c : textToRender) {
+			xprintf("%s(): doing '%c'\n", __FUNCTION__, c);
+
 			FT_Load_Glyph(face, charMap[c], FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL);
 			Reset();
+
+			// This process results in a set of FT::Contours (single PSLG outlines) for the glyph
 			FT_Outline_Decompose(&face->glyph->outline, (FT_Outline_Funcs*)this, (FT_Outline_Funcs*)this);
 
-			for (auto c : Outline()) {
+			int contourIdx = 0;
+
+			// For each contour of the glyph...
+			for (FT::Contour contour : Outline()) {
+				// mark the beginning of the contour in this shape's CPU-side vertex attributes vector
 				contourOffsets.push_back((int)v.size());
-				for (auto vrtx : c.v)
+
+				// add each contour vertex to this shape's CPU-side vertex attributes vector
+				for (XGLVertexAttributes vrtx : contour.v)
 					PushVertex(vrtx);
+
+				contour.ComputeCentroid();
+				xprintf("letter: '%c', contour[%d]: winding: %s\n", c, contourIdx++, contour.isClockwise?"CW":"CCW");
 			}
 			// mark end offset, so display loop can calculate size
 			contourOffsets.push_back((int)v.size());
@@ -128,5 +142,5 @@ void ExampleXGL::BuildScene() {
 
 	AddShape("shaders/000-simple", [&](){ shape = new XGLFreeType(); return shape; });
 
-	shape->RenderText("MadStyle TV");
+	shape->RenderText("S");
 }
