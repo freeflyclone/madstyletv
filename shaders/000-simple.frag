@@ -21,4 +21,11 @@ out vec4 out_Color;
 void main(void)
 {
     out_Color = ex_Color;
+
+	if (out_Color.a < 0.0f) {
+		out_Color.a *= -1.0f;
+		out_Color.r = 1.0f - out_Color.r;
+		out_Color.g = 1.0f - out_Color.g;
+		out_Color.b = 1.0f - out_Color.b;
+	}
 }

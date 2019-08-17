@@ -86,7 +86,7 @@ namespace FT {
 		Contour* currentContour;
 		XGLVertex firstPoint;
 		XGLVertex currentPoint;
-		bool drawCurves = true;
+		bool drawCurves = false;
 		REAL interpolationFactor = 0.1f;
 	};
 } // namespace FT

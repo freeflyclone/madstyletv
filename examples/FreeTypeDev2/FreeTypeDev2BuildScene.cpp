@@ -53,14 +53,20 @@ public:
 		v.push_back({});
 	}
 
-	void PushVertex(XGLVertexAttributes vrtx) {
+	void PushVertex(XGLVertexAttributes vrtx, bool isClockwise) {
 		vrtx.v.x /= scaleFactor;
 		vrtx.v.y /= scaleFactor;
 		
 		vrtx.v.x += advance.x;
 		vrtx.v.y += advance.y;
 
+		vrtx.v.z = 0.01f;
 		vrtx.c = XGLColors::yellow;
+
+		// this is part of the hybrid approach: help the shaders 
+		// understand the glyphs's outline vs holes: holes get negative alpha
+		if (!isClockwise)
+			vrtx.c.a *= -1.0f;
 
 		v.push_back(vrtx);
 	}
@@ -78,8 +84,6 @@ public:
 
 		// for each char in string...
 		for (char c : textToRender) {
-			xprintf("%s(): doing '%c'\n", __FUNCTION__, c);
-
 			FT_Load_Glyph(face, charMap[c], FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL);
 			Reset();
 
@@ -90,26 +94,30 @@ public:
 
 			// For each contour of the glyph...
 			for (FT::Contour contour : Outline()) {
-				// mark the beginning of the contour in this shape's CPU-side vertex attributes vector
+				// mark the beginning of the contour in this shape's CPU-side XGLVertexList
 				contourOffsets.push_back((int)v.size());
 
-				// add each contour vertex to this shape's CPU-side vertex attributes vector
-				for (XGLVertexAttributes vrtx : contour.v)
-					PushVertex(vrtx);
-
+				// determine if this contour is clockwise or counter-clockwise
 				contour.ComputeCentroid();
-				xprintf("letter: '%c', contour[%d]: winding: %s\n", c, contourIdx++, contour.isClockwise?"CW":"CCW");
+
+				// add each contour vertex to this shape's CPU-side XGLVertexList
+				for (XGLVertexAttributes vrtx : contour.v)
+					PushVertex(vrtx, contour.isClockwise);
 			}
 			// mark end offset, so display loop can calculate size
 			contourOffsets.push_back((int)v.size());
 			AdvanceGlyphPosition();
 		}
 
-		// update the VBO with new geometry
+		// update this shape's VBO with new geometry from the CPU-side XGLVertexList
+		// so it will actually be seen.
 		Load(shader, v, idx);
 	}
 
 	void Draw() {
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		if (contourOffsets.size()) {
 			for (int idx = 0; idx < contourOffsets.size() - 1; idx++) {
 				GLuint start = contourOffsets[idx];
@@ -119,6 +127,7 @@ public:
 				GL_CHECK("glDrawArrays() failed");
 			}
 		}
+		glDisable(GL_BLEND);
 	}
 
 private:
@@ -142,5 +151,5 @@ void ExampleXGL::BuildScene() {
 
 	AddShape("shaders/000-simple", [&](){ shape = new XGLFreeType(); return shape; });
 
-	shape->RenderText("S");
+	shape->RenderText("&");
 }
