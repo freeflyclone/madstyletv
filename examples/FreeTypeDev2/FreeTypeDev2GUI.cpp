@@ -9,17 +9,7 @@ void ExampleXGL::BuildGUI() {
 
 	AddGuiShape("shaders/ortho", [&]() { gm = new XGLGuiManager(this); return gm; });
 	gm->AddChildShape("shaders/zzz", [&](){ xig = new XGLImGui(); return xig; });
+	xig->SetName("TitlerGui", false);
 
-	xig->AddMenuFunc([&]() {
-		if (ImGui::Begin("Titler")) {
-			if (ImGui::CollapsingHeader("Controls")) {
-			}
-			ImGui::End();
-		}
-		else
-			ImGui::End();
-
-		return;
-	});
 	return;
 }

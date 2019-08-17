@@ -126,9 +126,15 @@ public:
 				glDrawArrays(GL_LINE_LOOP, start, length);
 				GL_CHECK("glDrawArrays() failed");
 			}
+
+			glPointSize(8.0);
+			glDrawArrays(GL_POINTS, indicatorIdx, 1);
+			glPointSize(1.0);
 		}
 		glDisable(GL_BLEND);
 	}
+
+	int indicatorIdx{ 0 };
 
 private:
 	// These 2 numbers help Freetype math have adequate precision...
@@ -146,10 +152,37 @@ private:
 	std::vector<int>contourOffsets;
 };
 
+static XGLFreeType *pFt;
+
 void ExampleXGL::BuildScene() {
-	XGLFreeType *shape;
+	XGLImGui *ig = nullptr;
 
-	AddShape("shaders/000-simple", [&](){ shape = new XGLFreeType(); return shape; });
+	glm::vec3 cameraPosition(-1, -3, 5);
+	glm::vec3 cameraDirection = glm::normalize(cameraPosition*-1.0f);
+	glm::vec3 cameraUp = { 0, 0, 1 };
+	camera.Set(cameraPosition, cameraDirection, cameraUp);
 
-	shape->RenderText("&");
+	AddShape("shaders/000-simple", [&](){ pFt = new XGLFreeType(); return pFt; });
+
+	if ((ig = (XGLImGui *)(GetGuiManager()->FindObject("TitlerGui"))) != nullptr) {
+		ig->AddMenuFunc([&]() {
+			if (ImGui::Begin("Titler")) {
+				if (ImGui::CollapsingHeader("Controls")) {
+					ImGui::SliderInt("Indicator Index", &pFt->indicatorIdx, 0, pFt->v.size()-1);
+					/*
+					ImGui::SliderInt("Row", &iconY, 0, 14);
+					ImGui::ColorEdit4("Tint", &iconTint.x);
+					ImGui::SliderInt("Size/32)", &iconPreviewSize, 1, 8);
+					*/
+				}
+				ImGui::End();
+			}
+			else
+				ImGui::End();
+
+			return;
+		});
+	}
+
+	pFt->RenderText("&");
 }
