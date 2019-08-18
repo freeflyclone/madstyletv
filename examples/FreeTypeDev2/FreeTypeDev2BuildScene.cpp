@@ -25,12 +25,40 @@
 
 #define FONT_NAME "C:/windows/fonts/times.ttf"
 
+// New concept: use additional XGLShape(s) to render visualizations of XGLFreeType structures
+// while I'm developing my hybrid shader-based Freetype2 renderer.
+class XGLFreetypeProbe : public XGLShape {
+public:
+	XGLFreetypeProbe(XGL* pxgl) : pXgl(pxgl) {
+		xprintf("%s()\n", __FUNCTION__);
+
+		pXgl->AddShape("shaders/specular", [&]() { cube = new XGLCube(); return cube; });
+		pXgl->AddShape("shaders/specular", [&]() { cubeX = new XGLCube(); return cubeX; });
+		pXgl->AddShape("shaders/specular", [&]() { cubeY = new XGLCube(); return cubeY; });
+	}
+
+	void Move(XGLVertex v, FT::BoundingBox bb) {
+		glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(0.0375, 0.0375, 0.0375));
+		glm::mat4 translate = glm::translate(glm::mat4(), v);
+		cube->model = translate * scale;
+
+		translate = glm::translate(glm::mat4(), glm::vec3(bb.lr.x, v.y, 0.0));
+		cubeX->model = translate * scale;
+
+		translate = glm::translate(glm::mat4(), glm::vec3(v.x, bb.ul.y, 0.0));
+		cubeY->model = translate * scale;
+	}
+
+	XGL* pXgl{ nullptr };
+	XGLCube *cube{ nullptr }, *cubeX{ nullptr }, *cubeY{ nullptr };
+};
+
 class XGLFreeType : public FT::GlyphDecomposer,  public XGLShape {
 public:
 	typedef std::map<FT_ULong, FT_UInt> CharMap;
 	typedef std::vector<GLsizei> ContourEndPoints;
 
-	XGLFreeType() {
+	XGLFreeType(XGL* pXgl) {
 		FT_UInt gindex = 0;
 		FT_ULong charcode = 0;
 
@@ -51,6 +79,8 @@ public:
 
 		// add signal to initial Load() to initialize the materials properties.
 		v.push_back({});
+
+		pXgl->AddShape("shaders/specular", [&]() { probe = new XGLFreetypeProbe(pXgl); return probe; });
 	}
 
 	void PushVertex(XGLVertexAttributes vrtx, bool isClockwise) {
@@ -76,7 +106,7 @@ public:
 		advance.y += face->glyph->advance.y / scaleFactor;
 	}
 
-	static bool SortCompare(XGLVertexAttributes a, XGLVertexAttributes b) {
+	static bool SortByXCompare(XGLVertexAttributes a, XGLVertexAttributes b) {
 		bool xIsEqual = (a.v.x == b.v.x);
 		bool xIsLess = (a.v.x < b.v.x);
 		bool yIsLess = (a.v.y < b.v.y);
@@ -128,45 +158,28 @@ public:
 			AdvanceGlyphPosition();
 		}
 
+		// save BoundingBox of first outline of first glyph.
+		// Freetype presents contours with outlines (vs holes) first.
+		// Multiple non-hole outlines are not handled yet.
 		bb = Outline()[0].bb;
 		bb.ul.x /= scaleFactor;
 		bb.ul.y /= scaleFactor;
 		bb.lr.x /= scaleFactor;
 		bb.lr.y /= scaleFactor;
 
-		// add a couple of vertices at the end of the XGLVertexList
-		// Used for drawing a ray from current indicatorIdx to right side of
-		// bounding box for the glyph.
-		v.push_back({ {0.0, 0.0, 0.0}, {}, {}, XGLColors::white });
-		v.push_back({ {1.0, 1.0, 0.0}, {}, {}, XGLColors::white });
-
 		// update this shape's VBO with new geometry from the CPU-side XGLVertexList
 		// so it will actually be seen.
 		Load(shader, v, idx);
 
 		sorted = new XGLVertexList(v);
+		std::sort(sorted->begin(), sorted->end() - 2, SortByXCompare);
 
-		std::sort(sorted->begin(), sorted->end()-2, SortCompare);
 		return;
 	}
 
 	void Draw() {
-		int endIndex = contourOffsets[contourOffsets.size() - 1];
-		XGLVertexAttributes *pData = v.data();
-		int length = 2 * sizeof(XGLVertexAttributes);
-		int endOffset = endIndex * sizeof(XGLVertexAttributes);
-
-		if (showTail) {
-			v[endIndex].v.x = v[indicatorIdx].v.x;
-			v[endIndex].v.y = v[indicatorIdx].v.y;
-			v[endIndex + 1].v.x = bb.lr.x;
-			v[endIndex + 1].v.y = v[indicatorIdx].v.y;
-			glBufferSubData(GL_ARRAY_BUFFER, endOffset, length, &pData[endIndex]);
-		}
-
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 		if (contourOffsets.size()) {
 			for (int idx = 0; idx < contourOffsets.size() - 1; idx++) {
 				GLuint start = contourOffsets[idx];
@@ -175,20 +188,25 @@ public:
 				glDrawArrays(GL_LINE_LOOP, start, length);
 				GL_CHECK("glDrawArrays() failed");
 			}
-
-			glPointSize(8.0);
-			glDrawArrays(GL_POINTS, indicatorIdx, 1);
-			glPointSize(1.0);
-
-			if (showTail)
-				glDrawArrays(GL_LINES, contourOffsets[contourOffsets.size() - 1], 2);
 		}
 		glDisable(GL_BLEND);
+
+		// if indicatorIdx has changed...)
+		if (indicatorIdx != oldIndicatorIdx) {
+			// adjust XGLFreetypeProbe to reflect new indicatorIdx
+			probe->Move(v[indicatorIdx].v, bb);
+			oldIndicatorIdx = indicatorIdx;
+		}
 	}
 
 	int indicatorIdx{ 0 };
+	int oldIndicatorIdx{ -1 };
 	bool showTail = false;
 	FT::BoundingBox bb;
+	
+	XGLFreetypeProbe* probe{ nullptr };
+	glm::mat4 probeScale;
+	glm::mat4 probeTranslate;
 
 private:
 	// These 2 numbers help Freetype math have adequate precision...
@@ -217,14 +235,13 @@ void ExampleXGL::BuildScene() {
 	glm::vec3 cameraUp = { 0, 0, 1 };
 	camera.Set(cameraPosition, cameraDirection, cameraUp);
 
-	AddShape("shaders/000-simple", [&](){ pFt = new XGLFreeType(); return pFt; });
+	AddShape("shaders/000-simple", [&](){ pFt = new XGLFreeType(this); return pFt; });
 
 	if ((ig = (XGLImGui *)(GetGuiManager()->FindObject("TitlerGui"))) != nullptr) {
 		ig->AddMenuFunc([&]() {
 			if (ImGui::Begin("Titler")) {
-				if (ImGui::CollapsingHeader("Tweeks")) {
+				if (ImGui::CollapsingHeader("Tweeks", ImGuiTreeNodeFlags_DefaultOpen)) {
 					ImGui::SliderInt("Indicator Index", &pFt->indicatorIdx, 0, pFt->v.size()-1);
-					ImGui::Checkbox("Show Tail", &pFt->showTail);
 				}
 				ImGui::End();
 			}
