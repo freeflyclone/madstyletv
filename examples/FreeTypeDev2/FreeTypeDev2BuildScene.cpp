@@ -76,9 +76,28 @@ public:
 		advance.y += face->glyph->advance.y / scaleFactor;
 	}
 
+	static bool SortCompare(XGLVertexAttributes a, XGLVertexAttributes b) {
+		bool xIsEqual = (a.v.x == b.v.x);
+		bool xIsLess = (a.v.x < b.v.x);
+		bool yIsLess = (a.v.y < b.v.y);
+
+		if (xIsEqual && yIsLess)
+			return true;
+
+		if (xIsLess)
+			return true;
+
+		return false;
+	}
+
 	void RenderText(std::string textToRender) {
 		v.clear();
 		contourOffsets.clear();
+
+		if (sorted) {
+			sorted->clear();
+			delete sorted;
+		}
 
 		advance = { 0.0f, 0.0f, 0.0f };
 
@@ -124,6 +143,11 @@ public:
 		// update this shape's VBO with new geometry from the CPU-side XGLVertexList
 		// so it will actually be seen.
 		Load(shader, v, idx);
+
+		sorted = new XGLVertexList(v);
+
+		std::sort(sorted->begin(), sorted->end()-2, SortCompare);
+		return;
 	}
 
 	void Draw() {
@@ -180,6 +204,7 @@ private:
 	CharMap charMap;
 	XGLVertex advance;
 	std::vector<int>contourOffsets;
+	XGLVertexList* sorted{ nullptr };
 };
 
 static XGLFreeType *pFt;
