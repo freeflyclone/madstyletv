@@ -141,6 +141,7 @@ public:
 		bb.lr.y /= scaleFactor;
 
 		pXgl->AddShape("shaders/000-simple", [&]() { grid = new XGLFreetypeGrid(pXgl, v, bb); return grid; });
+		pXgl->AddShape("shaders/000-simple", [&]() { crosshair = new XGLFreetypeCrosshair(pXgl, v, bb); return crosshair; });
 
 		// update this shape's VBO with new geometry from the CPU-side XGLVertexList
 		// so it will actually be seen.
@@ -182,6 +183,8 @@ public:
 	XGL* pXgl;
 	XGLFreetypeProbe* probe{ nullptr };
 	XGLFreetypeGrid* grid{ nullptr };
+	XGLFreetypeCrosshair* crosshair{ nullptr };
+
 	glm::mat4 probeScale;
 	glm::mat4 probeTranslate;
 
@@ -219,7 +222,13 @@ void ExampleXGL::BuildScene() {
 			if (ImGui::Begin("Titler")) {
 				if (ImGui::CollapsingHeader("Tweeks", ImGuiTreeNodeFlags_DefaultOpen)) {
 					ImGui::SliderInt("Indicator Index", &pFt->indicatorIdx, 0, pFt->v.size()-1);
-					ImGui::Checkbox("Show Grid", &pFt->grid->drawGrid);
+					pFt->grid->Move(pFt->indicatorIdx);
+					pFt->crosshair->Move(pFt->indicatorIdx);
+					ImGui::Checkbox("Show Grid", &pFt->grid->draw);
+					ImGui::Checkbox("Show Border", &pFt->grid->drawBorder);
+					ImGui::Checkbox("Show Up To Cursor", &pFt->grid->drawUpTo);
+					ImGui::Checkbox("Show From Cursor to End", &pFt->grid->drawFromHere);
+					ImGui::Checkbox("Show Crosshair", &pFt->crosshair->draw);
 				}
 				ImGui::End();
 			}

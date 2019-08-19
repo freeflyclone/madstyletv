@@ -1,3 +1,6 @@
+// New concept: use additional XGLShape(s) to render visualizations of XGLFreeType structures
+// while I'm developing my hybrid shader-based Freetype2 renderer.
+
 #ifndef XGLFREETYPEUTILS_H
 #define XGLFREETYPEUTILS_H
 
@@ -8,21 +11,39 @@ public:
 	XGLFreetypeGrid(XGL* pxgl, XGLVertexList vList, FT::BoundingBox bb);
 	void Draw();
 
+	void Move(int);
+
 	XGL* pXgl;
-	bool drawGrid{ true };
+	FT::BoundingBox bb;
+	bool draw{ true };
+	bool drawBorder{true};
+	bool drawUpTo{ true };
+	bool drawFromHere{ true };
+	int idx{ 0 };
 };
 
-// New concept: use additional XGLShape(s) to render visualizations of XGLFreeType structures
-// while I'm developing my hybrid shader-based Freetype2 renderer.
 class XGLFreetypeProbe : public XGLShape {
 public:
 	XGLFreetypeProbe(XGL* pxgl);
 	void Move(XGLVertex v, FT::BoundingBox bb);
 
 	XGL* pXgl{ nullptr };
-	XGLCube *cube{ nullptr }, *cubeX{ nullptr }, *cubeY{ nullptr };
+	XGLSphere *sphere{ nullptr }, *sphereX{ nullptr }, *sphereY{ nullptr };
 };
 
+
+class XGLFreetypeCrosshair : public XGLShape {
+public:
+	XGLFreetypeCrosshair(XGL* pxgl, XGLVertexList vList, FT::BoundingBox b);
+	void Draw();
+
+	void Move(int);
+
+	XGL* pXgl{ nullptr };
+	FT::BoundingBox bb;
+	bool draw{ true };
+	int idx{ 0 };
+};
 
 
 #endif
