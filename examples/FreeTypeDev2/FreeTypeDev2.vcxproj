@@ -175,9 +175,11 @@
     <ClCompile Include="FreeTypeDev2BuildScene.cpp" />
     <ClCompile Include="FreeTypeDev2GUI.cpp" />
     <ClCompile Include="XGLFreeType.cpp" />
+    <ClCompile Include="XGLFreetypeUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="XGLFreeType.h" />
+    <ClInclude Include="XGLFreetypeUtils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

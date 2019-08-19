@@ -16,6 +16,7 @@
 #include "ExampleXGL.h"
 #include <string>
 #include "XGLFreeType.h"
+#include "XGLFreetypeUtils.h"
 
 #include FT_OUTLINE_H
 
@@ -25,40 +26,12 @@
 
 #define FONT_NAME "C:/windows/fonts/times.ttf"
 
-// New concept: use additional XGLShape(s) to render visualizations of XGLFreeType structures
-// while I'm developing my hybrid shader-based Freetype2 renderer.
-class XGLFreetypeProbe : public XGLShape {
-public:
-	XGLFreetypeProbe(XGL* pxgl) : pXgl(pxgl) {
-		xprintf("%s()\n", __FUNCTION__);
-
-		pXgl->AddShape("shaders/specular", [&]() { cube = new XGLCube(); return cube; });
-		pXgl->AddShape("shaders/specular", [&]() { cubeX = new XGLCube(); return cubeX; });
-		pXgl->AddShape("shaders/specular", [&]() { cubeY = new XGLCube(); return cubeY; });
-	}
-
-	void Move(XGLVertex v, FT::BoundingBox bb) {
-		glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(0.0375, 0.0375, 0.0375));
-		glm::mat4 translate = glm::translate(glm::mat4(), v);
-		cube->model = translate * scale;
-
-		translate = glm::translate(glm::mat4(), glm::vec3(bb.lr.x, v.y, 0.0));
-		cubeX->model = translate * scale;
-
-		translate = glm::translate(glm::mat4(), glm::vec3(v.x, bb.ul.y, 0.0));
-		cubeY->model = translate * scale;
-	}
-
-	XGL* pXgl{ nullptr };
-	XGLCube *cube{ nullptr }, *cubeX{ nullptr }, *cubeY{ nullptr };
-};
-
 class XGLFreeType : public FT::GlyphDecomposer,  public XGLShape {
 public:
 	typedef std::map<FT_ULong, FT_UInt> CharMap;
 	typedef std::vector<GLsizei> ContourEndPoints;
 
-	XGLFreeType(XGL* pXgl) {
+	XGLFreeType(XGL* pxgl) : pXgl(pxgl) {
 		FT_UInt gindex = 0;
 		FT_ULong charcode = 0;
 
@@ -167,6 +140,8 @@ public:
 		bb.lr.x /= scaleFactor;
 		bb.lr.y /= scaleFactor;
 
+		pXgl->AddShape("shaders/000-simple", [&]() { grid = new XGLFreetypeGrid(pXgl, v, bb); return grid; });
+
 		// update this shape's VBO with new geometry from the CPU-side XGLVertexList
 		// so it will actually be seen.
 		Load(shader, v, idx);
@@ -204,7 +179,9 @@ public:
 	bool showTail = false;
 	FT::BoundingBox bb;
 	
+	XGL* pXgl;
 	XGLFreetypeProbe* probe{ nullptr };
+	XGLFreetypeGrid* grid{ nullptr };
 	glm::mat4 probeScale;
 	glm::mat4 probeTranslate;
 
@@ -242,6 +219,7 @@ void ExampleXGL::BuildScene() {
 			if (ImGui::Begin("Titler")) {
 				if (ImGui::CollapsingHeader("Tweeks", ImGuiTreeNodeFlags_DefaultOpen)) {
 					ImGui::SliderInt("Indicator Index", &pFt->indicatorIdx, 0, pFt->v.size()-1);
+					ImGui::Checkbox("Show Grid", &pFt->grid->drawGrid);
 				}
 				ImGui::End();
 			}

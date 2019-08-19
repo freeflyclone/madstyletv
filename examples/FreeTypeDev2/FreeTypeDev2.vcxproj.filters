@@ -39,9 +39,15 @@
     <ClCompile Include="..\common\xglimgui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="XGLFreetypeUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="XGLFreeType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="XGLFreetypeUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
