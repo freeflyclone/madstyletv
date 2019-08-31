@@ -93,7 +93,7 @@ public:
 		return false;
 	}
 
-	void RenderText(std::string textToRender) {
+	void RenderText() {
 		v.clear();
 		contourOffsets.clear();
 
@@ -105,7 +105,7 @@ public:
 		advance = { 0.0f, 0.0f, 0.0f };
 
 		// for each char in string...
-		for (char c : textToRender) {
+		for (char c : renderString) {
 			FT_Load_Glyph(face, charMap[c], FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL);
 			Reset();
 
@@ -151,6 +151,11 @@ public:
 		std::sort(sorted->begin(), sorted->end() - 2, SortByXCompare);
 
 		return;
+	}
+
+	void RenderText(std::string textToRender) {
+		renderString = textToRender;
+		RenderText();
 	}
 
 	void Draw() {
@@ -203,6 +208,7 @@ private:
 	XGLVertex advance;
 	std::vector<int>contourOffsets;
 	XGLVertexList* sorted{ nullptr };
+	std::string renderString;
 };
 
 static XGLFreeType *pFt;
