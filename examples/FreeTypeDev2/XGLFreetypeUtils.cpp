@@ -101,10 +101,13 @@ void XGLFreetypeCrosshair::Update(XGLVertexList vList, FT::BoundingBox b) {
 
 	v.push_back({ { x, bb.ul.y, 0 }, {}, {}, XGLColors::magenta });
 	v.push_back({ { x, bb.lr.y, 0 }, {}, {}, XGLColors::magenta });
+
+	// make sure the VBO gets updated
+	XGLBuffer::Load(XGLShape::shader, XGLShape::v, XGLShape::idx);
 }
 
 void XGLFreetypeCrosshair::Move(int i) {
-	if (i<0 || i>v.size() - 4)
+	if (i<0)
 		return;
 
 	idx = i;
@@ -112,7 +115,7 @@ void XGLFreetypeCrosshair::Move(int i) {
 
 void XGLFreetypeCrosshair::Draw() {
 	if (v.size() && draw) {
-		glDrawArrays(GL_LINES, idx*4, 4);
+		glDrawArrays(GL_LINES, 0, 4);
 		GL_CHECK("glDrawArrays() failed");
 	}
 }

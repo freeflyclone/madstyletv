@@ -165,10 +165,10 @@ public:
 
 		// update all the sub shapes..
 		if (grid)
-			grid->Update(*vertexLists[vListIdx], bb);
+			grid->Update(*CurrentVertexList(), bb);
 
 		if (crosshair)
-			crosshair->Update(*vertexLists[vListIdx], bb);
+			crosshair->Update(*CurrentVertexList(), bb);
 
 		// update this shape's VBO with new geometry from the CPU-side XGLVertexList
 		// so it will actually be seen.
@@ -180,6 +180,10 @@ public:
 	void RenderText(std::string textToRender) {
 		renderString = textToRender;
 		RenderText();
+	}
+
+	XGLVertexList* CurrentVertexList() {
+		return vertexLists[vListIdx];
 	}
 
 	void Draw() {
@@ -199,7 +203,7 @@ public:
 		// if indicatorIdx has changed...)
 		if (indicatorIdx != oldIndicatorIdx || vListIdx != oldvListIdx) {
 			// adjust XGLFreetypeProbe to reflect new indicatorIdx
-			probe->Move((*vertexLists[vListIdx])[indicatorIdx].v, bb);
+			probe->Move((*CurrentVertexList())[indicatorIdx].v, bb);
 			oldIndicatorIdx = indicatorIdx;
 			oldvListIdx = vListIdx;
 		}
@@ -258,10 +262,15 @@ void ExampleXGL::BuildScene() {
 		ig->AddMenuFunc([&]() {
 			if (ImGui::Begin("Titler")) {
 				if (ImGui::CollapsingHeader("Tweeks", ImGuiTreeNodeFlags_DefaultOpen)) {
-					ImGui::SliderInt("VertexList Index", &pFt->vListIdx, 0, pFt->vertexLists.size() - 1);
-					ImGui::SliderInt("Indicator Index", &pFt->indicatorIdx, 0, pFt->v.size() - 1);
+					ImGui::SetNextItemWidth(100);
+					ImGui::SliderInt("VertexList Index", &pFt->vListIdx, 0, (int)pFt->vertexLists.size() - 1);
+					ImGui::SetNextItemWidth(-120);
+					ImGui::SliderInt("Indicator Index", &pFt->indicatorIdx, 0, (int)pFt->v.size() - 1);
+
 					pFt->grid->Move(pFt->indicatorIdx);
 					pFt->crosshair->Move(pFt->indicatorIdx);
+					pFt->crosshair->Update(*pFt->CurrentVertexList(), pFt->bb);
+
 					ImGui::Checkbox("Show Grid", &pFt->grid->draw);
 					ImGui::Checkbox("Show Border", &pFt->grid->drawBorder);
 					ImGui::Checkbox("Show Up To Cursor", &pFt->grid->drawUpTo);
