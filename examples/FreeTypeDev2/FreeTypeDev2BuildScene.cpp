@@ -56,10 +56,13 @@ public:
 		pXgl->AddShape("shaders/specular", [&]() { probe = new XGLFreetypeProbe(pXgl); return probe; });
 		pXgl->AddShape("shaders/000-simple", [&]() { grid = new XGLFreetypeGrid(pXgl); return grid; });
 		pXgl->AddShape("shaders/000-simple", [&]() { crosshair = new XGLFreetypeCrosshair(pXgl); return crosshair; });
+		pXgl->AddShape("shaders/000-simple", [&]() { nearestNeighbor = new XGLFreetypeNearest(pXgl); return nearestNeighbor; });
 
 		vertexLists.push_back(&v);
 		vertexLists.push_back(&xSorted);
 		vertexLists.push_back(&ySorted);
+
+		DrawCurvesEnable(false);
 	}
 
 	void PushVertex(XGLVertexAttributes vrtx, bool isClockwise) {
@@ -170,6 +173,10 @@ public:
 		if (crosshair)
 			crosshair->Update(*CurrentVertexList(), bb);
 
+		// Fill NearestNeighbor list...
+		if (nearestNeighbor)
+			nearestNeighbor->Update(v);
+
 		// update this shape's VBO with new geometry from the CPU-side XGLVertexList
 		// so it will actually be seen.
 		Load(shader, v, idx);
@@ -218,6 +225,7 @@ public:
 	XGLFreetypeProbe* probe{ nullptr };
 	XGLFreetypeGrid* grid{ nullptr };
 	XGLFreetypeCrosshair* crosshair{ nullptr };
+	XGLFreetypeNearest* nearestNeighbor{ nullptr };
 
 	glm::mat4 probeScale;
 	glm::mat4 probeTranslate;

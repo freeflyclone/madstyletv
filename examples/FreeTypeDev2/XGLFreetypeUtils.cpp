@@ -120,3 +120,48 @@ void XGLFreetypeCrosshair::Draw() {
 	}
 }
 
+XGLFreetypeNearest::XGLFreetypeNearest(XGL* pxgl) : pXgl(pxgl) {
+	v.push_back({});
+}
+
+void XGLFreetypeNearest::Update(XGLVertexList vList) 
+{
+	int currentIdx = 0;
+	nn.clear();
+
+	for (auto vrtx : vList) {
+		// were looking for minimum distance, so initialize to maximum distance
+		float distance = std::numeric_limits<float>::max();
+
+		nn.push_back({});
+
+		int currentTrgtIdx = 0;
+
+		for (auto trgt : vList) {
+			int deltaIdx = abs(currentIdx - currentTrgtIdx);
+			float trgtDistance = glm::distance(vrtx.v, trgt.v);
+			if (trgtDistance > 0.0f && trgtDistance < distance && deltaIdx > 2) {
+				nn[currentIdx] = trgt;
+				distance = trgtDistance;
+			}
+			currentTrgtIdx++;
+		}
+		currentIdx++;
+	}
+
+	v.clear();
+
+	for (size_t i = 0; i < vList.size(); i++) {
+		v.push_back(vList[i]);
+		v.push_back(nn[i]);
+	}
+
+	Load(XGLShape::shader, XGLShape::v, XGLShape::idx);
+}
+
+void XGLFreetypeNearest::Draw() {
+	if (v.size() && draw) {
+		glDrawArrays(GL_LINES, 0, v.size());
+		GL_CHECK("glDrawArrays() failed");
+	}
+}

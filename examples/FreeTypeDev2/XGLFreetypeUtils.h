@@ -47,5 +47,16 @@ public:
 	int idx{ 0 };
 };
 
+class XGLFreetypeNearest : public XGLShape {
+public:
+	XGLFreetypeNearest(XGL* pxgl);
+	void Update(XGLVertexList vList);
+	void Draw();
+
+	XGL* pXgl{ nullptr };
+	bool draw{ true };
+
+	XGLVertexList nn;
+};
 
 #endif
