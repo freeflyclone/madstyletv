@@ -8,7 +8,8 @@
 
 class XGLFreetypeGrid : public XGLShape {
 public:
-	XGLFreetypeGrid(XGL* pxgl, XGLVertexList vList, FT::BoundingBox bb);
+	XGLFreetypeGrid(XGL* pxgl);
+	void Update(XGLVertexList vList, FT::BoundingBox bb);
 	void Draw();
 
 	void Move(int);
@@ -34,7 +35,8 @@ public:
 
 class XGLFreetypeCrosshair : public XGLShape {
 public:
-	XGLFreetypeCrosshair(XGL* pxgl, XGLVertexList vList, FT::BoundingBox b);
+	XGLFreetypeCrosshair(XGL* pxgl);
+	void Update(XGLVertexList vList, FT::BoundingBox b);
 	void Draw();
 
 	void Move(int);

@@ -54,6 +54,12 @@ public:
 		v.push_back({});
 
 		pXgl->AddShape("shaders/specular", [&]() { probe = new XGLFreetypeProbe(pXgl); return probe; });
+		pXgl->AddShape("shaders/000-simple", [&]() { grid = new XGLFreetypeGrid(pXgl); return grid; });
+		pXgl->AddShape("shaders/000-simple", [&]() { crosshair = new XGLFreetypeCrosshair(pXgl); return crosshair; });
+
+		vertexLists.push_back(&v);
+		vertexLists.push_back(&xSorted);
+		vertexLists.push_back(&ySorted);
 	}
 
 	void PushVertex(XGLVertexAttributes vrtx, bool isClockwise) {
@@ -79,6 +85,20 @@ public:
 		advance.y += face->glyph->advance.y / scaleFactor;
 	}
 
+	static bool SortByYCompare(XGLVertexAttributes a, XGLVertexAttributes b) {
+		bool yIsEqual = (a.v.y == b.v.y);
+		bool yIsLess = (a.v.y < b.v.y);
+		bool xIsLess = (a.v.x < b.v.x);
+
+		if (yIsEqual && xIsLess)
+			return true;
+
+		if (yIsLess)
+			return true;
+
+		return false;
+	}
+
 	static bool SortByXCompare(XGLVertexAttributes a, XGLVertexAttributes b) {
 		bool xIsEqual = (a.v.x == b.v.x);
 		bool xIsLess = (a.v.x < b.v.x);
@@ -96,11 +116,6 @@ public:
 	void RenderText() {
 		v.clear();
 		contourOffsets.clear();
-
-		if (sorted) {
-			sorted->clear();
-			delete sorted;
-		}
 
 		advance = { 0.0f, 0.0f, 0.0f };
 
@@ -140,15 +155,24 @@ public:
 		bb.lr.x /= scaleFactor;
 		bb.lr.y /= scaleFactor;
 
-		pXgl->AddShape("shaders/000-simple", [&]() { grid = new XGLFreetypeGrid(pXgl, v, bb); return grid; });
-		pXgl->AddShape("shaders/000-simple", [&]() { crosshair = new XGLFreetypeCrosshair(pXgl, v, bb); return crosshair; });
+		xSorted.clear();
+		xSorted = v;
+		std::sort(xSorted.begin(), xSorted.end() - 2, SortByXCompare);
+
+		ySorted.clear();
+		ySorted = v;
+		std::sort(ySorted.begin(), ySorted.end() - 2, SortByYCompare);
+
+		// update all the sub shapes..
+		if (grid)
+			grid->Update(*vertexLists[vListIdx], bb);
+
+		if (crosshair)
+			crosshair->Update(*vertexLists[vListIdx], bb);
 
 		// update this shape's VBO with new geometry from the CPU-side XGLVertexList
 		// so it will actually be seen.
 		Load(shader, v, idx);
-
-		sorted = new XGLVertexList(v);
-		std::sort(sorted->begin(), sorted->end() - 2, SortByXCompare);
 
 		return;
 	}
@@ -173,10 +197,11 @@ public:
 		glDisable(GL_BLEND);
 
 		// if indicatorIdx has changed...)
-		if (indicatorIdx != oldIndicatorIdx) {
+		if (indicatorIdx != oldIndicatorIdx || vListIdx != oldvListIdx) {
 			// adjust XGLFreetypeProbe to reflect new indicatorIdx
-			probe->Move(v[indicatorIdx].v, bb);
+			probe->Move((*vertexLists[vListIdx])[indicatorIdx].v, bb);
 			oldIndicatorIdx = indicatorIdx;
+			oldvListIdx = vListIdx;
 		}
 	}
 
@@ -193,6 +218,10 @@ public:
 	glm::mat4 probeScale;
 	glm::mat4 probeTranslate;
 
+	std::vector<XGLVertexList*> vertexLists;
+	int vListIdx{ 0 };
+	int oldvListIdx{ -1 };
+
 private:
 	// These 2 numbers help Freetype math have adequate precision...
 	const FT_F26Dot6 ftSize{ 1024 };
@@ -207,8 +236,10 @@ private:
 	CharMap charMap;
 	XGLVertex advance;
 	std::vector<int>contourOffsets;
-	XGLVertexList* sorted{ nullptr };
+	XGLVertexList xSorted;
+	XGLVertexList ySorted;
 	std::string renderString;
+
 };
 
 static XGLFreeType *pFt;
@@ -227,7 +258,8 @@ void ExampleXGL::BuildScene() {
 		ig->AddMenuFunc([&]() {
 			if (ImGui::Begin("Titler")) {
 				if (ImGui::CollapsingHeader("Tweeks", ImGuiTreeNodeFlags_DefaultOpen)) {
-					ImGui::SliderInt("Indicator Index", &pFt->indicatorIdx, 0, pFt->v.size()-1);
+					ImGui::SliderInt("VertexList Index", &pFt->vListIdx, 0, pFt->vertexLists.size() - 1);
+					ImGui::SliderInt("Indicator Index", &pFt->indicatorIdx, 0, pFt->v.size() - 1);
 					pFt->grid->Move(pFt->indicatorIdx);
 					pFt->crosshair->Move(pFt->indicatorIdx);
 					ImGui::Checkbox("Show Grid", &pFt->grid->draw);

@@ -1,6 +1,14 @@
 #include "XGLFreetypeUtils.h"
 
-XGLFreetypeGrid::XGLFreetypeGrid(XGL* pxgl, XGLVertexList vList, FT::BoundingBox b) : pXgl(pxgl), bb(b) {
+XGLFreetypeGrid::XGLFreetypeGrid(XGL* pxgl) : pXgl(pxgl) {
+	v.push_back({});
+}
+
+void XGLFreetypeGrid::Update(XGLVertexList vList, FT::BoundingBox b) {
+	bb = b;
+
+	v.clear();
+
 	v.push_back({ { bb.ul.x, bb.ul.y, 0 }, {}, {}, {0.5, 0.5, 0.5, 1.0} });
 	v.push_back({ { bb.lr.x, bb.ul.y, 0 }, {}, {}, {0.5, 0.5, 0.5, 1.0} });
 
@@ -23,6 +31,8 @@ XGLFreetypeGrid::XGLFreetypeGrid(XGL* pxgl, XGLVertexList vList, FT::BoundingBox
 		v.push_back({ { x, bb.ul.y, 0 }, {}, {}, {0.5, 0.5, 0.5, 1.0} });
 		v.push_back({ { x, bb.lr.y, 0 }, {}, {}, {0.5, 0.5, 0.5, 1.0} });
 	}
+	// make sure the VBO gets updated
+	XGLBuffer::Load(XGLShape::shader, XGLShape::v, XGLShape::idx);
 }
 
 void XGLFreetypeGrid::Move(int i) {
@@ -41,8 +51,8 @@ void XGLFreetypeGrid::Draw() {
 		GL_CHECK("glDrawArrays() failed");
 	}
 
-	if (drawUpTo) {
-		glDrawArrays(GL_LINES, 8, idx * 4);
+	if (drawUpTo && (idx>0) ) {
+		glDrawArrays(GL_LINES, 8, (idx-1) * 4);
 		GL_CHECK("glDrawArrays() failed");
 	}
 
@@ -72,17 +82,25 @@ void XGLFreetypeProbe::Move(XGLVertex v, FT::BoundingBox bb) {
 	sphereY->model = translate * scale;
 }
 
-XGLFreetypeCrosshair::XGLFreetypeCrosshair(XGL* pxgl, XGLVertexList vList, FT::BoundingBox b) : pXgl(pxgl), bb(b) {
-	for (auto vrtx : vList) {
-		float x = vrtx.v.x;
-		float y = vrtx.v.y;
+XGLFreetypeCrosshair::XGLFreetypeCrosshair(XGL* pxgl) : pXgl(pxgl) {
+	v.push_back({});
+}
 
-		v.push_back({ { bb.ul.x, y, 0 }, {}, {}, XGLColors::magenta });
-		v.push_back({ { bb.lr.x, y, 0 }, {}, {}, XGLColors::magenta });
+void XGLFreetypeCrosshair::Update(XGLVertexList vList, FT::BoundingBox b) {
+	bb = b;
 
-		v.push_back({ { x, bb.ul.y, 0 }, {}, {}, XGLColors::magenta });
-		v.push_back({ { x, bb.lr.y, 0 }, {}, {}, XGLColors::magenta });
-	}
+	v.clear();
+
+	XGLVertexAttributes vrtx = vList[idx];
+
+	float x = vrtx.v.x;
+	float y = vrtx.v.y;
+
+	v.push_back({ { bb.ul.x, y, 0 }, {}, {}, XGLColors::magenta });
+	v.push_back({ { bb.lr.x, y, 0 }, {}, {}, XGLColors::magenta });
+
+	v.push_back({ { x, bb.ul.y, 0 }, {}, {}, XGLColors::magenta });
+	v.push_back({ { x, bb.lr.y, 0 }, {}, {}, XGLColors::magenta });
 }
 
 void XGLFreetypeCrosshair::Move(int i) {
