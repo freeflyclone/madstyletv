@@ -209,6 +209,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shaders", "Shaders", "{5CB0
 	ProjectSection(SolutionItems) = preProject
 		shaders\000-simple.frag = shaders\000-simple.frag
 		shaders\000-simple.vert = shaders\000-simple.vert
+		shaders\bezier.frag = shaders\bezier.frag
+		shaders\bezier.vert = shaders\bezier.vert
 		shaders\diffuse.frag = shaders\diffuse.frag
 		shaders\diffuse.vert = shaders\diffuse.vert
 		shaders\mono.frag = shaders\mono.frag
@@ -266,6 +268,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source Files", "Source File
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FreeTypeDev2", "examples\FreeTypeDev2\FreeTypeDev2.vcxproj", "{D967F26C-8807-4CFD-8653-93DD6F4371C0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AC4080D2-1C42-4812-943D-79CA13A1D86C} = {AC4080D2-1C42-4812-943D-79CA13A1D86C}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BezierTest", "examples\BezierTest\BezierTest.vcxproj", "{E5FAF77A-D5A3-48CE-B060-25E0BEBEDD52}"
 	ProjectSection(ProjectDependencies) = postProject
 		{AC4080D2-1C42-4812-943D-79CA13A1D86C} = {AC4080D2-1C42-4812-943D-79CA13A1D86C}
 	EndProjectSection
@@ -806,6 +813,18 @@ Global
 		{D967F26C-8807-4CFD-8653-93DD6F4371C0}.Release|Win32.Build.0 = Release|Win32
 		{D967F26C-8807-4CFD-8653-93DD6F4371C0}.Release|x64.ActiveCfg = Release|x64
 		{D967F26C-8807-4CFD-8653-93DD6F4371C0}.Release|x64.Build.0 = Release|x64
+		{E5FAF77A-D5A3-48CE-B060-25E0BEBEDD52}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{E5FAF77A-D5A3-48CE-B060-25E0BEBEDD52}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{E5FAF77A-D5A3-48CE-B060-25E0BEBEDD52}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E5FAF77A-D5A3-48CE-B060-25E0BEBEDD52}.Debug|Win32.Build.0 = Debug|Win32
+		{E5FAF77A-D5A3-48CE-B060-25E0BEBEDD52}.Debug|x64.ActiveCfg = Debug|x64
+		{E5FAF77A-D5A3-48CE-B060-25E0BEBEDD52}.Debug|x64.Build.0 = Debug|x64
+		{E5FAF77A-D5A3-48CE-B060-25E0BEBEDD52}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{E5FAF77A-D5A3-48CE-B060-25E0BEBEDD52}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{E5FAF77A-D5A3-48CE-B060-25E0BEBEDD52}.Release|Win32.ActiveCfg = Release|Win32
+		{E5FAF77A-D5A3-48CE-B060-25E0BEBEDD52}.Release|Win32.Build.0 = Release|Win32
+		{E5FAF77A-D5A3-48CE-B060-25E0BEBEDD52}.Release|x64.ActiveCfg = Release|x64
+		{E5FAF77A-D5A3-48CE-B060-25E0BEBEDD52}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -858,5 +877,6 @@ Global
 		{DCE87CD9-B13B-4D53-B81F-67DC2E5BE5FD} = {1A5C1CC4-9FE3-496C-9856-D269B05C278E}
 		{7F74C7DF-1E26-448B-9952-31463567B8A3} = {1A5C1CC4-9FE3-496C-9856-D269B05C278E}
 		{D967F26C-8807-4CFD-8653-93DD6F4371C0} = {24EAE59C-1779-4D00-8819-415B4A41868E}
+		{E5FAF77A-D5A3-48CE-B060-25E0BEBEDD52} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 	EndGlobalSection
 EndGlobal
