@@ -25,6 +25,8 @@ vec4 Interpolate(vec4 p1, vec4 p2, float percent) {
 	v.x = p1.x + (diff * percent);
 	diff = p2.y - p1.y;
 	v.y = p1.y + (diff * percent);
+	diff = p2.z - p1.z;
+	v.z = p1.z + (diff * percent);
 
 	return v;
 }
@@ -37,12 +39,14 @@ void EmitCurve(mat4 pvm) {
 	vec4 p1 = gl_in[1].gl_Position;
 	vec4 p2 = gl_in[2].gl_Position;
 
+	/*
 	gl_Position = pvm * p2;
 	EmitVertex();
 	gl_Position = pvm * p1;
 	EmitVertex();
 	gl_Position = pvm * p0;
 	EmitVertex();
+	*/
 
 	for (interpolant = 0.0; interpolant <= 1.0; interpolant += interpolationFactor) {
 		i0 = Interpolate(p0, p1, interpolant);
@@ -52,8 +56,8 @@ void EmitCurve(mat4 pvm) {
 		EmitVertex();
 	}
 
-	gl_Position = pvm * p2;
-	EmitVertex();
+	//gl_Position = pvm * p2;
+	//EmitVertex();
 
 	EndPrimitive();
 }
