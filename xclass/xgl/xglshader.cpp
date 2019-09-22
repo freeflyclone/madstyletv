@@ -8,13 +8,42 @@
 
 #include "xgl.h"
 
-XGLShaderComponent::XGLShaderComponent() : mSourceSize(0) {
+namespace {
+	// declare a GLSL shader extension map for use by the XGLShaderComponent class
+	// to map to our extensions in "shaders" folder.
+	struct ShaderComponentExtensions {
+		typedef std::map<int, char*> ExtensionMap;
+
+		ShaderComponentExtensions() {
+			mEM[GL_VERTEX_SHADER] = ".vert";
+			mEM[GL_FRAGMENT_SHADER] = ".frag";
+			mEM[GL_GEOMETRY_SHADER] = ".geom";
+			mEM[GL_TESS_EVALUATION_SHADER] = ".tevl";
+			mEM[GL_TESS_CONTROL_SHADER] = ".tctl";
+			mEM[GL_COMPUTE_SHADER] = "cmpt";
+		}
+
+		const char* operator[] (int idx) {
+			char *ret = mEM[idx];
+
+			// return empty string if "idx" is ill-defined
+			return ret?ret:"";
+		};
+
+		ExtensionMap mEM;
+	};
+
+	// create a single instance statically, so it's always ready.
+	ShaderComponentExtensions extensions;
+};
+
+XGLShaderComponent::XGLShaderComponent() : mSourceSize(0), mShader(-1) {
 }
 
 XGLShaderComponent::~XGLShaderComponent() {
 }
 
-void XGLShaderComponent::TextFileRead() {
+bool XGLShaderComponent::TextFileRead() {
     std::ifstream ifd(mFileName.c_str(), std::ifstream::in);
 
     if (ifd){
@@ -22,45 +51,41 @@ void XGLShaderComponent::TextFileRead() {
         contents << ifd.rdbuf();
         ifd.close();
         mSourceString = contents.str();
-        return;
+        return true;
     }
-    throwXGLException("Couldn't find file: '" + 
-        mFileName + 
-        "'. \n\nThe file could not be found relative to:\n\n"+
-        currentWorkingDir
-    );
+	else {
+		return false;
+	}
 }
 
 bool XGLShaderComponent::Compile(std::string name, GLuint type)
 {
     char *sourceText;
 	GLint sourceLength;
-	std::string ext;
 
-	if (type == GL_VERTEX_SHADER)
-		ext.assign(".vert");
-	else if (type == GL_FRAGMENT_SHADER)
-		ext.assign(".frag");
-	else
-		ext.assign("");
+	// make use of ShaderComponentExtensions class to get extension from 'type'
+	std::string ext(extensions[type]);
 
 	mFileName = name + ext;
-	TextFileRead();
-	
-    sourceText = (char *)mSourceString.c_str();
-	sourceLength = (GLint)mSourceString.length();
- 
-	mShader = glCreateShader(type);
-    GL_CHECK("glCreateShader() failed");
-	glShaderSource(mShader, 1, (const GLchar **)&sourceText, &sourceLength);
-    GL_CHECK("glShaderSource() failed");
-	glCompileShader(mShader);
-    GL_CHECK("glCompileShader() failed");
-    InfoLog(mFileName);
-    return true;
+
+	if (TextFileRead()) {
+		sourceText = (char *)mSourceString.c_str();
+		sourceLength = (GLint)mSourceString.length();
+
+		mShader = glCreateShader(type);
+		GL_CHECK("glCreateShader() failed");
+		glShaderSource(mShader, 1, (const GLchar **)&sourceText, &sourceLength);
+		GL_CHECK("glShaderSource() failed");
+		glCompileShader(mShader);
+		GL_CHECK("glCompileShader() failed");
+		return InfoLog(mFileName);
+	}
+	else {
+		return false;
+	}
 }
 
-void XGLShaderComponent::InfoLog(std::string fileName) {
+bool XGLShaderComponent::InfoLog(std::string fileName) {
 	char infoLog[8192];
 	GLint infoLogLength = sizeof(infoLog);
 	GLint status = 0;
@@ -71,7 +96,9 @@ void XGLShaderComponent::InfoLog(std::string fileName) {
 		xprintf("File: %s: Shader did NOT compile.\n",fileName.c_str());
 		glGetShaderInfoLog(mShader, infoLogLength, &nWritten, infoLog);
 		xprintf("%s\n\n", infoLog);
+		return false;
 	}
+	return true;
 }
 
 XGLShader::XGLShader(std::string n) : shaderName(n), programId(-1) {} 
@@ -80,10 +107,14 @@ XGLShader::~XGLShader() { }
 bool XGLShader::Compile(std::string name) {
     GLint status;
 
+	// we MUST have vertex & fragment shader...
     if (!mVShader.Compile(name, GL_VERTEX_SHADER))
-        throwXGLException("Compiling vertex shader failed.");
+        throwXGLException("Compiling vertex shader failed for '" + name + "'.");
     if (!mFShader.Compile(name, GL_FRAGMENT_SHADER))
-        throwXGLException("Compiling fragment shader failed.");
+        throwXGLException("Compiling fragment shader failed for '" + name + "'.");
+	//... however a geometry shader is optional
+	if (mGShader.Compile(name, GL_GEOMETRY_SHADER))
+		xprintf("Compiled geometry shader for '%s'\n", name.c_str());
 
 	programId = glCreateProgram();
     GL_CHECK("glCreateProgram() failed");
@@ -92,6 +123,13 @@ bool XGLShader::Compile(std::string name) {
     GL_CHECK("glAttachShader(VERTEX) failed");
 	glAttachShader(programId, mFShader.mShader);
     GL_CHECK("glAttachShader(FRAGMENT) failed");
+
+	// if a geometry shader was found
+	if (mGShader.mSourceString.size()) {
+		glAttachShader(programId, mGShader.mShader);
+		GL_CHECK("glAttachShader(GEOMETRY) failed");
+	}
+
 	glBindAttribLocation(programId, 0, "in_Position");
     GL_CHECK("glBindAttribLocation(\"in_Position\") failed");
 	glBindAttribLocation(programId, 1, "in_TexCoord");
