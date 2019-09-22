@@ -8,23 +8,60 @@ layout (std140) uniform MatrixData {
 };
 
 
-layout(points) in;
-layout(points, max_vertices = 2) out;
+layout(triangles) in;
+layout(line_strip, max_vertices = 104) out;
 
 in vec4 ex_Color[];
 
 out vec4 finalColor;
 
+const float interpolationFactor = 0.02;
+
+vec4 Interpolate(vec4 p1, vec4 p2, float percent) {
+	vec4 v;
+	float diff;
+
+	diff = p2.x - p1.x;
+	v.x = p1.x + (diff * percent);
+	diff = p2.y - p1.y;
+	v.y = p1.y + (diff * percent);
+
+	return v;
+}
+
+void EmitCurve(mat4 pvm) {
+	float interpolant;
+	vec4 i0, i1, o;
+
+	vec4 p0 = gl_in[0].gl_Position;
+	vec4 p1 = gl_in[1].gl_Position;
+	vec4 p2 = gl_in[2].gl_Position;
+
+	gl_Position = pvm * p2;
+	EmitVertex();
+	gl_Position = pvm * p1;
+	EmitVertex();
+	gl_Position = pvm * p0;
+	EmitVertex();
+
+	for (interpolant = 0.0; interpolant <= 1.0; interpolant += interpolationFactor) {
+		i0 = Interpolate(p0, p1, interpolant);
+		i1 = Interpolate(p1, p2, interpolant);
+
+		gl_Position = pvm * Interpolate(i0, i1, interpolant);
+		EmitVertex();
+	}
+
+	gl_Position = pvm * p2;
+	EmitVertex();
+
+	EndPrimitive();
+}
+
 void main() {
 	mat4 pvm = projector * view * model;
 
-	gl_Position = pvm * gl_in[0].gl_Position;
-	finalColor = vec4(1.0, 1.0, 0.0, 1.0);
-	EmitVertex();
-	EndPrimitive();
+	finalColor = vec4(1.0, 1.0, 1.0, 1.0);
 
-	gl_Position = pvm * (gl_in[0].gl_Position + vec4(0.0, 0.0, 1.0, 0.0));
-	finalColor = vec4(0.0, 1.0, 1.0, 1.0);
-	EmitVertex();
-	EndPrimitive();
+	EmitCurve(pvm);
 }
