@@ -210,6 +210,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shaders", "Shaders", "{5CB0
 		shaders\000-simple.frag = shaders\000-simple.frag
 		shaders\000-simple.vert = shaders\000-simple.vert
 		shaders\bezier.frag = shaders\bezier.frag
+		shaders\bezier.geom = shaders\bezier.geom
 		shaders\bezier.vert = shaders\bezier.vert
 		shaders\diffuse.frag = shaders\diffuse.frag
 		shaders\diffuse.vert = shaders\diffuse.vert

@@ -17,7 +17,8 @@ public:
 	}
 
 	void Draw(){
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glPointSize(4.0f);
+		glDrawArrays(GL_POINTS, 0, 3);
 		GL_CHECK("glDrawArrays() failed");
 	};
 };

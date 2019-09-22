@@ -14,7 +14,7 @@ layout (std140) uniform LightData {
 uniform float materialShininess;
 uniform vec3 materialSpecularColor;
 uniform vec3 triangle[3];
-in  vec4 ex_Color;
+in  vec4 finalColor;
 
 out vec4 out_Color;
 
@@ -28,5 +28,5 @@ float distance(vec4 p) {
 
 void main(void)
 {
-    out_Color = ex_Color * distance(gl_FragCoord);
+    out_Color = finalColor * distance(gl_FragCoord);
 }
