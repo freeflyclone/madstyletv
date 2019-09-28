@@ -113,9 +113,9 @@ int GlyphDecomposer::ConicTo(const XGLVertex& control, const XGLVertex& to) {
 		EvaluateQuadraticBezier(currentPoint, control, to);
 	}
 	else {
-		glyphOutline[contourIdx].v.push_back({ control });
-		currentPoint = control;
-		currentContour->ExpandBoundingBox(currentPoint);
+		//glyphOutline[contourIdx].v.push_back({ control });
+		//currentPoint = control;
+		//currentContour->ExpandBoundingBox(currentPoint);
 
 		if (IsEqual(to, firstPoint))
 			return 0;

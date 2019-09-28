@@ -56,7 +56,7 @@ public:
 		pXgl->AddShape("shaders/specular", [&]() { probe = new XGLFreetypeProbe(pXgl); return probe; });
 		pXgl->AddShape("shaders/000-simple", [&]() { grid = new XGLFreetypeGrid(pXgl); return grid; });
 		pXgl->AddShape("shaders/000-simple", [&]() { crosshair = new XGLFreetypeCrosshair(pXgl); return crosshair; });
-		pXgl->AddShape("shaders/000-simple", [&]() { nearestNeighbor = new XGLFreetypeNearest(pXgl); return nearestNeighbor; });
+		//pXgl->AddShape("shaders/000-simple", [&]() { nearestNeighbor = new XGLFreetypeNearest(pXgl); return nearestNeighbor; });
 
 		vertexLists.push_back(&v);
 		vertexLists.push_back(&xSorted);
