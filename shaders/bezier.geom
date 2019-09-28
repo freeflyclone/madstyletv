@@ -39,14 +39,12 @@ void EmitCurve(mat4 pvm) {
 	vec4 p1 = gl_in[1].gl_Position;
 	vec4 p2 = gl_in[2].gl_Position;
 
-	/*
 	gl_Position = pvm * p2;
 	EmitVertex();
 	gl_Position = pvm * p1;
 	EmitVertex();
 	gl_Position = pvm * p0;
 	EmitVertex();
-	*/
 
 	for (interpolant = 0.0; interpolant <= 1.0; interpolant += interpolationFactor) {
 		i0 = Interpolate(p0, p1, interpolant);
@@ -55,9 +53,6 @@ void EmitCurve(mat4 pvm) {
 		gl_Position = pvm * Interpolate(i0, i1, interpolant);
 		EmitVertex();
 	}
-
-	//gl_Position = pvm * p2;
-	//EmitVertex();
 
 	EndPrimitive();
 }
