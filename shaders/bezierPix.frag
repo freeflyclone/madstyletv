@@ -22,6 +22,10 @@ out vec4 out_Color;
 void main(void)
 {
 	float distanceToCurve = UV.x * UV.x - UV.y;
+	float sdf = smoothstep(-0.001, 0.001, -distanceToCurve);
 
-	out_Color = ex_Color * smoothstep(-0.001, 0.001, distanceToCurve);
+	if (sdf > 0)
+		out_Color = ex_Color * sdf;
+	else
+		discard;
 }
