@@ -13,7 +13,7 @@ public:
 	XGLNewTriangle() {
 		SetName("XGLNewTriangle");
 		v.push_back({ { -1, 0, 0 },    {0.0, 0.0}, {}, XGLColors::red });
-		v.push_back({ { 0, 1.412, 0 }, {0.5, 0.0}, {}, {1, 0, 0, -1} });
+		v.push_back({ { 0, 1.412, 0 }, {0.5, 0.0}, {}, XGLColors::red });
 		v.push_back({ { 1, 0, 0 },     {1.0, 1.0}, {}, XGLColors::red });
 	}
 
@@ -28,6 +28,6 @@ void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 	XGLVertex triangle[3];
 
-	AddShape("shaders/bezier", [&](){ shape = new XGLNewTriangle(); return shape; });
+	AddShape("shaders/bezierPix", [&](){ shape = new XGLNewTriangle(); return shape; });
 	shape->model = glm::scale(glm::mat4(), glm::vec3(8.0, 8.0, 8.0));
 }
