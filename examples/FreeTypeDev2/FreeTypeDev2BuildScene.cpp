@@ -125,6 +125,11 @@ public:
 
 		// for each char in string...
 		for (char c : renderString) {
+			if (c == ' ') {
+				AdvanceGlyphPosition();
+				continue;
+			}
+
 			FT_Load_Glyph(face, charMap[c], FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL);
 			Reset();
 
@@ -224,26 +229,6 @@ public:
 			GL_CHECK("glDrawArrays() failed");
 
 		}
-		/*
-		if (contourOffsets.size()) {
-			for (int idx = 0; idx < contourOffsets.size() - 1; idx++) {
-				GLuint start = contourOffsets[idx];
-				GLuint length = contourOffsets[idx + 1] - start;
-
-				glDrawArrays(GL_TRIANGLES, start, length);
-				GL_CHECK("glDrawArrays() failed");
-			}
-		}
-
-		// if indicatorIdx has changed...)
-		if (indicatorIdx != oldIndicatorIdx || vListIdx != oldvListIdx) {
-			// adjust XGLFreetypeProbe to reflect new indicatorIdx
-			if (probe)
-				probe->Move((*CurrentVertexList())[indicatorIdx].v, bb);
-			oldIndicatorIdx = indicatorIdx;
-			oldvListIdx = vListIdx;
-		}
-		*/
 	}
 
 	int indicatorIdx{ 0 };
@@ -331,4 +316,5 @@ void ExampleXGL::BuildScene() {
 	}
 
 	pFt->RenderText("&");
+	//pFt->RenderText("Your Mom");
 }
