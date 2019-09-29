@@ -6,6 +6,7 @@
 #include <sstream>
 #include <vector>
 #include "xgl.h"
+#include "XGLFreeType.h"
 
 // triangle.h wants this
 #ifndef REAL
@@ -33,9 +34,11 @@ enum polyParseState {
 class Triangulator : public triangulateio, public XGLShape {
 public:
 	Triangulator();
+
+	void Init(triangulateio& in);
 	void Draw();
 
-	void ReadPolyFile(std::string fileName, triangulateio* t);
+	void Convert(FT::GlyphOutline&, triangulateio&, XGLVertex&, REAL);
 	void RenderTriangles(triangulateio& in);
 	void RenderSegments(triangulateio& t);
 
