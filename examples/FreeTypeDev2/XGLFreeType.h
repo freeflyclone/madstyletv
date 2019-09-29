@@ -9,7 +9,7 @@
 #include "xutils.h"
 
 const XGLTexCoord texCoord{ 0, 1 };
-const XGLColor neonYellow = { 0.8, 1.0, 0.00001, 1.0 };
+const XGLColor neonYellow = { 0.85, 1.0, 0.00001, 1.0 };
 const XGLColor madstyleRed = { 0.85, 0.0, 0.15, 1.0 };
 
 namespace FT {

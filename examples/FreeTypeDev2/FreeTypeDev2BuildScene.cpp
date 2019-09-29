@@ -51,24 +51,15 @@ public:
 		for (charcode = FT_Get_First_Char(face, &gindex); gindex; charcode = FT_Get_Next_Char(face, charcode, &gindex))
 			charMap.emplace(charcode, gindex);
 
-		// add signal to initial Load() to initialize the materials properties.
+		// Force initial Load() to initialize the materials properties. (it won't with empty VertexAttributeList)
 		v.push_back({});
-
-		//pXgl->AddShape("shaders/specular", [&]() { probe = new XGLFreetypeProbe(pXgl); return probe; });
-		//pXgl->AddShape("shaders/000-simple", [&]() { grid = new XGLFreetypeGrid(pXgl); return grid; });
-		//pXgl->AddShape("shaders/000-simple", [&]() { crosshair = new XGLFreetypeCrosshair(pXgl); return crosshair; });
-		//pXgl->AddShape("shaders/bezierPix", [&]() { nearestNeighbor = new XGLFreetypeNearest(pXgl); return nearestNeighbor; });
-
-		vertexLists.push_back(&v);
-		vertexLists.push_back(&xSorted);
-		vertexLists.push_back(&ySorted);
 
 		DrawCurvesEnable(false);
 	}
 
 	void PushVertex(XGLVertexAttributes vrtx, bool isClockwise) {
-		vrtx.v.x /= scaleFactor;
-		vrtx.v.y /= scaleFactor;
+		vrtx.v.x /= Triangulator::ScaleFactor();
+		vrtx.v.y /= Triangulator::ScaleFactor();
 		
 		vrtx.v.x += advance.x;
 		vrtx.v.y += advance.y;
@@ -85,36 +76,8 @@ public:
 	}
 
 	void AdvanceGlyphPosition() {
-		advance.x += face->glyph->advance.x / scaleFactor;
-		advance.y += face->glyph->advance.y / scaleFactor;
-	}
-
-	static bool SortByYCompare(XGLVertexAttributes a, XGLVertexAttributes b) {
-		bool yIsEqual = (a.v.y == b.v.y);
-		bool yIsLess = (a.v.y < b.v.y);
-		bool xIsLess = (a.v.x < b.v.x);
-
-		if (yIsEqual && xIsLess)
-			return true;
-
-		if (yIsLess)
-			return true;
-
-		return false;
-	}
-
-	static bool SortByXCompare(XGLVertexAttributes a, XGLVertexAttributes b) {
-		bool xIsEqual = (a.v.x == b.v.x);
-		bool xIsLess = (a.v.x < b.v.x);
-		bool yIsLess = (a.v.y < b.v.y);
-
-		if (xIsEqual && yIsLess)
-			return true;
-
-		if (xIsLess)
-			return true;
-
-		return false;
+		advance.x += face->glyph->advance.x / Triangulator::ScaleFactor();
+		advance.y += face->glyph->advance.y / Triangulator::ScaleFactor();
 	}
 
 	void RenderText() {
@@ -138,74 +101,30 @@ public:
 
 			int contourIdx = 0;
 
-			if (true) {
-				FT::GlyphOutline& glyphOutline = Outline();
+			FT::GlyphOutline& glyphOutline = Outline();
 
-				Triangulator t;
-				triangulateio in, out;
+			Triangulator t;
+			triangulateio in, out;
 
-				t.Init(in);
-				t.Init(out);
+			t.Init(in);
+			t.Init(out);
 
-				t.Convert(glyphOutline, in, advance);
+			t.Convert(glyphOutline, in, advance);
 
-				triangulate("zpYY", &in, &out, NULL);
+			triangulate("zpYY", &in, &out, NULL);
 
-				t.RenderTriangles(out);
+			t.RenderTriangles(out);
 
-				for (XGLVertexAttributes vrtx : t.v)
-					v.push_back(vrtx);
+			for (XGLVertexAttributes vrtx : t.v)
+				v.push_back(vrtx);
 
-				t.Free(out, false);
-				t.Free(in, true);
-			}
-			else {
-				// For each contour of the glyph...
-				for (FT::Contour contour : Outline()) {
-					// mark the beginning of the contour in this shape's CPU-side XGLVertexList
-					contourOffsets.push_back((int)v.size());
-
-					// determine if this contour is clockwise or counter-clockwise
-					contour.ComputeCentroid();
-
-					// add each contour vertex to this shape's CPU-side XGLVertexList
-					for (XGLVertexAttributes vrtx : contour.v)
-						PushVertex(vrtx, contour.isClockwise);
-				}
-			}
+			t.Free(out, false);
+			t.Free(in, true);
 
 			// mark end offset, so display loop can calculate size
 			contourOffsets.push_back((int)v.size());
 			AdvanceGlyphPosition();
 		}
-
-		// save BoundingBox of first outline of first glyph.
-		// Freetype presents contours with outlines (vs holes) first.
-		// Multiple non-hole outlines are not handled yet.
-		bb = Outline()[0].bb;
-		bb.ul.x /= scaleFactor;
-		bb.ul.y /= scaleFactor;
-		bb.lr.x /= scaleFactor;
-		bb.lr.y /= scaleFactor;
-
-		xSorted.clear();
-		xSorted = v;
-		std::sort(xSorted.begin(), xSorted.end() - 2, SortByXCompare);
-
-		ySorted.clear();
-		ySorted = v;
-		std::sort(ySorted.begin(), ySorted.end() - 2, SortByYCompare);
-
-		// update all the sub shapes..
-		if (grid)
-			grid->Update(*CurrentVertexList(), bb);
-
-		if (crosshair)
-			crosshair->Update(*CurrentVertexList(), bb);
-
-		// Fill NearestNeighbor list...
-		if (nearestNeighbor)
-			nearestNeighbor->Update(xSorted);
 
 		// update this shape's VBO with new geometry from the CPU-side XGLVertexList
 		// so it will actually be seen.
@@ -219,10 +138,6 @@ public:
 		RenderText();
 	}
 
-	XGLVertexList* CurrentVertexList() {
-		return vertexLists[vListIdx];
-	}
-
 	void Draw() {
 		if (v.size()){
 			glDrawArrays(GL_TRIANGLES, 0, v.size());
@@ -231,31 +146,12 @@ public:
 		}
 	}
 
-	int indicatorIdx{ 0 };
-	int oldIndicatorIdx{ -1 };
-	bool showTail = false;
-	FT::BoundingBox bb;
-	
 	XGL* pXgl;
-	XGLFreetypeProbe* probe{ nullptr };
-	XGLFreetypeGrid* grid{ nullptr };
-	XGLFreetypeCrosshair* crosshair{ nullptr };
-	XGLFreetypeNearest* nearestNeighbor{ nullptr };
-
-	glm::mat4 probeScale;
-	glm::mat4 probeTranslate;
-
-	std::vector<XGLVertexList*> vertexLists;
-	int vListIdx{ 0 };
-	int oldvListIdx{ -1 };
 
 private:
 	// These 2 numbers help Freetype math have adequate precision...
 	const FT_F26Dot6 ftSize{ 1024 };
 	const FT_UInt ftResolution{ 1024 };
-
-	// ...while this is used to scale back to XGL preferred size
-	REAL scaleFactor{ 3276.8f };
 
 	FT_Library ft;
 	FT_Face face;
@@ -263,8 +159,6 @@ private:
 	CharMap charMap;
 	XGLVertex advance;
 	std::vector<int>contourOffsets;
-	XGLVertexList xSorted;
-	XGLVertexList ySorted;
 	std::string renderString;
 
 };
@@ -285,26 +179,6 @@ void ExampleXGL::BuildScene() {
 		ig->AddMenuFunc([&]() {
 			if (ImGui::Begin("Titler")) {
 				if (ImGui::CollapsingHeader("Tweeks", ImGuiTreeNodeFlags_DefaultOpen)) {
-					ImGui::SetNextItemWidth(100);
-					ImGui::SliderInt("VertexList Index", &pFt->vListIdx, 0, (int)pFt->vertexLists.size() - 1);
-					ImGui::SetNextItemWidth(-120);
-					ImGui::SliderInt("Indicator Index", &pFt->indicatorIdx, 0, (int)pFt->v.size() - 1);
-
-					if (pFt->grid)
-						pFt->grid->Move(pFt->indicatorIdx);
-
-					if (pFt->grid) {
-						ImGui::Checkbox("Show Grid", &pFt->grid->draw);
-						ImGui::Checkbox("Show Border", &pFt->grid->drawBorder);
-						ImGui::Checkbox("Show Up To Cursor", &pFt->grid->drawUpTo);
-						ImGui::Checkbox("Show From Cursor to End", &pFt->grid->drawFromHere);
-					}
-
-					if (pFt->crosshair) {
-						pFt->crosshair->Move(pFt->indicatorIdx);
-						pFt->crosshair->Update(*pFt->CurrentVertexList(), pFt->bb);
-						ImGui::Checkbox("Show Crosshair", &pFt->crosshair->draw);
-					}
 				}
 				ImGui::End();
 			}

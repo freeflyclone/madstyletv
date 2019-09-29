@@ -1,47 +1,23 @@
 #include "Triangulator.h"
 
 void Triangulator::Free(triangulateio& t, bool flag) {
-	if (t.pointlist)
-		free(t.pointlist);
+	if (t.pointlist) free(t.pointlist);
+	if (t.pointattributelist) free(t.pointattributelist);
+	if (t.pointmarkerlist) free(t.pointmarkerlist);
+	if (t.trianglelist)	free(t.trianglelist);
+	if (t.triangleattributelist) free(t.triangleattributelist);
+	if (t.trianglearealist) free(t.trianglearealist);
+	if (t.neighborlist) free(t.neighborlist);
+	if (t.segmentlist) free(t.segmentlist);
+	if (t.segmentmarkerlist) free(t.segmentmarkerlist);
+	if (t.edgelist) free(t.edgelist);
+	if (t.edgemarkerlist) free(t.edgemarkerlist);
+	if (t.normlist) free(t.normlist);
 
-	if (t.pointattributelist)
-		free(t.pointattributelist);
-
-	if (t.pointmarkerlist)
-		free(t.pointmarkerlist);
-
-	if (t.trianglelist)
-		free(t.trianglelist);
-
-	if (t.triangleattributelist)
-		free(t.triangleattributelist);
-
-	if (t.trianglearealist)
-		free(t.trianglearealist);
-
-	if (t.neighborlist)
-		free(t.neighborlist);
-
-	if (t.segmentlist)
-		free(t.segmentlist);
-
-	if (t.segmentmarkerlist)
-		free(t.segmentmarkerlist);
-	
-	if (t.holelist && flag)
-		free(t.holelist);
-
-	if (t.regionlist)
-		free(t.regionlist);
-
-	if (t.edgelist)
-		free(t.edgelist);
-
-	if (t.edgemarkerlist)
-		free(t.edgemarkerlist);
-
-	if (t.normlist)
-		free(t.normlist);
+	if (flag) {
+		if (t.holelist) free(t.holelist);
+		if (t.regionlist) free(t.regionlist);
+	}
 
 	Init(t);
 }
@@ -152,17 +128,6 @@ void Triangulator::RenderSegments(triangulateio& t) {
 			v.push_back({ { x, y, 1 }, {}, {}, { XGLColors::white } });
 		}
 	}
-}
-
-void Triangulator::Dump(triangulateio& t) {
-	xprintf("%d 2 %d 0\n", t.numberofpoints, t.numberofpointattributes);
-	for (int i = 0; i < t.numberofpoints; i++)
-		xprintf("%d %0.6f %0.6f\n", i + 1, t.pointlist[i * 2], t.pointlist[i * 2 + 1]);
-
-	xprintf("%d 0\n", t.numberofsegments);
-
-	for (int i = 0; i < t.numberofsegments; i++)
-		xprintf("%d %d %d\n", i + 1, t.segmentlist[i * 2] + 1, t.segmentlist[i * 2 + 1] + 1);
 }
 
 void Triangulator::SetDrawCount(GLsizei count) { 

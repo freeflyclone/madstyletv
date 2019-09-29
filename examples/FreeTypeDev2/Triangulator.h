@@ -43,13 +43,13 @@ public:
 	void RenderTriangles(triangulateio& in);
 	void RenderSegments(triangulateio& t);
 
-	void Dump(triangulateio& in);
 	void SetDrawCount(GLsizei count);
+	static REAL ScaleFactor() { return 3276.80f; }
 
 private:
 	GLuint drawMode = GL_TRIANGLES; // GL_LINES or GL_TRIANGES (for filling in)
 	GLsizei drawCount;
-	float scaleFactor = 3276.80f;
+	const REAL scaleFactor{ 3276.80 };
 };
 
 
