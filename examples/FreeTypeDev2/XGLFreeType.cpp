@@ -2,6 +2,13 @@
 
 using namespace FT;
 
+namespace {
+	const XGLTexCoord texCoord{ 0, 1 };
+	const XGLColor neonYellow = { 0.8, 1.0, 0.00001, 1.0 };
+	const XGLColor madstyleRed = { 0.85, 0.0, 0.15, 1.0 };
+
+}
+
 XGLVertex Contour::ComputeCentroid()
 {
 	XGLVertex centroid = {};
@@ -87,7 +94,7 @@ int GlyphDecomposer::MoveTo(const XGLVertex& to) {
 		currentContour = &glyphOutline.back();
 	}
 
-	glyphOutline[contourIdx].v.push_back({ to });
+	glyphOutline[contourIdx].v.push_back({ to, texCoord, {}, madstyleRed });
 	currentPoint = to;
 	currentContour->ExpandBoundingBox(currentPoint);
 	return 0;
@@ -101,7 +108,7 @@ int GlyphDecomposer::LineTo(const XGLVertex& to) {
 		return 0;
 	}
 
-	glyphOutline[contourIdx].v.push_back({ to });
+	glyphOutline[contourIdx].v.push_back({ to, texCoord, {}, madstyleRed });
 	currentPoint = to;
 	currentContour->ExpandBoundingBox(currentPoint);
 	return 0;
@@ -113,14 +120,14 @@ int GlyphDecomposer::ConicTo(const XGLVertex& control, const XGLVertex& to) {
 		EvaluateQuadraticBezier(currentPoint, control, to);
 	}
 	else {
-		//glyphOutline[contourIdx].v.push_back({ control });
+		//glyphOutline[contourIdx].v.push_back({ control, texCoord, {}, madstyleRed });
 		//currentPoint = control;
 		//currentContour->ExpandBoundingBox(currentPoint);
 
 		if (IsEqual(to, firstPoint))
 			return 0;
 
-		glyphOutline[contourIdx].v.push_back({ to });
+		glyphOutline[contourIdx].v.push_back({ to, texCoord, {}, madstyleRed });
 	}
 	currentPoint = to;
 	currentContour->ExpandBoundingBox(currentPoint);
@@ -133,15 +140,15 @@ int GlyphDecomposer::CubicTo(const XGLVertex& control1, const XGLVertex& control
 		EvaluateCubicBezier(currentPoint, control1, control2, to);
 	}
 	else {
-		glyphOutline[contourIdx].v.push_back({ control1 });
-		glyphOutline[contourIdx].v.push_back({ control2 });
+		glyphOutline[contourIdx].v.push_back({ control1, texCoord, {}, madstyleRed });
+		glyphOutline[contourIdx].v.push_back({ control2, texCoord, {}, madstyleRed });
 		currentPoint = control2;
 		currentContour->ExpandBoundingBox(currentPoint);
 
 		if (IsEqual(to, firstPoint))
 			return 0;
 
-		glyphOutline[contourIdx].v.push_back({ to });
+		glyphOutline[contourIdx].v.push_back({ to, texCoord, {}, madstyleRed });
 	}
 	currentPoint = to;
 	currentContour->ExpandBoundingBox(currentPoint);
@@ -168,13 +175,13 @@ void GlyphDecomposer::EvaluateQuadraticBezier(const XGLVertex& p0, const XGLVert
 		i0 = Interpolate(p0, p1, interpolant);
 		i1 = Interpolate(p1, p2, interpolant);
 		out = Interpolate(i0, i1, interpolant);
-		glyphOutline[contourIdx].v.push_back({ out });
+		glyphOutline[contourIdx].v.push_back({ out, texCoord, {}, madstyleRed });
 	}
 	if (IsEqual(p2, firstPoint)) {
 		//xprintf("Final point of Quadratic Bezier is coincident with contour start, ignoring\n");
 		return;
 	}
-	glyphOutline[contourIdx].v.push_back({ p2 });
+	glyphOutline[contourIdx].v.push_back({ p2, texCoord, {}, madstyleRed });
 }
 
 void GlyphDecomposer::EvaluateCubicBezier(const XGLVertex& p0, const XGLVertex& p1, const XGLVertex& p2, const XGLVertex& p3) {
@@ -190,11 +197,11 @@ void GlyphDecomposer::EvaluateCubicBezier(const XGLVertex& p0, const XGLVertex& 
 		m1 = Interpolate(i1, i2, interpolant);
 
 		out = Interpolate(m0, m1, interpolant);
-		glyphOutline[contourIdx].v.push_back({ out });
+		glyphOutline[contourIdx].v.push_back({ out, texCoord, {}, madstyleRed });
 	}
 	if (IsEqual(p3, firstPoint)) {
 		//xprintf("Final point of Cubic Bezier is coincident with contour start, ignoring\n");
 		return;
 	}
-	glyphOutline[contourIdx].v.push_back({ p3 });
+	glyphOutline[contourIdx].v.push_back({ p3, texCoord, {}, madstyleRed });
 }

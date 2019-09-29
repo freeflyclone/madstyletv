@@ -56,7 +56,7 @@ public:
 		pXgl->AddShape("shaders/specular", [&]() { probe = new XGLFreetypeProbe(pXgl); return probe; });
 		pXgl->AddShape("shaders/000-simple", [&]() { grid = new XGLFreetypeGrid(pXgl); return grid; });
 		pXgl->AddShape("shaders/000-simple", [&]() { crosshair = new XGLFreetypeCrosshair(pXgl); return crosshair; });
-		//pXgl->AddShape("shaders/000-simple", [&]() { nearestNeighbor = new XGLFreetypeNearest(pXgl); return nearestNeighbor; });
+		pXgl->AddShape("shaders/bezierPix", [&]() { nearestNeighbor = new XGLFreetypeNearest(pXgl); return nearestNeighbor; });
 
 		vertexLists.push_back(&v);
 		vertexLists.push_back(&xSorted);
@@ -175,7 +175,7 @@ public:
 
 		// Fill NearestNeighbor list...
 		if (nearestNeighbor)
-			nearestNeighbor->Update(v);
+			nearestNeighbor->Update(xSorted);
 
 		// update this shape's VBO with new geometry from the CPU-side XGLVertexList
 		// so it will actually be seen.
@@ -264,7 +264,7 @@ void ExampleXGL::BuildScene() {
 	glm::vec3 cameraUp = { 0, 0, 1 };
 	camera.Set(cameraPosition, cameraDirection, cameraUp);
 
-	AddShape("shaders/000-simple", [&](){ pFt = new XGLFreeType(this); return pFt; });
+	AddShape("shaders/bezierPix", [&](){ pFt = new XGLFreeType(this); return pFt; });
 
 	if ((ig = (XGLImGui *)(GetGuiManager()->FindObject("TitlerGui"))) != nullptr) {
 		ig->AddMenuFunc([&]() {
