@@ -39,7 +39,7 @@ public:
 	void Free(triangulateio& in, bool);
 	void Draw();
 
-	void Convert(FT::GlyphOutline&, triangulateio&, XGLVertex&);
+	void Convert(FT::GlyphOutline&, XGLVertex&);
 	void RenderTriangles(triangulateio& in);
 	void RenderSegments(triangulateio& t);
 

@@ -104,22 +104,10 @@ public:
 			FT::GlyphOutline& glyphOutline = Outline();
 
 			Triangulator t;
-			triangulateio in, out;
-
-			t.Init(in);
-			t.Init(out);
-
-			t.Convert(glyphOutline, in, advance);
-
-			triangulate("zpYY", &in, &out, NULL);
-
-			t.RenderTriangles(out);
+			t.Convert(glyphOutline, advance);
 
 			for (XGLVertexAttributes vrtx : t.v)
 				v.push_back(vrtx);
-
-			t.Free(out, false);
-			t.Free(in, true);
 
 			// mark end offset, so display loop can calculate size
 			contourOffsets.push_back((int)v.size());
@@ -142,7 +130,6 @@ public:
 		if (v.size()){
 			glDrawArrays(GL_TRIANGLES, 0, v.size());
 			GL_CHECK("glDrawArrays() failed");
-
 		}
 	}
 
@@ -190,5 +177,5 @@ void ExampleXGL::BuildScene() {
 	}
 
 	pFt->RenderText("&");
-	//pFt->RenderText("Your Mom");
+	pFt->RenderText("goop");
 }

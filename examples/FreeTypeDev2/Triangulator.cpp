@@ -14,6 +14,8 @@ void Triangulator::Free(triangulateio& t, bool flag) {
 	if (t.edgemarkerlist) free(t.edgemarkerlist);
 	if (t.normlist) free(t.normlist);
 
+	// so-called "out" triangulateio struct have some ptrs copied from "in", 
+	// avoid double free() if caller (who knows which is which) says to. 
 	if (flag) {
 		if (t.holelist) free(t.holelist);
 		if (t.regionlist) free(t.regionlist);
@@ -21,76 +23,66 @@ void Triangulator::Free(triangulateio& t, bool flag) {
 
 	Init(t);
 }
+
 void Triangulator::Init(triangulateio& t) {
-	t.pointlist = 0;
-	t.pointattributelist = 0;
-	t.pointmarkerlist = 0;
-	t.numberofpoints = 0;
-	t.numberofpointattributes = 0;
-	t.trianglelist = 0;
-	t.triangleattributelist = 0;
-	t.trianglearealist = 0;
-	t.neighborlist = 0;
-	t.numberoftriangles = 0;
-	t.numberofcorners = 0;
-	t.numberoftriangleattributes = 0;
-	t.segmentlist = 0;
-	t.segmentmarkerlist = 0;
-	t.numberofsegments = 0;
-	t.holelist = 0;
-	t.numberofholes = 0;
-	t.regionlist = 0;
-	t.numberofregions = 0;
-	t.edgelist = 0;
-	t.edgemarkerlist = 0;
-	t.normlist = 0;
-	t.numberofedges = 0;
+	memset(&t, 0, sizeof(t));
 }
 
-void Triangulator::Convert(FT::GlyphOutline& go, triangulateio&  in, XGLVertex& a) {
-	Init(in);
+void Triangulator::Convert(FT::GlyphOutline& ftGlyphOutline, XGLVertex& advance) {
+	Init(*this);
 
 	size_t numPoints = 0, numSegments;
 
-	for (auto c : go)
-		numPoints += c.v.size();
+	for (FT::Contour contour : ftGlyphOutline)
+		numPoints += contour.v.size();
 
 	numSegments = numPoints;
 
-	in.pointlist = (REAL*)malloc(2 * sizeof(REAL) * numPoints);
-	in.segmentlist = (int*)malloc(2 * sizeof(int) * numSegments);
-	in.holelist = (REAL*)malloc(2 * sizeof(REAL) * 20);
+	pointlist = (REAL*)malloc(2 * sizeof(REAL) * numPoints);
+	segmentlist = (int*)malloc(2 * sizeof(int) * numSegments);
+	holelist = (REAL*)malloc(2 * sizeof(REAL) * 20);
 
 	int contourOffset = 0;
 	int pIdx = 0;
 	int sIdx = 0;
-	for (FT::Contour c : go)
+	for (FT::Contour contour : ftGlyphOutline)
 	{
-		size_t numPoints = c.v.size();
+		size_t numPoints = contour.v.size();
 		size_t numSegments = numPoints;
 
 		for (int i = 0; i < numPoints; i++) {
-			in.pointlist[pIdx++] = c.v[i].v.x / scaleFactor + a.x;
-			in.pointlist[pIdx++] = c.v[i].v.y / scaleFactor + a.y;
+			pointlist[pIdx++] = contour.v[i].v.x / scaleFactor + advance.x;
+			pointlist[pIdx++] = contour.v[i].v.y / scaleFactor + advance.y;
 		}
 
 		for (int i = 0; i < numPoints; i++) {
 			int j = (i + 1) % numPoints;
-			in.segmentlist[sIdx++] = i + contourOffset;
-			in.segmentlist[sIdx++] = j + contourOffset;
+			segmentlist[sIdx++] = i + contourOffset;
+			segmentlist[sIdx++] = j + contourOffset;
 		}
-		in.numberofpoints += (int)numPoints;
-		in.numberofsegments += (int)numSegments;
+		numberofpoints += (int)numPoints;
+		numberofsegments += (int)numSegments;
 
-		bool isClockwise;
-		XGLVertex v = c.ComputeCentroid();
-		if (!c.isClockwise) {
-			in.holelist[in.numberofholes * 2] = v.x / scaleFactor + a.x;
-			in.holelist[in.numberofholes * 2 + 1] = v.y / scaleFactor + a.y;
-			in.numberofholes++;
+		XGLVertex centroid = contour.ComputeCentroid();
+
+		// if this FT::Contour is CCW, it's a hole to be extracted
+		if (!contour.isClockwise) {
+			holelist[numberofholes * 2] = centroid.x / scaleFactor + advance.x;
+			holelist[numberofholes * 2 + 1] = centroid.y / scaleFactor + advance.y;
+			numberofholes++;
 		}
 		contourOffset += (int)numPoints;
 	}
+
+	triangulateio out;
+	Init(out);
+
+	triangulate("zpYY", (triangulateio*)this, &out, NULL);
+
+	RenderTriangles(out);
+
+	Free(out, false);
+	Free(*this, true);
 }
 
 Triangulator::Triangulator() {
