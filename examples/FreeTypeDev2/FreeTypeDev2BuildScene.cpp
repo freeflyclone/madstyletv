@@ -53,10 +53,10 @@ public:
 		// add signal to initial Load() to initialize the materials properties.
 		v.push_back({});
 
-		pXgl->AddShape("shaders/specular", [&]() { probe = new XGLFreetypeProbe(pXgl); return probe; });
-		pXgl->AddShape("shaders/000-simple", [&]() { grid = new XGLFreetypeGrid(pXgl); return grid; });
-		pXgl->AddShape("shaders/000-simple", [&]() { crosshair = new XGLFreetypeCrosshair(pXgl); return crosshair; });
-		pXgl->AddShape("shaders/bezierPix", [&]() { nearestNeighbor = new XGLFreetypeNearest(pXgl); return nearestNeighbor; });
+		//pXgl->AddShape("shaders/specular", [&]() { probe = new XGLFreetypeProbe(pXgl); return probe; });
+		//pXgl->AddShape("shaders/000-simple", [&]() { grid = new XGLFreetypeGrid(pXgl); return grid; });
+		//pXgl->AddShape("shaders/000-simple", [&]() { crosshair = new XGLFreetypeCrosshair(pXgl); return crosshair; });
+		//pXgl->AddShape("shaders/bezierPix", [&]() { nearestNeighbor = new XGLFreetypeNearest(pXgl); return nearestNeighbor; });
 
 		vertexLists.push_back(&v);
 		vertexLists.push_back(&xSorted);
@@ -194,8 +194,6 @@ public:
 	}
 
 	void Draw() {
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		if (contourOffsets.size()) {
 			for (int idx = 0; idx < contourOffsets.size() - 1; idx++) {
 				GLuint start = contourOffsets[idx];
@@ -205,12 +203,12 @@ public:
 				GL_CHECK("glDrawArrays() failed");
 			}
 		}
-		glDisable(GL_BLEND);
 
 		// if indicatorIdx has changed...)
 		if (indicatorIdx != oldIndicatorIdx || vListIdx != oldvListIdx) {
 			// adjust XGLFreetypeProbe to reflect new indicatorIdx
-			probe->Move((*CurrentVertexList())[indicatorIdx].v, bb);
+			if (probe)
+				probe->Move((*CurrentVertexList())[indicatorIdx].v, bb);
 			oldIndicatorIdx = indicatorIdx;
 			oldvListIdx = vListIdx;
 		}
@@ -275,15 +273,21 @@ void ExampleXGL::BuildScene() {
 					ImGui::SetNextItemWidth(-120);
 					ImGui::SliderInt("Indicator Index", &pFt->indicatorIdx, 0, (int)pFt->v.size() - 1);
 
-					pFt->grid->Move(pFt->indicatorIdx);
-					pFt->crosshair->Move(pFt->indicatorIdx);
-					pFt->crosshair->Update(*pFt->CurrentVertexList(), pFt->bb);
+					if (pFt->grid)
+						pFt->grid->Move(pFt->indicatorIdx);
 
-					ImGui::Checkbox("Show Grid", &pFt->grid->draw);
-					ImGui::Checkbox("Show Border", &pFt->grid->drawBorder);
-					ImGui::Checkbox("Show Up To Cursor", &pFt->grid->drawUpTo);
-					ImGui::Checkbox("Show From Cursor to End", &pFt->grid->drawFromHere);
-					ImGui::Checkbox("Show Crosshair", &pFt->crosshair->draw);
+					if (pFt->grid) {
+						ImGui::Checkbox("Show Grid", &pFt->grid->draw);
+						ImGui::Checkbox("Show Border", &pFt->grid->drawBorder);
+						ImGui::Checkbox("Show Up To Cursor", &pFt->grid->drawUpTo);
+						ImGui::Checkbox("Show From Cursor to End", &pFt->grid->drawFromHere);
+					}
+
+					if (pFt->crosshair) {
+						pFt->crosshair->Move(pFt->indicatorIdx);
+						pFt->crosshair->Update(*pFt->CurrentVertexList(), pFt->bb);
+						ImGui::Checkbox("Show Crosshair", &pFt->crosshair->draw);
+					}
 				}
 				ImGui::End();
 			}
