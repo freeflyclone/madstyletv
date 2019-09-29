@@ -17,6 +17,7 @@
 #include <string>
 #include "XGLFreeType.h"
 #include "XGLFreetypeUtils.h"
+#include "Triangulator.h"
 
 #include FT_OUTLINE_H
 
@@ -132,18 +133,42 @@ public:
 
 			int contourIdx = 0;
 
-			// For each contour of the glyph...
-			for (FT::Contour contour : Outline()) {
-				// mark the beginning of the contour in this shape's CPU-side XGLVertexList
-				contourOffsets.push_back((int)v.size());
+			if (true) {
+				FT::GlyphOutline& glyphOutline = Outline();
 
-				// determine if this contour is clockwise or counter-clockwise
-				contour.ComputeCentroid();
+				Triangulator t;
+				triangulateio in, out;
 
-				// add each contour vertex to this shape's CPU-side XGLVertexList
-				for (XGLVertexAttributes vrtx : contour.v)
-					PushVertex(vrtx, contour.isClockwise);
+				t.Init(in);
+				t.Init(out);
+
+				t.Convert(glyphOutline, in, advance);
+
+				triangulate("zpYY", &in, &out, NULL);
+
+				t.RenderTriangles(out);
+
+				for (XGLVertexAttributes vrtx : t.v)
+					v.push_back(vrtx);
+
+				t.Free(out, false);
+				t.Free(in, true);
 			}
+			else {
+				// For each contour of the glyph...
+				for (FT::Contour contour : Outline()) {
+					// mark the beginning of the contour in this shape's CPU-side XGLVertexList
+					contourOffsets.push_back((int)v.size());
+
+					// determine if this contour is clockwise or counter-clockwise
+					contour.ComputeCentroid();
+
+					// add each contour vertex to this shape's CPU-side XGLVertexList
+					for (XGLVertexAttributes vrtx : contour.v)
+						PushVertex(vrtx, contour.isClockwise);
+				}
+			}
+
 			// mark end offset, so display loop can calculate size
 			contourOffsets.push_back((int)v.size());
 			AdvanceGlyphPosition();
@@ -194,12 +219,18 @@ public:
 	}
 
 	void Draw() {
+		if (v.size()){
+			glDrawArrays(GL_TRIANGLES, 0, v.size());
+			GL_CHECK("glDrawArrays() failed");
+
+		}
+		/*
 		if (contourOffsets.size()) {
 			for (int idx = 0; idx < contourOffsets.size() - 1; idx++) {
 				GLuint start = contourOffsets[idx];
 				GLuint length = contourOffsets[idx + 1] - start;
 
-				glDrawArrays(GL_LINE_LOOP, start, length);
+				glDrawArrays(GL_TRIANGLES, start, length);
 				GL_CHECK("glDrawArrays() failed");
 			}
 		}
@@ -212,6 +243,7 @@ public:
 			oldIndicatorIdx = indicatorIdx;
 			oldvListIdx = vListIdx;
 		}
+		*/
 	}
 
 	int indicatorIdx{ 0 };

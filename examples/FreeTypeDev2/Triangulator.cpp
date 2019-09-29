@@ -1,5 +1,50 @@
 #include "Triangulator.h"
 
+void Triangulator::Free(triangulateio& t, bool flag) {
+	if (t.pointlist)
+		free(t.pointlist);
+
+	if (t.pointattributelist)
+		free(t.pointattributelist);
+
+	if (t.pointmarkerlist)
+		free(t.pointmarkerlist);
+
+	if (t.trianglelist)
+		free(t.trianglelist);
+
+	if (t.triangleattributelist)
+		free(t.triangleattributelist);
+
+	if (t.trianglearealist)
+		free(t.trianglearealist);
+
+	if (t.neighborlist)
+		free(t.neighborlist);
+
+	if (t.segmentlist)
+		free(t.segmentlist);
+
+	if (t.segmentmarkerlist)
+		free(t.segmentmarkerlist);
+	
+	if (t.holelist && flag)
+		free(t.holelist);
+
+	if (t.regionlist)
+		free(t.regionlist);
+
+	if (t.edgelist)
+		free(t.edgelist);
+
+	if (t.edgemarkerlist)
+		free(t.edgemarkerlist);
+
+	if (t.normlist)
+		free(t.normlist);
+
+	Init(t);
+}
 void Triangulator::Init(triangulateio& t) {
 	t.pointlist = 0;
 	t.pointattributelist = 0;
@@ -26,7 +71,7 @@ void Triangulator::Init(triangulateio& t) {
 	t.numberofedges = 0;
 }
 
-void Triangulator::Convert(FT::GlyphOutline& go, triangulateio&  in, XGLVertex& a, REAL scaleFactor) {
+void Triangulator::Convert(FT::GlyphOutline& go, triangulateio&  in, XGLVertex& a) {
 	Init(in);
 
 	size_t numPoints = 0, numSegments;
@@ -92,14 +137,7 @@ void Triangulator::RenderTriangles(triangulateio& t) {
 			// first point of the line segment of this triangle's edge
 			REAL x = t.pointlist[idx * 2];
 			REAL y = t.pointlist[idx * 2 + 1];
-			v.push_back({ { x, y, 1 }, {}, {}, { XGLColors::white } });
-
-			// for debugging during dev
-			if (drawMode == GL_LINES) {
-				REAL x2 = t.pointlist[idxNext * 2];
-				REAL y2 = t.pointlist[idxNext * 2 + 1];
-				v.push_back({ { x2, y2, 1 }, {}, {}, { XGLColors::white } });
-			}
+			v.push_back({ { x, y, 1 }, texCoord, {}, neonYellow });
 		}
 	}
 }
@@ -127,6 +165,6 @@ void Triangulator::Dump(triangulateio& t) {
 		xprintf("%d %d %d\n", i + 1, t.segmentlist[i * 2] + 1, t.segmentlist[i * 2 + 1] + 1);
 }
 
-void Triangulator::SetDrawCount(GLsizei count){ 
+void Triangulator::SetDrawCount(GLsizei count) { 
 	drawCount = (count<v.size()) ? count : (GLsizei)v.size(); 
 }

@@ -36,9 +36,10 @@ public:
 	Triangulator();
 
 	void Init(triangulateio& in);
+	void Free(triangulateio& in, bool);
 	void Draw();
 
-	void Convert(FT::GlyphOutline&, triangulateio&, XGLVertex&, REAL);
+	void Convert(FT::GlyphOutline&, triangulateio&, XGLVertex&);
 	void RenderTriangles(triangulateio& in);
 	void RenderSegments(triangulateio& t);
 
@@ -46,8 +47,9 @@ public:
 	void SetDrawCount(GLsizei count);
 
 private:
-	GLuint drawMode = GL_LINES; // GL_LINES or GL_TRIANGES (for filling in)
+	GLuint drawMode = GL_TRIANGLES; // GL_LINES or GL_TRIANGES (for filling in)
 	GLsizei drawCount;
+	float scaleFactor = 3276.80f;
 };
 
 
