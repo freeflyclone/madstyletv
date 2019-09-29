@@ -172,6 +172,10 @@
     <ClCompile Include="..\common\main.cpp" />
     <ClCompile Include="BezierTestBuildScene.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\shaders\bezierPix.frag" />
+    <None Include="..\..\shaders\bezierPix.vert" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

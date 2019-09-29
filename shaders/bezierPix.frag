@@ -25,7 +25,7 @@ void main(void)
 	float sdf = smoothstep(-0.001, 0.001, -distanceToCurve);
 
 	if (sdf > 0)
-		out_Color = ex_Color * sdf;
+		out_Color = sqrt(ex_Color*ex_Color) * sdf;
 	else
 		discard;
 }

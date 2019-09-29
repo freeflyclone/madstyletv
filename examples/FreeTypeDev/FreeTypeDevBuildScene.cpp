@@ -177,8 +177,8 @@ public:
 				t.Init(out);
 
 				t.Dump(in);
-				triangulate("q25zp", &in, &out, NULL);
-				//triangulate("zp", &in, &out, NULL);
+				//triangulate("q25zp", &in, &out, NULL);
+				triangulate("zpYY", &in, &out, NULL);
 
 				RenderTriangles(out);
 			}
@@ -257,7 +257,7 @@ void ExampleXGL::BuildScene() {
 	glm::vec3 cameraUp = { 0, 0, 1 };
 	camera.Set(cameraPosition, cameraDirection, cameraUp);
 
-	AddShape("shaders/000-simple", [&](){ shape = new XGLFreeType(config.WideToBytes(config.Find(L"FreeTypeText")->AsString())); return shape; });
+	AddShape("shaders/bezierPix", [&](){ shape = new XGLFreeType(config.WideToBytes(config.Find(L"FreeTypeText")->AsString())); return shape; });
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(-2, 0, 0));
 	shape->model = translate;
 	

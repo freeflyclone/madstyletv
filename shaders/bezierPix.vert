@@ -18,6 +18,11 @@ out vec2 UV;
 void main(void)
 {
 	gl_Position = projector * view * model * vec4(in_Position, 1.0);
-	ex_Color = in_Color;
-    UV = in_TexCoord;
+
+	if (in_Color.a < 0)
+		ex_Color = vec4(1-in_Color.x, 1-in_Color.y, 1-in_Color.z, -in_Color.a);
+	else
+		ex_Color = in_Color;
+    
+	UV = in_TexCoord;
 }
