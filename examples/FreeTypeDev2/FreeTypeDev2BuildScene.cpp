@@ -17,7 +17,6 @@
 #include <string>
 #include "XGLFreeType.h"
 #include "XGLFreetypeUtils.h"
-#include "Triangulator.h"
 
 #include FT_OUTLINE_H
 
@@ -27,7 +26,7 @@
 
 #define FONT_NAME "C:/windows/fonts/times.ttf"
 
-class XGLFreeType : public FT::GlyphDecomposer,  public XGLShape {
+class XGLFreeType : public FT::GlyphDecomposer,  public Triangulator {
 public:
 	typedef std::map<FT_ULong, FT_UInt> CharMap;
 	typedef std::vector<GLsizei> ContourEndPoints;
@@ -51,12 +50,10 @@ public:
 		for (charcode = FT_Get_First_Char(face, &gindex); gindex; charcode = FT_Get_Next_Char(face, charcode, &gindex))
 			charMap.emplace(charcode, gindex);
 
-		// Force initial Load() to initialize the materials properties. (it won't with empty VertexAttributeList)
+		// Force initial XGLBuffer::Load() to initialize the materials properties. (it won't with empty VertexAttributeList)
 		v.push_back({});
-
-		DrawCurvesEnable(false);
 	}
-
+	/*
 	void PushVertex(XGLVertexAttributes vrtx, bool isClockwise) {
 		vrtx.v.x /= Triangulator::ScaleFactor();
 		vrtx.v.y /= Triangulator::ScaleFactor();
@@ -74,7 +71,7 @@ public:
 
 		v.push_back(vrtx);
 	}
-
+	*/
 	void AdvanceGlyphPosition() {
 		advance.x += face->glyph->advance.x / Triangulator::ScaleFactor();
 		advance.y += face->glyph->advance.y / Triangulator::ScaleFactor();
@@ -99,15 +96,7 @@ public:
 			// This process results in a set of FT::Contours (single PSLG outlines) for the glyph
 			FT_Outline_Decompose(&face->glyph->outline, (FT_Outline_Funcs*)this, (FT_Outline_Funcs*)this);
 
-			int contourIdx = 0;
-
-			FT::GlyphOutline& glyphOutline = Outline();
-
-			Triangulator t;
-			t.Convert(glyphOutline, advance);
-
-			for (XGLVertexAttributes vrtx : t.v)
-				v.push_back(vrtx);
+			Convert(Outline(), advance);
 
 			// mark end offset, so display loop can calculate size
 			contourOffsets.push_back((int)v.size());

@@ -95,4 +95,7 @@ namespace FT {
 	};
 } // namespace FT
 
+// this must be after namespace FT, as Triangulator class depends on it.
+#include "Triangulator.h"
+
 #endif
