@@ -167,6 +167,12 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\xclass\3rdParty\Triangle\triangle.c">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NO_TIMER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NO_TIMER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NO_TIMER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NO_TIMER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\ImGuiFileDialog.cpp" />
     <ClCompile Include="..\common\imgui_main.cpp" />
@@ -174,12 +180,6 @@
     <ClCompile Include="..\common\xglimgui.cpp" />
     <ClCompile Include="FreeTypeDev2BuildScene.cpp" />
     <ClCompile Include="FreeTypeDev2GUI.cpp" />
-    <ClCompile Include="triangle.c">
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NO_TIMER;ANSI_DECLARATORS;TRILIBRARY;_USE_MATH_DEFINES;XML_STATIC;GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NO_TIMER;ANSI_DECLARATORS;TRILIBRARY;_USE_MATH_DEFINES;XML_STATIC;GLEW_STATIC;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NO_TIMER;ANSI_DECLARATORS;TRILIBRARY;_USE_MATH_DEFINES;XML_STATIC;GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NO_TIMER;ANSI_DECLARATORS;TRILIBRARY;_USE_MATH_DEFINES;XML_STATIC;GLEW_STATIC;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
     <ClCompile Include="Triangulator.cpp" />
     <ClCompile Include="XGLFreeType.cpp" />
     <ClCompile Include="XGLFreetypeUtils.cpp" />
