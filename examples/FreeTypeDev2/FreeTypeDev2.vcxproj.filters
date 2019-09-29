@@ -42,12 +42,21 @@
     <ClCompile Include="XGLFreetypeUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Triangulator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="triangle.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="XGLFreeType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="XGLFreetypeUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Triangulator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
