@@ -53,25 +53,7 @@ public:
 		// Force initial XGLBuffer::Load() to initialize the materials properties. (it won't with empty VertexAttributeList)
 		v.push_back({});
 	}
-	/*
-	void PushVertex(XGLVertexAttributes vrtx, bool isClockwise) {
-		vrtx.v.x /= Triangulator::ScaleFactor();
-		vrtx.v.y /= Triangulator::ScaleFactor();
-		
-		vrtx.v.x += advance.x;
-		vrtx.v.y += advance.y;
 
-		vrtx.v.z = 0.01f;
-		vrtx.c = XGLColors::yellow;
-
-		// this is part of the hybrid approach: help the shaders 
-		// understand the glyphs's outline vs holes: holes get negative alpha
-		if (!isClockwise)
-			vrtx.c.a *= -1.0f;
-
-		v.push_back(vrtx);
-	}
-	*/
 	void AdvanceGlyphPosition() {
 		advance.x += face->glyph->advance.x / Triangulator::ScaleFactor();
 		advance.y += face->glyph->advance.y / Triangulator::ScaleFactor();
@@ -91,12 +73,14 @@ public:
 			}
 
 			FT_Load_Glyph(face, charMap[c], FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL);
-			Reset();
+
+			FT::GlyphDecomposer::Reset();
 
 			// This process results in a set of FT::Contours (single PSLG outlines) for the glyph
 			FT_Outline_Decompose(&face->glyph->outline, (FT_Outline_Funcs*)this, (FT_Outline_Funcs*)this);
 
-			Convert(Outline(), advance);
+			// Convert the FT::Contours list to a triangulated mesh
+			Triangulator::Convert(Outline(), advance);
 
 			// mark end offset, so display loop can calculate size
 			contourOffsets.push_back((int)v.size());
@@ -116,9 +100,29 @@ public:
 	}
 
 	void Draw() {
-		if (v.size()){
-			glDrawArrays(GL_TRIANGLES, 0, v.size());
+		if (contourOffsets.size() > 1) {
+			GLuint start = 0;
+			GLuint end = contourOffsets[0];
+
+			for (int i = 0; i < contourOffsets.size() - 1; i++) {
+				GLuint length = end - start;
+
+				glDrawArrays(GL_TRIANGLES, start, length);
+				GL_CHECK("glDrawArrays() failed");
+
+				start = contourOffsets[i];
+				end = contourOffsets[i + 1];
+			}
+
+			GLuint length = v.size() - start;
+			glDrawArrays(GL_TRIANGLES, start, length);
 			GL_CHECK("glDrawArrays() failed");
+		}
+		else {
+			if (v.size()){
+				glDrawArrays(GL_TRIANGLES, 0, v.size());
+				GL_CHECK("glDrawArrays() failed");
+			}
 		}
 	}
 
@@ -136,7 +140,6 @@ private:
 	XGLVertex advance;
 	std::vector<int>contourOffsets;
 	std::string renderString;
-
 };
 
 static XGLFreeType *pFt;

@@ -85,15 +85,7 @@ void Triangulator::Convert(FT::GlyphOutline& ftGlyphOutline, XGLVertex& advance)
 	Free(*this, true);
 }
 
-Triangulator::Triangulator() {
-}
-
-void Triangulator::Draw() {
-	if (v.size()) {
-		glDrawArrays(drawMode, 0, v.size());
-		GL_CHECK("glDrawArrays() failed");
-	}
-}
+Triangulator::Triangulator() {}
 
 void Triangulator::RenderTriangles(triangulateio& t) {
 	for (int i = 0; i < t.numberoftriangles; i++) {
@@ -108,20 +100,4 @@ void Triangulator::RenderTriangles(triangulateio& t) {
 			v.push_back({ { x, y, 1 }, texCoord, {}, neonYellow });
 		}
 	}
-}
-
-void Triangulator::RenderSegments(triangulateio& t) {
-	for (int i = 0; i < t.numberofsegments; i++) {
-		for (int j = 0; j < 2; j++) {
-			int idx = t.segmentlist[i * 2 + j];
-
-			REAL x = t.pointlist[idx * 2];
-			REAL y = t.pointlist[idx * 2 + 1];
-			v.push_back({ { x, y, 1 }, {}, {}, { XGLColors::white } });
-		}
-	}
-}
-
-void Triangulator::SetDrawCount(GLsizei count) { 
-	drawCount = (count<v.size()) ? count : (GLsizei)v.size(); 
 }
