@@ -77,7 +77,7 @@ void GlyphDecomposer::Reset() {
 }
 
 int GlyphDecomposer::MoveTo(const XGLVertex& to) {
-	//xprintf(" MoveTo: %0.4f %0.4f\n", to.x, to.y);
+	xprintf(" MoveTo: %0.4f %0.4f\n", to.x, to.y);
 	firstPoint = to;
 
 	// if the current Contour has XGLVertex data, this MoveTo is a new Contour
@@ -94,28 +94,32 @@ int GlyphDecomposer::MoveTo(const XGLVertex& to) {
 }
 
 int GlyphDecomposer::LineTo(const XGLVertex& to) {
-	//xprintf(" LineTo: %0.4f %0.4f\n", to.x, to.y);
+	xprintf(" LineTo: %0.4f %0.4f\n", to.x, to.y);
 
 	if (IsEqual(to, firstPoint)) {
-		//xprintf(" LineTo: %0.4f %0.4f is coincident with Contour start, ignoring\n");
+		xprintf(" LineTo: %0.4f %0.4f is coincident with Contour start, ignoring\n");
 		return 0;
 	}
 
-	glyphOutline[contourIdx].v.push_back({ to, texCoord, {}, madstyleRed });
+	if (!emitConicsOnly)
+		glyphOutline[contourIdx].v.push_back({ to, texCoord, {}, madstyleRed });
+
 	currentPoint = to;
 	currentContour->ExpandBoundingBox(currentPoint);
 	return 0;
 }
 
 int GlyphDecomposer::ConicTo(const XGLVertex& control, const XGLVertex& to) {
-	//xprintf("ConicTo: %0.4f %0.4f - %0.4f %0.4f\n", control.x, control.y, to.x, to.y);
+	xprintf("ConicTo: %0.4f %0.4f - %0.4f %0.4f\n", control.x, control.y, to.x, to.y);
 	if (drawCurves) {
 		EvaluateQuadraticBezier(currentPoint, control, to);
 	}
 	else {
-		//glyphOutline[contourIdx].v.push_back({ control, texCoord, {}, madstyleRed });
-		//currentPoint = control;
-		//currentContour->ExpandBoundingBox(currentPoint);
+		if (emitConicsOnly || (contourIdx > 0) ) {
+			glyphOutline[contourIdx].v.push_back({ control, texCoord, {}, madstyleRed });
+			currentPoint = control;
+			currentContour->ExpandBoundingBox(currentPoint);
+		}
 
 		if (IsEqual(to, firstPoint))
 			return 0;

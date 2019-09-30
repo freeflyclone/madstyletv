@@ -97,7 +97,7 @@ void Triangulator::RenderTriangles(triangulateio& t) {
 			// first point of the line segment of this triangle's edge
 			REAL x = t.pointlist[idx * 2];
 			REAL y = t.pointlist[idx * 2 + 1];
-			v.push_back({ { x, y, 1 }, texCoord, {}, neonYellow });
+			v.push_back({ { x, y, -0.001 }, texCoord, {}, madstyleRed });
 		}
 	}
 }

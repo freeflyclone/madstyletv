@@ -59,6 +59,73 @@ public:
 		advance.y += face->glyph->advance.y / Triangulator::ScaleFactor();
 	}
 
+	void PushVertex(XGLVertexAttributes vrtx, bool isClockwise) {
+		vrtx.v.x /= Triangulator::ScaleFactor();
+		vrtx.v.y /= Triangulator::ScaleFactor();
+
+		vrtx.v.x += advance.x;
+		vrtx.v.y += advance.y;
+		vrtx.v.z = 0.0001f;
+
+		// this is part of the hybrid approach: help the shaders 
+		// understand the glyphs's outline vs holes: holes get negative alpha
+		if (!isClockwise)
+			vrtx.c.a *= -1.0f;
+
+		v.push_back(vrtx);
+	}
+
+	void EmitOutline() {
+		// For each contour of the glyph...
+		for (FT::Contour contour : Outline()) {
+			// mark the beginning of the contour in this shape's CPU-side XGLVertexList
+			contourOffsets.push_back((int)v.size());
+
+			// determine if this contour is clockwise or counter-clockwise
+			contour.ComputeCentroid();
+
+			// add each contour vertex to this shape's CPU-side XGLVertexList
+			for (XGLVertexAttributes vrtx : contour.v)
+				PushVertex(vrtx, contour.isClockwise);
+		}
+	}
+
+	void EmitTriangles() {
+		for (FT::Contour contour : Outline()) {
+			XGLVertexAttributes *vertices = contour.v.data();
+			XGLVertexAttributes vrtx;
+			std::size_t count = contour.v.size();
+
+			contour.ComputeCentroid();
+
+			for (std::size_t idx = 0; idx < count-2; idx += 2) {
+				vrtx = vertices[idx];
+				vrtx.t = { 0.0, 0.0 };
+				PushVertex(vrtx, contour.isClockwise);
+
+				vrtx = vertices[idx+1];
+				vrtx.t = { 0.5, 0.0 };
+				PushVertex(vrtx, contour.isClockwise);
+
+				vrtx = vertices[idx+2];
+				vrtx.t = { 1, 1 };
+				PushVertex(vrtx, contour.isClockwise);
+			}
+
+			vrtx = vertices[count - 2];
+			vrtx.t = { 0.0, 0.0 };
+			PushVertex(vrtx, contour.isClockwise);
+
+			vrtx = vertices[count - 1];
+			vrtx.t = { 0.5, 0.0 };
+			PushVertex(vrtx, contour.isClockwise);
+
+			vrtx = vertices[0];
+			vrtx.t = { 1.0, 1.0 };
+			PushVertex(vrtx, contour.isClockwise);
+		}
+	}
+
 	void RenderText() {
 		v.clear();
 		contourOffsets.clear();
@@ -74,13 +141,27 @@ public:
 
 			FT_Load_Glyph(face, charMap[c], FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL);
 
+			FT::GlyphDecomposer::EmitConicsOnly(false);
 			FT::GlyphDecomposer::Reset();
 
 			// This process results in a set of FT::Contours (single PSLG outlines) for the glyph
 			FT_Outline_Decompose(&face->glyph->outline, (FT_Outline_Funcs*)this, (FT_Outline_Funcs*)this);
 
-			// Convert the FT::Contours list to a triangulated mesh
-			Triangulator::Convert(Outline(), advance);
+			if (triangulateEnable) {
+				// Convert the FT::Contours list to a triangulated mesh
+				Triangulator::Convert(Outline(), advance);
+				drawMode = GL_TRIANGLES;
+			}
+
+			FT::GlyphDecomposer::EmitConicsOnly(true);
+			FT::GlyphDecomposer::Reset();
+
+			// This process results in a set of FT::Contours (single PSLG outlines) for the glyph
+			FT_Outline_Decompose(&face->glyph->outline, (FT_Outline_Funcs*)this, (FT_Outline_Funcs*)this);
+			{
+				EmitTriangles();
+				drawMode = GL_TRIANGLES;
+			}
 
 			// mark end offset, so display loop can calculate size
 			contourOffsets.push_back((int)v.size());
@@ -100,30 +181,39 @@ public:
 	}
 
 	void Draw() {
+		/*
 		if (contourOffsets.size() > 1) {
+			glPointSize(4.0);
 			GLuint start = 0;
 			GLuint end = contourOffsets[0];
 
 			for (int i = 0; i < contourOffsets.size() - 1; i++) {
 				GLuint length = end - start;
 
-				glDrawArrays(GL_TRIANGLES, start, length);
+				glDrawArrays(drawMode, start, length);
 				GL_CHECK("glDrawArrays() failed");
 
 				start = contourOffsets[i];
 				end = contourOffsets[i + 1];
 			}
 
-			GLuint length = v.size() - start;
-			glDrawArrays(GL_TRIANGLES, start, length);
+			GLuint length = (GLuint)v.size() - start;
+			glDrawArrays(drawMode, start, length);
 			GL_CHECK("glDrawArrays() failed");
 		}
-		else {
+		else */ {
 			if (v.size()){
-				glDrawArrays(GL_TRIANGLES, 0, v.size());
+				glDrawArrays(drawMode, 0, (GLsizei)v.size());
 				GL_CHECK("glDrawArrays() failed");
 			}
 		}
+	/*
+		if (v.size()) {
+			glPointSize(1.0);
+			glDrawArrays(GL_POINTS, 0, (GLsizei)v.size());
+			GL_CHECK("glDrawArrays() failed");
+		}
+	*/
 	}
 
 	XGL* pXgl;
@@ -140,6 +230,8 @@ private:
 	XGLVertex advance;
 	std::vector<int>contourOffsets;
 	std::string renderString;
+	GLuint drawMode;
+	bool triangulateEnable{ true };
 };
 
 static XGLFreeType *pFt;
@@ -168,6 +260,6 @@ void ExampleXGL::BuildScene() {
 		});
 	}
 
-	pFt->RenderText("&");
-	pFt->RenderText("goop");
+	//pFt->RenderText("&");
+	pFt->RenderText("HNBP");
 }

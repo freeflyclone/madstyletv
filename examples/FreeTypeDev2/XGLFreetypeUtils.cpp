@@ -57,7 +57,7 @@ void XGLFreetypeGrid::Draw() {
 	}
 
 	if (drawFromHere) {
-		glDrawArrays(GL_LINES, 8 + ((idx + 1) * 4), v.size() - ((idx + 1) * 4) - 8);
+		glDrawArrays(GL_LINES, 8 + ((idx + 1) * 4), (GLsizei)v.size() - ((idx + 1) * 4) - 8);
 		GL_CHECK("glDrawArrays() failed");
 	}
 }
@@ -161,7 +161,7 @@ void XGLFreetypeNearest::Update(XGLVertexList vList)
 
 void XGLFreetypeNearest::Draw() {
 	if (v.size() && draw) {
-		glDrawArrays(GL_LINES, 0, v.size());
+		glDrawArrays(GL_LINES, 0, (GLsizei)v.size());
 		GL_CHECK("glDrawArrays() failed");
 	}
 }

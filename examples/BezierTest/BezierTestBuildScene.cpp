@@ -11,7 +11,7 @@
 class XGLNewTriangle : public XGLShape {
 public:
 	XGLNewTriangle() {
-		XGLColor neonYellow = { 0.8, 1.0, 0.00001, 1.0 };
+		XGLColor neonYellow = { 0.8, 1.0, 0.00001, -1.0 };
 		XGLColor madstyleRed = { 0.85, 0.0, 0.15, 1.0 };
 
 		SetName("XGLNewTriangle");
