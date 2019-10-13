@@ -8,7 +8,7 @@
 	"VideoFile1" : "H:/Hero6/GH010150.mp4",
 	"VideoFile2" : "H:/Hero6/GH010154.mp4",
 	"VideoFile3" : "H:/Hero6/GH010155.mp4",
-	"FreeTypeText" : "e-man.tv",
+	"FreeTypeText" : "THING",
 	"Encoder" : {
 		"enabled" : false,
 		"preset" : "faster",
