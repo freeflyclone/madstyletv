@@ -87,6 +87,8 @@ public:
 			// add each contour vertex to this shape's CPU-side XGLVertexList
 			for (XGLVertexAttributes vrtx : contour.v)
 				PushVertex(vrtx, contour.isClockwise);
+
+			PushVertex(contour.v[0], contour.isClockwise);
 		}
 	}
 
@@ -141,26 +143,26 @@ public:
 
 			FT_Load_Glyph(face, charMap[c], FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL);
 
-			FT::GlyphDecomposer::EmitConicsOnly(false);
-			FT::GlyphDecomposer::Reset();
-
-			// This process results in a set of FT::Contours (single PSLG outlines) for the glyph
-			FT_Outline_Decompose(&face->glyph->outline, (FT_Outline_Funcs*)this, (FT_Outline_Funcs*)this);
-
 			if (triangulateEnable) {
+				FT::GlyphDecomposer::Reset();
+
+				// This process results in a set of FT::Contours (single PSLG outlines) for the glyph
+				FT_Outline_Decompose(&face->glyph->outline, (FT_Outline_Funcs*)this, (FT_Outline_Funcs*)this);
+
 				// Convert the FT::Contours list to a triangulated mesh
 				Triangulator::Convert(Outline(), advance);
 				drawMode = GL_TRIANGLES;
 			}
 
-			FT::GlyphDecomposer::EmitConicsOnly(true);
-			FT::GlyphDecomposer::Reset();
+			if (outlineEnable) {
+				FT::GlyphDecomposer::Reset();
 
-			// This process results in a set of FT::Contours (single PSLG outlines) for the glyph
-			FT_Outline_Decompose(&face->glyph->outline, (FT_Outline_Funcs*)this, (FT_Outline_Funcs*)this);
-			{
-				EmitTriangles();
-				drawMode = GL_TRIANGLES;
+				// This process results in a set of FT::Contours (single PSLG outlines) for the glyph
+				FT_Outline_Decompose(&face->glyph->outline, (FT_Outline_Funcs*)this, (FT_Outline_Funcs*)this);
+				{
+					EmitOutline();
+					drawMode = GL_LINE_STRIP;
+				}
 			}
 
 			// mark end offset, so display loop can calculate size
@@ -181,7 +183,6 @@ public:
 	}
 
 	void Draw() {
-		/*
 		if (contourOffsets.size() > 1) {
 			glPointSize(4.0);
 			GLuint start = 0;
@@ -201,19 +202,17 @@ public:
 			glDrawArrays(drawMode, start, length);
 			GL_CHECK("glDrawArrays() failed");
 		}
-		else */ {
+		else {
 			if (v.size()){
 				glDrawArrays(drawMode, 0, (GLsizei)v.size());
 				GL_CHECK("glDrawArrays() failed");
 			}
 		}
-	/*
 		if (v.size()) {
-			glPointSize(1.0);
+			glPointSize(4.0);
 			glDrawArrays(GL_POINTS, 0, (GLsizei)v.size());
 			GL_CHECK("glDrawArrays() failed");
 		}
-	*/
 	}
 
 	XGL* pXgl;
@@ -231,7 +230,8 @@ private:
 	std::vector<int>contourOffsets;
 	std::string renderString;
 	GLuint drawMode;
-	bool triangulateEnable{ true };
+	bool triangulateEnable{ false };
+	bool outlineEnable{ true };
 };
 
 static XGLFreeType *pFt;
@@ -261,5 +261,5 @@ void ExampleXGL::BuildScene() {
 	}
 
 	//pFt->RenderText("&");
-	pFt->RenderText("HNBP");
+	pFt->RenderText("POOR THING");
 }

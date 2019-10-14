@@ -54,7 +54,6 @@ namespace FT {
 		}
 
 		void DrawCurvesEnable(bool enable) { drawCurves = enable; }
-		void EmitConicsOnly(bool enable) { emitConicsOnly = enable; }
 
 	private:
 		static int _MoveToFunc(const FT_Vector* to, void *pCtx) { 
@@ -91,9 +90,10 @@ namespace FT {
 		Contour* currentContour;
 		XGLVertex firstPoint;
 		XGLVertex currentPoint;
-		bool emitConicsOnly{ false };
-		bool drawCurves = false;
 		REAL interpolationFactor = 0.1;
+
+		bool drawCurves{ false };
+		bool useColors{ true };
 	};
 } // namespace FT
 

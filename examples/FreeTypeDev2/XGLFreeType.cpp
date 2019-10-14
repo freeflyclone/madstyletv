@@ -87,7 +87,7 @@ int GlyphDecomposer::MoveTo(const XGLVertex& to) {
 		currentContour = &glyphOutline.back();
 	}
 
-	glyphOutline[contourIdx].v.push_back({ to, texCoord, {}, madstyleRed });
+	glyphOutline[contourIdx].v.push_back({ to, texCoord, {}, useColors ? XGLColors::cyan : madstyleRed });
 	currentPoint = to;
 	currentContour->ExpandBoundingBox(currentPoint);
 	return 0;
@@ -101,8 +101,7 @@ int GlyphDecomposer::LineTo(const XGLVertex& to) {
 		return 0;
 	}
 
-	if (!emitConicsOnly)
-		glyphOutline[contourIdx].v.push_back({ to, texCoord, {}, madstyleRed });
+	glyphOutline[contourIdx].v.push_back({ to, texCoord, {}, useColors ? XGLColors::blue : madstyleRed });
 
 	currentPoint = to;
 	currentContour->ExpandBoundingBox(currentPoint);
@@ -115,8 +114,8 @@ int GlyphDecomposer::ConicTo(const XGLVertex& control, const XGLVertex& to) {
 		EvaluateQuadraticBezier(currentPoint, control, to);
 	}
 	else {
-		if (emitConicsOnly || (contourIdx > 0) ) {
-			glyphOutline[contourIdx].v.push_back({ control, texCoord, {}, madstyleRed });
+		if ( (contourIdx > 0) ) {
+			glyphOutline[contourIdx].v.push_back({ control, texCoord, {}, useColors ? XGLColors::green : madstyleRed });
 			currentPoint = control;
 			currentContour->ExpandBoundingBox(currentPoint);
 		}
@@ -124,7 +123,7 @@ int GlyphDecomposer::ConicTo(const XGLVertex& control, const XGLVertex& to) {
 		if (IsEqual(to, firstPoint))
 			return 0;
 
-		glyphOutline[contourIdx].v.push_back({ to, texCoord, {}, madstyleRed });
+		glyphOutline[contourIdx].v.push_back({ to, texCoord, {}, useColors ? XGLColors::green : madstyleRed });
 	}
 	currentPoint = to;
 	currentContour->ExpandBoundingBox(currentPoint);
@@ -137,15 +136,15 @@ int GlyphDecomposer::CubicTo(const XGLVertex& control1, const XGLVertex& control
 		EvaluateCubicBezier(currentPoint, control1, control2, to);
 	}
 	else {
-		glyphOutline[contourIdx].v.push_back({ control1, texCoord, {}, madstyleRed });
-		glyphOutline[contourIdx].v.push_back({ control2, texCoord, {}, madstyleRed });
+		glyphOutline[contourIdx].v.push_back({ control1, texCoord, {}, useColors ? XGLColors::green : madstyleRed });
+		glyphOutline[contourIdx].v.push_back({ control2, texCoord, {}, useColors ? XGLColors::green : madstyleRed });
 		currentPoint = control2;
 		currentContour->ExpandBoundingBox(currentPoint);
 
 		if (IsEqual(to, firstPoint))
 			return 0;
 
-		glyphOutline[contourIdx].v.push_back({ to, texCoord, {}, madstyleRed });
+		glyphOutline[contourIdx].v.push_back({ to, texCoord, {}, useColors ? XGLColors::green : madstyleRed });
 	}
 	currentPoint = to;
 	currentContour->ExpandBoundingBox(currentPoint);
@@ -172,13 +171,13 @@ void GlyphDecomposer::EvaluateQuadraticBezier(const XGLVertex& p0, const XGLVert
 		i0 = Interpolate(p0, p1, interpolant);
 		i1 = Interpolate(p1, p2, interpolant);
 		out = Interpolate(i0, i1, interpolant);
-		glyphOutline[contourIdx].v.push_back({ out, texCoord, {}, madstyleRed });
+		glyphOutline[contourIdx].v.push_back({ out, texCoord, {}, useColors ? XGLColors::magenta : madstyleRed });
 	}
 	if (IsEqual(p2, firstPoint)) {
 		//xprintf("Final point of Quadratic Bezier is coincident with contour start, ignoring\n");
 		return;
 	}
-	glyphOutline[contourIdx].v.push_back({ p2, texCoord, {}, madstyleRed });
+	glyphOutline[contourIdx].v.push_back({ p2, texCoord, {}, useColors ? XGLColors::magenta : madstyleRed });
 }
 
 void GlyphDecomposer::EvaluateCubicBezier(const XGLVertex& p0, const XGLVertex& p1, const XGLVertex& p2, const XGLVertex& p3) {
@@ -194,11 +193,11 @@ void GlyphDecomposer::EvaluateCubicBezier(const XGLVertex& p0, const XGLVertex& 
 		m1 = Interpolate(i1, i2, interpolant);
 
 		out = Interpolate(m0, m1, interpolant);
-		glyphOutline[contourIdx].v.push_back({ out, texCoord, {}, madstyleRed });
+		glyphOutline[contourIdx].v.push_back({ out, texCoord, {}, useColors ? XGLColors::magenta : madstyleRed });
 	}
 	if (IsEqual(p3, firstPoint)) {
 		//xprintf("Final point of Cubic Bezier is coincident with contour start, ignoring\n");
 		return;
 	}
-	glyphOutline[contourIdx].v.push_back({ p3, texCoord, {}, madstyleRed });
+	glyphOutline[contourIdx].v.push_back({ p3, texCoord, {}, useColors ? XGLColors::magenta : madstyleRed });
 }
