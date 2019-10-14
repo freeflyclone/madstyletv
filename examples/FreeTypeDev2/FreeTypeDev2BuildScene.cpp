@@ -183,10 +183,10 @@ public:
 				FT_Outline_Decompose(&face->glyph->outline, (FT_Outline_Funcs*)this, (FT_Outline_Funcs*)this);
 				EmitOutline();
 
-				// mark end offset, so display loop can calculate size
-				contourOffsets.push_back((int)v.size());
 				AdvanceGlyphPosition();
 			}
+			drawMode = GL_TRIANGLES;
+			contourLayers.push_back({ contourOffsets.size(), drawMode });
 		}
 
 		// update this shape's VBO with new geometry from the CPU-side XGLVertexList
