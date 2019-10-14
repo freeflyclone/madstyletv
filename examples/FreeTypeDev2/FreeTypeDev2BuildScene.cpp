@@ -29,7 +29,12 @@
 class XGLFreeType : public FT::GlyphDecomposer,  public Triangulator {
 public:
 	typedef std::map<FT_ULong, FT_UInt> CharMap;
-	typedef std::vector<GLsizei> ContourEndPoints;
+	typedef struct {
+		int idx;
+		GLuint drawMode;
+		std::vector<int> endOffsets;
+	} ContourLayer;
+	typedef std::vector<ContourLayer> ContourLayers;
 
 	XGLFreeType(XGL* pxgl) : pXgl(pxgl) {
 		FT_UInt gindex = 0;
@@ -132,18 +137,18 @@ public:
 		v.clear();
 		contourOffsets.clear();
 
-		advance = { 0.0f, 0.0f, 0.0f };
+		if (triangulateEnable) {
+			advance = { 0.0f, 0.0f, 0.0f };
 
-		// for each char in string...
-		for (char c : renderString) {
-			if (c == ' ') {
-				AdvanceGlyphPosition();
-				continue;
-			}
+			// for each char in string...
+			for (char c : renderString) {
+				if (c == ' ') {
+					AdvanceGlyphPosition();
+					continue;
+				}
 
-			FT_Load_Glyph(face, charMap[c], FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL);
+				FT_Load_Glyph(face, charMap[c], FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL);
 
-			if (triangulateEnable) {
 				FT::GlyphDecomposer::Reset();
 
 				// This process results in a set of FT::Contours (single PSLG outlines) for the glyph
@@ -151,23 +156,37 @@ public:
 
 				// Convert the FT::Contours list to a triangulated mesh
 				Triangulator::Convert(Outline(), advance);
-				drawMode = GL_TRIANGLES;
-			}
 
-			if (outlineEnable) {
+				// mark end offset, so display loop can calculate size
+				contourOffsets.push_back((int)v.size());
+				AdvanceGlyphPosition();
+			}
+			drawMode = GL_TRIANGLES;
+			contourLayers.push_back({ contourOffsets.size(), drawMode });
+		}
+
+		if (outlineEnable) {
+			advance = { 0.0f, 0.0f, 0.0f };
+
+			// for each char in string...
+			for (char c : renderString) {
+				if (c == ' ') {
+					AdvanceGlyphPosition();
+					continue;
+				}
+
+				FT_Load_Glyph(face, charMap[c], FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL);
+
 				FT::GlyphDecomposer::Reset();
 
 				// This process results in a set of FT::Contours (single PSLG outlines) for the glyph
 				FT_Outline_Decompose(&face->glyph->outline, (FT_Outline_Funcs*)this, (FT_Outline_Funcs*)this);
-				{
-					EmitOutline();
-					drawMode = GL_LINE_STRIP;
-				}
-			}
+				EmitOutline();
 
-			// mark end offset, so display loop can calculate size
-			contourOffsets.push_back((int)v.size());
-			AdvanceGlyphPosition();
+				// mark end offset, so display loop can calculate size
+				contourOffsets.push_back((int)v.size());
+				AdvanceGlyphPosition();
+			}
 		}
 
 		// update this shape's VBO with new geometry from the CPU-side XGLVertexList
@@ -184,7 +203,6 @@ public:
 
 	void Draw() {
 		if (contourOffsets.size() > 1) {
-			glPointSize(4.0);
 			GLuint start = 0;
 			GLuint end = contourOffsets[0];
 
@@ -230,8 +248,10 @@ private:
 	std::vector<int>contourOffsets;
 	std::string renderString;
 	GLuint drawMode;
-	bool triangulateEnable{ false };
+	bool triangulateEnable{ true };
 	bool outlineEnable{ true };
+
+	ContourLayers contourLayers;
 };
 
 static XGLFreeType *pFt;
