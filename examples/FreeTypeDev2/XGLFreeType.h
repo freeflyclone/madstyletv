@@ -92,7 +92,7 @@ namespace FT {
 		XGLVertex currentPoint;
 		REAL interpolationFactor = 0.1;
 
-		bool drawCurves{ false };
+		bool drawCurves{ true };
 		bool useColors{ true };
 	};
 } // namespace FT

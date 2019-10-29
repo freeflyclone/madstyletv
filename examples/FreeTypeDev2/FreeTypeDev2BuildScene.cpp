@@ -29,12 +29,14 @@
 class XGLFreeType : public FT::GlyphDecomposer,  public Triangulator {
 public:
 	typedef std::map<FT_ULong, FT_UInt> CharMap;
-	typedef struct {
+	struct ContourLayer {
+		ContourLayer(int i) : idx(i) {};
 		int idx;
 		GLuint drawMode;
 		std::vector<int> endOffsets;
-	} ContourLayer;
-	typedef std::vector<ContourLayer> ContourLayers;
+	};
+
+	typedef std::vector<ContourLayer*> ContourLayers;
 
 	XGLFreeType(XGL* pxgl) : pXgl(pxgl) {
 		FT_UInt gindex = 0;
@@ -81,10 +83,12 @@ public:
 	}
 
 	void EmitOutline() {
+		ContourLayer *layer = CurrentLayer();
+
 		// For each contour of the glyph...
+		int contourIdx = 0;
 		for (FT::Contour contour : Outline()) {
-			// mark the beginning of the contour in this shape's CPU-side XGLVertexList
-			contourOffsets.push_back((int)v.size());
+			xprintf("contourIdx: %d\n", contourIdx++);
 
 			// determine if this contour is clockwise or counter-clockwise
 			contour.ComputeCentroid();
@@ -93,7 +97,8 @@ public:
 			for (XGLVertexAttributes vrtx : contour.v)
 				PushVertex(vrtx, contour.isClockwise);
 
-			PushVertex(contour.v[0], contour.isClockwise);
+			//PushVertex(contour.v[0], contour.isClockwise);
+			layer->endOffsets.push_back(v.size());
 		}
 	}
 
@@ -135,9 +140,9 @@ public:
 
 	void RenderText() {
 		v.clear();
-		contourOffsets.clear();
 
 		if (triangulateEnable) {
+			ContourLayer *layer = NewContourLayer(v.size());
 			advance = { 0.0f, 0.0f, 0.0f };
 
 			// for each char in string...
@@ -158,14 +163,14 @@ public:
 				Triangulator::Convert(Outline(), advance);
 
 				// mark end offset, so display loop can calculate size
-				contourOffsets.push_back((int)v.size());
+				layer->endOffsets.push_back((int)v.size());
 				AdvanceGlyphPosition();
 			}
-			drawMode = GL_TRIANGLES;
-			contourLayers.push_back({ contourOffsets.size(), drawMode });
+			layer->drawMode = GL_TRIANGLES;
 		}
 
 		if (outlineEnable) {
+			ContourLayer *layer = NewContourLayer(v.size());
 			advance = { 0.0f, 0.0f, 0.0f };
 
 			// for each char in string...
@@ -183,10 +188,12 @@ public:
 				FT_Outline_Decompose(&face->glyph->outline, (FT_Outline_Funcs*)this, (FT_Outline_Funcs*)this);
 				EmitOutline();
 
+				// mark end offset, so display loop can calculate size
+				layer->endOffsets.push_back((int)v.size());
+
 				AdvanceGlyphPosition();
 			}
-			drawMode = GL_TRIANGLES;
-			contourLayers.push_back({ contourOffsets.size(), drawMode });
+			layer->drawMode = GL_LINE_LOOP;
 		}
 
 		// update this shape's VBO with new geometry from the CPU-side XGLVertexList
@@ -201,35 +208,28 @@ public:
 		RenderText();
 	}
 
+	ContourLayer* CurrentLayer() {
+		return contourLayers.back();
+	}
+
+	ContourLayer* NewContourLayer(int idx) {
+		contourLayers.push_back(new ContourLayer(idx));
+		return CurrentLayer();
+	}
+
 	void Draw() {
-		if (contourOffsets.size() > 1) {
-			GLuint start = 0;
-			GLuint end = contourOffsets[0];
+		for (ContourLayer* layer : contourLayers) {
+			int start = layer->idx;
+			if (layer->endOffsets.size()) {
+				for (int i = 0; i < layer->endOffsets.size(); i++) {
+					GLuint end = layer->endOffsets[i];
+					GLuint length = end - start;
+					glDrawArrays(layer->drawMode, start, length);
+					GL_CHECK("glDrawArrays() failed");
 
-			for (int i = 0; i < contourOffsets.size() - 1; i++) {
-				GLuint length = end - start;
-
-				glDrawArrays(drawMode, start, length);
-				GL_CHECK("glDrawArrays() failed");
-
-				start = contourOffsets[i];
-				end = contourOffsets[i + 1];
+					start = end;
+				}
 			}
-
-			GLuint length = (GLuint)v.size() - start;
-			glDrawArrays(drawMode, start, length);
-			GL_CHECK("glDrawArrays() failed");
-		}
-		else {
-			if (v.size()){
-				glDrawArrays(drawMode, 0, (GLsizei)v.size());
-				GL_CHECK("glDrawArrays() failed");
-			}
-		}
-		if (v.size()) {
-			glPointSize(4.0);
-			glDrawArrays(GL_POINTS, 0, (GLsizei)v.size());
-			GL_CHECK("glDrawArrays() failed");
 		}
 	}
 
@@ -245,7 +245,7 @@ private:
 	FT_GlyphSlot g;
 	CharMap charMap;
 	XGLVertex advance;
-	std::vector<int>contourOffsets;
+	//std::vector<int>contourOffsets;
 	std::string renderString;
 	GLuint drawMode;
 	bool triangulateEnable{ true };
