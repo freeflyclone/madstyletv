@@ -34,6 +34,8 @@ public:
 		int idx;
 		GLuint drawMode;
 		std::vector<int> endOffsets;
+		bool drawEnable;
+		char *name;
 	};
 
 	typedef std::vector<ContourLayer*> ContourLayers;
@@ -143,6 +145,7 @@ public:
 
 		if (triangulateEnable) {
 			ContourLayer *layer = NewContourLayer(v.size());
+			layer->name = "Triangulator";
 			advance = { 0.0f, 0.0f, 0.0f };
 
 			// for each char in string...
@@ -171,6 +174,7 @@ public:
 
 		if (outlineEnable) {
 			ContourLayer *layer = NewContourLayer(v.size());
+			layer->name = "Outline";
 			advance = { 0.0f, 0.0f, 0.0f };
 
 			// for each char in string...
@@ -220,6 +224,8 @@ public:
 	void Draw() {
 		for (ContourLayer* layer : contourLayers) {
 			int start = layer->idx;
+			if (!layer->drawEnable)
+				continue;
 			if (layer->endOffsets.size()) {
 				for (int i = 0; i < layer->endOffsets.size(); i++) {
 					GLuint end = layer->endOffsets[i];
@@ -234,6 +240,7 @@ public:
 	}
 
 	XGL* pXgl;
+	ContourLayers contourLayers;
 
 private:
 	// These 2 numbers help Freetype math have adequate precision...
@@ -245,13 +252,10 @@ private:
 	FT_GlyphSlot g;
 	CharMap charMap;
 	XGLVertex advance;
-	//std::vector<int>contourOffsets;
 	std::string renderString;
 	GLuint drawMode;
 	bool triangulateEnable{ true };
 	bool outlineEnable{ true };
-
-	ContourLayers contourLayers;
 };
 
 static XGLFreeType *pFt;
@@ -270,6 +274,8 @@ void ExampleXGL::BuildScene() {
 		ig->AddMenuFunc([&]() {
 			if (ImGui::Begin("Titler")) {
 				if (ImGui::CollapsingHeader("Tweeks", ImGuiTreeNodeFlags_DefaultOpen)) {
+					for (auto contour : pFt->contourLayers)
+						ImGui::Checkbox(contour->name, &contour->drawEnable);
 				}
 				ImGui::End();
 			}
