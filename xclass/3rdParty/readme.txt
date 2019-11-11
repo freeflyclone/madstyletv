@@ -14,9 +14,16 @@ Be advised: opencv is big and takes awhile to clone and build.
 
 The following commands will initialize them from GitHub:
 
-	git submodule init mavlink/c_library_v1 ; git submodule update
-	git submodule init mosquitto ; git submodule update
-	git submodule init openal-soft ; git submodule update
-	git submodule init opencv ; git submodule update
+	git submodule init mavlink/c_library_v1
+	git submodule update
+	
+	git submodule init mosquitto
+	git submodule update
+	
+	git submodule init openal-soft
+	git submodule update
+	
+	git submodule init opencv
+	git submodule update
 	
 VS2013 project files and TortoiseGit procedures are a work in progress as of 4/23/2017
