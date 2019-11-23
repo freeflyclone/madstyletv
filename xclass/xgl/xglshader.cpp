@@ -20,7 +20,7 @@ namespace {
 			mEM[GL_GEOMETRY_SHADER] = ".geom";
 			mEM[GL_TESS_EVALUATION_SHADER] = ".tevl";
 			mEM[GL_TESS_CONTROL_SHADER] = ".tctl";
-			mEM[GL_COMPUTE_SHADER] = "cmpt";
+			mEM[GL_COMPUTE_SHADER] = ".cmpt";
 		}
 
 		const char* operator[] (int idx) {
