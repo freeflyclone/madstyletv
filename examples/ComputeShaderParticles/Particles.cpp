@@ -100,6 +100,8 @@ XGLParticleSystem::XGLParticleSystem(int n) : numParticles(n) {
 void XGLParticleSystem::Draw() {
 	//glPointSize(2.0f);
 
+	glPointSize(4.0);
+
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_3D, tex);
 	GL_CHECK("failed");

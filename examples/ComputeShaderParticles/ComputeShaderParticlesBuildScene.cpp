@@ -7,14 +7,14 @@
 #include "ExampleXGL.h"
 #include "Particles.h"
 
-const static int nParticles = 100000;
+const static int nParticles = 1000;
 
 XGLParticleSystem *pParticles;
 
 extern bool initHmd;
 
 void ExampleXGL::BuildScene() {
-	AddShape("shaders/000-simple2", [&]() { pParticles = new XGLParticleSystem(nParticles); return pParticles; });
+	AddShape("shaders/000-simple", [&]() { pParticles = new XGLParticleSystem(nParticles); return pParticles; });
 
 	if (true)
 		AddPreRenderFunction(pParticles->invokeComputeShader);
