@@ -19,6 +19,3 @@
 [submodule "xclass/3rdParty/ImGuiFileDialog"]
 	path = xclass/3rdParty/ImGuiFileDialog
 	url = https://github.com/freeflyclone/ImGuiFileDialog.git
-[submodule "xclass/3rdParty/assimp"]
-	path = xclass/3rdParty/assimp
-	url = https://github.com/freeflyclone/assimp.git
