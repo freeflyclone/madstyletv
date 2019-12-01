@@ -1,39 +1,27 @@
 #include "ExampleXGL.h"
 #include "xglimgui.h"
 
-class XGLImGui : public XGLShape {
-public:
-	void Draw() {
-		ImGui::ShowDemoWindow(&demoWindow);
-	}
-
-private:
-	bool demoWindow{ true };
-};
 
 void ExampleXGL::BuildGUI() {
 	XGLGuiManager* gm;
-	XGLImGui* im;
+	XGLImGui* xig;
 
-	ImGuiMenuFn fn = [this]() {
+	menuFunctions.push_back([this]() {
 		if (ImGui::BeginMainMenuBar())
 		{
-			if (ImGui::BeginMenu("Your Mom"))
+			if (ImGui::BeginMenu("Configuration"))
 			{
-				if (ImGui::MenuItem("Undo", "CTRL+Z")) {
-					xprintf("she's been undone");
+				if (ImGui::MenuItem("Load", "CTRL+Z")) {
+					xprintf("Load was selected\n");
 				}
 				ImGui::EndMenu();
 			}
 			ImGui::EndMainMenuBar();
 		}
-	};
-
-	menuFunctions.push_back(fn);
+	});
 
 	AddGuiShape("shaders/ortho", [&]() { gm = new XGLGuiManager(this); return gm; });
-
-	gm->AddChildShape("shaders/zzz", [&](){ im = new XGLImGui(); return im; });
+	gm->AddChildShape("shaders/zzz", [&](){ xig = new XGLImGui(); return xig; });
 
 	return;
 }

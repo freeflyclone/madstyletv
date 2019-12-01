@@ -4,13 +4,19 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#include "ImGuiFileDialog.h"
+
 extern 	GLFWwindow *gMainWindow;
+
+std::string filePathName, path, fileName, filter;
+bool openFileDialog{ false };
 
 void ShowExampleMenuFile()
 {
 	if (ImGui::MenuItem("New")) {}
 	if (ImGui::MenuItem("Open", "Ctrl+O")) {
 		xprintf("Main menu open\n");
+		openFileDialog = true;
 	}
 	if (ImGui::BeginMenu("Open Recent"))
 	{
@@ -76,5 +82,26 @@ void ShowMainMenuBar() {
 			ImGui::EndMenu();
 		}
 		ImGui::EndMainMenuBar();
+	}
+
+	if (openFileDialog) {
+		if (ImGuiFileDialog::Instance()->FileDialog("Choose File", ".cpp\0.h\0.hpp\0\0", ".", ""))
+		{
+			if (ImGuiFileDialog::Instance()->IsOk == true)
+			{
+				filePathName = ImGuiFileDialog::Instance()->GetFilepathName();
+				path = ImGuiFileDialog::Instance()->GetCurrentPath();
+				fileName = ImGuiFileDialog::Instance()->GetCurrentFileName();
+				filter = ImGuiFileDialog::Instance()->GetCurrentFilter();
+			}
+			else
+			{
+				filePathName = "";
+				path = "";
+				fileName = "";
+				filter = "";
+			}
+			openFileDialog = false;
+		}
 	}
 }

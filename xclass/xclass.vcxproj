@@ -232,6 +232,7 @@
     <ClInclude Include="3rdParty\imgui\imstb_rectpack.h" />
     <ClInclude Include="3rdParty\imgui\imstb_textedit.h" />
     <ClInclude Include="3rdParty\imgui\imstb_truetype.h" />
+    <ClInclude Include="3rdParty\imgui\misc\freetype\imgui_freetype.h" />
     <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\Clock.h" />
     <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\GameTime.h" />
     <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\ManualClock.h" />
@@ -260,7 +261,6 @@
     <ClInclude Include="xfifo.h" />
     <ClInclude Include="xftdi.h" />
     <ClInclude Include="xglew.h" />
-    <ClInclude Include="xglimgui.h" />
     <ClInclude Include="xgl\GLAppUtil.h" />
     <ClInclude Include="xgl\glew.h" />
     <ClInclude Include="xgl\glxew.h" />
@@ -273,9 +273,11 @@
     <ClInclude Include="xgl\xglframebuffer.h" />
     <ClInclude Include="xgl\xglgui.h" />
     <ClInclude Include="xgl\xglhmd.h" />
+    <ClInclude Include="xgl\xglimgui.h" />
     <ClInclude Include="xgl\xgllight.h" />
     <ClInclude Include="xgl\xglmaterial.h" />
     <ClInclude Include="xgl\xglpixelbuffer.h" />
+    <ClInclude Include="xgl\xglpixelformat.h" />
     <ClInclude Include="xgl\xglprimitives.h" />
     <ClInclude Include="xgl\xglprojector.h" />
     <ClInclude Include="xgl\xglshader.h" />
@@ -311,6 +313,8 @@
     </ClCompile>
     <ClCompile Include="3rdParty\imgui\imgui_draw.cpp" />
     <ClCompile Include="3rdParty\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="3rdParty\imgui\misc\cpp\imgui_stdlib.cpp" />
+    <ClCompile Include="3rdParty\imgui\misc\freetype\imgui_freetype.cpp" />
     <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\Clock.cpp" />
     <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\GameTime.cpp" />
     <ClCompile Include="3rdParty\NuclexTimer\Source\Timing\ManualClock.cpp" />

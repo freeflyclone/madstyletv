@@ -331,7 +331,7 @@ void XGL::IterateShapesMap(){
 			xprintf("XGL::IterateShapesMap(): '%s', shader->shader: %d\n", Name().c_str(), shader->programId);
 
 			for (auto shape : *(perShader.second))
-				xprintf("   shape->b: vao:%d, vbo:%d, program:%d\n", shape->vao, shape->vbo, shape->shader->programId);
+				xprintf("   shape->b: vbo:%d, program:%d\n", shape->vbo, shape->shader->programId);
 		}
 	}
 }

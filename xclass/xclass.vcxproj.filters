@@ -264,6 +264,9 @@
     <ClInclude Include="3rdParty\NuclexTimer\Include\Timing\WindowsClock.h">
       <Filter>NuclexTimer\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xgl\xglpixelformat.h">
+      <Filter>xgl\Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="3rdParty\imgui\imconfig.h">
       <Filter>xgl\Header Files\imgui</Filter>
     </ClInclude>
@@ -327,8 +330,11 @@
     <ClInclude Include="3rdParty\imgui\examples\imgui_impl_win32.h">
       <Filter>xgl\Header Files\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="xglimgui.h">
-      <Filter>xgl\Header Files</Filter>
+    <ClInclude Include="xgl\xglimgui.h">
+      <Filter>xgl</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\imgui\misc\freetype\imgui_freetype.h">
+      <Filter>xgl\Header Files\imgui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -486,6 +492,12 @@
       <Filter>xgl\Source Files\imgui</Filter>
     </ClCompile>
     <ClCompile Include="3rdParty\imgui\imgui_widgets.cpp">
+      <Filter>xgl\Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\imgui\misc\cpp\imgui_stdlib.cpp">
+      <Filter>xgl\Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\imgui\misc\freetype\imgui_freetype.cpp">
       <Filter>xgl\Source Files\imgui</Filter>
     </ClCompile>
   </ItemGroup>

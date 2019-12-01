@@ -116,6 +116,14 @@ static void mouse_button_callback(GLFWwindow *window, int button, int action, in
 		exgl->MouseEvent((int)x, (int)y, state);
 }
 
+static void scroll_callback(GLFWwindow *window, double x, double y) {
+	if (pIo->WantCaptureMouse)
+		return;
+
+	if (exgl != NULL)
+		xprintf("Scroll event: %0.4f, %0.4f\n", x, y);
+}
+
 static void window_size_callback(GLFWwindow *window, int width, int height) {
 	if (exgl != NULL) {
 		exgl->Reshape(width, height);
@@ -261,6 +269,7 @@ int main(void) {
 	glfwSetCursorPosCallback(gMainWindow, cursor_position_callback);
 	glfwSetWindowSizeCallback(gMainWindow, window_size_callback);
 	glfwSetMouseButtonCallback(gMainWindow, mouse_button_callback);
+	glfwSetScrollCallback(gMainWindow, scroll_callback);
 
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();

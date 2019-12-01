@@ -22,9 +22,9 @@ public:
     XGLShaderComponent();
     ~XGLShaderComponent();
 
-    void TextFileRead();
+    bool TextFileRead();
     bool Compile(std::string name, GLuint type);
-    void InfoLog(std::string fileName);
+    bool InfoLog(std::string fileName);
 
     std::string mFileName;
     std::streamoff mSourceSize;
@@ -56,7 +56,7 @@ public:
 
 private:
 	std::string shaderName;
-    XGLShaderComponent mVShader, mFShader;
+    XGLShaderComponent mVShader, mFShader, mGShader;
 	XGLShaderComponent mCShader;
 };
 

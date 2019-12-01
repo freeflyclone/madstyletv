@@ -153,7 +153,7 @@ class XGLTexQuad : public XGLShape{
 public:
 	// these constructors build a quad @ -1,-1 to 1,1
 	XGLTexQuad();
-	XGLTexQuad(std::string fileName);
+	XGLTexQuad(std::string fileName, int forceChannels = 0);
 	XGLTexQuad(int width, int height, int channels, GLubyte *img, bool flipColors = false);
 	XGLTexQuad(int width, int height, int channels);
 

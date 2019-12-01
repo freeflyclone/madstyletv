@@ -58,17 +58,52 @@ private:
 	XGLGuiLabel *label;
 };
 
+class XGLRoundedTexQuad : public XGLTexQuad {
+public:
+	XGLRoundedTexQuad() : XGLTexQuad() {};
+	XGLRoundedTexQuad(std::string fileName) : XGLTexQuad(fileName) {};
+	XGLRoundedTexQuad(int width, int height, int channels, GLubyte *img, bool flipColors = false) : XGLTexQuad(width, height, channels, img, flipColors) {};
+	XGLRoundedTexQuad(int w, int h, int c) : XGLTexQuad(w, h, c), width(w), height(h), channels(c) {
+		xprintf("%s()\n", __FUNCTION__);
+
+		bufferSize = width*height*channels;
+		buffer = new GLbyte[bufferSize]();
+		memset(buffer, 0, bufferSize);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texIds[0]);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, buffer);
+		GL_CHECK("glGetTexSubImage2D() didn't work");
+	};
+
+	GLbyte* buffer{ nullptr };
+	int bufferSize{ 0 };
+	int width, height, channels;
+};
+
 void ExampleXGL::BuildScene() {
-	XGLShape *shape;
+	XGLShape *shape, *rrTexQuad;
 	XGLGuiManager *gm = GetGuiManager();
 	XGLGuiWindow *gw;
 	XGLGuiTextEdit *gte;
 
 	AddShape("shaders/000-simple", [&](){ shape = new XGLTriangle(); return shape; });
 
-	gm->AddChildShape("shaders/ortho-tex", [&]() { gw = new XGLGuiWindow(this, "TextWindow", 480, 20, 360, 200); return gw; });
-	gw->attributes.diffuseColor = { 0.7, 0.7, 0.7, 1.0 };
-	gw->attributes.ambientColor = { 0.1, 0.1, 0.1, 0.5 };
+	// Initialize the Camera matrix
+	glm::vec3 cameraPosition(-3.75, -6.25, 3.75);
+	glm::vec3 cameraDirection = glm::normalize(cameraPosition*-1.0f);
+	glm::vec3 cameraUp = { 0, 0, 1 };
+	camera.Set(cameraPosition, cameraDirection, cameraUp);
+
+	AddShape("shaders/mono", [&]() { rrTexQuad = new XGLRoundedTexQuad(640, 360, 1); return rrTexQuad; });
+	rrTexQuad->attributes.ambientColor = XGLColors::magenta;
+	rrTexQuad->attributes.diffuseColor = XGLColors::yellow;
+	rrTexQuad->model = glm::scale(glm::mat4(), glm::vec3(1.77777, 1, 1));
+
+	gm->AddChildShape("shaders/ortho-tex", [&]() { gw = new XGLGuiWindow(this, "TextWindow", 480, 20, 360, 300); return gw; });
+	gw->attributes.diffuseColor = XGLColors::white;
+	gw->attributes.ambientColor = { 0.8, 0.8, 0.8, 0.5 };
+
 
 	gw->SetPenPosition(10, 20);
 	gw->RenderText("Container for XGLGuiTextEdit fields.\n", 20);

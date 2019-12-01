@@ -174,7 +174,7 @@ void XGLGuiManager::AddReshapeCallback(ReshapeCallback fn) {
 XGLGuiWindow::XGLGuiWindow(XGL *xgl, std::string name, int x, int y, int w, int h) : XGLGuiCanvas(xgl, w, h) {
 	SetName(name, false);
 	model = glm::translate(glm::mat4(), glm::vec3(x, y, 0));
-	attributes.ambientColor = { 1.0, 1.0, 1.0, 0.1 };
+	attributes.ambientColor = { 0.0, 0.0, 0.0, 0.6 };
 }
 
 XGLGuiLabel::XGLGuiLabel(XGL *xgl, std::string name, int x, int y) : XGLGuiCanvas(xgl) {
@@ -194,10 +194,19 @@ XGLGuiLabel::XGLGuiLabel(XGL *xgl, std::string name, int x, int y) : XGLGuiCanva
 	AddChildShape("shaders/ortho-tex", [xgl, this]() { label = new XGLGuiCanvas(xgl, labelWidth, labelHeight); return label; });
 	label->SetName("Label");
 	label->attributes.diffuseColor = XGLColors::white;
-	label->attributes.ambientColor = { 1, 1, 1, 0.1 };
+	label->attributes.ambientColor = { 0, 0, 0, 0.1 };
 	label->SetPenPosition(labelPadding / 2, labelHeight - (baselineHeight + (labelPadding / 2)));
 	label->RenderText(name.c_str(), pixelSize);
 };
+
+void XGLGuiLabel::SetText(std::string t) {
+	label->SetPenPosition(labelPadding / 2, labelHeight - (baselineHeight + (labelPadding / 2)));
+	label->RenderText(t.c_str(), pixelSize);
+}
+
+void XGLGuiLabel::ClearText() {
+	label->Clear();
+}
 
 XGLGuiSlider::XGLGuiSlider(XGL *xgl, std::string name, Orientation o, int x, int y, int w, int h) : XGLGuiCanvas(xgl, w, h), orientation(o), position(0.0f) {
 	SetName(name, false);

@@ -34,106 +34,6 @@
 #include <xthread.h>
 #include <xfifo.h>
 
-class ImageProcessing : public XGLTexQuad {
-public:
-	ImageProcessing(int w, int h, int c) : 
-		XGLTexQuad(),
-		width(w),
-		height(h),
-		frameBufferObject(NULL)
-	{
-		// we start off with no textures in our base class constructor
-		// so add the 4 we'll need now.
-		AddTexture(width, height, c);
-		AddTexture(width, height, c);
-		AddTexture(width, height, c);
-		AddTexture(width, height, c);
-
-		//frameBufferObject = new XGLFramebuffer(width, height, texIds.data(), texIds.size());
-		frameBufferObject = new XGLFramebuffer(width, height, false);
-		frameBufferObject->AddColorAttachment(texIds[0]);
-		frameBufferObject->AddColorAttachment(texIds[1]);
-		frameBufferObject->AddColorAttachment(texIds[2]);
-		frameBufferObject->AddColorAttachment(texIds[3]);
-
-		std::string shaderName = pathToAssets + "/shaders/imageproc";
-		imgShader = new XGLShader(shaderName);
-		imgShader->Compile(shaderName);
-
-		glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
-		glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(10, 0, 5.625f));
-		glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
-		MakeSubQuad(3, translate * rotate * scale);
-
-		translate = glm::translate(glm::mat4(), glm::vec3(-10, 0, 3*5.625f));
-		MakeSubQuad(0, translate * rotate * scale);
-
-		translate = glm::translate(glm::mat4(), glm::vec3(10, 0, 3 * 5.625f));
-		MakeSubQuad(1, translate * rotate * scale);
-	};
-
-	// overide of XGLShape::Render(), which means if we're in this function
-	// we're being called by normal shape rendering chain. Doing this to
-	// add the rendering to the FBO to the chain, which is the whole reason
-	// for this derived class.
-	void Render(float clock) {
-		frameBufferObject->Render([this](){
-			glDisable(GL_DEPTH_TEST);
-			glViewport(0, 0, width, height);
-
-			XGLBuffer::Bind();
-
-			// These ensure that the FBO pass has access to all the GL_COLORATTACHMENT buffers
-			// that have been setup in the FBO;  (Might be sticky in the FBO and not 
-			// need setting per render pass)
-			glBindFragDataLocation(shader->programId, 0, "color0");
-			glBindFragDataLocation(shader->programId, 1, "color1");
-			glBindFragDataLocation(shader->programId, 2, "color2");
-			glBindFragDataLocation(shader->programId, 3, "color3");
-
-			glUniform1i(glGetUniformLocation(shader->programId, "mode"), 1);
-			glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
-			glUniform1i(glGetUniformLocation(shader->programId, "mode"), 0);
-			glViewport(0, 0, *windowWidth, *windowHeight);
-			glEnable(GL_DEPTH_TEST);
-			GL_CHECK("there was a problem in the FBO rendering");
-
-			XGLBuffer::Unbind();
-		});
-
-		// These ensure that the textures rendered in the FBO pass are available 
-		// in the main rendering pass.  Is probably sticky in the program object, (shader)
-		// and could be set in this object's constructor, if "shader" were valid at that point.
-		// I'll need to refactor to make that so.
-		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit0"), 0);
-		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit1"), 1);
-		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit2"), 2);
-		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit3"), 3);
-
-		XGLShape::Render();
-		for (auto imgQuad : imgQuads)
-			imgQuad->Render();
-	}
-	
-	void MakeSubQuad(GLuint texId, glm::mat4 model) {
-		XGLTexQuad *quad = new XGLTexQuad();
-		quad = new XGLTexQuad();
-		quad->texIds.push_back(texIds[texId]);
-		quad->numTextures = 1;
-		quad->Load(imgShader, quad->v, quad->idx);
-		quad->uniformLocations = imgShader->materialLocations;
-		quad->model = model;
-		imgQuads.push_back(quad);
-	}
-
-	int width, height;
-	XGLFramebuffer *frameBufferObject;
-	XGLShapeList imgQuads;
-	XGLShader *imgShader;
-	int *windowWidth, *windowHeight;
-};
-
 class CameraThread : public XObject, public XThread {
 public:
 	CameraThread(std::string n, int w, int h, int c) : XObject(n), XThread(n), width(w), height(h), channels(c), frameNumber(0) {
@@ -154,7 +54,7 @@ public:
 
 		// this is hard-coded for Logitech C920 web cam. Also works
 		// on a Macbook Pro with internal camera.  May work with others.
-		cap.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));
+		cap.set(CV_CAP_PROP_FOURCC, CV_FOURCC('Y', 'U', 'Y', '2'));
 		cap.set(CV_CAP_PROP_FRAME_WIDTH, width);
 		cap.set(CV_CAP_PROP_FRAME_HEIGHT, height);
 		cap.set(CV_CAP_PROP_FPS, 30.0);
@@ -165,7 +65,6 @@ public:
 			frameNumber++;
 			width = frame.cols;
 			height = frame.rows;
-			xprintf("frame: %d\n", frameNumber);
 		}
 	}
 
@@ -181,29 +80,20 @@ public:
 };
 
 void ExampleXGL::BuildScene() {
-	//ImageProcessing *shape;
 	XGLTexQuad *shape;
-	const int camWidth = 1920;
-	const int camHeight = 1080;
+	const int camWidth = 640;
+	const int camHeight = 360;
 	const int camChannels = 3;
 
-	useHmd = true;
-
-	//CameraThread *pct = new CameraThread("CameraThread", camWidth, camHeight, camChannels);
+	CameraThread *pct = new CameraThread("CameraThread", camWidth, camHeight, camChannels);
 
 	AddShape("shaders/tex", [&](){ shape = new XGLTexQuad(camWidth, camHeight, camChannels); return shape; });
-	/*
-	AddShape("shaders/imageproc", [&](){ shape = new ImageProcessing(camWidth, camHeight, camChannels); return shape; });
-	shape->windowWidth = &width;
-	shape->windowHeight = &height;
-	*/
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(-10, 0, 5.625f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	shape->model = translate * rotate * scale;
 
 	// animation function to grab a web cam frame from the web cam capture thread and upload it to texture memory
-	/*
 	shape->SetAnimationFunction([pct,shape](float clock) {
 		XGLTexQuad *ipShape = (XGLTexQuad *)shape;
 		if (pct != NULL && pct->IsRunning() && (pct->frameNumber>3) ) {
@@ -218,8 +108,7 @@ void ExampleXGL::BuildScene() {
 			//GL_CHECK("glGetTexImage() didn't work");
 		}
 	});
-	*/
-	//pct->Start();
+	pct->Start();
 
-	//AddChild(pct);
+	AddChild(pct);
 }

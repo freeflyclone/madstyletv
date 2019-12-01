@@ -100,9 +100,6 @@ typedef std::vector<XGLShapesMap*> XGLShapeLayers;
 typedef std::function<void(float)> AnimationFn;
 typedef std::vector<AnimationFn> AnimationFunctions;
 
-typedef std::function<void()> ImGuiMenuFn;
-typedef std::vector<ImGuiMenuFn> ImGuiMenuFunctions;
-
 // write code to set these before creating XGL instance, for XGLException messages
 // and to locate assets (ie: shaders) in the local filesystem
 extern std::string currentWorkingDir;
@@ -114,7 +111,6 @@ extern XGLFont font;
 class XGL : public XObject, public XInput
 {
 public:
-    // this one is for Windows (wgl)
     XGL(void);
 
     virtual ~XGL();

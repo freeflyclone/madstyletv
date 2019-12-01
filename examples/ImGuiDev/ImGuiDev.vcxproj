@@ -168,10 +168,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\common\ExampleXGL.cpp" />
+    <ClCompile Include="..\common\ImGuiFileDialog.cpp" />
     <ClCompile Include="..\common\imgui_main.cpp" />
     <ClCompile Include="..\common\imgui_menu_bar.cpp" />
+    <ClCompile Include="..\common\xglimgui.cpp" />
     <ClCompile Include="ImGuiDevBuildScene.cpp" />
     <ClCompile Include="ImGuiDevGUI.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\common\ImGuiFileDialog.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -16,7 +16,7 @@ extern uint8_t* pGlobalPboBuffer;
 //
 // Also derive from XThread for async buffer upload in alternate OpenGL context.
 // (hence the name)
-class XGLContextImage : public XGLTexQuad {//, public XThread {
+class XGLContextImage : public XGLTexQuad, public XThread {
 public:
 	// convenience ptrs to y,u,v buffers for each frame
 	typedef struct { uint8_t *y, *u, *v; } YUV;
@@ -26,7 +26,8 @@ public:
 		width(w), height(h), components(c),
 		freeBuffs(numFrames),
 		usedBuffs(0),
-		XGLTexQuad(w, h, c)
+		XGLTexQuad(w, h, c),
+		XThread("XGLContextImageThread") 
 	{
 		xprintf("%s()\n", __FUNCTION__);
 
@@ -135,7 +136,6 @@ public:
 		}
 
 		initDone = true;
-		xt1.SinceLast();
 	}
 
 	static void ErrorFunc(int code, const char *str) {
@@ -161,17 +161,27 @@ public:
 		GL_CHECK("glTexSubImage() failed");
 
 		// put a fence in so renedering context can know if we're done with this frame
-		fillFences[wIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+		fillFences[INDEX(framesWritten)] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 		GL_CHECK("glFenceSync() failed");
 
+		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(2));
 		framesWritten++;
 	}
 
-	void Draw() {
-		if ((framesWritten < numFrames) || (framesRead >= framesWritten))
-			return;
+	void Run() {
+		// first up, bind the new OpenGL context, for 2nd GPU command queue
+		glfwMakeContextCurrent(mWindow);
 
-		xprintf("%0.5f\n", xt1.SinceLast());
+		xprintf("%s\n", __FUNCTION__);
+
+		while (IsRunning()) {
+			InitiatePboTransfer();
+		}
+	}
+
+	void Draw() {
+		if (framesWritten < numFrames)
+			return;
 
 		int rIndex = INDEX(framesRead++);		// currently active frame for reading
 
@@ -212,6 +222,7 @@ public:
 	}
 
 	~XGLContextImage() {
+		WaitForStop();
 	}
 
 	YUV* NextFree() {
@@ -281,8 +292,6 @@ public:
 
 	XSemaphore freeBuffs, usedBuffs;
 	bool initDone{ false };
-
-	XTimer xt1;
 };
 
 

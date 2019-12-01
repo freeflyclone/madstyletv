@@ -1,6 +1,6 @@
 #include "xgl.h"
 
-XGLUniformf::XGLUniformf(GLint program, std::string n, glm::vec3 v) : name(n){
+XGLUniformf::XGLUniformf(GLint program, std::string n, glm::vec3& v) : name(n){
     location = glGetUniformLocation(program, name.c_str());
     GL_CHECK("getUniformLocation failed");
     if (location == -1)

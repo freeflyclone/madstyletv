@@ -75,7 +75,7 @@ namespace FT {
 		int contourIdx{ 0 };
 		XGLVertex firstPoint;
 		XGLVertex currentPoint;
-		bool drawCurves = true;
+		bool drawCurves = false;
 		float interpolationFactor = 0.1f;
 	};
 } // namespace FT

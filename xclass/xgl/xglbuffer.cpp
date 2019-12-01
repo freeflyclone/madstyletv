@@ -95,16 +95,9 @@ void XGLBuffer::Load(XGLShader *s, std::vector<XGLVertexAttributes> va, std::vec
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     GL_CHECK("glBindBuffer() failed");
 
-	// Check for pre-allocated buffer data in the VBO.
-	GLint size;
-	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
-
-	// If the VBO size > 0, constructor already allocated it, so don't overwrite it.
-	if (size == 0) {
-		// this loads the actual XGLVertexAttributes into the bound "vbo"
-		glBufferData(GL_ARRAY_BUFFER, va.size()*sizeof(XGLVertexAttributes), va.data(), GL_STATIC_DRAW);
-		GL_CHECK("glBufferData() failed");
-	}
+	// this loads the actual XGLVertexAttributes into the bound "vbo"
+	glBufferData(GL_ARRAY_BUFFER, va.size()*sizeof(XGLVertexAttributes), va.data(), GL_STATIC_DRAW);
+	GL_CHECK("glBufferData() failed");
 
     // Tell the bound Vertex Attribute Object about how the "vbo" is layed out
     // the first arg is an index to XGLVertex. XGLNormal, XGLTexCoord or XGLColor 
@@ -151,13 +144,14 @@ void XGLBuffer::Load(XGLShader *s, std::vector<XGLVertexAttributes> va, std::vec
     }
 }
 
-void XGLBuffer::AddTexture(std::string texName){
+void XGLBuffer::AddTexture(std::string texName, int forceChannels){
     int width, height, channels;
     unsigned char *img;
 
-    if ((img = SOIL_load_image(texName.c_str(), &width, &height, &channels, 0)) == NULL)
+    if ((img = SOIL_load_image(texName.c_str(), &width, &height, &channels, forceChannels)) == NULL)
         throwXGLException("SOIL_load_image() failed: " + texName);
 
+	channels = (forceChannels)?forceChannels:channels;
     AddTexture(width, height, channels, img);
 
     SOIL_free_image_data(img);
@@ -193,7 +187,7 @@ void XGLBuffer::AddTexture(int width, int height, int channels, GLubyte *img, bo
 
     switch (channels){
         case 1:
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, img);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, img);
             break;
         case 2:
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RG, width, height, 0, GL_RG, GL_UNSIGNED_BYTE, img);
