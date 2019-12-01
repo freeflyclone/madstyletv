@@ -512,5 +512,6 @@
     <None Include="..\madstyletv.props" />
     <None Include="ffmpeg.props" />
     <None Include="PhysX.props" />
+    <None Include="Assimp.props" />
   </ItemGroup>
 </Project>

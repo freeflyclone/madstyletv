@@ -367,6 +367,9 @@
     <None Include="3rdParty\3rdPartyCopy.proj">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Assimp.props">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="ffmpeg.props">
       <SubType>Designer</SubType>
     </None>
