@@ -8,6 +8,10 @@
 #include "ExampleXGL.h"
 #include <string>
 
+#include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
+using json = nlohmann::json;
+
 #define REAL double
 
 extern "C" {
