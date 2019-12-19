@@ -4,7 +4,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <IncludePath>$(PHYSX_DIR)\..\PxShared\include;$(PHYSX_DIR)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(PHYSX_DIR)\bin\win.x86_64.vc120.mt\$(Configuration);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(PHYSX_DIR)\bin\win.x86_64.vc140.mt\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup />
   <ItemGroup />
