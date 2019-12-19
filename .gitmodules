@@ -22,3 +22,6 @@
 [submodule "xclass/3rdParty/assimp"]
 	path = xclass/3rdParty/assimp
 	url = https://github.com/freeflyclone/assimp.git
+[submodule "xclass/3rdParty/json"]
+	path = xclass/3rdParty/json
+	url = https://github.com/freeflyclone/json.git
