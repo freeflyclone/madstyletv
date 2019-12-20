@@ -6,11 +6,6 @@
 ** on StackOverFlow.
 **************************************************************/
 #include "ExampleXGL.h"
-#include <string>
-
-#include <nlohmann/json.hpp>
-#include <nlohmann/json_fwd.hpp>
-using json = nlohmann::json;
 
 #define REAL double
 
@@ -252,8 +247,30 @@ public:
 	struct triangulateio in, out;
 };
 
+#include <string>
+#include <sstream>
+#include <iostream>
+#include <iomanip>
+
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
+
+void ReadConfig() {
+	nlohmann::json j;
+	std::ifstream ifs(pathToAssets + "/assets/config.json");
+	ifs >> j;
+
+	if (j.size())
+	{
+		std::string s = j["AssetFolder"];
+		xprintf("Your Mom says: %s\n", s.c_str());
+	}
+}
+
 void ExampleXGL::BuildScene() {
 	XGLFreeType *shape;
+
+	ReadConfig();
 
 	// Initialize the Camera matrix
 	glm::vec3 cameraPosition(0, -5, 8);
