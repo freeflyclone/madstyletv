@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2048
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{24EAE59C-1779-4D00-8819-415B4A41868E}"
 EndProject
@@ -293,6 +293,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlibstatic", "xclass\3rdParty\assimp\build\contrib\zlib\zlibstatic.vcxproj", "{4104E15C-824F-33EA-B54B-B033C21D25B9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3DModels", "3DModels", "{320225F3-3FE0-4B4C-B355-1196FFEEBD9A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ActivityStream", "examples\ActivityStream\ActivityStream.vcxproj", "{D7F1E445-D2AC-49AA-B492-B3F5DA472FA9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -884,6 +886,18 @@ Global
 		{4104E15C-824F-33EA-B54B-B033C21D25B9}.Release|Win32.ActiveCfg = Release|x64
 		{4104E15C-824F-33EA-B54B-B033C21D25B9}.Release|x64.ActiveCfg = Release|x64
 		{4104E15C-824F-33EA-B54B-B033C21D25B9}.Release|x64.Build.0 = Release|x64
+		{D7F1E445-D2AC-49AA-B492-B3F5DA472FA9}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{D7F1E445-D2AC-49AA-B492-B3F5DA472FA9}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{D7F1E445-D2AC-49AA-B492-B3F5DA472FA9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D7F1E445-D2AC-49AA-B492-B3F5DA472FA9}.Debug|Win32.Build.0 = Debug|Win32
+		{D7F1E445-D2AC-49AA-B492-B3F5DA472FA9}.Debug|x64.ActiveCfg = Debug|x64
+		{D7F1E445-D2AC-49AA-B492-B3F5DA472FA9}.Debug|x64.Build.0 = Debug|x64
+		{D7F1E445-D2AC-49AA-B492-B3F5DA472FA9}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{D7F1E445-D2AC-49AA-B492-B3F5DA472FA9}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{D7F1E445-D2AC-49AA-B492-B3F5DA472FA9}.Release|Win32.ActiveCfg = Release|Win32
+		{D7F1E445-D2AC-49AA-B492-B3F5DA472FA9}.Release|Win32.Build.0 = Release|Win32
+		{D7F1E445-D2AC-49AA-B492-B3F5DA472FA9}.Release|x64.ActiveCfg = Release|x64
+		{D7F1E445-D2AC-49AA-B492-B3F5DA472FA9}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -942,5 +956,6 @@ Global
 		{5C35D3F9-7928-3D12-B27A-9B7C1CDA444E} = {AEF119EB-E8D2-4FC8-87DF-A818B128D5E0}
 		{4104E15C-824F-33EA-B54B-B033C21D25B9} = {AEF119EB-E8D2-4FC8-87DF-A818B128D5E0}
 		{320225F3-3FE0-4B4C-B355-1196FFEEBD9A} = {526A4A9A-A338-4CAE-BC55-3A8479A67E33}
+		{D7F1E445-D2AC-49AA-B492-B3F5DA472FA9} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 	EndGlobalSection
 EndGlobal
