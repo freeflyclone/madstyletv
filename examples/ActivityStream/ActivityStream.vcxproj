@@ -56,22 +56,18 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\xclass\ffmpeg.props" />
     <Import Project="..\..\xclass\xclass.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\xclass\ffmpeg.props" />
     <Import Project="..\..\xclass\xclass.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\xclass\ffmpeg.props" />
     <Import Project="..\..\xclass\xclass.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\xclass\ffmpeg.props" />
     <Import Project="..\..\xclass\xclass.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -177,6 +173,8 @@
     <ClCompile Include="..\common\main.cpp" />
     <ClCompile Include="ActivityStream.cpp" />
     <ClCompile Include="ActivityStreamBuildScene.cpp" />
+    <ClCompile Include="DebugOutput.cpp" />
+    <ClCompile Include="DebugOutput.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActivityStream.h" />
