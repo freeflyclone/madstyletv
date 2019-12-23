@@ -31,6 +31,13 @@ void ExampleXGL::BuildScene() {
 
 	InitStdLog();
 
+	{
+		std::ifstream ifs(pathToAssets + "/assets/timeline-public.json");
+		ASLink j;
+		ifs >> j;
+		std::clog << std::setw(2) << j << std::endl;
+	}
+
 	asLink["@context"].push_back("https://e-man.tv/.well_known");
 	asLink["preview"] = "https://hq.e-man.tv/hls-test.html";
 
