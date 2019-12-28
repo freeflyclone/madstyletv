@@ -4,6 +4,7 @@
     <Import Project="..\madstyletv.props" />
     <Import Project="mavlink.props" />
     <Import Project="mosquitto.props" />
+    <Import Project="poco.props"/>
     <Import Project="ffmpeg.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
