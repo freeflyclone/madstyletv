@@ -381,6 +381,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="PhysX.props" />
+    <None Include="poco.props" />
     <None Include="xclass-copy.proj">
       <SubType>Designer</SubType>
     </None>
