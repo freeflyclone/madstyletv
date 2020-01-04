@@ -33,3 +33,10 @@ ASObject::ASObject()
 };
 
 */
+
+ASLink::ASLink()
+{
+	emplace("@context", std::vector<std::string>{"https://www.we.org/ns/activitystreams"});
+	emplace("type", "Link");
+}
+

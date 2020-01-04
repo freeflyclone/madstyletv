@@ -7,3 +7,10 @@
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
+
+class ASLink : public json
+{
+public:
+	ASLink();
+};
+
