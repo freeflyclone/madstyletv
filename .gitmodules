@@ -25,3 +25,6 @@
 [submodule "xclass/3rdParty/json"]
 	path = xclass/3rdParty/json
 	url = https://github.com/freeflyclone/json.git
+[submodule "xclass/3rdParty/poco"]
+	path = xclass/3rdParty/poco
+	url = https://github.com/freeflyclone/poco.git

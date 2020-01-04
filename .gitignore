@@ -10,6 +10,7 @@ examples/*/x64
 bin/*.exe
 /.vs
 /x64
+*.vcxproj.user
 
 
 free-icon-set

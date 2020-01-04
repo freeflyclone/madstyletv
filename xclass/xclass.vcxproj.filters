@@ -513,5 +513,6 @@
     <None Include="ffmpeg.props" />
     <None Include="PhysX.props" />
     <None Include="Assimp.props" />
+    <None Include="poco.props" />
   </ItemGroup>
 </Project>
