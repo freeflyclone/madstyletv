@@ -16,4 +16,5 @@ void ExampleXGL::BuildScene() {
 	std::string dbPath = pathToAssets + "/assets/dbTest.sq3";
 
 	xdb = new Xsqlite(dbPath);
+	xdb->AddCars();
 }

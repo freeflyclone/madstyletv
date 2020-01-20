@@ -168,7 +168,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\xclass\3rdParty\sqlite\sqlite3.c" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\ImGuiFileDialog.cpp" />
     <ClCompile Include="..\common\imgui_main.cpp" />
@@ -181,9 +180,6 @@
   <ItemGroup>
     <ClInclude Include="..\common\ImGuiFileDialog.h" />
     <ClInclude Include="..\common\xsqlite.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\xclass\3rdParty\sqlite\sqlite3.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

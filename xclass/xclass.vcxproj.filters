@@ -73,6 +73,15 @@
     <Filter Include="xgl\Header Files\imgui">
       <UniqueIdentifier>{e603856f-ff10-483c-be89-ecd548756287}</UniqueIdentifier>
     </Filter>
+    <Filter Include="sqlite">
+      <UniqueIdentifier>{a7f72c39-b613-4d4a-bdc8-02e4a3801235}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sqlite\Headers">
+      <UniqueIdentifier>{8bcb959f-6e05-4b2b-bee2-6a1008643d6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sqlite\Sources">
+      <UniqueIdentifier>{8bf93448-00ce-4818-b7cc-3dbc2a4e7aba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -336,6 +345,12 @@
     <ClInclude Include="3rdParty\imgui\misc\freetype\imgui_freetype.h">
       <Filter>xgl\Header Files\imgui</Filter>
     </ClInclude>
+    <ClInclude Include="3rdParty\sqlite\sqlite3.h">
+      <Filter>sqlite\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\sqlite\sqlite3ext.h">
+      <Filter>sqlite\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xgl\xglbuffer.cpp">
@@ -499,6 +514,9 @@
     </ClCompile>
     <ClCompile Include="3rdParty\imgui\misc\freetype\imgui_freetype.cpp">
       <Filter>xgl\Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\sqlite\sqlite3.c">
+      <Filter>sqlite\Sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -9,9 +9,11 @@ public:
 	Xsqlite(std::string dbName);
 	~Xsqlite();
 
+	int AddCars();
+
 private:
 	std::string dbName;
-	sqlite3 *db;
+	sqlite3 *db{ nullptr };
 };
 
 #endif // XSQLITE_H

@@ -39,9 +39,6 @@
     <ClCompile Include="..\common\xsqlite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xclass\3rdParty\sqlite\sqlite3.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\common\ImGuiFileDialog.h">
@@ -50,10 +47,5 @@
     <ClInclude Include="..\common\xsqlite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\xclass\3rdParty\sqlite\sqlite3.def">
-      <Filter>Source Files</Filter>
-    </None>
   </ItemGroup>
 </Project>
