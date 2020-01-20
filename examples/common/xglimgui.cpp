@@ -4,6 +4,8 @@
 // For reasons unknown, my icon files are not parsed correctly by SOIL... forceChannels says
 // "I know how many channels there are, make it work."  Hence the "4" as the 2nd arg to XGLTexQuad ctor
 XGLImGui::XGLImGui() : XGLTexQuad(pathToAssets + "/assets/icons-64.png", 4) {
+	SetName("XGLImGui", false);
+
 	ImGuiStyle& igStyle = ImGui::GetStyle();
 
 	igStyle.WindowRounding = 4.0f;

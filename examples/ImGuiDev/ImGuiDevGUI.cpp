@@ -1,7 +1,6 @@
 #include "ExampleXGL.h"
 #include "xglimgui.h"
 
-
 void ExampleXGL::BuildGUI() {
 	XGLGuiManager* gm;
 	XGLImGui* xig;

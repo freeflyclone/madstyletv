@@ -12,9 +12,10 @@
 
 #include "xglprimitives.h"
 
-#define Z 0.0001
 
 namespace XGLColors {
+	static const double Z{ 0.0001 };
+
 	const XGLColor black = { Z, Z, Z, 1 };
 	const XGLColor white = { 1, 1, 1, 1 };
 	const XGLColor red = { 1, Z, Z, 1 };

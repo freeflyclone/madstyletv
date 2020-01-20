@@ -8,6 +8,12 @@
 ** UI experiences, which I care about.
 **************************************************************/
 #include "ExampleXGL.h"
+#include "xsqlite.h"
+
+Xsqlite* xdb;
 
 void ExampleXGL::BuildScene() {
+	std::string dbPath = pathToAssets + "/assets/dbTest.sq3";
+
+	xdb = new Xsqlite(dbPath);
 }
