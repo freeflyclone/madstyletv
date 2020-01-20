@@ -1,11 +1,8 @@
 #include "ExampleXGL.h"
-
 #include "xsqlite.h"
 
 Xsqlite::Xsqlite(std::string dbn) : dbName(dbn)
 {
-	xprintf("%s(\"%s\")\n", __FUNCTION__, dbName.c_str());
-
 	int rc = sqlite3_open(dbName.c_str(), &db);
 
 	if (rc)
@@ -14,34 +11,46 @@ Xsqlite::Xsqlite(std::string dbn) : dbName(dbn)
 
 Xsqlite::~Xsqlite()
 {
-	xprintf("%s\n", __FUNCTION__);
-	if (db) 
-	{
+	if (db)
 		sqlite3_close(db);
-	}
 }
 
-int Xsqlite::AddCars() {
+int Xsqlite::Execute(std::string sql) {
 	char* errorMsg{ nullptr };
 
 	if (!db)
 		throw std::runtime_error("Xsqlite::db is not open");
 
-	char *sql = "DROP TABLE IF EXISTS Cars;"
-		"CREATE TABLE Cars(Id INT, Name TEXT, Price INT);"
-		"INSERT INTO Cars VALUES(1, 'Audi', 52642);"
-		"INSERT INTO Cars VALUES(2, 'Mercedes', 57127);"
-		"INSERT INTO Cars VALUES(3, 'Skoda', 9000);"
-		"INSERT INTO Cars VALUES(4, 'Volvo', 29000);"
-		"INSERT INTO Cars VALUES(5, 'Bentley', 350000);"
-		"INSERT INTO Cars VALUES(6, 'Citroen', 21000);"
-		"INSERT INTO Cars VALUES(7, 'Hummer', 41400);"
-		"INSERT INTO Cars VALUES(8, 'Volkswagen', 21600);";
-
-	int rc = sqlite3_exec(db, sql, 0, 0, &errorMsg);
-
+	int rc = sqlite3_exec(db, sql.c_str(), _callback, this, &errorMsg);
 	if (rc != SQLITE_OK) {
-		xprintf("%s(): error: %s\n", errorMsg);
+		xprintf("%s(): error: %s\n", __FUNCTION__, errorMsg);
 		sqlite3_free(errorMsg);
 	}
+
+	return rc;
+}
+
+void Xsqlite::AddCallback(CallbackFn fn)
+{
+	_callbackList.push_back(fn);
+}
+
+int Xsqlite::Callback(int argc, char** argv, char** columnNames)
+{
+	int rc = 0;
+
+	for (CallbackFn cb : _callbackList)
+		rc = cb(argc, argv, columnNames);
+
+	return rc;
+}
+
+int Xsqlite::_callback(void* pCtx, int argc, char** argv, char** columnNames)
+{
+	Xsqlite* pSqlite = (Xsqlite*)pCtx;
+
+	if (pCtx && pSqlite->_callbackList.size())
+		return ((Xsqlite*)(pCtx))->Callback(argc, argv, columnNames);
+
+	return SQLITE_OK;
 }
