@@ -258,6 +258,7 @@
     <ClInclude Include="xav\xavenc.h" />
     <ClInclude Include="xav\xavfile.h" />
     <ClInclude Include="xav\xavsrc.h" />
+    <ClInclude Include="xbento4.h" />
     <ClInclude Include="xclasses.h" />
     <ClInclude Include="xconfig.h" />
     <ClInclude Include="xcircularbuffer.h" />
