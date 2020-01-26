@@ -56,7 +56,7 @@ XBento4::XBento4(std::string fname) : filename(fname)
 
 	AP4_List<AP4_Track>& tracks = movie->GetTracks();
 	xprintf("Found %d Tracks\n", tracks.ItemCount());
-	ShowTracks(*movie, tracks, *input, false, false, false, true);
+	ShowTracks(*movie, tracks, *input, false, false, false, false);
 }
 
 XBento4::~XBento4()
@@ -86,7 +86,6 @@ void XBento4::ShowMovieInfo(AP4_Movie& movie)
 	xprintf("  duration:   %d ms\n", movie.GetDurationMs());
 	xprintf("  time scale: %d\n", movie.GetTimeScale());
 	xprintf("  fragments:  %s\n", movie.HasFragments() ? "yes" : "no");
-	xprintf("\n");
 }
 
 void XBento4::ShowTracks
