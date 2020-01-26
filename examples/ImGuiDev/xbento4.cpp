@@ -31,6 +31,7 @@
 
 XBento4::XBento4() : XThread("XBento4Thread")
 {
+	SetName("XBento4");
 }
 
 XBento4::XBento4(std::string fname) : filename(fname), XThread("XBento4Thread")

@@ -52,7 +52,6 @@ void ExampleXGL::BuildScene() {
 	xdb->Execute("SELECT name FROM sqlite_master WHERE type = 'table';");
 	xdb->Execute("SELECT * FROM Cars;");
 
-	//xb4 = new XBento4(pathToAssets + "/assets/CulturalPhenomenon.mp4");
-	xb4 = new XBento4("H:/Hero6/GH010171.mp4");
+	AddShape("shaders/yuv", [&]() { xb4 = new XBento4("H:/Hero6/GH010171.mp4"); return xb4; });
 	xb4->Start();
 }

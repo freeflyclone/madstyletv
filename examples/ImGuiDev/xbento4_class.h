@@ -38,7 +38,7 @@ typedef struct {
 } MediaInfo;
 
 
-class XBento4 : public XGLShape, public XThread {
+class XBento4 : public XGLTexQuad, public XThread {
 public:
 	XBento4();
 	XBento4(std::string);
