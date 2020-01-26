@@ -29,11 +29,19 @@
 #include "ExampleXGL.h"
 #include "xbento4_class.h"
 
-XBento4::XBento4()
+XBento4::XBento4() : XThread("XBento4Thread")
 {
 }
 
-XBento4::XBento4(std::string fname) : filename(fname)
+void XBento4::Run() {
+	while (IsRunning())
+	{
+		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(100));
+		xprintf("Tic\n");
+	}
+}
+
+XBento4::XBento4(std::string fname) : filename(fname), XThread("XBento4Thread")
 {
 	XBento4();
 
@@ -56,7 +64,7 @@ XBento4::XBento4(std::string fname) : filename(fname)
 
 	AP4_List<AP4_Track>& tracks = movie->GetTracks();
 	xprintf("Found %d Tracks\n", tracks.ItemCount());
-	ShowTracks(*movie, tracks, *input, false, false, false, false);
+	ShowTracks(*movie, tracks, *input, true, false, true, false);
 }
 
 XBento4::~XBento4()

@@ -38,11 +38,13 @@ typedef struct {
 } MediaInfo;
 
 
-class XBento4 {
+class XBento4 : public XGLShape, public XThread {
 public:
 	XBento4();
 	XBento4(std::string);
 	~XBento4();
+
+	void Run();
 
 	void ShowFileInfo(AP4_File&);
 
