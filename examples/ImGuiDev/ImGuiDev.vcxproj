@@ -176,10 +176,12 @@
     <ClCompile Include="..\common\xsqlite.cpp" />
     <ClCompile Include="ImGuiDevBuildScene.cpp" />
     <ClCompile Include="ImGuiDevGUI.cpp" />
+    <ClCompile Include="xbento4.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\common\ImGuiFileDialog.h" />
     <ClInclude Include="..\common\xsqlite.h" />
+    <ClInclude Include="xbento4_class.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

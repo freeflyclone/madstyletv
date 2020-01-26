@@ -9,8 +9,10 @@
 **************************************************************/
 #include "ExampleXGL.h"
 #include "xsqlite.h"
+#include "xbento4_class.h"
 
 Xsqlite* xdb;
+XBento4* xb4;
 
 void ExampleXGL::BuildScene() {
 	std::string dbPath = pathToAssets + "/assets/dbTest.sq3";
@@ -49,4 +51,6 @@ void ExampleXGL::BuildScene() {
 
 	xdb->Execute("SELECT name FROM sqlite_master WHERE type = 'table';");
 	xdb->Execute("SELECT * FROM Cars;");
+
+	xb4 = new XBento4(pathToAssets + "/assets/CulturalPhenomenon.mp4");
 }

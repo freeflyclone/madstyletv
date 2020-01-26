@@ -39,12 +39,18 @@
     <ClCompile Include="..\common\xsqlite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="xbento4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\common\ImGuiFileDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\common\xsqlite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xbento4_class.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
