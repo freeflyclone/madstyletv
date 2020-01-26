@@ -57,8 +57,6 @@ void XBento4::Run() {
 	ShowFileInfo(*file);
 
 	AP4_Movie* movie = file->GetMovie();
-	AP4_FtypAtom* ftyp = file->GetFileType();
-
 	if (movie)
 		ShowMovieInfo(*movie);
 
@@ -124,35 +122,40 @@ void XBento4::ShowTrackInfo(
 	bool fast)
 {
 	xprintf("  flags:        %d", track.GetFlags());
-	if (track.GetFlags() & AP4_TRACK_FLAG_ENABLED) {
+	if (track.GetFlags() & AP4_TRACK_FLAG_ENABLED)
+	{
 		xprintf(" ENABLED");
 	}
-	if (track.GetFlags() & AP4_TRACK_FLAG_IN_MOVIE) {
+	if (track.GetFlags() & AP4_TRACK_FLAG_IN_MOVIE)
+	{
 		xprintf(" IN-MOVIE");
 	}
-	if (track.GetFlags() & AP4_TRACK_FLAG_IN_PREVIEW) {
+	if (track.GetFlags() & AP4_TRACK_FLAG_IN_PREVIEW)
+	{
 		xprintf(" IN-PREVIEW");
 	}
 	xprintf("\n");
 	xprintf("  id:           %d\n", track.GetId());
 	xprintf("  type:         ");
+
 	switch (track.GetType()) {
-	case AP4_Track::TYPE_AUDIO:     xprintf("Audio\n");     break;
-	case AP4_Track::TYPE_VIDEO:     xprintf("Video\n");     break;
-	case AP4_Track::TYPE_HINT:      xprintf("Hint\n");      break;
-	case AP4_Track::TYPE_SYSTEM:    xprintf("System\n");    break;
-	case AP4_Track::TYPE_TEXT:      xprintf("Text\n");      break;
-	case AP4_Track::TYPE_JPEG:      xprintf("JPEG\n");      break;
-	case AP4_Track::TYPE_SUBTITLES: xprintf("Subtitles\n"); break;
-	default: {
-		char hdlr[5];
-		AP4_FormatFourChars(hdlr, track.GetHandlerType());
-		xprintf("Unknown [");
-		xprintf("%s", hdlr);
-		xprintf("]\n");
-		break;
+		case AP4_Track::TYPE_AUDIO:     xprintf("Audio\n");     break;
+		case AP4_Track::TYPE_VIDEO:     xprintf("Video\n");     break;
+		case AP4_Track::TYPE_HINT:      xprintf("Hint\n");      break;
+		case AP4_Track::TYPE_SYSTEM:    xprintf("System\n");    break;
+		case AP4_Track::TYPE_TEXT:      xprintf("Text\n");      break;
+		case AP4_Track::TYPE_JPEG:      xprintf("JPEG\n");      break;
+		case AP4_Track::TYPE_SUBTITLES: xprintf("Subtitles\n"); break;
+		default: {
+			char hdlr[5];
+			AP4_FormatFourChars(hdlr, track.GetHandlerType());
+			xprintf("Unknown [");
+			xprintf("%s", hdlr);
+			xprintf("]\n");
+			break;
+		}
 	}
-	}
+
 	xprintf("  duration: %d ms\n", track.GetDurationMs());
 	xprintf("  language: %s\n", track.GetTrackLanguage());
 	xprintf("  media:\n");
@@ -160,21 +163,26 @@ void XBento4::ShowTrackInfo(
 	xprintf("    timescale:    %d\n", track.GetMediaTimeScale());
 	xprintf("    duration:     %lld (media timescale units)\n", track.GetMediaDuration());
 	xprintf("    duration:     %d (ms)\n", (AP4_UI32)AP4_ConvertTime(track.GetMediaDuration(), track.GetMediaTimeScale(), 1000));
-	if (!fast) {
+
+	if (!fast)
+	{
 		MediaInfo media_info;
 		ScanMedia(movie, track, stream, media_info);
 		xprintf("    bitrate (computed): %.3f Kbps\n", media_info.bitrate / 1000.0);
-		if (movie.HasFragments()) {
+		if (movie.HasFragments())
+		{
 			xprintf("    sample count with fragments: %lld\n", media_info.sample_count);
 			xprintf("    duration with fragments:     %lld\n", media_info.duration);
 			xprintf("    duration with fragments:     %d (ms)\n", (AP4_UI32)AP4_ConvertTime(media_info.duration, track.GetMediaTimeScale(), 1000));
 		}
 	}
-	if (track.GetWidth() || track.GetHeight()) {
+	if (track.GetWidth() || track.GetHeight())
+	{
 		xprintf("  display width:  %f\n", (float)track.GetWidth() / 65536.0);
 		xprintf("  display height: %f\n", (float)track.GetHeight() / 65536.0);
 	}
-	if (track.GetType() == AP4_Track::TYPE_VIDEO && track.GetSampleCount()) {
+	if (track.GetType() == AP4_Track::TYPE_VIDEO && track.GetSampleCount())
+	{
 		xprintf("  frame rate (computed): %.3f\n", (float)track.GetSampleCount() /
 			((float)track.GetMediaDuration() / (float)track.GetMediaTimeScale()));
 	}
@@ -190,13 +198,15 @@ void XBento4::ShowTrackInfo(
 	}
 
 	// show samples if requested
-	if (show_samples) {
+	if (show_samples)
+	{
 		AP4_Sample     sample;
 		AP4_DataBuffer sample_data;
 		AP4_Ordinal    index = 0;
 		while (AP4_SUCCEEDED(track.GetSample(index, sample)))
 		{
-			if (avc_desc || show_sample_data) {
+			if (avc_desc || show_sample_data)
+			{
 				sample.ReadData(sample_data);
 			}
 
@@ -220,7 +230,8 @@ void XBento4::ShowSample(
 		index + 1,
 		(int)sample.GetSize(),
 		(int)sample.GetDuration());
-	if (verbose) {
+	if (verbose)
+	{
 		xprintf(" (%6d ms) offset=%10lld dts=%10lld (%10lld ms) cts=%10lld (%10lld ms) [%d]",
 			(int)AP4_ConvertTime(sample.GetDuration(), track.GetMediaTimeScale(), 1000),
 			sample.GetOffset(),
@@ -230,34 +241,46 @@ void XBento4::ShowSample(
 			AP4_ConvertTime(sample.GetCts(), track.GetMediaTimeScale(), 1000),
 			sample.GetDescriptionIndex());
 	}
-	if (sample.IsSync()) {
+	if (sample.IsSync())
+	{
 		xprintf(" [S] ");
 	}
-	else {
+	else
+	{
 		xprintf("     ");
 	}
-	if (avc_desc || show_sample_data) {
+	if (avc_desc || show_sample_data)
+	{
 		sample.ReadData(sample_data);
 	}
-	if (avc_desc) {
+	if (avc_desc)
+	{
 		ShowAvcInfo(sample_data, avc_desc);
 	}
-	if (show_sample_data) {
+	if (show_sample_data)
+	{
 		unsigned int show = sample_data.GetDataSize();
-		if (!verbose) {
+		if (!verbose)
+		{
 			if (show > 12) show = 12; // max first 12 chars
 		}
 
-		for (unsigned int i = 0; i < show; i++) {
-			if (verbose) {
-				if (i % 16 == 0) {
+		for (unsigned int i = 0; i < show; i++)
+		{
+			if (verbose)
+			{
+				if (i % 16 == 0)
+				{
 					xprintf("\n%06d: ", i);
 				}
 			}
 			xprintf("%02x", sample_data.GetData()[i]);
-			if (verbose) xprintf(" ");
+			if (verbose)
+				xprintf(" ");
 		}
-		if (show != sample_data.GetDataSize()) {
+
+		if (show != sample_data.GetDataSize())
+		{
 			xprintf("...");
 		}
 	}
@@ -268,57 +291,64 @@ void XBento4::ShowAvcInfo(const AP4_DataBuffer& sample_data, AP4_AvcSampleDescri
 	const unsigned char* data = sample_data.GetData();
 	AP4_Size             size = sample_data.GetDataSize();
 
-	while (size >= avc_desc->GetNaluLengthSize()) {
+	while (size >= avc_desc->GetNaluLengthSize())
+	{
 		unsigned int nalu_length = 0;
-		if (avc_desc->GetNaluLengthSize() == 1) {
+		if (avc_desc->GetNaluLengthSize() == 1)
+		{
 			nalu_length = *data++;
 			--size;
 		}
-		else if (avc_desc->GetNaluLengthSize() == 2) {
+		else if (avc_desc->GetNaluLengthSize() == 2)
+		{
 			nalu_length = AP4_BytesToUInt16BE(data);
 			data += 2;
 			size -= 2;
 		}
-		else if (avc_desc->GetNaluLengthSize() == 4) {
+		else if (avc_desc->GetNaluLengthSize() == 4)
+		{
 			nalu_length = AP4_BytesToUInt32BE(data);
 			data += 4;
 			size -= 4;
 		}
-		else {
+		else
+		{
 			return;
 		}
-		if (nalu_length <= size) {
+		if (nalu_length <= size)
+		{
 			size -= nalu_length;
 		}
-		else {
+		else 
+		{
 			size = 0;
 		}
 
 		switch (*data & 0x1F) {
-		case 1: {
-			AP4_BitStream bits;
-			bits.WriteBytes(data + 1, 8);
-			ReadGolomb(bits);
-			unsigned int slice_type = ReadGolomb(bits);
-			switch (slice_type) {
-			case 0: xprintf("<P>");  break;
-			case 1: xprintf("<B>");  break;
-			case 2: xprintf("<I>");  break;
-			case 3:	xprintf("<SP>"); break;
-			case 4: xprintf("<SI>"); break;
-			case 5: xprintf("<P>");  break;
-			case 6: xprintf("<B>");  break;
-			case 7: xprintf("<I>");  break;
-			case 8:	xprintf("<SP>"); break;
-			case 9: xprintf("<SI>"); break;
-			default: xprintf("<S/%d>", slice_type); break;
+			case 1: {
+				AP4_BitStream bits;
+				bits.WriteBytes(data + 1, 8);
+				ReadGolomb(bits);
+				unsigned int slice_type = ReadGolomb(bits);
+				switch (slice_type) {
+					case 0: xprintf("<P>");  break;
+					case 1: xprintf("<B>");  break;
+					case 2: xprintf("<I>");  break;
+					case 3:	xprintf("<SP>"); break;
+					case 4: xprintf("<SI>"); break;
+					case 5: xprintf("<P>");  break;
+					case 6: xprintf("<B>");  break;
+					case 7: xprintf("<I>");  break;
+					case 8:	xprintf("<SP>"); break;
+					case 9: xprintf("<SI>"); break;
+					default: xprintf("<S/%d>", slice_type); break;
+				}
+				return; // only show first slice type
 			}
-			return; // only show first slice type
-		}
 
-		case 5:
-			xprintf("<I>");
-			return;
+			case 5:
+				xprintf("<I>");
+				return;
 		}
 
 		data += nalu_length;
@@ -328,13 +358,16 @@ void XBento4::ShowAvcInfo(const AP4_DataBuffer& sample_data, AP4_AvcSampleDescri
 unsigned int XBento4::ReadGolomb(AP4_BitStream& bits)
 {
 	unsigned int leading_zeros = 0;
-	while (bits.ReadBit() == 0) {
+	while (bits.ReadBit() == 0)
+	{
 		leading_zeros++;
 	}
-	if (leading_zeros) {
+	if (leading_zeros)
+	{
 		return (1 << leading_zeros) - 1 + bits.ReadBits(leading_zeros);
 	}
-	else {
+	else
+	{
 		return 0;
 	}
 }
@@ -342,14 +375,17 @@ unsigned int XBento4::ReadGolomb(AP4_BitStream& bits)
 void XBento4::ShowSampleDescription(AP4_SampleDescription& description, bool verbose)
 {
 	AP4_SampleDescription* desc = &description;
-	if (desc->GetType() == AP4_SampleDescription::TYPE_PROTECTED) {
+	if (desc->GetType() == AP4_SampleDescription::TYPE_PROTECTED)
+	{
 		AP4_ProtectedSampleDescription* prot_desc = AP4_DYNAMIC_CAST(AP4_ProtectedSampleDescription, desc);
-		if (prot_desc) {
+		if (prot_desc)
+		{
 			ShowProtectedSampleDescription_Text(*prot_desc, verbose);
 			desc = prot_desc->GetOriginalSampleDescription();
 		}
 	}
-	if (verbose) {
+	if (verbose)
+	{
 		xprintf("    Bytes: ");
 		AP4_Atom* details = desc->ToAtom();
 		ShowPayload(*details, false);
@@ -361,14 +397,17 @@ void XBento4::ShowSampleDescription(AP4_SampleDescription& description, bool ver
 	AP4_FormatFourChars(coding, desc->GetFormat());
 	xprintf("    Coding:      %s", coding);
 	const char* format_name = AP4_GetFormatName(desc->GetFormat());
-	if (format_name) {
+	if (format_name)
+	{
 		xprintf(" (%s)\n", format_name);
 	}
-	else {
+	else
+	{
 		xprintf("\n");
 	}
 
-	if (desc->GetType() == AP4_SampleDescription::TYPE_MPEG) {
+	if (desc->GetType() == AP4_SampleDescription::TYPE_MPEG)
+	{
 		// MPEG sample description
 		AP4_MpegSampleDescription* mpeg_desc = AP4_DYNAMIC_CAST(AP4_MpegSampleDescription, desc);
 
@@ -380,15 +419,18 @@ void XBento4::ShowSampleDescription(AP4_SampleDescription& description, bool ver
 
 		if (mpeg_desc->GetObjectTypeId() == AP4_OTI_MPEG4_AUDIO ||
 			mpeg_desc->GetObjectTypeId() == AP4_OTI_MPEG2_AAC_AUDIO_LC ||
-			mpeg_desc->GetObjectTypeId() == AP4_OTI_MPEG2_AAC_AUDIO_MAIN) {
+			mpeg_desc->GetObjectTypeId() == AP4_OTI_MPEG2_AAC_AUDIO_MAIN)
+		{
 			AP4_MpegAudioSampleDescription* mpeg_audio_desc = AP4_DYNAMIC_CAST(AP4_MpegAudioSampleDescription, mpeg_desc);
-			if (mpeg_audio_desc) ShowMpegAudioSampleDescription(*mpeg_audio_desc);
+			if (mpeg_audio_desc) 
+				ShowMpegAudioSampleDescription(*mpeg_audio_desc);
 		}
 	}
 
 	AP4_AudioSampleDescription* audio_desc =
 		AP4_DYNAMIC_CAST(AP4_AudioSampleDescription, desc);
-	if (audio_desc) {
+	if (audio_desc)
+	{
 		// Audio sample description
 		xprintf("    Sample Rate: %d\n", audio_desc->GetSampleRate());
 		xprintf("    Sample Size: %d\n", audio_desc->GetSampleSize());
@@ -396,7 +438,8 @@ void XBento4::ShowSampleDescription(AP4_SampleDescription& description, bool ver
 	}
 	AP4_VideoSampleDescription* video_desc =
 		AP4_DYNAMIC_CAST(AP4_VideoSampleDescription, desc);
-	if (video_desc) {
+	if (video_desc) 
+	{
 		// Video sample description
 		xprintf("    Width:       %d\n", video_desc->GetWidth());
 		xprintf("    Height:      %d\n", video_desc->GetHeight());
@@ -404,9 +447,11 @@ void XBento4::ShowSampleDescription(AP4_SampleDescription& description, bool ver
 	}
 
 	// Dolby Digital specifics
-	if (desc->GetFormat() == AP4_SAMPLE_FORMAT_AC_3) {
+	if (desc->GetFormat() == AP4_SAMPLE_FORMAT_AC_3)
+	{
 		AP4_Dac3Atom* dac3 = AP4_DYNAMIC_CAST(AP4_Dac3Atom, desc->GetDetails().GetChild(AP4_ATOM_TYPE_DAC3));
-		if (dac3) {
+		if (dac3)
+		{
 			xprintf("    AC-3 Data Rate: %d\n", dac3->GetDataRate());
 			xprintf("    AC-3 Stream:\n");
 			xprintf("        fscod       = %d\n", dac3->GetStreamInfo().fscod);
@@ -421,9 +466,11 @@ void XBento4::ShowSampleDescription(AP4_SampleDescription& description, bool ver
 	}
 
 	// Dolby Digital Plus specifics
-	if (desc->GetFormat() == AP4_SAMPLE_FORMAT_EC_3) {
+	if (desc->GetFormat() == AP4_SAMPLE_FORMAT_EC_3)
+	{
 		AP4_Dec3Atom* dec3 = AP4_DYNAMIC_CAST(AP4_Dec3Atom, desc->GetDetails().GetChild(AP4_ATOM_TYPE_DEC3));
-		if (dec3) {
+		if (dec3)
+		{
 			xprintf("    AC-3 Data Rate: %d\n", dec3->GetDataRate());
 			for (unsigned int i = 0; i < dec3->GetSubStreams().ItemCount(); i++) {
 				xprintf("    AC-3 Substream %d:\n", i);
@@ -442,9 +489,11 @@ void XBento4::ShowSampleDescription(AP4_SampleDescription& description, bool ver
 	}
 
 	// Dolby AC-4 specifics
-	if (desc->GetFormat() == AP4_SAMPLE_FORMAT_AC_4) {
+	if (desc->GetFormat() == AP4_SAMPLE_FORMAT_AC_4) 
+	{
 		AP4_Dac4Atom* dac4 = AP4_DYNAMIC_CAST(AP4_Dac4Atom, desc->GetDetails().GetChild(AP4_ATOM_TYPE_DAC4));
-		if (dac4) {
+		if (dac4) 
+		{
 			xprintf("    Codecs String: ");
 			AP4_String codec;
 			dac4->GetCodecString(codec);
@@ -452,10 +501,13 @@ void XBento4::ShowSampleDescription(AP4_SampleDescription& description, bool ver
 			xprintf("\n");
 
 			const AP4_Dac4Atom::Ac4Dsi& dsi = dac4->GetDsi();
-			if (dsi.ac4_dsi_version == 1) {
-				for (unsigned int i = 0; i < dsi.d.v1.n_presentations; i++) {
+			if (dsi.ac4_dsi_version == 1) 
+			{
+				for (unsigned int i = 0; i < dsi.d.v1.n_presentations; i++)
+				{
 					AP4_Dac4Atom::Ac4Dsi::PresentationV1& presentation = dsi.d.v1.presentations[i];
-					if (presentation.presentation_version == 1) {
+					if (presentation.presentation_version == 1)
+					{
 						xprintf("    AC-4 Presentation %d:\n", i);
 						xprintf("        presentation_channel_mask_v1 = %x\n",
 							presentation.d.v1.presentation_channel_mask_v1);
@@ -470,21 +522,25 @@ void XBento4::ShowSampleDescription(AP4_SampleDescription& description, bool ver
 	}
 
 	// AVC specifics
-	if (desc->GetType() == AP4_SampleDescription::TYPE_AVC) {
+	if (desc->GetType() == AP4_SampleDescription::TYPE_AVC)
+	{
 		// AVC Sample Description
 		AP4_AvcSampleDescription* avc_desc = AP4_DYNAMIC_CAST(AP4_AvcSampleDescription, desc);
 		const char* profile_name = AP4_AvccAtom::GetProfileName(avc_desc->GetProfile());
 		xprintf("    AVC Profile:          %d", avc_desc->GetProfile());
-		if (profile_name) {
+		if (profile_name) 
+		{
 			xprintf(" (%s)\n", profile_name);
 		}
-		else {
+		else 
+		{
 			xprintf("\n");
 		}
 		xprintf("    AVC Profile Compat:   %x\n", avc_desc->GetProfileCompatibility());
 		xprintf("    AVC Level:            %d\n", avc_desc->GetLevel());
 		xprintf("    AVC NALU Length Size: %d\n", avc_desc->GetNaluLengthSize());
 		xprintf("    AVC SPS: [");
+
 		const char* sep = "";
 		for (unsigned int i = 0; i < avc_desc->GetSequenceParameters().ItemCount(); i++) {
 			xprintf("%s", sep);
@@ -494,55 +550,69 @@ void XBento4::ShowSampleDescription(AP4_SampleDescription& description, bool ver
 		xprintf("]\n");
 		xprintf("    AVC PPS: [");
 		sep = "";
-		for (unsigned int i = 0; i < avc_desc->GetPictureParameters().ItemCount(); i++) {
+		for (unsigned int i = 0; i < avc_desc->GetPictureParameters().ItemCount(); i++)
+		{
 			xprintf("%s", sep);
 			ShowData(avc_desc->GetPictureParameters()[i]);
 			sep = ", ";
 		}
 		xprintf("]\n");
 		xprintf("    Codecs String: ");
+
 		AP4_String codec;
 		avc_desc->GetCodecString(codec);
 		xprintf("%s", codec.GetChars());
 		xprintf("\n");
 	}
-	else if (desc->GetType() == AP4_SampleDescription::TYPE_HEVC) {
+	else if (desc->GetType() == AP4_SampleDescription::TYPE_HEVC) 
+	{
 		// HEVC Sample Description
 		AP4_HevcSampleDescription* hevc_desc = AP4_DYNAMIC_CAST(AP4_HevcSampleDescription, desc);
 		const char* profile_name = AP4_HvccAtom::GetProfileName(hevc_desc->GetGeneralProfileSpace(), hevc_desc->GetGeneralProfile());
 		xprintf("    HEVC Profile Space:       %d\n", hevc_desc->GetGeneralProfileSpace());
 		xprintf("    HEVC Profile:             %d", hevc_desc->GetGeneralProfile());
-		if (profile_name) xprintf(" (%s)", profile_name);
+		if (profile_name) 
+			xprintf(" (%s)", profile_name);
 		xprintf("\n");
+
 		xprintf("    HEVC Profile Compat:      %x\n", hevc_desc->GetGeneralProfileCompatibilityFlags());
 		xprintf("    HEVC Level:               %d.%d\n", hevc_desc->GetGeneralLevel() / 30, (hevc_desc->GetGeneralLevel() % 30) / 3);
 		xprintf("    HEVC Tier:                %d\n", hevc_desc->GetGeneralTierFlag());
 		xprintf("    HEVC Chroma Format:       %d", hevc_desc->GetChromaFormat());
+
 		const char* chroma_format_name = AP4_HvccAtom::GetChromaFormatName(hevc_desc->GetChromaFormat());
-		if (chroma_format_name) xprintf(" (%s)", chroma_format_name);
+		if (chroma_format_name) 
+			xprintf(" (%s)", chroma_format_name);
 		xprintf("\n");
+
 		xprintf("    HEVC Chroma Bit Depth:    %d\n", hevc_desc->GetChromaBitDepth());
 		xprintf("    HEVC Luma Bit Depth:      %d\n", hevc_desc->GetLumaBitDepth());
 		xprintf("    HEVC Average Frame Rate:  %d\n", hevc_desc->GetAverageFrameRate());
 		xprintf("    HEVC Constant Frame Rate: %d\n", hevc_desc->GetConstantFrameRate());
 		xprintf("    HEVC NALU Length Size:    %d\n", hevc_desc->GetNaluLengthSize());
 		xprintf("    HEVC Sequences:\n");
-		for (unsigned int i = 0; i < hevc_desc->GetSequences().ItemCount(); i++) {
+
+		for (unsigned int i = 0; i < hevc_desc->GetSequences().ItemCount(); i++) 
+		{
 			const AP4_HvccAtom::Sequence& seq = hevc_desc->GetSequences()[i];
 			xprintf("      {\n");
 			xprintf("        Array Completeness=%d\n", seq.m_ArrayCompleteness);
 			xprintf("        Type=%d", seq.m_NaluType);
+
 			const char* nalu_type_name = AP4_HevcNalParser::NaluTypeName(seq.m_NaluType);
-			if (nalu_type_name) {
+			if (nalu_type_name) 
+			{
 				xprintf(" (%s)", nalu_type_name);
 			}
 			xprintf("\n");
-			for (unsigned int j = 0; j < seq.m_Nalus.ItemCount(); j++) {
+			for (unsigned int j = 0; j < seq.m_Nalus.ItemCount(); j++) 
+			{
 				xprintf("        ");
 				ShowData(seq.m_Nalus[j]);
 			}
 			xprintf("\n      }\n");
 		}
+
 		xprintf("    Codecs String: ");
 		AP4_String codec;
 		hevc_desc->GetCodecString(codec);
@@ -552,14 +622,18 @@ void XBento4::ShowSampleDescription(AP4_SampleDescription& description, bool ver
 
 	// Dolby Vision specifics
 	AP4_DvccAtom* dvcc = AP4_DYNAMIC_CAST(AP4_DvccAtom, desc->GetDetails().GetChild(AP4_ATOM_TYPE_DVCC));
-	if (dvcc) {
+	if (dvcc) 
+	{
 		xprintf("    Dolby Vision:\n");
 		xprintf("      Version:     %d.%d\n", dvcc->GetDvVersionMajor(), dvcc->GetDvVersionMinor());
+
 		const char* profile_name = AP4_DvccAtom::GetProfileName(dvcc->GetDvProfile());
-		if (profile_name) {
+		if (profile_name) 
+		{
 			xprintf("      Profile:     %s\n", profile_name);
 		}
-		else {
+		else 
+		{
 			xprintf("      Profile:     %d\n", dvcc->GetDvProfile());
 		}
 		xprintf("      Level:       %d\n", dvcc->GetDvLevel());
@@ -571,9 +645,11 @@ void XBento4::ShowSampleDescription(AP4_SampleDescription& description, bool ver
 	// VPx Specifics
 	if (desc->GetFormat() == AP4_SAMPLE_FORMAT_VP8 ||
 		desc->GetFormat() == AP4_SAMPLE_FORMAT_VP9 ||
-		desc->GetFormat() == AP4_SAMPLE_FORMAT_VP10) {
+		desc->GetFormat() == AP4_SAMPLE_FORMAT_VP10) 
+	{
 		AP4_VpccAtom* vpcc = AP4_DYNAMIC_CAST(AP4_VpccAtom, desc->GetDetails().GetChild(AP4_ATOM_TYPE_VPCC));
-		if (vpcc) {
+		if (vpcc) 
+		{
 			xprintf("    Profile:                  %d\n", vpcc->GetProfile());
 			xprintf("    Level:                    %d\n", vpcc->GetLevel());
 			xprintf("    Bit Depth:                %d\n", vpcc->GetBitDepth());
@@ -582,6 +658,7 @@ void XBento4::ShowSampleDescription(AP4_SampleDescription& description, bool ver
 			xprintf("    Transfer Characteristics: %d\n", vpcc->GetTransferCharacteristics());
 			xprintf("    Matrix Coefficients:      %d\n", vpcc->GetMatrixCoefficients());
 			xprintf("    Video Full Range Flag:    %s\n", vpcc->GetVideoFullRangeFlag() ? "true" : "false");
+
 			AP4_String codec;
 			vpcc->GetCodecString(desc->GetFormat(), codec);
 			xprintf("    Codecs String:            %s", codec.GetChars());
@@ -590,7 +667,8 @@ void XBento4::ShowSampleDescription(AP4_SampleDescription& description, bool ver
 	}
 
 	// Subtitles
-	if (desc->GetType() == AP4_SampleDescription::TYPE_SUBTITLES) {
+	if (desc->GetType() == AP4_SampleDescription::TYPE_SUBTITLES) 
+	{
 		AP4_SubtitleSampleDescription* subt_desc = AP4_DYNAMIC_CAST(AP4_SubtitleSampleDescription, desc);
 		xprintf("    Subtitles:\n");
 		xprintf("       Namespace:       %s\n", subt_desc->GetNamespace().GetChars());
@@ -602,7 +680,8 @@ void XBento4::ShowSampleDescription(AP4_SampleDescription& description, bool ver
 
 void XBento4::ShowData(const AP4_DataBuffer& data)
 {
-	for (unsigned int i = 0; i < data.GetDataSize(); i++) {
+	for (unsigned int i = 0; i < data.GetDataSize(); i++) 
+	{
 		xprintf("%02x", (unsigned char)data.GetData()[i]);
 	}
 }
@@ -613,6 +692,7 @@ void XBento4::ShowProtectedSampleDescription_Text(AP4_ProtectedSampleDescription
 	char coding[5];
 	AP4_FormatFourChars(coding, desc.GetFormat());
 	xprintf("      Coding:         %s\n", coding);
+
 	AP4_UI32 st = desc.GetSchemeType();
 	xprintf("      Scheme Type:    %c%c%c%c\n",
 		(char)((st >> 24) & 0xFF),
@@ -621,52 +701,77 @@ void XBento4::ShowProtectedSampleDescription_Text(AP4_ProtectedSampleDescription
 		(char)((st) & 0xFF));
 	xprintf("      Scheme Version: %d\n", desc.GetSchemeVersion());
 	xprintf("      Scheme URI:     %s\n", desc.GetSchemeUri().GetChars());
+
 	AP4_ProtectionSchemeInfo* scheme_info = desc.GetSchemeInfo();
-	if (scheme_info == NULL) return;
+	if (scheme_info == NULL) 
+		return;
+
 	AP4_ContainerAtom* schi = scheme_info->GetSchiAtom();
-	if (schi == NULL) return;
+	if (schi == NULL) 
+		return;
+
 	ShowProtectionSchemeInfo_Text(desc.GetSchemeType(), *schi, verbose);
 }
 
 void XBento4::ShowProtectionSchemeInfo_Text(AP4_UI32 scheme_type, AP4_ContainerAtom& schi, bool verbose)
 {
-	if (scheme_type == AP4_PROTECTION_SCHEME_TYPE_IAEC) {
+	if (scheme_type == AP4_PROTECTION_SCHEME_TYPE_IAEC) 
+	{
 		xprintf("      iAEC Scheme Info:\n");
 		AP4_IkmsAtom* ikms = AP4_DYNAMIC_CAST(AP4_IkmsAtom, schi.FindChild("iKMS"));
-		if (ikms) {
+		if (ikms) 
+		{
 			xprintf("        KMS URI:              %s\n", ikms->GetKmsUri().GetChars());
 		}
 		AP4_IsfmAtom* isfm = AP4_DYNAMIC_CAST(AP4_IsfmAtom, schi.FindChild("iSFM"));
-		if (isfm) {
+		if (isfm) 
+		{
 			xprintf("        Selective Encryption: %s\n", isfm->GetSelectiveEncryption() ? "yes" : "no");
 			xprintf("        Key Indicator Length: %d\n", isfm->GetKeyIndicatorLength());
 			xprintf("        IV Length:            %d\n", isfm->GetIvLength());
 		}
 		AP4_IsltAtom* islt = AP4_DYNAMIC_CAST(AP4_IsltAtom, schi.FindChild("iSLT"));
-		if (islt) {
+		if (islt) 
+		{
 			xprintf("        Salt:                 ");
-			for (unsigned int i = 0; i < 8; i++) {
+			for (unsigned int i = 0; i < 8; i++) 
+			{
 				xprintf("%02x", islt->GetSalt()[i]);
 			}
 			xprintf("\n");
 		}
 	}
-	else if (scheme_type == AP4_PROTECTION_SCHEME_TYPE_OMA) {
+	else if (scheme_type == AP4_PROTECTION_SCHEME_TYPE_OMA) 
+	{
 		xprintf("      odkm Scheme Info:\n");
 		AP4_OdafAtom* odaf = AP4_DYNAMIC_CAST(AP4_OdafAtom, schi.FindChild("odkm/odaf"));
-		if (odaf) {
+		if (odaf) 
+		{
 			xprintf("        Selective Encryption: %s\n", odaf->GetSelectiveEncryption() ? "yes" : "no");
 			xprintf("        Key Indicator Length: %d\n", odaf->GetKeyIndicatorLength());
 			xprintf("        IV Length:            %d\n", odaf->GetIvLength());
 		}
 		AP4_OhdrAtom* ohdr = AP4_DYNAMIC_CAST(AP4_OhdrAtom, schi.FindChild("odkm/ohdr"));
-		if (ohdr) {
+		if (ohdr) 
+		{
 			const char* encryption_method = "";
-			switch (ohdr->GetEncryptionMethod()) {
-			case AP4_OMA_DCF_ENCRYPTION_METHOD_NULL:    encryption_method = "NULL";    break;
-			case AP4_OMA_DCF_ENCRYPTION_METHOD_AES_CTR: encryption_method = "AES-CTR"; break;
-			case AP4_OMA_DCF_ENCRYPTION_METHOD_AES_CBC: encryption_method = "AES-CBC"; break;
-			default:                                    encryption_method = "UNKNOWN"; break;
+			switch (ohdr->GetEncryptionMethod()) 
+			{
+				case AP4_OMA_DCF_ENCRYPTION_METHOD_NULL:
+					encryption_method = "NULL";
+					break;
+				
+				case AP4_OMA_DCF_ENCRYPTION_METHOD_AES_CTR:
+					encryption_method = "AES-CTR";
+					break;
+				
+				case AP4_OMA_DCF_ENCRYPTION_METHOD_AES_CBC:
+					encryption_method = "AES-CBC";
+					break;
+
+				default:
+					encryption_method = "UNKNOWN";
+					break;
 			}
 			xprintf("        Encryption Method: %s\n", encryption_method);
 			xprintf("        Content ID:        %s\n", ohdr->GetContentId().GetChars());
@@ -674,7 +779,8 @@ void XBento4::ShowProtectionSchemeInfo_Text(AP4_UI32 scheme_type, AP4_ContainerA
 
 			const AP4_DataBuffer& headers = ohdr->GetTextualHeaders();
 			AP4_Size              data_len = headers.GetDataSize();
-			if (data_len) {
+			if (data_len) 
+			{
 				AP4_Byte*      textual_headers_string;
 				AP4_Byte*      curr;
 				AP4_DataBuffer output_buffer;
@@ -682,8 +788,10 @@ void XBento4::ShowProtectionSchemeInfo_Text(AP4_UI32 scheme_type, AP4_ContainerA
 				AP4_CopyMemory(output_buffer.UseData(), headers.GetData(), data_len);
 				curr = textual_headers_string = output_buffer.UseData();
 				textual_headers_string[data_len] = '\0';
-				while (curr < textual_headers_string + data_len) {
-					if ('\0' == *curr) {
+				while (curr < textual_headers_string + data_len) 
+				{
+					if ('\0' == *curr) 
+					{
 						*curr = '\n';
 					}
 					curr++;
@@ -695,40 +803,48 @@ void XBento4::ShowProtectionSchemeInfo_Text(AP4_UI32 scheme_type, AP4_ContainerA
 	else if (scheme_type == AP4_PROTECTION_SCHEME_TYPE_ITUNES) {
 		xprintf("      itun Scheme Info:\n");
 		AP4_Atom* name = schi.FindChild("name");
-		if (name) {
+		if (name) 
+		{
 			xprintf("        Name:    ");
 			ShowPayload(*name, true);
 			xprintf("\n");
 		}
 		AP4_Atom* user = schi.FindChild("user");
-		if (user) {
+		if (user) 
+		{
 			xprintf("        User ID: ");
 			ShowPayload(*user);
 			xprintf("\n");
 		}
 		AP4_Atom* key = schi.FindChild("key ");
-		if (key) {
+		if (key) 
+		{
 			xprintf("        Key ID:  ");
 			ShowPayload(*key);
 			xprintf("\n");
 		}
 		AP4_Atom* iviv = schi.FindChild("iviv");
-		if (iviv) {
+		if (iviv) 
+		{
 			xprintf("        IV:      ");
 			ShowPayload(*iviv);
 			xprintf("\n");
 		}
 	}
-	else if (scheme_type == AP4_PROTECTION_SCHEME_TYPE_MARLIN_ACBC ||
-		scheme_type == AP4_PROTECTION_SCHEME_TYPE_MARLIN_ACGK) {
+	else if (
+		scheme_type == AP4_PROTECTION_SCHEME_TYPE_MARLIN_ACBC ||
+		scheme_type == AP4_PROTECTION_SCHEME_TYPE_MARLIN_ACGK) 
+	{
 		xprintf("      Marlin IPMP ACBC/ACGK Scheme Info:\n");
 		AP4_NullTerminatedStringAtom* octopus_id = AP4_DYNAMIC_CAST(AP4_NullTerminatedStringAtom, schi.FindChild("8id "));
-		if (octopus_id) {
+		if (octopus_id) 
+		{
 			xprintf("        Content ID: %s\n", octopus_id->GetValue().GetChars());
 		}
 	}
 
-	if (verbose) {
+	if (verbose) 
+	{
 		xprintf("    Protection System Details:\n");
 		AP4_ByteStream* output = NULL;
 		AP4_FileByteStream::Create("-stdout", AP4_FileByteStream::STREAM_MODE_WRITE, output);
@@ -741,17 +857,21 @@ void XBento4::ShowProtectionSchemeInfo_Text(AP4_UI32 scheme_type, AP4_ContainerA
 void XBento4::ShowPayload(AP4_Atom& atom, bool ascii)
 {
 	AP4_UI64 payload_size = atom.GetSize() - 8;
-	if (payload_size <= 1024) {
+	if (payload_size <= 1024) 
+	{
 		AP4_MemoryByteStream* payload = new AP4_MemoryByteStream();
 		atom.Write(*payload);
-		if (ascii) {
+		if (ascii) 
+		{
 			// ascii
 			payload->WriteUI08(0); // terminate with a NULL character
 			xprintf("%s", (const char*)payload->GetData() + atom.GetHeaderSize());
 		}
-		else {
+		else 
+		{
 			// hex
-			for (unsigned int i = 0; i < payload_size; i++) {
+			for (unsigned int i = 0; i < payload_size; i++) 
+			{
 				xprintf("%02x", (unsigned char)payload->GetData()[atom.GetHeaderSize() + i]);
 			}
 		}
@@ -767,15 +887,17 @@ void XBento4::ShowMpegAudioSampleDescription(AP4_MpegAudioSampleDescription& mpe
 	AP4_String codec_string;
 	mpeg_audio_desc.GetCodecString(codec_string);
 
-		xprintf("    Codecs String: %s\n", codec_string.GetChars());
-		xprintf("    MPEG-4 Audio Object Type: %d (%s)\n", object_type, object_type_string);
+	xprintf("    Codecs String: %s\n", codec_string.GetChars());
+	xprintf("    MPEG-4 Audio Object Type: %d (%s)\n", object_type, object_type_string);
 
 	// Decoder Specific Info
 	const AP4_DataBuffer& dsi = mpeg_audio_desc.GetDecoderInfo();
-	if (dsi.GetDataSize()) {
+	if (dsi.GetDataSize()) 
+	{
 		AP4_Mp4AudioDecoderConfig dec_config;
 		AP4_Result result = dec_config.Parse(dsi.GetData(), dsi.GetDataSize());
-		if (AP4_SUCCEEDED(result)) {
+		if (AP4_SUCCEEDED(result)) 
+		{
 			xprintf("    MPEG-4 Audio Decoder Config:\n");
 			xprintf("      Sampling Frequency: %d\n", dec_config.m_SamplingFrequency);
 			xprintf("      Channels: %d\n", dec_config.m_ChannelCount);
@@ -807,25 +929,32 @@ void XBento4::ScanMedia(AP4_Movie& movie, AP4_Track& track, AP4_ByteStream& stre
 	info.sample_count = 0;
 
 	AP4_Sample sample;
-	if (movie.HasFragments()) {
+	if (movie.HasFragments())
+	{
 		AP4_DataBuffer sample_data;
-		for (unsigned int i = 0; ; i++) {
+		for (unsigned int i = 0; ; i++) 
+		{
 			AP4_UI32 track_id = 0;
 			AP4_Result result = reader.ReadNextSample(sample, sample_data, track_id);
-			if (AP4_SUCCEEDED(result)) {
+			if (AP4_SUCCEEDED(result)) 
+			{
 				total_size += sample.GetSize();
 				total_duration += sample.GetDuration();
 				++info.sample_count;
 			}
-			else {
+			else 
+			{
 				break;
 			}
 		}
 	}
-	else {
+	else 
+	{
 		info.sample_count = track.GetSampleCount();
-		for (unsigned int i = 0; i < track.GetSampleCount(); i++) {
-			if (AP4_SUCCEEDED(track.GetSample(i, sample))) {
+		for (unsigned int i = 0; i < track.GetSampleCount(); i++)
+		{
+			if (AP4_SUCCEEDED(track.GetSample(i, sample)))
+			{
 				total_size += sample.GetSize();
 			}
 		}
@@ -834,10 +963,12 @@ void XBento4::ScanMedia(AP4_Movie& movie, AP4_Track& track, AP4_ByteStream& stre
 	info.duration = total_duration;
 
 	double duration_ms = (double)AP4_ConvertTime(total_duration, track.GetMediaTimeScale(), 1000);
-	if (duration_ms) {
+	if (duration_ms) 
+	{
 		info.bitrate = 8.0*1000.0*(double)total_size / duration_ms;
 	}
-	else {
+	else 
+	{
 		info.bitrate = 0.0;
 	}
 }
