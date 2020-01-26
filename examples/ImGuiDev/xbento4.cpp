@@ -33,18 +33,18 @@ XBento4::XBento4() : XThread("XBento4Thread")
 {
 }
 
-void XBento4::Run() {
-	while (IsRunning())
-	{
-		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(100));
-		xprintf("Tic\n");
-	}
-}
-
 XBento4::XBento4(std::string fname) : filename(fname), XThread("XBento4Thread")
 {
 	XBento4();
+}
 
+XBento4::~XBento4()
+{
+	if(input)
+		delete input;
+}
+
+void XBento4::Run() {
 	AP4_Result result = AP4_FileByteStream::Create(
 		filename.c_str(),
 		AP4_FileByteStream::STREAM_MODE_READ,
@@ -64,13 +64,10 @@ XBento4::XBento4(std::string fname) : filename(fname), XThread("XBento4Thread")
 
 	AP4_List<AP4_Track>& tracks = movie->GetTracks();
 	xprintf("Found %d Tracks\n", tracks.ItemCount());
-	ShowTracks(*movie, tracks, *input, true, false, true, false);
-}
+	ShowTracks(*movie, tracks, *input, false, false, false, false);
 
-XBento4::~XBento4()
-{
-	if(input)
-		delete input;
+	Stop();
+	xprintf("%s() done.\n", __FUNCTION__);
 }
 
 void XBento4::ShowFileInfo(AP4_File& file)

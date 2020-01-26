@@ -53,5 +53,6 @@ void ExampleXGL::BuildScene() {
 	xdb->Execute("SELECT * FROM Cars;");
 
 	//xb4 = new XBento4(pathToAssets + "/assets/CulturalPhenomenon.mp4");
-	xb4 = new XBento4("H:/Hero6/GH010148.mp4");
+	xb4 = new XBento4("H:/Hero6/GH010171.mp4");
+	xb4->Start();
 }
