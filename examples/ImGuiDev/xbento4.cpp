@@ -29,20 +29,108 @@
 #include "ExampleXGL.h"
 #include "xbento4_class.h"
 
+void XBento4::Draw()
+{
+	if (v.size())
+	{
+		glPointSize(3.0);
+		glDrawArrays(GL_LINES, 0, GLsizei(v.size()));
+		GL_CHECK("glDrawArrays() failed");
+	}
+}
+
+
 XBento4::XBento4() : XThread("XBento4Thread")
 {
 	SetName("XBento4");
+
 }
 
 XBento4::XBento4(std::string fname) : filename(fname), XThread("XBento4Thread")
 {
 	XBento4();
+
+	AP4_Result result = AP4_FileByteStream::Create(
+		filename.c_str(),
+		AP4_FileByteStream::STREAM_MODE_READ,
+		input);
+
+	if (AP4_FAILED(result))
+		throw std::runtime_error("Oops: AP4_FileBytestreamCreate() didn't");
+
+	AP4_File* file = new AP4_File(*input, true);
+	ShowFileInfo(*file);
+
+	AP4_Movie* movie = file->GetMovie();
+	if (movie)
+		ShowMovieInfo(*movie);
+
+	AP4_List<AP4_Track>& tracks = movie->GetTracks();
+
+	MediaInfo mediaInfo;
+	MakeTrackList(*movie, tracks, *input, mediaInfo);
+
+	//Stop();  // clear "isRunning" in our XThread
+	xprintf("%s() done.\n", __FUNCTION__);
 }
 
 XBento4::~XBento4()
 {
 	if(input)
 		delete input;
+}
+
+void XBento4::MakeTrackList(AP4_Movie& movie, AP4_List<AP4_Track>&in, AP4_ByteStream& stream, MediaInfo&)
+{
+	for (auto t = in.FirstItem(); t; t = t->GetNext())
+		trackList.push_back(t->GetData());
+
+	xprintf("%s(): loaded up %d tracks\n", __FUNCTION__, trackList.size());
+
+	for (auto pt : trackList)
+	{
+		AP4_Track& t{ *pt };
+		xprintf("Track type: %s, %d samples\n",
+			trackTypes[t.GetType()],
+			t.GetSampleCount());
+
+		Samples* samples = new Samples();
+		AP4_Sample sample;
+
+		for (int idx = 0; idx < t.GetSampleCount(); idx++)
+		{
+			t.GetSample(idx, sample);
+			samples->push_back(sample);
+		}
+		sl.push_back(samples);
+	}
+
+	xprintf("sl.size(): %d\n", sl.size());
+
+	XGLColor colors[4]
+	{
+		XGLColors::green,
+		XGLColors::yellow,
+		XGLColors::cyan,
+		XGLColors::magenta
+	};
+
+	int i{ 0 };
+	for (Samples* samples : sl)
+	{
+		xprintf("Track %d: %d samples\n", i++, samples->size());
+		for (AP4_Sample sample : *samples)
+		{
+			float y = 1.0f * i;
+			float x = (float)sample.GetOffset() / 20000000.0f;
+			float z = (float)sample.GetSize() / 20000.0f;
+
+			v.push_back({ {x, y, 0}, {}, {}, colors[i] });
+			v.push_back({ {x, y, z}, {}, {}, colors[i] });
+		}
+	}
+
+	return;
 }
 
 void XBento4::Run() {
@@ -62,10 +150,11 @@ void XBento4::Run() {
 		ShowMovieInfo(*movie);
 
 	AP4_List<AP4_Track>& tracks = movie->GetTracks();
-	xprintf("Found %d Tracks\n", tracks.ItemCount());
-	ShowTracks(*movie, tracks, *input, false, false, false, false);
 
-	Stop();
+	MediaInfo mediaInfo;
+	MakeTrackList(*movie, tracks, *input, mediaInfo);
+
+	//Stop();  // clear "isRunning" in our XThread
 	xprintf("%s() done.\n", __FUNCTION__);
 }
 

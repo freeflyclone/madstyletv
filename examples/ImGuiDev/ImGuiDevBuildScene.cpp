@@ -52,6 +52,6 @@ void ExampleXGL::BuildScene() {
 	xdb->Execute("SELECT name FROM sqlite_master WHERE type = 'table';");
 	xdb->Execute("SELECT * FROM Cars;");
 
-	AddShape("shaders/yuv", [&]() { xb4 = new XBento4("H:/Hero6/GH010171.mp4"); return xb4; });
-	xb4->Start();
+	AddShape("shaders/000-simple", [&]() { xb4 = new XBento4("H:/Hero6/GH010171.mp4"); return xb4; });
+	xb4->model = glm::translate(glm::mat4(), { -100.0f, 0.0f, 0.0f });
 }

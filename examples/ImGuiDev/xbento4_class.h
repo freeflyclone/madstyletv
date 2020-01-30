@@ -38,28 +38,34 @@ typedef struct {
 } MediaInfo;
 
 
-class XBento4 : public XGLTexQuad, public XThread {
+class XBento4 : public XGLShape, public XThread {
 public:
+	typedef std::vector<AP4_Sample> Samples;
+	typedef std::vector<Samples*> SamplesList;
+
+	typedef std::vector<AP4_Track*> TrackList;
+
 	XBento4();
 	XBento4(std::string);
 	~XBento4();
 
+	void MakeTrackList(AP4_Movie&, AP4_List<AP4_Track>&, AP4_ByteStream&, MediaInfo&);
+
 	void Run();
 
+	void Draw();
+
 	void ShowFileInfo(AP4_File&);
-
 	void ShowMovieInfo(AP4_Movie&);
-
 	void ShowTracks(
-		AP4_Movie&, 
-		AP4_List<AP4_Track>&, 
-		AP4_ByteStream&, 
+		AP4_Movie&,
+		AP4_List<AP4_Track>&,
+		AP4_ByteStream&,
 		bool,
 		bool,
 		bool,
 		bool
 	);
-
 	void ShowTrackInfo(
 		AP4_Movie&,
 		AP4_Track&,
@@ -69,43 +75,35 @@ public:
 		bool,
 		bool
 	);
-
 	void ScanMedia(
 		AP4_Movie&,
 		AP4_Track&,
 		AP4_ByteStream&,
 		MediaInfo&
 	);
-
 	void ShowSampleDescription(
 		AP4_SampleDescription&,
 		bool
 	);
-
 	void ShowProtectedSampleDescription_Text(
 		AP4_ProtectedSampleDescription& desc,
 		bool verbose
 	);
-
 	void ShowProtectionSchemeInfo_Text(
 		AP4_UI32 scheme_type,
 		AP4_ContainerAtom& schi,
 		bool verbose
 	);
-
 	void ShowPayload(
 		AP4_Atom& atom,
 		bool ascii = false
 	);
-
 	void ShowMpegAudioSampleDescription(
 		AP4_MpegAudioSampleDescription& mpeg_audio_desc
 	);
-
 	void ShowData(
 		const AP4_DataBuffer& data
 	);
-
 	void ShowSample(AP4_Track&,
 		AP4_Sample&,
 		AP4_DataBuffer&,
@@ -114,18 +112,29 @@ public:
 		bool,
 		AP4_AvcSampleDescription*
 	);
-
 	void ShowAvcInfo(
 		const AP4_DataBuffer& sample_data,
 		AP4_AvcSampleDescription* avc_desc
 	);
-
 	unsigned int ReadGolomb(
 		AP4_BitStream& bits
 	);
 
-
 private:
+	TrackList trackList;
+	const char* trackTypes[10] = {
+		{"UNKNOWN"},
+		{"AUDIO"},
+		{"VIDEO"},
+		{"SYSTEM"},
+		{"HINT"},
+		{"TEXT"},
+		{"JPEG"},
+		{"RTP"},
+		{"SUBTITLES"}
+	};
+
 	std::string filename;
 	AP4_ByteStream* input{ nullptr };
+	SamplesList sl;
 };
