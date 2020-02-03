@@ -38,7 +38,7 @@ typedef struct {
 } MediaInfo;
 
 
-class XBento4 : public XGLShape, public XThread {
+class XBento4 : public XGLTexQuad, public XThread {
 public:
 	typedef std::vector<AP4_Sample> Samples;
 	typedef std::vector<Samples*> SamplesList;
@@ -137,4 +137,5 @@ private:
 	std::string filename;
 	AP4_ByteStream* input{ nullptr };
 	SamplesList sl;
+	unsigned char yuvBuffer[1920 * 1080 * 3];
 };

@@ -301,6 +301,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ActivityStream", "examples\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Bento4", "xclass\3rdParty\bento4\Build\Targets\x86_64-microsoft-win32-vs2017\Bento4\Bento4.vcxproj", "{A714AA1C-45A9-403D-A6E1-020E520119A2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "h264decoder", "examples\h264decoder\h264decoder.vcxproj", "{5E68D08F-BE18-4BF2-B4DE-E76B90FA645E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -915,6 +917,18 @@ Global
 		{A714AA1C-45A9-403D-A6E1-020E520119A2}.Release|Win32.Build.0 = Release|Win32
 		{A714AA1C-45A9-403D-A6E1-020E520119A2}.Release|x64.ActiveCfg = Release|x64
 		{A714AA1C-45A9-403D-A6E1-020E520119A2}.Release|x64.Build.0 = Release|x64
+		{5E68D08F-BE18-4BF2-B4DE-E76B90FA645E}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{5E68D08F-BE18-4BF2-B4DE-E76B90FA645E}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{5E68D08F-BE18-4BF2-B4DE-E76B90FA645E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5E68D08F-BE18-4BF2-B4DE-E76B90FA645E}.Debug|Win32.Build.0 = Debug|Win32
+		{5E68D08F-BE18-4BF2-B4DE-E76B90FA645E}.Debug|x64.ActiveCfg = Debug|x64
+		{5E68D08F-BE18-4BF2-B4DE-E76B90FA645E}.Debug|x64.Build.0 = Debug|x64
+		{5E68D08F-BE18-4BF2-B4DE-E76B90FA645E}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{5E68D08F-BE18-4BF2-B4DE-E76B90FA645E}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{5E68D08F-BE18-4BF2-B4DE-E76B90FA645E}.Release|Win32.ActiveCfg = Release|Win32
+		{5E68D08F-BE18-4BF2-B4DE-E76B90FA645E}.Release|Win32.Build.0 = Release|Win32
+		{5E68D08F-BE18-4BF2-B4DE-E76B90FA645E}.Release|x64.ActiveCfg = Release|x64
+		{5E68D08F-BE18-4BF2-B4DE-E76B90FA645E}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -975,6 +989,7 @@ Global
 		{320225F3-3FE0-4B4C-B355-1196FFEEBD9A} = {526A4A9A-A338-4CAE-BC55-3A8479A67E33}
 		{D7F1E445-D2AC-49AA-B492-B3F5DA472FA9} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 		{A714AA1C-45A9-403D-A6E1-020E520119A2} = {AEF119EB-E8D2-4FC8-87DF-A818B128D5E0}
+		{5E68D08F-BE18-4BF2-B4DE-E76B90FA645E} = {AEF119EB-E8D2-4FC8-87DF-A818B128D5E0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C05D074B-A148-477D-8D8B-145B090FAD2E}

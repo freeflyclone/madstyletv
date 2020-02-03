@@ -31,12 +31,11 @@
 
 void XBento4::Draw()
 {
-	if (v.size())
-	{
-		glPointSize(3.0);
-		glDrawArrays(GL_LINES, 0, GLsizei(v.size()));
-		GL_CHECK("glDrawArrays() failed");
-	}
+	glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit0"), 0);
+	glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit1"), 1);
+	glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit2"), 2);
+
+	XGLTexQuad::Draw();
 }
 
 
@@ -46,9 +45,10 @@ XBento4::XBento4() : XThread("XBento4Thread")
 
 }
 
-XBento4::XBento4(std::string fname) : filename(fname), XThread("XBento4Thread")
+XBento4::XBento4(std::string fname) : filename(fname), XThread("XBento4Thread"), XGLTexQuad()
 {
-	XBento4();
+	//XBento4();
+	SetName("XBento4");
 
 	AP4_Result result = AP4_FileByteStream::Create(
 		filename.c_str(),
@@ -72,6 +72,27 @@ XBento4::XBento4(std::string fname) : filename(fname), XThread("XBento4Thread")
 
 	//Stop();  // clear "isRunning" in our XThread
 	xprintf("%s() done.\n", __FUNCTION__);
+
+	FILE *yuvInputFile = fopen("test_dec.yuv", "rb");
+	if (yuvInputFile) {
+		int nRead = fread(yuvBuffer, 1, sizeof(yuvBuffer), yuvInputFile);
+		if (nRead != sizeof(yuvBuffer))
+		{
+			xprintf("Dang, didn't init the yuvBuffer\n");
+		}
+		else
+		{
+			unsigned char *y = yuvBuffer;
+			unsigned char *u = yuvBuffer + 1920 * 1080;
+			unsigned char *v = u + 1920 * 1080 / 4;
+
+			AddTexture(1920, 1080, 1, y);
+			AddTexture(960, 540, 1, u);
+			AddTexture(960, 540, 1, v);
+		}
+
+		fclose(yuvInputFile);
+	}
 }
 
 XBento4::~XBento4()
@@ -87,49 +108,59 @@ void XBento4::MakeTrackList(AP4_Movie& movie, AP4_List<AP4_Track>&in, AP4_ByteSt
 
 	xprintf("%s(): loaded up %d tracks\n", __FUNCTION__, trackList.size());
 
-	for (auto pt : trackList)
+	auto pt = trackList[0];
 	{
 		AP4_Track& t{ *pt };
 		xprintf("Track type: %s, %d samples\n",
 			trackTypes[t.GetType()],
 			t.GetSampleCount());
 
+		AP4_SampleDescription* sample_description = t.GetSampleDescription(0);
+		if (sample_description->GetType() == AP4_SampleDescription::TYPE_AVC)
+			xprintf("Yippie: it's an AVC sample!\n");
+
 		Samples* samples = new Samples();
 		AP4_Sample sample;
+		AP4_DataBuffer sample_data;
 
 		for (int idx = 0; idx < t.GetSampleCount(); idx++)
 		{
 			t.GetSample(idx, sample);
 			samples->push_back(sample);
+			//sample.ReadData(sample_data);
+			//sample_data.GetDataSize();
 		}
 		sl.push_back(samples);
 	}
 
-	xprintf("sl.size(): %d\n", sl.size());
-
-	XGLColor colors[4]
+	if (false)
 	{
-		XGLColors::green,
-		XGLColors::yellow,
-		XGLColors::cyan,
-		XGLColors::magenta
-	};
+		xprintf("sl.size(): %d\n", sl.size());
 
-	int i{ 0 };
-	for (Samples* samples : sl)
-	{
-		xprintf("Track %d: %d samples\n", i++, samples->size());
-		for (AP4_Sample sample : *samples)
+		XGLColor colors[4]
 		{
-			float y = 1.0f * i;
-			float x = (float)sample.GetOffset() / 20000000.0f;
-			float z = (float)sample.GetSize() / 20000.0f;
+			XGLColors::green,
+			XGLColors::yellow,
+			XGLColors::cyan,
+			XGLColors::magenta
+		};
 
-			v.push_back({ {x, y, 0}, {}, {}, colors[i] });
-			v.push_back({ {x, y, z}, {}, {}, colors[i] });
+		int i{ 0 };
+		for (Samples* samples : sl)
+		{
+			xprintf("Track %d: %d samples\n", i++, samples->size());
+			for (AP4_Sample sample : *samples)
+			{
+				float y = 1.0f * i;
+				float x = (float)sample.GetOffset() / 20000000.0f;
+				float z = (float)sample.GetSize() / 20000.0f;
+
+
+				v.push_back({ {x, y, 0}, {}, {}, colors[i] });
+				v.push_back({ {x, y, z}, {}, {}, colors[i] });
+			}
 		}
 	}
-
 	return;
 }
 
