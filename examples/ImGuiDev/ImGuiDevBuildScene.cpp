@@ -10,7 +10,9 @@
 #include "ExampleXGL.h"
 #include "xsqlite.h"
 #include "xbento4_class.h"
+#include "xglvcrcontrols.h"
 
+XGLVcrControlsGui* xig{ nullptr };
 Xsqlite* xdb;
 XBento4* xb4;
 
@@ -55,5 +57,17 @@ void ExampleXGL::BuildScene() {
 	AddShape("shaders/yuv", [&]() { xb4 = new XBento4("H:/Hero6/GH010171.mp4"); return xb4; });
 	glm::mat4 scale = glm::scale(glm::mat4(), { 16,9,0 });
 	xb4->model = scale;
-	//xb4->model = glm::translate(glm::mat4(), { -100.0f, 0.0f, 0.0f });
+
+	xig = new XGLVcrControlsGui();
+	menuFunctions.push_back(([&]() {
+		if (ImGui::Begin("VCR Controls", &xig->vcrWindow)) {
+			if (ImGui::SliderInt("Frame", &xig->frameNum, 0, 547))
+			{
+				xb4->SeekToFrame(xig->frameNum);
+			}
+			ImGui::End();
+		}
+		else
+			ImGui::End();
+	}));
 }

@@ -49,6 +49,8 @@ public:
 	XBento4(std::string);
 	~XBento4();
 
+	void SeekToFrame(size_t);
+
 	void MakeTrackList(AP4_Movie&, AP4_List<AP4_Track>&, AP4_ByteStream&, MediaInfo&);
 
 	void Run();

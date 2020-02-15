@@ -47,7 +47,6 @@ XBento4::XBento4() : XThread("XBento4Thread")
 
 XBento4::XBento4(std::string fname) : filename(fname), XThread("XBento4Thread"), XGLTexQuad()
 {
-	//XBento4();
 	SetName("XBento4");
 
 	AP4_Result result = AP4_FileByteStream::Create(
@@ -94,6 +93,48 @@ XBento4::XBento4(std::string fname) : filename(fname), XThread("XBento4Thread"),
 		fclose(yuvInputFile);
 	}
 }
+
+void XBento4::SeekToFrame(size_t frameNum)
+{
+	const int bytesNeeded = 1920 * 1080 + 1920 * 1080 / 2;
+	FILE *yuvInputFile = fopen("test_dec.yuv", "rb");
+
+	if (yuvInputFile) {
+		fseek(yuvInputFile, frameNum * bytesNeeded, 0);
+		int nRead = fread(yuvBuffer, 1, bytesNeeded, yuvInputFile);
+		if (nRead != bytesNeeded)
+		{
+			xprintf("fread() failed, got %d, expected %d\n", nRead, bytesNeeded);
+		}
+		else
+		{
+			unsigned char *y = yuvBuffer;
+			unsigned char *u = yuvBuffer + 1920 * 1080;
+			unsigned char *v = u + 1920 * 1080 / 4;
+
+			// Luma - Y
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texIds[0]);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 1920, 1080, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)y);
+			GL_CHECK("glGetTexImage() didn't work");
+
+			// Chroma - U
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, texIds[1]);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 960, 540, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)u);
+			GL_CHECK("glGetTexImage() didn't work");
+
+			// Chroma - V
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, texIds[2]);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 960, 540, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)v);
+			GL_CHECK("glGetTexImage() didn't work");
+
+		}
+		fclose(yuvInputFile);
+	}
+}
+
 
 XBento4::~XBento4()
 {

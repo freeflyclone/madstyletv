@@ -3,7 +3,6 @@
 
 void ExampleXGL::BuildGUI() {
 	XGLGuiManager* gm;
-	XGLImGui* xig;
 
 	menuFunctions.push_back([this]() {
 		if (ImGui::BeginMainMenuBar())
@@ -20,7 +19,5 @@ void ExampleXGL::BuildGUI() {
 	});
 
 	AddGuiShape("shaders/ortho", [&]() { gm = new XGLGuiManager(this); return gm; });
-	gm->AddChildShape("shaders/zzz", [&](){ xig = new XGLImGui(); return xig; });
-
 	return;
 }
