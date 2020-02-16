@@ -31,3 +31,6 @@
 [submodule "xclass/3rdParty/bento4"]
 	path = xclass/3rdParty/bento4
 	url = https://github.com/freeflyclone/Bento4.git
+[submodule "xclass/3rdParty/JM"]
+	path = xclass/3rdParty/JM
+	url = https://github.com/freeflyclone/JM.git
