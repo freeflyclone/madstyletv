@@ -72,7 +72,7 @@ XBento4::XBento4(std::string fname) : filename(fname), XThread("XBento4Thread"),
 	//Stop();  // clear "isRunning" in our XThread
 	xprintf("%s() done.\n", __FUNCTION__);
 
-	FILE *yuvInputFile = fopen("test_dec.yuv", "rb");
+	FILE *yuvInputFile = fopen("C:\\Users\\evan\\src\\JM\\bin\\test_dec.yuv", "rb");
 	if (yuvInputFile) {
 		int nRead = fread(yuvBuffer, 1, sizeof(yuvBuffer), yuvInputFile);
 		if (nRead != sizeof(yuvBuffer))
@@ -97,10 +97,10 @@ XBento4::XBento4(std::string fname) : filename(fname), XThread("XBento4Thread"),
 void XBento4::SeekToFrame(size_t frameNum)
 {
 	const int bytesNeeded = 1920 * 1080 + 1920 * 1080 / 2;
-	FILE *yuvInputFile = fopen("test_dec.yuv", "rb");
+	FILE *yuvInputFile = fopen("C:\\Users\\evan\\src\\JM\\bin\\test_dec.yuv", "rb");
 
 	if (yuvInputFile) {
-		fseek(yuvInputFile, frameNum * bytesNeeded, 0);
+		_fseeki64(yuvInputFile, (int64_t)frameNum * bytesNeeded, 0);
 		int nRead = fread(yuvBuffer, 1, bytesNeeded, yuvInputFile);
 		if (nRead != bytesNeeded)
 		{
@@ -130,6 +130,35 @@ void XBento4::SeekToFrame(size_t frameNum)
 			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 960, 540, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)v);
 			GL_CHECK("glGetTexImage() didn't work");
 
+			AP4_Track* pTrack = trackList[0];
+			AP4_Sample sample;
+
+			pTrack->GetSample(frameNum, sample);
+			//xprintf("Sample: %6d, offset: %10ld, size: %6ld, ", frameNum, sample.GetOffset(), sample.GetSize());
+			AP4_DataBuffer sample_data;
+			sample.ReadData(sample_data);
+
+			const unsigned char *sampleBuffer = sample_data.GetData();
+/*
+			xprintf("First 16 bytes: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\n",
+				sampleBuffer[0],
+				sampleBuffer[1],
+				sampleBuffer[2],
+				sampleBuffer[3],
+				sampleBuffer[4],
+				sampleBuffer[5],
+				sampleBuffer[6],
+				sampleBuffer[7],
+				sampleBuffer[8],
+				sampleBuffer[9],
+				sampleBuffer[10],
+				sampleBuffer[11],
+				sampleBuffer[12],
+				sampleBuffer[13],
+				sampleBuffer[14],
+				sampleBuffer[15]
+				);
+*/
 		}
 		fclose(yuvInputFile);
 	}

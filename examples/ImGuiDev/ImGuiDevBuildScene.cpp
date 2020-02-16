@@ -61,7 +61,7 @@ void ExampleXGL::BuildScene() {
 	xig = new XGLVcrControlsGui();
 	menuFunctions.push_back(([&]() {
 		if (ImGui::Begin("VCR Controls", &xig->vcrWindow)) {
-			if (ImGui::SliderInt("Frame", &xig->frameNum, 0, 547))
+			if (ImGui::SliderInt("Frame", &xig->frameNum, 0, 14358))
 			{
 				xb4->SeekToFrame(xig->frameNum);
 			}
