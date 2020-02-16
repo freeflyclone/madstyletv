@@ -69,29 +69,17 @@ XBento4::XBento4(std::string fname) : filename(fname), XThread("XBento4Thread"),
 	MediaInfo mediaInfo;
 	MakeTrackList(*movie, tracks, *input, mediaInfo);
 
-	//Stop();  // clear "isRunning" in our XThread
 	xprintf("%s() done.\n", __FUNCTION__);
 
-	FILE *yuvInputFile = fopen("C:\\Users\\evan\\src\\JM\\bin\\test_dec.yuv", "rb");
-	if (yuvInputFile) {
-		int nRead = fread(yuvBuffer, 1, sizeof(yuvBuffer), yuvInputFile);
-		if (nRead != sizeof(yuvBuffer))
-		{
-			xprintf("Dang, didn't init the yuvBuffer\n");
-		}
-		else
-		{
-			unsigned char *y = yuvBuffer;
-			unsigned char *u = yuvBuffer + 1920 * 1080;
-			unsigned char *v = u + 1920 * 1080 / 4;
+	unsigned char *y = yuvBuffer;
+	unsigned char *u = yuvBuffer + 1920 * 1080;
+	unsigned char *v = u + 1920 * 1080 / 4;
 
-			AddTexture(1920, 1080, 1, y);
-			AddTexture(960, 540, 1, u);
-			AddTexture(960, 540, 1, v);
-		}
+	AddTexture(1920, 1080, 1, y);
+	AddTexture(960, 540, 1, u);
+	AddTexture(960, 540, 1, v);
 
-		fclose(yuvInputFile);
-	}
+	SeekToFrame(0);
 }
 
 void XBento4::SeekToFrame(size_t frameNum)
@@ -167,6 +155,9 @@ void XBento4::SeekToFrame(size_t frameNum)
 
 XBento4::~XBento4()
 {
+	if (IsRunning())
+		Stop();
+
 	if(input)
 		delete input;
 }
@@ -234,29 +225,10 @@ void XBento4::MakeTrackList(AP4_Movie& movie, AP4_List<AP4_Track>&in, AP4_ByteSt
 	return;
 }
 
+extern "C" int JM_DecoderMain(int argc, char **argv);
+
 void XBento4::Run() {
-	AP4_Result result = AP4_FileByteStream::Create(
-		filename.c_str(),
-		AP4_FileByteStream::STREAM_MODE_READ,
-		input);
-
-	if (AP4_FAILED(result))
-		throw std::runtime_error("Oops: AP4_FileBytestreamCreate() didn't");
-
-	AP4_File* file = new AP4_File(*input, true);
-	ShowFileInfo(*file);
-
-	AP4_Movie* movie = file->GetMovie();
-	if (movie)
-		ShowMovieInfo(*movie);
-
-	AP4_List<AP4_Track>& tracks = movie->GetTracks();
-
-	MediaInfo mediaInfo;
-	MakeTrackList(*movie, tracks, *input, mediaInfo);
-
-	//Stop();  // clear "isRunning" in our XThread
-	xprintf("%s() done.\n", __FUNCTION__);
+	JM_DecoderMain(0, nullptr);
 }
 
 void XBento4::ShowFileInfo(AP4_File& file)

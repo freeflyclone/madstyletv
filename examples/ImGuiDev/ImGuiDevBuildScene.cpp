@@ -70,4 +70,6 @@ void ExampleXGL::BuildScene() {
 		else
 			ImGui::End();
 	}));
+
+	xb4->Start();
 }

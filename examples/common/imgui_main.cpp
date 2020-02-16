@@ -233,10 +233,10 @@ void GLLogString(const char* msg) {
 int main(void) {
 	int width, height;
 
-	if (!FreeConsole()) {
-		printf("Freeing the console failed: %d\n", GetLastError());
-		exit(0);
-	}
+	//if (!FreeConsole()) {
+	//	printf("Freeing the console failed: %d\n", GetLastError());
+	//	exit(0);
+	//}
 
 	if (!glfwInit()) {
 		printf("glfwInit() failed\n");
