@@ -259,10 +259,10 @@ void XBento4::MakeTrackList(AP4_Movie& movie, AP4_List<AP4_Track>&in, AP4_ByteSt
 	return;
 }
 
-extern "C" int JM_DecoderMain(int argc, char **argv);
+//extern "C" int JM_DecoderMain(int argc, char **argv);
 
 void XBento4::Run() {
-	JM_DecoderMain(0, nullptr);
+	//JM_DecoderMain(0, nullptr);
 }
 
 void XBento4::ShowFileInfo(AP4_File& file)
