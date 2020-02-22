@@ -122,6 +122,8 @@ public:
 		AP4_BitStream& bits
 	);
 
+	uint64_t GetNumFrames() { return numRawFrames; }
+
 private:
 	TrackList trackList;
 	const char* trackTypes[10] = {
@@ -140,4 +142,5 @@ private:
 	AP4_ByteStream* input{ nullptr };
 	SamplesList sl;
 	unsigned char yuvBuffer[1920 * 1080 * 3];
+	uint64_t numRawFrames{ 0 };
 };

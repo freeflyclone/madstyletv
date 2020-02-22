@@ -29,8 +29,25 @@
 #include "ExampleXGL.h"
 #include "xbento4_class.h"
 
+namespace {
+	// for decoded image display during development.  Ideally these
+	// constants are decoded from the input MP4 stream, but we're
+	// not there yet. So for now, just hard code them here, in one place.
+	const char* testDecYuvName{ "test_dec.yuv" };
+	const int imageWidth = 1920;
+	const int imageHeight = 1080;
+	const int imageUVWidth = imageWidth / 2;
+	const int imageUVHeight = imageHeight / 2;
+	const int imageYSize = imageWidth * imageHeight;
+	const int imageUVSize = imageYSize / 4;
+	const int imageTotalSize = imageYSize + imageUVSize * 2;
+	//int numRawFrames{ 0 };
+};
+
 void XBento4::Draw()
 {
+	// assume the "yuv" shader was specified for this XGLShape,
+	// hence we need 3 texture units for Y,U,V respectively.
 	glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit0"), 0);
 	glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit1"), 1);
 	glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit2"), 2);
@@ -72,24 +89,36 @@ XBento4::XBento4(std::string fname) : filename(fname), XThread("XBento4Thread"),
 	xprintf("%s() done.\n", __FUNCTION__);
 
 	unsigned char *y = yuvBuffer;
-	unsigned char *u = yuvBuffer + 1920 * 1080;
-	unsigned char *v = u + 1920 * 1080 / 4;
+	unsigned char *u = yuvBuffer + imageYSize;
+	unsigned char *v = u + imageUVSize;
 
-	AddTexture(1920, 1080, 1, y);
-	AddTexture(960, 540, 1, u);
-	AddTexture(960, 540, 1, v);
+	AddTexture(imageWidth, imageHeight, 1, y);
+	AddTexture(imageUVWidth, imageUVHeight, 1, u);
+	AddTexture(imageUVWidth, imageUVHeight, 1, u);
+
+	FILE *yuvInputFile = fopen(testDecYuvName, "rb");
+	if (yuvInputFile) {
+		_fseeki64(yuvInputFile, 0, SEEK_END);
+		int64_t fileSize = _ftelli64(yuvInputFile);
+		fclose(yuvInputFile);
+
+		numRawFrames = fileSize / imageTotalSize;
+	}
+
+	if (numRawFrames)
+		xprintf("%s(): found %d raw frames\n", __FUNCTION__, numRawFrames);
 
 	SeekToFrame(0);
 }
 
 void XBento4::SeekToFrame(size_t frameNum)
 {
-	const int bytesNeeded = 1920 * 1080 + 1920 * 1080 / 2;
-	FILE *yuvInputFile = fopen("C:\\Users\\evan\\src\\JM\\bin\\test_dec.yuv", "rb");
+	const int bytesNeeded = imageTotalSize;
+	FILE *yuvInputFile = fopen(testDecYuvName, "rb");
 
 	if (yuvInputFile) {
 		_fseeki64(yuvInputFile, (int64_t)frameNum * bytesNeeded, 0);
-		int nRead = fread(yuvBuffer, 1, bytesNeeded, yuvInputFile);
+		size_t nRead = fread(yuvBuffer, 1, bytesNeeded, yuvInputFile);
 		if (nRead != bytesNeeded)
 		{
 			xprintf("fread() failed, got %d, expected %d\n", nRead, bytesNeeded);
@@ -97,59 +126,64 @@ void XBento4::SeekToFrame(size_t frameNum)
 		else
 		{
 			unsigned char *y = yuvBuffer;
-			unsigned char *u = yuvBuffer + 1920 * 1080;
-			unsigned char *v = u + 1920 * 1080 / 4;
+			unsigned char *u = yuvBuffer + imageYSize;
+			unsigned char *v = u + imageUVSize;
 
 			// Luma - Y
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, texIds[0]);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 1920, 1080, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)y);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 
+				imageWidth, imageHeight, 
+				GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)y);
 			GL_CHECK("glGetTexImage() didn't work");
 
 			// Chroma - U
 			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D, texIds[1]);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 960, 540, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)u);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 
+				imageUVWidth, imageUVHeight, 
+				GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)u);
 			GL_CHECK("glGetTexImage() didn't work");
 
 			// Chroma - V
 			glActiveTexture(GL_TEXTURE2);
 			glBindTexture(GL_TEXTURE_2D, texIds[2]);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 960, 540, GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)v);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 
+				imageUVWidth, imageUVHeight,
+				GL_RED, GL_UNSIGNED_BYTE, (GLvoid *)v);
 			GL_CHECK("glGetTexImage() didn't work");
-
-			AP4_Track* pTrack = trackList[0];
-			AP4_Sample sample;
-
-			pTrack->GetSample(frameNum, sample);
-			//xprintf("Sample: %6d, offset: %10ld, size: %6ld, ", frameNum, sample.GetOffset(), sample.GetSize());
-			AP4_DataBuffer sample_data;
-			sample.ReadData(sample_data);
-
-			const unsigned char *sampleBuffer = sample_data.GetData();
-/*
-			xprintf("First 16 bytes: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\n",
-				sampleBuffer[0],
-				sampleBuffer[1],
-				sampleBuffer[2],
-				sampleBuffer[3],
-				sampleBuffer[4],
-				sampleBuffer[5],
-				sampleBuffer[6],
-				sampleBuffer[7],
-				sampleBuffer[8],
-				sampleBuffer[9],
-				sampleBuffer[10],
-				sampleBuffer[11],
-				sampleBuffer[12],
-				sampleBuffer[13],
-				sampleBuffer[14],
-				sampleBuffer[15]
-				);
-*/
 		}
 		fclose(yuvInputFile);
 	}
+
+	AP4_Track* pTrack = trackList[0];
+	AP4_Sample sample;
+
+	pTrack->GetSample((AP4_Ordinal)frameNum, sample);
+	xprintf("Sample: %6d, offset: %10ld, size: %6ld, ", frameNum, sample.GetOffset(), sample.GetSize());
+	AP4_DataBuffer sample_data;
+	sample.ReadData(sample_data);
+
+	const unsigned char *sampleBuffer = sample_data.GetData();
+
+	xprintf("First 16 bytes: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\n",
+		sampleBuffer[0],
+		sampleBuffer[1],
+		sampleBuffer[2],
+		sampleBuffer[3],
+		sampleBuffer[4],
+		sampleBuffer[5],
+		sampleBuffer[6],
+		sampleBuffer[7],
+		sampleBuffer[8],
+		sampleBuffer[9],
+		sampleBuffer[10],
+		sampleBuffer[11],
+		sampleBuffer[12],
+		sampleBuffer[13],
+		sampleBuffer[14],
+		sampleBuffer[15]
+	);
 }
 
 
@@ -184,7 +218,7 @@ void XBento4::MakeTrackList(AP4_Movie& movie, AP4_List<AP4_Track>&in, AP4_ByteSt
 		AP4_Sample sample;
 		AP4_DataBuffer sample_data;
 
-		for (int idx = 0; idx < t.GetSampleCount(); idx++)
+		for (unsigned int idx = 0; idx < t.GetSampleCount(); idx++)
 		{
 			t.GetSample(idx, sample);
 			samples->push_back(sample);

@@ -303,6 +303,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Bento4", "xclass\3rdParty\b
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ldecod", "xclass\3rdParty\JM\ldecod_vc141.vcxproj", "{5499B067-CF32-4141-A757-E0A29866994A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Mp42Avc", "xclass\3rdParty\bento4\Build\Targets\x86_64-microsoft-win32-vs2017\Mp42Avc\Mp42Avc.vcxproj", "{28D14679-1C21-4B6E-B891-62769EDCEFFF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -929,6 +931,18 @@ Global
 		{5499B067-CF32-4141-A757-E0A29866994A}.Release|Win32.Build.0 = Release|Win32
 		{5499B067-CF32-4141-A757-E0A29866994A}.Release|x64.ActiveCfg = Release|x64
 		{5499B067-CF32-4141-A757-E0A29866994A}.Release|x64.Build.0 = Release|x64
+		{28D14679-1C21-4B6E-B891-62769EDCEFFF}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{28D14679-1C21-4B6E-B891-62769EDCEFFF}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{28D14679-1C21-4B6E-B891-62769EDCEFFF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{28D14679-1C21-4B6E-B891-62769EDCEFFF}.Debug|Win32.Build.0 = Debug|Win32
+		{28D14679-1C21-4B6E-B891-62769EDCEFFF}.Debug|x64.ActiveCfg = Debug|x64
+		{28D14679-1C21-4B6E-B891-62769EDCEFFF}.Debug|x64.Build.0 = Debug|x64
+		{28D14679-1C21-4B6E-B891-62769EDCEFFF}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{28D14679-1C21-4B6E-B891-62769EDCEFFF}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{28D14679-1C21-4B6E-B891-62769EDCEFFF}.Release|Win32.ActiveCfg = Release|Win32
+		{28D14679-1C21-4B6E-B891-62769EDCEFFF}.Release|Win32.Build.0 = Release|Win32
+		{28D14679-1C21-4B6E-B891-62769EDCEFFF}.Release|x64.ActiveCfg = Release|x64
+		{28D14679-1C21-4B6E-B891-62769EDCEFFF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -990,6 +1004,7 @@ Global
 		{D7F1E445-D2AC-49AA-B492-B3F5DA472FA9} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 		{A714AA1C-45A9-403D-A6E1-020E520119A2} = {AEF119EB-E8D2-4FC8-87DF-A818B128D5E0}
 		{5499B067-CF32-4141-A757-E0A29866994A} = {AEF119EB-E8D2-4FC8-87DF-A818B128D5E0}
+		{28D14679-1C21-4B6E-B891-62769EDCEFFF} = {AEF119EB-E8D2-4FC8-87DF-A818B128D5E0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C05D074B-A148-477D-8D8B-145B090FAD2E}
