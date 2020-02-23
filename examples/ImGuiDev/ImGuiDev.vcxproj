@@ -173,6 +173,7 @@
     <ClCompile Include="..\common\imgui_main.cpp" />
     <ClCompile Include="..\common\imgui_menu_bar.cpp" />
     <ClCompile Include="..\common\xglimgui.cpp" />
+    <ClCompile Include="..\common\xh264.cpp" />
     <ClCompile Include="..\common\xsqlite.cpp" />
     <ClCompile Include="ImGuiDevBuildScene.cpp" />
     <ClCompile Include="ImGuiDevGUI.cpp" />
@@ -180,6 +181,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\common\ImGuiFileDialog.h" />
+    <ClInclude Include="..\common\xh264.h" />
     <ClInclude Include="..\common\xsqlite.h" />
     <ClInclude Include="xbento4_class.h" />
     <ClInclude Include="xglvcrcontrols.h" />

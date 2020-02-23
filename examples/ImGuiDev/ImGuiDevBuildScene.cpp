@@ -11,10 +11,12 @@
 #include "xsqlite.h"
 #include "xbento4_class.h"
 #include "xglvcrcontrols.h"
+#include "xh264.h"
 
 XGLVcrControlsGui* xig{ nullptr };
 Xsqlite* xdb;
 XBento4* xb4;
+Xh264Decoder* xdecoder;
 
 void ExampleXGL::BuildScene() {
 	std::string dbPath = pathToAssets + "/assets/dbTest.sq3";
@@ -69,6 +71,9 @@ void ExampleXGL::BuildScene() {
 		}
 		ImGui::End();
 	}));
+
+	xdecoder = new Xh264Decoder();
+	xdecoder->Start();
 
 	//xb4->Start();
 }
