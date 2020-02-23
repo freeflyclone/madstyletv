@@ -45,6 +45,9 @@
     <ClCompile Include="..\common\xh264.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\common\xh264annexb.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\common\ImGuiFileDialog.h">
@@ -60,6 +63,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\common\xh264.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\xh264annexb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

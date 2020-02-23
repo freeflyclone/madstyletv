@@ -47,6 +47,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenCVWebcam", "examples\Op
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{1A5C1CC4-9FE3-496C-9856-D269B05C278E}"
+	ProjectSection(SolutionItems) = preProject
+		examples\common\xh264annexb.cpp = examples\common\xh264annexb.cpp
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ThreadsTest", "examples\ThreadsTest\ThreadsTest.vcxproj", "{536373B5-E6CC-47A9-8F52-00C34683D2A9}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -258,6 +261,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Header Files", "Header File
 		examples\common\WinMain.h = examples\common\WinMain.h
 		examples\common\xglcontextimage.h = examples\common\xglcontextimage.h
 		examples\common\xh264.h = examples\common\xh264.h
+		examples\common\xh264annexb.h = examples\common\xh264annexb.h
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source Files", "Source Files", "{7F74C7DF-1E26-448B-9952-31463567B8A3}"
@@ -271,6 +275,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source Files", "Source File
 		examples\common\WinMain.cpp = examples\common\WinMain.cpp
 		examples\common\xglimgui.cpp = examples\common\xglimgui.cpp
 		examples\common\xh264.cpp = examples\common\xh264.cpp
+		examples\common\xh264annexb.cpp = examples\common\xh264annexb.cpp
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FreeTypeDev2", "examples\FreeTypeDev2\FreeTypeDev2.vcxproj", "{D967F26C-8807-4CFD-8653-93DD6F4371C0}"
