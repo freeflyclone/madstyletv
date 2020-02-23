@@ -70,7 +70,6 @@ static inline byte getfbyte(ANNEXB_t *annex_b)
 
 int  MyAnnexB::GetNALU(VideoParameters *p_Vid, NALU_t *nalu, ANNEXB_t *annex_b)
 {
-	xprintf("%s()...", __FUNCTION__);
 	int i;
 	int info2 = 0, info3 = 0, pos = 0;
 	int StartCodeFound = 0;

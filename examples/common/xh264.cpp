@@ -10,17 +10,11 @@ namespace {
 
 Xh264Decoder::Xh264Decoder() : XThread("Xh264Decoder")
 {
-	InputParameters& ip = inputParameters;
-
-	init_time();
-
-	// this also parses the default "Decoder.cfg" file
 	ParseCommand(&inputParameters, 0, nullptr);
 }
 
 Xh264Decoder::~Xh264Decoder()
 {
-
 }
 
 void Xh264Decoder::Run() {
@@ -30,8 +24,20 @@ void Xh264Decoder::Run() {
 
 	while (IsRunning())
 	{
-		DecodeOneFrame(&pDecPicList);
+		int rc = DecodeOneFrame(&pDecPicList);
+		if (rc == DEC_SUCCEED) {
+			xprintf("New Frame: ");
+			DecodedPicList *p = pDecPicList;
+			do {
+				if (p->iWidth)
+					xprintf("Width: %d, Height: %d\n", p->iWidth, p->iHeight);
+				p = p->pNext;
+			} while (p != NULL);
+		}
 	}
+
+	FinitDecoder(&pDecPicList);
+	CloseDecoder();
 
 	xprintf("Xh264Decoder::Run() finished\n");
 }
