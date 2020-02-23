@@ -8,13 +8,13 @@ extern "C" {
 
 class Xh264AnnexB {
 public:
-	int  GetNALU(VideoParameters *p_Vid, NALU_t *nalu, ANNEXB_t *annex_b);
-	void Open(char *fn, ANNEXB_t *annex_b);
-	void Close(ANNEXB_t *annex_b);
-	void Malloc(VideoParameters *p_Vid, ANNEXB_t **p_annex_b);
-	void Free(ANNEXB_t **p_annex_b);
-	void Init(ANNEXB_t *annex_b);
-	void Reset(ANNEXB_t *annex_b);
+	virtual int  GetNALU(VideoParameters *p_Vid, NALU_t *nalu, ANNEXB_t *annex_b) = 0;
+	virtual void Open(char *fn, ANNEXB_t *annex_b) = 0;
+	virtual void Close(ANNEXB_t *annex_b) = 0;
+	virtual void Malloc(VideoParameters *p_Vid, ANNEXB_t **p_annex_b) = 0;
+	virtual void Free(ANNEXB_t **p_annex_b) = 0;
+	virtual void Init(ANNEXB_t *annex_b) = 0;
+	virtual void Reset(ANNEXB_t *annex_b) = 0;
 };
 
 #endif

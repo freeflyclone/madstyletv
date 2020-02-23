@@ -9,37 +9,23 @@ extern "C" {
 
 static const int IOBUFFERSIZE = 512 * 1024; //65536;
 
-Xh264AnnexB annexB;
-
-int  get_annex_b_NALU(VideoParameters *p_Vid, NALU_t *nalu, ANNEXB_t *annex_b)
+class MyAnnexB : public Xh264AnnexB
 {
-	return annexB.GetNALU(p_Vid, nalu, annex_b);
+public:
+	MyAnnexB()
+	{
+		xprintf("%s()\n", __FUNCTION__);
+	}	
+	virtual int  GetNALU(VideoParameters *p_Vid, NALU_t *nalu, ANNEXB_t *annex_b);
+	virtual void Open(char *fn, ANNEXB_t *annex_b);
+	virtual void Close(ANNEXB_t *annex_b);
+	virtual void Malloc(VideoParameters *p_Vid, ANNEXB_t **p_annex_b);
+	virtual void Free(ANNEXB_t **p_annex_b);
+	virtual void Init(ANNEXB_t *annex_b);
+	virtual void Reset(ANNEXB_t *annex_b);
 };
 
-void open_annex_b(char *fn, ANNEXB_t *annex_b)
-{
-	annexB.Open(fn, annex_b);
-}
-void close_annex_b(ANNEXB_t *annex_b)
-{
-	annexB.Close(annex_b);
-}
-void malloc_annex_b(VideoParameters *p_Vid, ANNEXB_t **p_annex_b)
-{
-	annexB.Malloc(p_Vid, p_annex_b);
-}
-void free_annex_b(ANNEXB_t **p_annex_b)
-{
-	annexB.Free(p_annex_b);
-}
-void init_annex_b(ANNEXB_t *annex_b)
-{
-	annexB.Init(annex_b);
-}
-void reset_annex_b(ANNEXB_t *annex_b)
-{
-	annexB.Reset(annex_b);
-}
+MyAnnexB annexB;
 
 static inline int getChunk(ANNEXB_t *annex_b)
 {
@@ -82,7 +68,7 @@ static inline byte getfbyte(ANNEXB_t *annex_b)
 	return (*annex_b->iobufferread++);
 }
 
-int  Xh264AnnexB::GetNALU(VideoParameters *p_Vid, NALU_t *nalu, ANNEXB_t *annex_b)
+int  MyAnnexB::GetNALU(VideoParameters *p_Vid, NALU_t *nalu, ANNEXB_t *annex_b)
 {
 	xprintf("%s()...", __FUNCTION__);
 	int i;
@@ -229,11 +215,13 @@ int  Xh264AnnexB::GetNALU(VideoParameters *p_Vid, NALU_t *nalu, ANNEXB_t *annex_
 	fflush(p_Dec->p_trace);
 #endif
 
-	xprintf("nalu size: %d\n", nalu->len);
+	if (nalu->len > 52)
+		xprintf("nalu length: %d\n", nalu->len);
+
 	return (pos);
 }
 
-void  Xh264AnnexB::Open(char *fn, ANNEXB_t *annex_b)
+void  MyAnnexB::Open(char *fn, ANNEXB_t *annex_b)
 {
 	xprintf("%s()\n", __FUNCTION__);
 	if (NULL != annex_b->iobuffer)
@@ -256,7 +244,7 @@ void  Xh264AnnexB::Open(char *fn, ANNEXB_t *annex_b)
 	getChunk(annex_b);
 }
 
-void  Xh264AnnexB::Close(ANNEXB_t *annex_b)
+void  MyAnnexB::Close(ANNEXB_t *annex_b)
 {
 	xprintf("%s()\n", __FUNCTION__);
 	if (annex_b->BitStreamFile != -1)
@@ -268,7 +256,7 @@ void  Xh264AnnexB::Close(ANNEXB_t *annex_b)
 	annex_b->iobuffer = NULL;
 }
 
-void  Xh264AnnexB::Malloc(VideoParameters *p_Vid, ANNEXB_t **p_annex_b)
+void  MyAnnexB::Malloc(VideoParameters *p_Vid, ANNEXB_t **p_annex_b)
 {
 	xprintf("%s()\n", __FUNCTION__);
 
@@ -283,7 +271,7 @@ void  Xh264AnnexB::Malloc(VideoParameters *p_Vid, ANNEXB_t **p_annex_b)
 	}
 }
 
-void  Xh264AnnexB::Free(ANNEXB_t **p_annex_b)
+void  MyAnnexB::Free(ANNEXB_t **p_annex_b)
 {
 	xprintf("%s()\n", __FUNCTION__);
 	free((*p_annex_b)->Buf);
@@ -292,7 +280,7 @@ void  Xh264AnnexB::Free(ANNEXB_t **p_annex_b)
 	*p_annex_b = NULL;
 }
 
-void  Xh264AnnexB::Init(ANNEXB_t *annex_b)
+void  MyAnnexB::Init(ANNEXB_t *annex_b)
 {
 	xprintf("%s()\n", __FUNCTION__);
 	annex_b->BitStreamFile = -1;
@@ -304,7 +292,7 @@ void  Xh264AnnexB::Init(ANNEXB_t *annex_b)
 	annex_b->nextstartcodebytes = 0;
 }
 
-void  Xh264AnnexB::Reset(ANNEXB_t *annex_b)
+void  MyAnnexB::Reset(ANNEXB_t *annex_b)
 {
 	xprintf("%s()\n", __FUNCTION__);
 	annex_b->is_eof = FALSE;
@@ -312,3 +300,33 @@ void  Xh264AnnexB::Reset(ANNEXB_t *annex_b)
 	annex_b->iobufferread = annex_b->iobuffer;
 }
 
+// --- from here down are the functions from the orginal annexb.c ---
+int  get_annex_b_NALU(VideoParameters *p_Vid, NALU_t *nalu, ANNEXB_t *annex_b)
+{
+	return annexB.GetNALU(p_Vid, nalu, annex_b);
+};
+
+void open_annex_b(char *fn, ANNEXB_t *annex_b)
+{
+	annexB.Open(fn, annex_b);
+}
+void close_annex_b(ANNEXB_t *annex_b)
+{
+	annexB.Close(annex_b);
+}
+void malloc_annex_b(VideoParameters *p_Vid, ANNEXB_t **p_annex_b)
+{
+	annexB.Malloc(p_Vid, p_annex_b);
+}
+void free_annex_b(ANNEXB_t **p_annex_b)
+{
+	annexB.Free(p_annex_b);
+}
+void init_annex_b(ANNEXB_t *annex_b)
+{
+	annexB.Init(annex_b);
+}
+void reset_annex_b(ANNEXB_t *annex_b)
+{
+	annexB.Reset(annex_b);
+}

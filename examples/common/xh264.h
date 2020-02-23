@@ -11,15 +11,10 @@ extern "C" {
 class Xh264Decoder : public XThread
 {
 public:
-	class Xh264AnnexB;
-
 	Xh264Decoder();
 	~Xh264Decoder();
 
 	void Run();
-
-private:
-	Xh264AnnexB *pAnnexB;
 };
 
 #endif
