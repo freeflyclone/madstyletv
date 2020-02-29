@@ -214,8 +214,8 @@ int  MyAnnexB::GetNALU(VideoParameters *p_Vid, NALU_t *nalu, ANNEXB_t *annex_b)
 	fflush(p_Dec->p_trace);
 #endif
 
-	if (nalu->len > 52)
-		xprintf("nalu length: %d\n", nalu->len);
+	//if (nalu->len > 52)
+		//xprintf("nalu length: %d\n", nalu->len);
 
 	return (pos);
 }
