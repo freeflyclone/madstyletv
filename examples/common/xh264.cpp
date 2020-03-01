@@ -32,8 +32,7 @@ namespace {
 // Hack: I changed output.c from the JM ldecod project to make it's internal
 // "write_out_picture()" function a function pointer initialized to NULL, and
 // in the one place it's called, a check for not-NULL is made before calling it.
-// Thus, if we change this pointer to our own function, hopefully we get
-// decoder output.
+// Thus, if we change this pointer to our own function, we get decoder output.
 extern "C" { extern void(*write_out_picture)(VideoParameters*, StorablePicture*, int); };
 
 void Xh264Decoder::_callback(VideoParameters* pvp, StorablePicture*psp, int p_out)
