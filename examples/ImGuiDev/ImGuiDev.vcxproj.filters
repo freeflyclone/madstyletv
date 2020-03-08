@@ -68,5 +68,8 @@
     <ClInclude Include="..\common\xh264annexb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xfifo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

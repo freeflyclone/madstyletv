@@ -262,7 +262,6 @@
     <ClInclude Include="xclasses.h" />
     <ClInclude Include="xconfig.h" />
     <ClInclude Include="xcircularbuffer.h" />
-    <ClInclude Include="xfifo.h" />
     <ClInclude Include="xftdi.h" />
     <ClInclude Include="xglew.h" />
     <ClInclude Include="xgl\GLAppUtil.h" />

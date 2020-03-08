@@ -8,15 +8,18 @@
 ** UI experiences, which I care about.
 **************************************************************/
 #include "ExampleXGL.h"
+#include "xfifo.h"
 #include "xsqlite.h"
 #include "xbento4_class.h"
 #include "xglvcrcontrols.h"
 #include "xh264.h"
 
 XGLVcrControlsGui* xig{ nullptr };
-Xsqlite* xdb;
-XBento4* xb4;
-Xh264Decoder* xdecoder;
+Xsqlite* xdb{ nullptr };
+XBento4* xb4{ nullptr };
+Xh264Decoder* xdecoder{ nullptr };
+XFifo* xFifo{ nullptr };
+
 extern "C" void allocate_p_dec_pic(
 	VideoParameters *p_Vid,
 	DecodedPicList *pDecPic,
@@ -128,75 +131,91 @@ void DisplayFrame(VideoParameters* p_Vid, StorablePicture* p, int p_out)
 void ExampleXGL::BuildScene() {
 	std::string dbPath = pathToAssets + "/assets/dbTest.sq3";
 
-	xdb = new Xsqlite(dbPath);
-
-	xdb->AddCallback(
-		[&](int argc, char**argv, char** columnNames) 
+	try 
 	{
-		Xsqlite::KeyValueList kl;
+		xFifo = new XFifo(0x100000);
+		//xdb = new Xsqlite(dbPath);
+		xig = new XGLVcrControlsGui();
+		//AddShape("shaders/yuv", [&]() { xdecoder = new Xh264Decoder(); return xdecoder; });
+	}
+	catch (std::exception e)
+	{
+		xprintf("Caught exception: %s\n", e.what());
+	}
 
-		for (int i = 0; i < argc; i++)
-			kl.push_back({ columnNames[i], argv[i] });
+	if (xdb)
+	{
+		xdb->AddCallback([&](int argc, char**argv, char** columnNames)
+		{
+			Xsqlite::KeyValueList kl;
 
-		std::string row;
-		for (Xsqlite::KeyValue k : kl)
-			row += k.first + ": " + k.second + ", ";
+			for (int i = 0; i < argc; i++)
+				kl.push_back({ columnNames[i], argv[i] });
 
-		xprintf("%s\n", row.c_str());
+			std::string row;
+			for (Xsqlite::KeyValue k : kl)
+				row += k.first + ": " + k.second + ", ";
 
-		return 0; 
-	});
+			xprintf("%s\n", row.c_str());
 
-	std::string  sql = "DROP TABLE IF EXISTS Cars;"
-				"CREATE TABLE Cars(Id INT, Name TEXT, Price INT);"
-				"INSERT INTO Cars VALUES(1, 'Audi', 52642);"
-				"INSERT INTO Cars VALUES(2, 'Mercedes', 57127);"
-				"INSERT INTO Cars VALUES(3, 'Skoda', 9000);"
-				"INSERT INTO Cars VALUES(4, 'Volvo', 29000);"
-				"INSERT INTO Cars VALUES(5, 'Bentley', 350000);"
-				"INSERT INTO Cars VALUES(6, 'Citroen', 21000);"
-				"INSERT INTO Cars VALUES(7, 'Hummer', 41400);"
-				"INSERT INTO Cars VALUES(8, 'Volkswagen', 21600);";
+			return 0;
+		});
 
-	xdb->Execute(sql);
+		std::string  sql = "DROP TABLE IF EXISTS Cars;"
+			"CREATE TABLE Cars(Id INT, Name TEXT, Price INT);"
+			"INSERT INTO Cars VALUES(1, 'Audi', 52642);"
+			"INSERT INTO Cars VALUES(2, 'Mercedes', 57127);"
+			"INSERT INTO Cars VALUES(3, 'Skoda', 9000);"
+			"INSERT INTO Cars VALUES(4, 'Volvo', 29000);"
+			"INSERT INTO Cars VALUES(5, 'Bentley', 350000);"
+			"INSERT INTO Cars VALUES(6, 'Citroen', 21000);"
+			"INSERT INTO Cars VALUES(7, 'Hummer', 41400);"
+			"INSERT INTO Cars VALUES(8, 'Volkswagen', 21600);";
 
-	xdb->Execute("SELECT name FROM sqlite_master WHERE type = 'table';");
-	xdb->Execute("SELECT * FROM Cars;");
+		xdb->Execute(sql);
+
+		xdb->Execute("SELECT name FROM sqlite_master WHERE type = 'table';");
+		xdb->Execute("SELECT * FROM Cars;");
+	}
+	else
+		xprintf("xdb object not available\n");
 
 	//AddShape("shaders/yuv", [&]() { xb4 = new XBento4("H:/Hero6/GH010171.mp4"); return xb4; });
 	//glm::mat4 scale = glm::scale(glm::mat4(), { 16,9,0 });
 	//xb4->model = scale;
 
-	xig = new XGLVcrControlsGui();
-	menuFunctions.push_back(([&]() {
-		if (ImGui::Begin("VCR Controls", &xig->vcrWindow))
-		{
-			//if (ImGui::SliderInt("Frame", &xig->frameNum, 0, xb4->GetNumFrames() - 1))
-			//{
-				//xb4->SeekToFrame(xig->frameNum);
-			//}
-		}
-		ImGui::End();
-	}));
+	if (xig)
+	{
+		menuFunctions.push_back(([&]() {
+			if (ImGui::Begin("VCR Controls", &xig->vcrWindow))
+			{
+				ImGui::SliderInt("Frame#", &xig->frameNum, 0, 1000);
+				//if (ImGui::SliderInt("Frame", &xig->frameNum, 0, xb4->GetNumFrames() - 1))
+				//{
+					//xb4->SeekToFrame(xig->frameNum);
+				//}
+			}
+			ImGui::End();
+		}));
+	}
+	else
+		xprintf("xig object not available\n");
 
-	AddShape("shaders/yuv", [&]() { xdecoder = new Xh264Decoder(); return xdecoder; });
-	glm::mat4 scale = glm::scale(glm::mat4(), { 16,9,0 });
-	xdecoder->model = scale;
+	if (xdecoder)
+	{
+		glm::mat4 scale = glm::scale(glm::mat4(), { 16,9,0 });
+		xdecoder->model = scale;
 
-	/*
-	xdecoder->AddCallback([&](VideoParameters* pvp, StorablePicture* psp, int p_out) {
-		DecodedPicList *pDecPic;
-		pDecPic = get_one_avail_dec_pic_from_list(pvp->pDecOuputPic, 0, 0);
+		xdecoder->AddCallback(DisplayFrame);
+		xdecoder->Start();
+	}
+	else
+		xprintf("xdecoder object not available\n");
 
-		memset(xdecoder->yuvBuffer, 255, 1920 * 1080);
-		memset(xdecoder->yuvBuffer + (1920 * 1080), 127, (1920 * 1080 / 2));
-
-		memcpy(xdecoder->yuvBuffer, psp->imgY, 1920 * 1080);
-
-		xprintf("Picture callback!\n");
-	});
-	*/
-	xdecoder->AddCallback(DisplayFrame);
-
-	xdecoder->Start();
+	if (xFifo)
+	{
+		xprintf("xFifo SpaceAvailable: %llu\n", xFifo->SpaceAvailable());
+	}
+	else
+		xprintf("xFifo object not available\n");
 }

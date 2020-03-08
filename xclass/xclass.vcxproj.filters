@@ -168,9 +168,6 @@
     <ClInclude Include="xcircularbuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="xfifo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="xav\xavsrc.h">
       <Filter>xav\Header Files</Filter>
     </ClInclude>
