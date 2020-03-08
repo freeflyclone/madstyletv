@@ -16,10 +16,10 @@
 
 #include <iostream>
 #include <chrono>
+#include <deque>
 
 #include <xav.h>
 #include <xavfile.h>
-#include <xfifo.h>
 #include <xal.h>
 #include <xtimer.h>
 #include "xavdata.h"

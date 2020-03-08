@@ -32,7 +32,6 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include <xthread.h>
-#include <xfifo.h>
 
 class CameraThread : public XObject, public XThread {
 public:
