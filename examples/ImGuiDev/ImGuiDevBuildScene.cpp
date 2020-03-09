@@ -136,7 +136,7 @@ void ExampleXGL::BuildScene() {
 		xFifo = new XFifo(0x100000);
 		//xdb = new Xsqlite(dbPath);
 		xig = new XGLVcrControlsGui();
-		//AddShape("shaders/yuv", [&]() { xdecoder = new Xh264Decoder(); return xdecoder; });
+		AddShape("shaders/yuv", [&]() { xdecoder = new Xh264Decoder(); return xdecoder; });
 	}
 	catch (std::exception e)
 	{
@@ -214,7 +214,7 @@ void ExampleXGL::BuildScene() {
 
 	if (xFifo)
 	{
-		xprintf("xFifo SpaceAvailable: %llu\n", xFifo->SpaceAvailable());
+		xprintf("xFifo Available(): %llu\n", xFifo->Available());
 	}
 	else
 		xprintf("xFifo object not available\n");
