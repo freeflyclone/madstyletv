@@ -1,3 +1,20 @@
+/*
+** Note:
+**
+** This is a work in progress... I have obvious (to me) holes
+** in my knowledge due to my "informal education" approach,
+** and this object is at the core of my inter-thread communications.
+***
+** I want to prove to my satisfaction that it does what I think
+** it does.  So this is a deep dive into this very particular feature,
+** and there is a fair bit of availble info that has highlighted
+** aspects of the problem that I was ignorant of, and now realize
+** they deserve my full attention.
+**
+** In particular: I was unaware of so called "false sharing"
+** in lockless designs, and now I get it.
+*/
+
 /**************************************************************
 ** XFifo
 **
@@ -37,6 +54,7 @@
 
 class XFifo {
 public:
+	// max timeout (infinite wait) is 21 days (ish) is "virtually infinite"
 	const int maxTimeout{ std::numeric_limits<int>::max() };
 
 	XFifo(uint64_t s = 0x8000, int pi = 1) : size(s), pollingIntervalInMillis(pi) 
