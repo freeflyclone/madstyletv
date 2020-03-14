@@ -13,6 +13,11 @@
 **
 ** In particular: I was unaware of so called "false sharing"
 ** in lockless designs, and now I get it.
+**
+** Bottom line: I need to analyze the performance for my use
+** case(s), it may turn out that false sharing isn't a factor.
+**
+** 
 */
 
 /**************************************************************
@@ -49,8 +54,19 @@
 #include <atomic>
 #include <stdexcept>
 #include <limits>
+#include <thread>
 #include "xutils.h"
 
+// This number matters, cross-platform requires runtime determination.
+// Assume Intel x86 for now.
+const int cacheLineSizeInBytes{ 64 };
+
+template<typename T>
+struct cacheLineStorage
+{
+	alignas(cacheLineSizeInBytes) T data;
+	char pad[cacheLineSizeInBytes > sizeof(T) ? cacheLineSizeInBytes - sizeof(T) : 1];
+};
 
 class XFifo {
 public:
@@ -100,20 +116,20 @@ public:
 			return 0;
 
 		auto actualWriteLength = (available < length) ? available : length;
-		auto nearnessToEnd = size - wIdx;
+		auto nearnessToEnd = size - wIdx.data;
 		auto firstSegmentSize = (actualWriteLength < nearnessToEnd) ? actualWriteLength : nearnessToEnd;
 		auto secondSegmentSize = actualWriteLength - firstSegmentSize;
 
-		auto actualBufferOffset = wIdx & moduloMask;
+		auto actualBufferOffset = wIdx.data & moduloMask;
 
 		memcpy(buf + actualBufferOffset, data, firstSegmentSize);
-		wIdx += firstSegmentSize;
+		wIdx.data += firstSegmentSize;
 
 		if (secondSegmentSize)
 		{
-			auto actualBufferOffset = wIdx & moduloMask;
+			auto actualBufferOffset = wIdx.data & moduloMask;
 			memcpy(buf + actualBufferOffset, data, secondSegmentSize);
-			wIdx += secondSegmentSize;
+			wIdx.data += secondSegmentSize;
 		}
 
 		return actualWriteLength;
@@ -137,20 +153,20 @@ public:
 			return 0;
 
 		auto actualReadLength = (used < length) ? used : length;
-		auto nearnessToEnd = size - rIdx;
+		auto nearnessToEnd = size - rIdx.data;
 		auto firstSegmentSize = (actualReadLength < nearnessToEnd) ? actualReadLength : nearnessToEnd;
 		auto secondSegmentSize = actualReadLength - firstSegmentSize;
 
-		auto actualBufferOffset = rIdx & moduloMask;
+		auto actualBufferOffset = rIdx.data & moduloMask;
 
 		memcpy(data, buf + actualBufferOffset, firstSegmentSize);
-		rIdx += firstSegmentSize;
+		rIdx.data += firstSegmentSize;
 
 		if (secondSegmentSize)
 		{
-			auto actualBufferOffset = rIdx & moduloMask;
+			auto actualBufferOffset = rIdx.data & moduloMask;
 			memcpy(data, buf + actualBufferOffset, secondSegmentSize);
-			rIdx += secondSegmentSize;
+			rIdx.data += secondSegmentSize;
 		}
 
 		return actualReadLength;
@@ -158,15 +174,15 @@ public:
 
 	uint64_t Available()
 	{
-		uint64_t w = wIdx;
-		uint64_t r = rIdx;
+		uint64_t w = wIdx.data;
+		uint64_t r = rIdx.data;
 		return size - (w - r);
 	}
 
 	uint64_t Used()
 	{
-		uint64_t w = wIdx;
-		uint64_t r = rIdx;
+		uint64_t w = wIdx.data;
+		uint64_t r = rIdx.data;
 
 		return w - r;
 	}
@@ -184,16 +200,17 @@ public:
 	void Reset()
 	{
 		memset(buf, 0, size);
-		wIdx = rIdx = 0;
+		wIdx.data = rIdx.data = 0;
 	}
 
 private:
+	cacheLineStorage<std::atomic<uint64_t> > wIdx{ 0 };
+	cacheLineStorage<std::atomic<uint64_t> > rIdx{ 0 };
+
 	uint8_t* buf;
 
 	uint64_t size;
 	uint64_t moduloMask;
-	std::atomic<uint64_t> wIdx{ 0 };
-	std::atomic<uint64_t> rIdx{ 0 };
 
 	int pollingIntervalInMillis;
 	const int maxPossibleTimeout = std::numeric_limits<int>::max();

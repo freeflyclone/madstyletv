@@ -176,6 +176,7 @@
     <ClCompile Include="..\common\xh264.cpp" />
     <ClCompile Include="..\common\xh264annexb.cpp" />
     <ClCompile Include="..\common\xsqlite.cpp" />
+    <ClCompile Include="fifotest.cpp" />
     <ClCompile Include="ImGuiDevBuildScene.cpp" />
     <ClCompile Include="ImGuiDevGUI.cpp" />
     <ClCompile Include="xbento4.cpp" />
@@ -185,6 +186,7 @@
     <ClInclude Include="..\common\xh264.h" />
     <ClInclude Include="..\common\xh264annexb.h" />
     <ClInclude Include="..\common\xsqlite.h" />
+    <ClInclude Include="fifotest.h" />
     <ClInclude Include="xbento4_class.h" />
     <ClInclude Include="xfifo.h" />
     <ClInclude Include="xglvcrcontrols.h" />

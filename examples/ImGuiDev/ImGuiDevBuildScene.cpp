@@ -13,24 +13,38 @@
 #include "xbento4_class.h"
 #include "xglvcrcontrols.h"
 #include "xh264.h"
+#include "fifotest.h"
 
-XGLVcrControlsGui* xig{ nullptr };
-Xsqlite* xdb{ nullptr };
-XBento4* xb4{ nullptr };
-Xh264Decoder* xdecoder{ nullptr };
-XFifo* xFifo{ nullptr };
+namespace {
+	XGLVcrControlsGui* xig{ nullptr };
+	Xsqlite* xdb{ nullptr };
+	XBento4* xb4{ nullptr };
+	Xh264Decoder* xdecoder{ nullptr };
 
-extern "C" void allocate_p_dec_pic(
-	VideoParameters *p_Vid,
-	DecodedPicList *pDecPic,
-	StorablePicture *p,
-	int iLumaSize,
-	int iFrameSize,
-	int iLumaSizeX,
-	int iLumaSizeY,
-	int iChromaSizeX,
-	int iChromaSizeY
-);
+	XFifoTest::Writer* fifoWriter{ nullptr };
+	XFifoTest::Reader* fifoReader{ nullptr };
+
+	// can't use alignas() operator on heap objects, so make this a
+	// file-scope global for now.
+	//
+	// Alternative is to overload new (& delete?) operators to produce
+	// the desired alignment at runtime.  Do that later.
+	XFifo xf(0x100000);
+
+	// defined/declared in JM ldecode project
+	extern "C" void allocate_p_dec_pic(
+		VideoParameters *p_Vid,
+		DecodedPicList *pDecPic,
+		StorablePicture *p,
+		int iLumaSize,
+		int iFrameSize,
+		int iLumaSizeX,
+		int iLumaSizeY,
+		int iChromaSizeX,
+		int iChromaSizeY
+	);
+}
+
 
 void DisplayFrame(VideoParameters* p_Vid, StorablePicture* p, int p_out) 
 {
@@ -47,7 +61,6 @@ void DisplayFrame(VideoParameters* p_Vid, StorablePicture* p, int p_out)
 	int iLumaSize, iFrameSize;
 	int iLumaSizeX, iLumaSizeY;
 	int iChromaSizeX, iChromaSizeY;
-	int ret;
 
 	if (p->non_existing)
 		return;
@@ -133,9 +146,12 @@ void ExampleXGL::BuildScene() {
 
 	try 
 	{
-		xFifo = new XFifo(0x100000);
+		//xFifo = &xf;
 		//xdb = new Xsqlite(dbPath);
 		xig = new XGLVcrControlsGui();
+		fifoWriter = new XFifoTest::Writer(&xf);
+		fifoReader = new XFifoTest::Reader(&xf);
+
 		AddShape("shaders/yuv", [&]() { xdecoder = new Xh264Decoder(); return xdecoder; });
 	}
 	catch (std::exception e)
@@ -212,10 +228,5 @@ void ExampleXGL::BuildScene() {
 	else
 		xprintf("xdecoder object not available\n");
 
-	if (xFifo)
-	{
-		xprintf("xFifo Available(): %llu\n", xFifo->Available());
-	}
-	else
-		xprintf("xFifo object not available\n");
+	xprintf("xf.Available(): %llu\n", xf.Available());
 }
