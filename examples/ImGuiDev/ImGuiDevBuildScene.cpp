@@ -232,6 +232,7 @@ void ExampleXGL::BuildScene() {
 	if (fifoTester)
 	{
 		XLOG("fifoTester exists.");
+		fifoTester->Start();
 	}
 	else
 		XLOG("fifoTester does not exist.");

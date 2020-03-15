@@ -48,6 +48,13 @@ namespace XFifoTest
 		Tester(XFifo* f);
 		~Tester();
 
+		void Start();
+		void Stop();
+		void StartReader();
+		void StopReader();
+		void StartWriter();
+		void StopWriter();
+
 	private:
 		Reader* reader;
 		Writer* writer;

@@ -96,4 +96,33 @@ namespace XFifoTest
 		delete writer;
 		XLOG("%s()", __FUNCTION__);
 	}
+
+	void Tester::Start()
+	{
+		reader->Start();
+		writer->Start();
+	}
+
+	void Tester::Stop()
+	{
+		reader->Stop();
+		writer->Stop();
+	}
+
+	void Tester::StartReader()
+	{
+		reader->Start();
+	}
+	void Tester::StopReader()
+	{
+		reader->Stop();
+	}
+	void Tester::StartWriter()
+	{
+		writer->Start();
+	}
+	void Tester::StopWriter()
+	{
+		writer->Stop();
+	}
 }
