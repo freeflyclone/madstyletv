@@ -14,11 +14,13 @@
 #include "xglvcrcontrols.h"
 #include "xh264.h"
 #include "fifotest.h"
+#include "xfifotestcontrols.h"
 #include "xlog.h"
 
 namespace {
 	XLOG_DECLARE("ImGuiDevBuildScene");
 
+	XFifoTestControls* fifoTestControls{ nullptr };
 	XGLVcrControlsGui* xig{ nullptr };
 	Xsqlite* xdb{ nullptr };
 	XBento4* xb4{ nullptr };
@@ -149,8 +151,9 @@ void ExampleXGL::BuildScene() {
 	try 
 	{
 		//xdb = new Xsqlite(dbPath);
-		//xig = new XGLVcrControlsGui();
-		//AddShape("shaders/yuv", [&]() { xdecoder = new Xh264Decoder(); return xdecoder; });
+		xig = new XGLVcrControlsGui();
+		fifoTestControls = new XFifoTestControls();
+		AddShape("shaders/yuv", [&]() { xdecoder = new Xh264Decoder(); return xdecoder; });
 		AddShape("shaders/000-simple", [&]() { fifoTester = new XFifoTest::Tester(&xf); return fifoTester; });
 	}
 	catch (std::exception e)
@@ -232,7 +235,49 @@ void ExampleXGL::BuildScene() {
 	if (fifoTester)
 	{
 		XLOG("fifoTester exists.");
-		fifoTester->Start();
+		if (fifoTestControls)
+		{
+			menuFunctions.push_back(([&]() {
+				if (ImGui::Begin("FIFO Tester Controls", &fifoTestControls->fifoTestWindow))
+				{
+					ImGui::SliderInt("Read Pool Size", &fifoTestControls->readPoolSize, 0, 64);
+					ImGui::SliderInt("Read Buffer Size", &fifoTestControls->readBufferSize, 0, 0x100000);
+					ImGui::SliderInt("Write Pool Size", &fifoTestControls->writePoolSize, 0, 64);
+					ImGui::SliderInt("Write Buffer Size", &fifoTestControls->writeBufferSize, 0, 0x100000);
+					if (ImGui::Checkbox("Running", &fifoTestControls->isRunning))
+					{
+						XLOG("isRunning changed to: %s", (fifoTestControls->isRunning) ? "Running" : "Stopped");
+					}
+					if (!fifoTestControls->isRunning)
+					{
+						if (ImGui::Button("Start", { 60,24 }))
+						{
+							XLOG("Start button clicked");
+							fifoTestControls->isRunning = true;
+						}
+					}
+					else
+					{
+						if (ImGui::Button("Stop", { 60,24 }))
+						{
+							XLOG("Stop button clicked");
+							fifoTestControls->isRunning = false;
+						}
+					}
+					ImGui::SameLine(80.0f);
+					if (ImGui::Checkbox("Reader Enabled", &fifoTestControls->isReading))
+					{
+						XLOG("\"Reader Enabled\" to: %s", (fifoTestControls->isReading) ? "Enabled" : "Disabled");
+					}
+					ImGui::SameLine(280.0f);
+					if (ImGui::Checkbox("Writer Enabled", &fifoTestControls->isWriting))
+					{
+						XLOG("\"Writer Enabled\" to: %s", (fifoTestControls->isWriting) ? "Enabled" : "Disabled");
+					}
+				}
+				ImGui::End();
+			}));
+		}
 	}
 	else
 		XLOG("fifoTester does not exist.");

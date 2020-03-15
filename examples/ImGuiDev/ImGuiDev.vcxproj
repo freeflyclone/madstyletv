@@ -191,6 +191,7 @@
     <ClInclude Include="fifotest.h" />
     <ClInclude Include="xbento4_class.h" />
     <ClInclude Include="xfifo.h" />
+    <ClInclude Include="xfifotestcontrols.h" />
     <ClInclude Include="xglvcrcontrols.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
