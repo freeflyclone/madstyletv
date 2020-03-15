@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-extern "C" void DefaultLog(const char*, ...);
-
 #ifdef __cplusplus
 #include "xobject.h"
 

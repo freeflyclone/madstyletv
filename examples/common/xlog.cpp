@@ -36,10 +36,3 @@ void Logger::Log(const char*fmt, ...) {
 	printf("%s", buff);
 #endif
 }
-
-
-extern "C" void DefaultLog(const char* fmt, ...)
-{
-	va_list ap;
-	va_start(ap, fmt);
-}
