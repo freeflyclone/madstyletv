@@ -23,18 +23,10 @@ namespace XFifoTest
 			uint64_t totalWriteLength{ 0 };
 
 			do {
-				uint64_t nWritten = pFifo->Write(bp[rotatingIndex].data(), writeChunkSize - totalWriteLength);
-				totalWriteLength += nWritten;
-
-				if (totalWriteLength < writeChunkSize)
-				{
-					XLOG("%s() - waiting for room @ index: %d, need %llu bytes of room", __FUNCTION__, rotatingIndex, writeChunkSize - totalWriteLength);
-					std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(100));
-				}
+				totalWriteLength += pFifo->Write(bp[rotatingIndex].data(), writeChunkSize - totalWriteLength, 10);
 			} while (totalWriteLength < writeChunkSize && IsRunning());
 
 			rotatingIndex = (rotatingIndex + 1) % poolWriteSize;
-			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
 		}
 		XLOG("%s() done.", __FUNCTION__);
 	}
@@ -63,16 +55,19 @@ namespace XFifoTest
 	void Reader::Run()
 	{
 		XLOG("%s()", __FUNCTION__);
+		FILE *of = fopen("fifoTestReader.bin", "wb");
+
 		while (IsRunning())
 		{
-			uint64_t nUsed = pFifo->Used();
-			XLOG("%s() - Fifo level: %d", __FUNCTION__, nUsed);
+			uint64_t nRead = pFifo->Read(bi.data(), bi.size(), 10);
 
-			uint64_t nRead = pFifo->Read(bi.data(), bi.size());
-			XLOG("%s() - Read() returned %d bytes", __FUNCTION__, nRead);
-
-			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(50));
+			if (nRead)
+				fwrite(bi.data(), 1, nRead, of);
+			else
+				std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
 		}
+
+		fclose(of);
 		XLOG("%s() done.", __FUNCTION__);
 	}
 
