@@ -364,7 +364,7 @@
     <ClCompile Include="xshmem.cpp" />
     <ClCompile Include="xuart.cpp" />
     <ClCompile Include="xuartascii.cpp" />
-    <ClCompile Include="xutils.c" />
+    <ClCompile Include="xutils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\madstyletv.props" />

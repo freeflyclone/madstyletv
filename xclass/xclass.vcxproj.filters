@@ -437,9 +437,6 @@
     <ClCompile Include="socket.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="xutils.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="xgl\xglgui.cpp">
       <Filter>xgl\Source Files</Filter>
     </ClCompile>
@@ -517,6 +514,9 @@
     </ClCompile>
     <ClCompile Include="3rdParty\sqlite\sqlite3.c">
       <Filter>sqlite\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="xutils.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

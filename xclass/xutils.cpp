@@ -6,7 +6,7 @@
 #include <stdarg.h>
 #include <string.h>
 
-int xprintf(char *fmt,...)
+extern "C" int xprintf(char *fmt,...)
 {
 	static char buff[8192];
 	va_list ap;

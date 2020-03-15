@@ -1,5 +1,5 @@
 #include "xgl.h"
-
+#include <cmath>
 
 XGLShape::XGLShape() : isVisible(true), parent(nullptr) {
 	//xprintf("XGLShape::XGLShape()\n");
@@ -171,7 +171,7 @@ void XGLCube::Draw() {
 XGLSphere::XGLSphere(float r, int n) : radius(r), nSegments(n - (n&1)), visualizeNormals(false) {
 	SetName("XGLSphere");
 	int i, j;
-	float twoPi = (2 * (float)PI);
+	float twoPi = (2 * (float)M_PI);
 	XGLVertexAttributes vrtx;
 	int halfSeg = nSegments >> 1;
 	int halfSegPlus = halfSeg + 1;
@@ -242,7 +242,7 @@ void XGLSphere::Draw() {
 XGLHemiSphere::XGLHemiSphere(float r, int n) : radius(r), nSegments(n - (n & 1)), visualizeNormals(false) {
 	SetName("XGLSphere");
 	int i, j;
-	float twoPi = (2 * (float)PI);
+	float twoPi = (2 * (float)M_PI);
 	XGLVertexAttributes vrtx;
 	int halfSeg = nSegments >> 2;
 	int halfSegPlus = halfSeg + 1;
@@ -319,8 +319,8 @@ void XGLHemiSphere::Draw() {
 XGLCapsule::XGLCapsule(float r, float l, int n) : radius(r), length(l), nSegments(n) {
 	SetName("XGLCapsule");
 	int i, j;
-	float twoPi = (2 * (float)PI);
-	float pi = (float)PI;
+	float twoPi = (2 * (float)M_PI);
+	float pi = (float)M_PI;
 	XGLVertexAttributes vrtx;
 	float angleStep = pi / float(nSegments);
 	float angleStep2 = pi / float(nSegments);
@@ -417,7 +417,7 @@ XGLTorus::XGLTorus(float rMaj, float rMin, int nMaj, int nMin) :
 	SetName("XGLTorus");
     XGLVertexAttributes vrtx;
     
-    float twoPi = (2 * (float)PI);
+    float twoPi = (2 * (float)M_PI);
     XGLIndex nMajor = nSegmentsMajor;
     XGLIndex nMinor = nSegmentsMinor;
     int i, j;
@@ -589,8 +589,8 @@ void XGLIcoSphere::Draw() {
 XGLSphere2::XGLSphere2(float r, int n) : radius(r), nSegments(n), visualizeNormals(false) {
 	SetName("XGLSphere2_");
 	int i, j;
-	float twoPi = (2 * (float)PI);
-	float pi = (float)PI;
+	float twoPi = (2 * (float)M_PI);
+	float pi = (float)M_PI;
 	XGLVertexAttributes vrtx;
 	int nPoints = nSegments+1;
 	float angleStep = pi / float(nSegments);
