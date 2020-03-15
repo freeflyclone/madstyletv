@@ -116,7 +116,7 @@ public:
 			return 0;
 
 		auto actualWriteLength = (available < length) ? available : length;
-		auto nearnessToEnd = size - wIdx.data;
+		auto nearnessToEnd = size - (wIdx.data & moduloMask);
 		auto firstSegmentSize = (actualWriteLength < nearnessToEnd) ? actualWriteLength : nearnessToEnd;
 		auto secondSegmentSize = actualWriteLength - firstSegmentSize;
 
@@ -153,7 +153,7 @@ public:
 			return 0;
 
 		auto actualReadLength = (used < length) ? used : length;
-		auto nearnessToEnd = size - rIdx.data;
+		auto nearnessToEnd = size - (rIdx.data & moduloMask);
 		auto firstSegmentSize = (actualReadLength < nearnessToEnd) ? actualReadLength : nearnessToEnd;
 		auto secondSegmentSize = actualReadLength - firstSegmentSize;
 
