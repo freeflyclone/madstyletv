@@ -11,13 +11,13 @@ using namespace XLog;
 
 Logger::Logger(std::string n) : XObject(n)
 {
-	char buff[] = __FUNCTION__ "()";
+	char buff[] = __FUNCTION__ "()\n";
 	OutputDebugStringA(buff);
 }
 
 Logger::~Logger()
 {
-	char buff[] = __FUNCTION__ "()";
+	char buff[] = __FUNCTION__ "()\n";
 	OutputDebugStringA(buff);
 }
 
