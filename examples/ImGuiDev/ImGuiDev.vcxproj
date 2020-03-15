@@ -175,6 +175,7 @@
     <ClCompile Include="..\common\xglimgui.cpp" />
     <ClCompile Include="..\common\xh264.cpp" />
     <ClCompile Include="..\common\xh264annexb.cpp" />
+    <ClCompile Include="..\common\xlog.cpp" />
     <ClCompile Include="..\common\xsqlite.cpp" />
     <ClCompile Include="fifotest.cpp" />
     <ClCompile Include="ImGuiDevBuildScene.cpp" />
@@ -185,6 +186,7 @@
     <ClInclude Include="..\common\ImGuiFileDialog.h" />
     <ClInclude Include="..\common\xh264.h" />
     <ClInclude Include="..\common\xh264annexb.h" />
+    <ClInclude Include="..\common\xlog.h" />
     <ClInclude Include="..\common\xsqlite.h" />
     <ClInclude Include="fifotest.h" />
     <ClInclude Include="xbento4_class.h" />

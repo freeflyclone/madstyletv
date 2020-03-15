@@ -14,8 +14,11 @@
 #include "xglvcrcontrols.h"
 #include "xh264.h"
 #include "fifotest.h"
+#include "xlog.h"
 
 namespace {
+	XLOG_DECLARE("ImGuiDevBuildScene");
+
 	XGLVcrControlsGui* xig{ nullptr };
 	Xsqlite* xdb{ nullptr };
 	XBento4* xb4{ nullptr };
@@ -105,7 +108,7 @@ void DisplayFrame(VideoParameters* p_Vid, StorablePicture* p, int p_out)
 
 	if (NULL == pDecPic->pY)
 	{
-		xprintf("write_out_picture: buf");
+		XLOG("write_out_picture: buf");
 		return;
 	}
 
@@ -152,7 +155,7 @@ void ExampleXGL::BuildScene() {
 	}
 	catch (std::exception e)
 	{
-		xprintf("Caught exception: %s\n", e.what());
+		XLOG("Caught exception: %s", e.what());
 	}
 
 	if (xdb)
@@ -168,7 +171,7 @@ void ExampleXGL::BuildScene() {
 			for (Xsqlite::KeyValue k : kl)
 				row += k.first + ": " + k.second + ", ";
 
-			xprintf("%s\n", row.c_str());
+			XLOG("%s", row.c_str());
 
 			return 0;
 		});
@@ -190,7 +193,7 @@ void ExampleXGL::BuildScene() {
 		xdb->Execute("SELECT * FROM Cars;");
 	}
 	else
-		xprintf("xdb object not available\n");
+		XLOG("xdb object not available");
 
 	//AddShape("shaders/yuv", [&]() { xb4 = new XBento4("H:/Hero6/GH010171.mp4"); return xb4; });
 	//glm::mat4 scale = glm::scale(glm::mat4(), { 16,9,0 });
@@ -211,7 +214,7 @@ void ExampleXGL::BuildScene() {
 		}));
 	}
 	else
-		xprintf("xig object not available\n");
+		XLOG("xig object not available");
 
 	if (xdecoder)
 	{
@@ -222,14 +225,14 @@ void ExampleXGL::BuildScene() {
 		xdecoder->Start();
 	}
 	else
-		xprintf("xdecoder object not available\n");
+		XLOG("xdecoder object not available");
 
-	xprintf("xf.Available(): %llu\n", xf.Available());
+	XLOG("xf.Available(): %llu", xf.Available());
 
 	if (fifoTester)
 	{
-		xprintf("fifoTester exists.\n");
+		XLOG("fifoTester exists.");
 	}
 	else
-		xprintf("fifoTester does not exist.\n");
+		XLOG("fifoTester does not exist.");
 }

@@ -5,7 +5,7 @@ namespace {
 	XObjectPtr foundObject;
 }
 
-XObject::XObject(std::string n) {// : parent(NULL) {
+XObject::XObject(std::string n) : name(n) {// : parent(NULL) {
 	uchildren = std::make_unique<XObjectChildren>();
 }
 
