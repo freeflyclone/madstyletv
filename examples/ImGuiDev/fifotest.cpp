@@ -31,7 +31,7 @@ namespace XFifoTest
 					XLOG("%s() - waiting for room @ index: %d, need %llu bytes of room", __FUNCTION__, rotatingIndex, writeChunkSize - totalWriteLength);
 					std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(100));
 				}
-			} while (totalWriteLength < writeChunkSize);
+			} while (totalWriteLength < writeChunkSize && IsRunning());
 
 			rotatingIndex = (rotatingIndex + 1) % poolWriteSize;
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
@@ -41,8 +41,11 @@ namespace XFifoTest
 
 	Writer::~Writer()
 	{
-		if (IsRunning())
-			Stop();
+		if (IsRunning()) 
+		{
+			pFifo->AbortIO();
+			WaitForStop();
+		}
 
 		bp.clear();
 		XLOG("%s()", __FUNCTION__);
@@ -76,7 +79,10 @@ namespace XFifoTest
 	Reader::~Reader()
 	{
 		if (IsRunning())
-			Stop();
+		{
+			pFifo->AbortIO();
+			WaitForStop();
+		}
 
 		bp.clear();
 		bi.clear();
@@ -99,14 +105,14 @@ namespace XFifoTest
 
 	void Tester::Start()
 	{
-		reader->Start();
-		writer->Start();
+		StartReader();
+		StartWriter();
 	}
 
 	void Tester::Stop()
 	{
-		reader->Stop();
-		writer->Stop();
+		StopWriter();
+		StopReader();
 	}
 
 	void Tester::StartReader()
@@ -115,7 +121,7 @@ namespace XFifoTest
 	}
 	void Tester::StopReader()
 	{
-		reader->Stop();
+		reader->WaitForStop();
 	}
 	void Tester::StartWriter()
 	{
@@ -123,6 +129,6 @@ namespace XFifoTest
 	}
 	void Tester::StopWriter()
 	{
-		writer->Stop();
+		writer->WaitForStop();
 	}
 }
