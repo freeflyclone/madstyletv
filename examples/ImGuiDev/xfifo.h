@@ -98,7 +98,7 @@ public:
 		delete buf;
 	}
 
-	uint64_t Write(uint8_t* data, uint64_t length, int timeout) 
+	uint64_t Write(uint8_t* data, uint64_t length, int timeout = 0) 
 	{
 		uint64_t available = Available();
 
@@ -135,7 +135,7 @@ public:
 		return actualWriteLength;
 	}
 	
-	uint64_t Read(uint8_t* data, uint64_t length, int timeout)
+	uint64_t Read(uint8_t* data, uint64_t length, int timeout = 0)
 	{
 		uint64_t used = Used();
 

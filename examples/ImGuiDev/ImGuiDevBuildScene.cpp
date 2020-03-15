@@ -21,8 +21,7 @@ namespace {
 	XBento4* xb4{ nullptr };
 	Xh264Decoder* xdecoder{ nullptr };
 
-	XFifoTest::Writer* fifoWriter{ nullptr };
-	XFifoTest::Reader* fifoReader{ nullptr };
+	XFifoTest::Tester* fifoTester{ nullptr };
 
 	// can't use alignas() operator on heap objects, so make this a
 	// file-scope global for now.
@@ -146,13 +145,10 @@ void ExampleXGL::BuildScene() {
 
 	try 
 	{
-		//xFifo = &xf;
 		//xdb = new Xsqlite(dbPath);
-		xig = new XGLVcrControlsGui();
-		fifoWriter = new XFifoTest::Writer(&xf);
-		fifoReader = new XFifoTest::Reader(&xf);
-
-		AddShape("shaders/yuv", [&]() { xdecoder = new Xh264Decoder(); return xdecoder; });
+		//xig = new XGLVcrControlsGui();
+		//AddShape("shaders/yuv", [&]() { xdecoder = new Xh264Decoder(); return xdecoder; });
+		AddShape("shaders/000-simple", [&]() { fifoTester = new XFifoTest::Tester(&xf); return fifoTester; });
 	}
 	catch (std::exception e)
 	{
@@ -229,4 +225,11 @@ void ExampleXGL::BuildScene() {
 		xprintf("xdecoder object not available\n");
 
 	xprintf("xf.Available(): %llu\n", xf.Available());
+
+	if (fifoTester)
+	{
+		xprintf("fifoTester exists.\n");
+	}
+	else
+		xprintf("fifoTester does not exist.\n");
 }
