@@ -115,12 +115,12 @@ public:
 		if (0 == available)
 			return 0;
 
-		auto actualWriteLength = (available < length) ? available : length;
-		auto nearnessToEnd = size - (wIdx.data & moduloMask);
-		auto firstSegmentSize = (actualWriteLength < nearnessToEnd) ? actualWriteLength : nearnessToEnd;
-		auto secondSegmentSize = actualWriteLength - firstSegmentSize;
+		uint64_t actualWriteLength = (available < length) ? available : length;
+		uint64_t nearnessToEnd = size - (wIdx.data & moduloMask);
+		uint64_t firstSegmentSize = (actualWriteLength < nearnessToEnd) ? actualWriteLength : nearnessToEnd;
+		uint64_t secondSegmentSize = actualWriteLength - firstSegmentSize;
 
-		auto actualBufferOffset = wIdx.data & moduloMask;
+		uint64_t actualBufferOffset = wIdx.data & moduloMask;
 
 		memcpy(buf + actualBufferOffset, data, firstSegmentSize);
 		wIdx.data += firstSegmentSize;
@@ -152,12 +152,12 @@ public:
 		if (0 == used)
 			return 0;
 
-		auto actualReadLength = (used < length) ? used : length;
-		auto nearnessToEnd = size - (rIdx.data & moduloMask);
-		auto firstSegmentSize = (actualReadLength < nearnessToEnd) ? actualReadLength : nearnessToEnd;
-		auto secondSegmentSize = actualReadLength - firstSegmentSize;
+		uint64_t actualReadLength = (used < length) ? used : length;
+		uint64_t nearnessToEnd = size - (rIdx.data & moduloMask);
+		uint64_t firstSegmentSize = (actualReadLength < nearnessToEnd) ? actualReadLength : nearnessToEnd;
+		uint64_t secondSegmentSize = actualReadLength - firstSegmentSize;
 
-		auto actualBufferOffset = rIdx.data & moduloMask;
+		uint64_t actualBufferOffset = rIdx.data & moduloMask;
 
 		memcpy(data, buf + actualBufferOffset, firstSegmentSize);
 		rIdx.data += firstSegmentSize;
@@ -213,7 +213,6 @@ private:
 	uint64_t moduloMask;
 
 	int pollingIntervalInMillis;
-	const int maxPossibleTimeout = std::numeric_limits<int>::max();
 	bool abort{ false };
 };
 
