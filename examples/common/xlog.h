@@ -10,21 +10,24 @@ enum XLogLevel {
 #ifdef __cplusplus
 #include "xobject.h"
 
-#define XLOG_DECLARE(x) XLog::Logger logger(x)
-#define XLOG(f, ...) logger.Log(__FUNCTION__"  | "f, __VA_ARGS__)
+#define XLOG_DECLARE(r,...) XLog::Logger logger(r,__VA_ARGS__)
+#define XLOG(l,...) logger.Log((l), __FUNCTION__"  | " __VA_ARGS__)
 
 namespace XLog {
 	class Logger : public XObject
 	{
 	public:
 		Logger(std::string);
+		Logger(std::string, XLogLevel l = defaultLevel);
 		virtual ~Logger();
 
+		void Log(const char*fmt, va_list ap);
 		void Log(const char *, ...);
+		void Log(XLogLevel, const char*, ...);
 	
 	private:
 		char buff[8192];
-		XLogLevel defaultLevel{ XLError };
+		static const XLogLevel defaultLevel{ XLError };
 		XLogLevel currentLevel{ XLError };
 	};
 }

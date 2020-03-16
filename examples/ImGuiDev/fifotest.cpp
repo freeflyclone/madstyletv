@@ -1,7 +1,7 @@
 #include "fifotest.h"
 #include "xlog.h"
 
-XLOG_DECLARE("XFifoTest");
+XLOG_DECLARE("XFifoTest", XLTrace);
 
 namespace XFifoTest
 {
@@ -9,12 +9,12 @@ namespace XFifoTest
 	{
 		for (int i = 0; i < poolWriteSize; i++)
 			bp.push_back(BufferItem(poolWriteBufferSize, i));
-		XLOG();
+		XLOG(XLTrace);
 	};
 
 	void Writer::Run()
 	{
-		XLOG("starting...");
+		XLOG(XLTrace, "starting...");
 		int rotatingIndex = 0;
 
 		while (IsRunning())
@@ -28,7 +28,7 @@ namespace XFifoTest
 
 			rotatingIndex = (rotatingIndex + 1) % poolWriteSize;
 		}
-		XLOG("done.");
+		XLOG(XLTrace, "done.");
 	}
 
 	Writer::~Writer()
@@ -40,7 +40,7 @@ namespace XFifoTest
 		}
 
 		bp.clear();
-		XLOG("");
+		XLOG(XLTrace, "");
 	}
 
 	Reader::Reader(XFifo* f) : pFifo(f), XThread("XFifoReader")
@@ -49,12 +49,12 @@ namespace XFifoTest
 
 		for (int i = 0; i < poolReadSize; i++)
 			bp.push_back(BufferItem(poolReadBufferSize, 0));
-		XLOG("");
+		XLOG(XLTrace, "");
 	};
 
 	void Reader::Run()
 	{
-		XLOG("starting...");
+		XLOG(XLTrace, "starting...");
 		FILE *of = fopen("fifoTestReader.bin", "wb");
 
 		while (IsRunning())
@@ -68,7 +68,7 @@ namespace XFifoTest
 		}
 
 		fclose(of);
-		XLOG("done.");
+		XLOG(XLTrace, "done.");
 	}
 
 	Reader::~Reader()
@@ -81,21 +81,21 @@ namespace XFifoTest
 
 		bp.clear();
 		bi.clear();
-		XLOG("");
+		XLOG(XLTrace, "");
 	}
 
 	Tester::Tester(XFifo *f) : pFifo(f)
 	{
 		reader = new Reader(pFifo);
 		writer = new Writer(pFifo);
-		XLOG("");
+		XLOG(XLTrace, "");
 	}
 
 	Tester::~Tester()
 	{
 		delete reader;
 		delete writer;
-		XLOG("");
+		XLOG(XLTrace, "");
 	}
 
 	bool Tester::IsRunning()

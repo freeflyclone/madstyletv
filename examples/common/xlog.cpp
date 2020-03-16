@@ -15,17 +15,20 @@ Logger::Logger(std::string n) : XObject(n)
 	OutputDebugStringA(buff);
 }
 
+Logger::Logger(std::string n, XLogLevel l) : XObject(n), currentLevel(l)
+{
+	char buff[] = __FUNCTION__ "()\n";
+	OutputDebugStringA(buff);
+}
+
 Logger::~Logger()
 {
 	char buff[] = __FUNCTION__ "()\n";
 	OutputDebugStringA(buff);
 }
 
-void Logger::Log(const char*fmt, ...) {
-	va_list ap;
-
-	va_start(ap, fmt);
-
+void Logger::Log(const char*fmt, va_list ap)
+{
 #ifdef _WIN32
 	sprintf(buff, "%20s: ", Name().c_str());
 	vsprintf_s(buff + strlen(buff), sizeof(buff), fmt, ap);
@@ -35,4 +38,20 @@ void Logger::Log(const char*fmt, ...) {
 	vsprintf(buff, fmt, ap);
 	printf("%s", buff);
 #endif
+}
+
+void Logger::Log(const char*fmt, ...) {
+	va_list ap;
+	va_start(ap, fmt);
+	Log(fmt, ap);
+}
+
+void Logger::Log(XLogLevel level, const char* fmt, ...)
+{
+	if (level < currentLevel)
+		return;
+
+	va_list ap;
+	va_start(ap, fmt);
+	Log(fmt, ap);
 }
