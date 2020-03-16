@@ -1,4 +1,5 @@
 #include "xutils.h"
+#include "xlog.h"
 #include "xh264annexb.h"
 
 extern "C" {
@@ -7,6 +8,10 @@ extern "C" {
 	#include "fast_memory.h"
 }
 
+namespace {
+	XLOG_DECLARE("MyAnnexB", XLDebug);
+};
+
 static const int IOBUFFERSIZE = 512 * 1024; //65536;
 
 class MyAnnexB : public Xh264AnnexB
@@ -14,7 +19,7 @@ class MyAnnexB : public Xh264AnnexB
 public:
 	MyAnnexB()
 	{
-		xprintf("%s()\n", __FUNCTION__);
+		XLOG(XLDebug);
 	}	
 	virtual int  GetNALU(VideoParameters *p_Vid, NALU_t *nalu, ANNEXB_t *annex_b);
 	virtual void Open(char *fn, ANNEXB_t *annex_b);
@@ -222,7 +227,7 @@ int  MyAnnexB::GetNALU(VideoParameters *p_Vid, NALU_t *nalu, ANNEXB_t *annex_b)
 
 void  MyAnnexB::Open(char *fn, ANNEXB_t *annex_b)
 {
-	xprintf("%s()\n", __FUNCTION__);
+	XLOG(XLDebug);
 	if (NULL != annex_b->iobuffer)
 	{
 		error("open_annex_b: tried to open Annex B file twice", 500);
@@ -245,7 +250,7 @@ void  MyAnnexB::Open(char *fn, ANNEXB_t *annex_b)
 
 void  MyAnnexB::Close(ANNEXB_t *annex_b)
 {
-	xprintf("%s()\n", __FUNCTION__);
+	XLOG(XLDebug);
 	if (annex_b->BitStreamFile != -1)
 	{
 		close(annex_b->BitStreamFile);
@@ -257,7 +262,7 @@ void  MyAnnexB::Close(ANNEXB_t *annex_b)
 
 void  MyAnnexB::Malloc(VideoParameters *p_Vid, ANNEXB_t **p_annex_b)
 {
-	xprintf("%s()\n", __FUNCTION__);
+	XLOG(XLDebug);
 
 	if (((*p_annex_b) = (ANNEXB_t *)calloc(1, sizeof(ANNEXB_t))) == NULL)
 	{
@@ -272,7 +277,7 @@ void  MyAnnexB::Malloc(VideoParameters *p_Vid, ANNEXB_t **p_annex_b)
 
 void  MyAnnexB::Free(ANNEXB_t **p_annex_b)
 {
-	xprintf("%s()\n", __FUNCTION__);
+	XLOG(XLDebug);
 	free((*p_annex_b)->Buf);
 	(*p_annex_b)->Buf = NULL;
 	free(*p_annex_b);
@@ -281,7 +286,7 @@ void  MyAnnexB::Free(ANNEXB_t **p_annex_b)
 
 void  MyAnnexB::Init(ANNEXB_t *annex_b)
 {
-	xprintf("%s()\n", __FUNCTION__);
+	XLOG(XLDebug);
 	annex_b->BitStreamFile = -1;
 	annex_b->iobuffer = NULL;
 	annex_b->iobufferread = NULL;
@@ -293,7 +298,7 @@ void  MyAnnexB::Init(ANNEXB_t *annex_b)
 
 void  MyAnnexB::Reset(ANNEXB_t *annex_b)
 {
-	xprintf("%s()\n", __FUNCTION__);
+	XLOG(XLDebug);
 	annex_b->is_eof = FALSE;
 	annex_b->bytesinbuffer = 0;
 	annex_b->iobufferread = annex_b->iobuffer;

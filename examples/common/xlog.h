@@ -11,7 +11,7 @@ enum XLogLevel {
 #include "xobject.h"
 
 #define XLOG_DECLARE(r,...) XLog::Logger logger(r,__VA_ARGS__)
-#define XLOG(l,...) logger.Log((l), __FUNCTION__"  | " __VA_ARGS__)
+#define XLOG(l,...) logger.Log((l), __FUNCTION__"|" __VA_ARGS__)
 
 namespace XLog {
 	class Logger : public XObject

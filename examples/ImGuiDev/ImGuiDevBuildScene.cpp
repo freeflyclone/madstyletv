@@ -18,7 +18,7 @@
 #include "xlog.h"
 
 namespace {
-	XLOG_DECLARE("ImGuiDevBuildScene");
+	XLOG_DECLARE("ImGuiDevBuildScene", XLDebug);
 
 	XFifoTestControls* fifoTestControls{ nullptr };
 	XGLVcrControlsGui* xig{ nullptr };
@@ -158,7 +158,7 @@ void ExampleXGL::BuildScene() {
 	}
 	catch (std::exception e)
 	{
-		XLOG("Caught exception: %s", e.what());
+		XLOG(XLError, "Caught exception: %s", e.what());
 	}
 
 	if (xdb)
@@ -174,7 +174,7 @@ void ExampleXGL::BuildScene() {
 			for (Xsqlite::KeyValue k : kl)
 				row += k.first + ": " + k.second + ", ";
 
-			XLOG("%s", row.c_str());
+			XLOG(XLDebug, "%s", row.c_str());
 
 			return 0;
 		});
@@ -196,7 +196,7 @@ void ExampleXGL::BuildScene() {
 		xdb->Execute("SELECT * FROM Cars;");
 	}
 	else
-		XLOG("xdb object not available");
+		XLOG(XLDebug, "xdb object not available");
 
 	//AddShape("shaders/yuv", [&]() { xb4 = new XBento4("H:/Hero6/GH010171.mp4"); return xb4; });
 	//glm::mat4 scale = glm::scale(glm::mat4(), { 16,9,0 });
@@ -217,7 +217,7 @@ void ExampleXGL::BuildScene() {
 		}));
 	}
 	else
-		XLOG("xig object not available");
+		XLOG(XLDebug, "xig object not available");
 
 	if (xdecoder)
 	{
@@ -228,13 +228,13 @@ void ExampleXGL::BuildScene() {
 		xdecoder->Start();
 	}
 	else
-		XLOG("xdecoder object not available");
+		XLOG(XLDebug, "xdecoder object not available");
 
-	XLOG("xf.Available(): %llu", xf.Available());
+	XLOG(XLDebug, "xf.Available(): %llu", xf.Available());
 
 	if (fifoTester)
 	{
-		XLOG("fifoTester exists.");
+		XLOG(XLDebug, "fifoTester exists.");
 		if (fifoTestControls)
 		{
 			menuFunctions.push_back(([&]() {
@@ -249,13 +249,13 @@ void ExampleXGL::BuildScene() {
 
 					if (ImGui::Checkbox("Running", &fifoTestControls->isRunning))
 					{
-						XLOG("isRunning changed to: %s", (fifoTestControls->isRunning) ? "Running" : "Stopped");
+						XLOG(XLDebug, "isRunning changed to: %s", (fifoTestControls->isRunning) ? "Running" : "Stopped");
 					}
 					if (!fifoTestControls->isRunning)
 					{
 						if (ImGui::Button("Start", { 60,24 }))
 						{
-							XLOG("Start button clicked");
+							XLOG(XLDebug, "Start button clicked");
 							fifoTester->Start();
 						}
 					}
@@ -263,19 +263,19 @@ void ExampleXGL::BuildScene() {
 					{
 						if (ImGui::Button("Stop", { 60,24 }))
 						{
-							XLOG("Stop button clicked");
+							XLOG(XLDebug, "Stop button clicked");
 							fifoTester->Stop();
 						}
 					}
 					ImGui::SameLine(80.0f);
 					if (ImGui::Checkbox("Reader Enabled", &fifoTestControls->isReading))
 					{
-						XLOG("\"Reader Enabled\" to: %s", (fifoTestControls->isReading) ? "Enabled" : "Disabled");
+						XLOG(XLDebug, "\"Reader Enabled\" to: %s", (fifoTestControls->isReading) ? "Enabled" : "Disabled");
 					}
 					ImGui::SameLine(280.0f);
 					if (ImGui::Checkbox("Writer Enabled", &fifoTestControls->isWriting))
 					{
-						XLOG("\"Writer Enabled\" to: %s", (fifoTestControls->isWriting) ? "Enabled" : "Disabled");
+						XLOG(XLDebug, "\"Writer Enabled\" to: %s", (fifoTestControls->isWriting) ? "Enabled" : "Disabled");
 					}
 
 					float fraction = (float)xf.Used() / (float)xf.Capacity();
@@ -287,5 +287,5 @@ void ExampleXGL::BuildScene() {
 		}
 	}
 	else
-		XLOG("fifoTester does not exist.");
+		XLOG(XLDebug, "fifoTester does not exist.");
 }

@@ -1,10 +1,10 @@
 #include "fifotest.h"
 #include "xlog.h"
 
-XLOG_DECLARE("XFifoTest", XLTrace);
-
 namespace XFifoTest
 {
+	XLOG_DECLARE("XFifoTest", XLTrace);
+
 	Writer::Writer(XFifo* f) : pFifo(f), XThread("XFifoWriter")
 	{
 		for (int i = 0; i < poolWriteSize; i++)

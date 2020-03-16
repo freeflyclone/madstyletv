@@ -11,26 +11,26 @@ using namespace XLog;
 
 Logger::Logger(std::string n) : XObject(n)
 {
-	char buff[] = __FUNCTION__ "()\n";
+	sprintf(buff, "%20s|%s|\n", n.c_str(), __FUNCTION__);
 	OutputDebugStringA(buff);
 }
 
 Logger::Logger(std::string n, XLogLevel l) : XObject(n), currentLevel(l)
 {
-	char buff[] = __FUNCTION__ "()\n";
+	sprintf(buff, "%20s|%s|level: %d\n", n.c_str(), __FUNCTION__, l);
 	OutputDebugStringA(buff);
 }
 
 Logger::~Logger()
 {
-	char buff[] = __FUNCTION__ "()\n";
+	sprintf(buff, "%20s|%s|\n", Name().c_str(), __FUNCTION__);
 	OutputDebugStringA(buff);
 }
 
 void Logger::Log(const char*fmt, va_list ap)
 {
 #ifdef _WIN32
-	sprintf(buff, "%20s: ", Name().c_str());
+	sprintf(buff, "%20s|", Name().c_str());
 	vsprintf_s(buff + strlen(buff), sizeof(buff), fmt, ap);
 	OutputDebugStringA(buff);
 	OutputDebugStringA("\n");
