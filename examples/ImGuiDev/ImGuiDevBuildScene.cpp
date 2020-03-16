@@ -244,6 +244,9 @@ void ExampleXGL::BuildScene() {
 					ImGui::SliderInt("Read Buffer Size", &fifoTestControls->readBufferSize, 0, 0x100000);
 					ImGui::SliderInt("Write Pool Size", &fifoTestControls->writePoolSize, 0, 64);
 					ImGui::SliderInt("Write Buffer Size", &fifoTestControls->writeBufferSize, 0, 0x100000);
+
+					fifoTestControls->isRunning = fifoTester->IsRunning();
+
 					if (ImGui::Checkbox("Running", &fifoTestControls->isRunning))
 					{
 						XLOG("isRunning changed to: %s", (fifoTestControls->isRunning) ? "Running" : "Stopped");
@@ -253,7 +256,7 @@ void ExampleXGL::BuildScene() {
 						if (ImGui::Button("Start", { 60,24 }))
 						{
 							XLOG("Start button clicked");
-							fifoTestControls->isRunning = true;
+							fifoTester->Start();
 						}
 					}
 					else
@@ -261,7 +264,7 @@ void ExampleXGL::BuildScene() {
 						if (ImGui::Button("Stop", { 60,24 }))
 						{
 							XLOG("Stop button clicked");
-							fifoTestControls->isRunning = false;
+							fifoTester->Stop();
 						}
 					}
 					ImGui::SameLine(80.0f);
@@ -274,6 +277,10 @@ void ExampleXGL::BuildScene() {
 					{
 						XLOG("\"Writer Enabled\" to: %s", (fifoTestControls->isWriting) ? "Enabled" : "Disabled");
 					}
+
+					float fraction = (float)xf.Used() / (float)xf.Capacity();
+					ImGui::ProgressBar(fraction, {400, 20});
+
 				}
 				ImGui::End();
 			}));

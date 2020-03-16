@@ -203,6 +203,11 @@ public:
 		wIdx.data = rIdx.data = 0;
 	}
 
+	uint64_t Capacity()
+	{
+		return size;
+	}
+
 private:
 	cacheLineStorage<std::atomic<uint64_t> > wIdx{ 0 };
 	cacheLineStorage<std::atomic<uint64_t> > rIdx{ 0 };

@@ -48,6 +48,7 @@ namespace XFifoTest
 		Tester(XFifo* f);
 		~Tester();
 
+		bool IsRunning();
 		void Start();
 		void Stop();
 		void StartReader();
