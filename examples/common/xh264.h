@@ -1,7 +1,7 @@
 #ifndef XH264_H
 #define XH264_H
 
-#include "xutils.h"
+#include "xlog.h"
 #include "xthread.h"
 #include "XGL.h"
 

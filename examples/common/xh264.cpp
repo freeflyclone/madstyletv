@@ -15,6 +15,7 @@ extern "C" {
 }
 
 namespace {
+	XLOG_DECLARE("Xh264Decoder", XLDebug);
 	InputParameters inputParameters{ 0 };
 
 	// for decoded image display during development.  Ideally these
@@ -119,6 +120,6 @@ void Xh264Decoder::Run() {
 	FinitDecoder(&pDecPicList);
 	CloseDecoder();
 
-	xprintf("Xh264Decoder::Run() finished\n");
+	XLOG(XLDebug, "Finished!");
 }
 

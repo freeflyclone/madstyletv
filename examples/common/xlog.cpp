@@ -1,46 +1,14 @@
-#include "xlog.h"
-
 #include <stdlib.h>
 #include <stdarg.h>
-
 #ifdef _WIN32
 #include <windows.h>
 #endif
+#include "xlog.h"
 
 using namespace XLog;
 
-Logger::Logger(std::string n) : XObject(n)
+void Logger::Log(const char*fmt, ...)
 {
-	sprintf(buff, "%20s|%s|\n", n.c_str(), __FUNCTION__);
-	OutputDebugStringA(buff);
-}
-
-Logger::Logger(std::string n, XLogLevel l) : XObject(n), currentLevel(l)
-{
-	sprintf(buff, "%20s|%s|level: %d\n", n.c_str(), __FUNCTION__, l);
-	OutputDebugStringA(buff);
-}
-
-Logger::~Logger()
-{
-	sprintf(buff, "%20s|%s|\n", Name().c_str(), __FUNCTION__);
-	OutputDebugStringA(buff);
-}
-
-void Logger::Log(const char*fmt, va_list ap)
-{
-#ifdef _WIN32
-	sprintf(buff, "%20s|", Name().c_str());
-	vsprintf_s(buff + strlen(buff), sizeof(buff), fmt, ap);
-	OutputDebugStringA(buff);
-	OutputDebugStringA("\n");
-#else
-	vsprintf(buff, fmt, ap);
-	printf("%s", buff);
-#endif
-}
-
-void Logger::Log(const char*fmt, ...) {
 	va_list ap;
 	va_start(ap, fmt);
 	Log(fmt, ap);
@@ -51,7 +19,41 @@ void Logger::Log(XLogLevel level, const char* fmt, ...)
 	if (level < currentLevel)
 		return;
 
+	int newSize = strlen(fmt) + 64;
+	char* newFmt = new char[newSize];
+	snprintf(newFmt, newSize, "%26s|", fmt);
+
 	va_list ap;
 	va_start(ap, fmt);
-	Log(fmt, ap);
+	Log(newFmt, ap);
+}
+
+void Logger::Log(XLogLevel level, const char* func, const char* fmt, ...)
+{
+	if (level < currentLevel)
+		return;
+
+	int newSize = strlen(fmt) + 64;
+	char* newFmt = new char[newSize];
+	snprintf(newFmt, newSize, "%26s| %s", func, fmt);
+
+	va_list ap;
+	va_start(ap, fmt);
+	Log(newFmt, ap);
+}
+
+void Logger::Log(const char*fmt, va_list ap)
+{
+	std::lock_guard<std::mutex> lock(mutexLock);
+
+#ifdef _WIN32
+	sprintf(buff, "%20s|", Name().c_str());
+	int prefixLength = strlen(buff);
+	vsprintf_s(buff + prefixLength, sizeof(buff)-prefixLength, fmt, ap);
+	strcat(buff, "\n");
+	OutputDebugStringA(buff);
+#else
+	vsprintf(buff, fmt, ap);
+	printf("%s", buff);
+#endif
 }
