@@ -15,6 +15,7 @@
 ** uploads the previously captured image buffer from the thread
 ** to OpenGL texture memory.
 **
+**--------- The following is deprecated for now --------------
 ** The ImageProcessing class overrides the Render() method
 ** so as to inject an FBO rendering of the uploaded image,
 ** to allow for pixel processing with a fragment shader.
@@ -109,7 +110,11 @@ void ExampleXGL::BuildScene() {
 			GL_CHECK("glGetTexImage() didn't work");
 		}
 	});
+
+	// Attaching a non XGL XObject to an XGLShape is accomplished as follows.
+	// Doing this attaches CameraThread object to the XGL object that renders it's output.
+	shape->XObject::AddChild(pct);
+
 	pct->Start();
 
-	AddChild(pct);
 }

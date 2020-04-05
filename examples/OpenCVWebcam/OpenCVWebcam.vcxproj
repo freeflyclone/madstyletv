@@ -174,7 +174,9 @@
   <ItemGroup>
     <ClCompile Include="..\common\ExampleGUI.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
-    <ClCompile Include="..\common\main.cpp" />
+    <ClCompile Include="..\common\ImGuiFileDialog.cpp" />
+    <ClCompile Include="..\common\imgui_main.cpp" />
+    <ClCompile Include="..\common\imgui_menu_bar.cpp" />
     <ClCompile Include="..\common\xlog.cpp" />
     <ClCompile Include="OpenCVWebcamBuildScene.cpp" />
   </ItemGroup>
