@@ -9,7 +9,7 @@ extern "C" {
 }
 
 namespace {
-	XLOG_DECLARE("MyAnnexB", XLDebug);
+	XLOG_DEFINE("MyAnnexB", XLDebug);
 };
 
 static const int IOBUFFERSIZE = 512 * 1024; //65536;

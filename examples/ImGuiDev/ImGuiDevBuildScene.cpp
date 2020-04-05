@@ -18,7 +18,7 @@
 #include "xlog.h"
 
 namespace {
-	XLOG_DECLARE("ImGuiDevBuildScene", XLDebug);
+	XLOG_DEFINE("ImGuiDevBuildScene", XLDebug);
 
 	XFifoTestControls* fifoTestControls{ nullptr };
 	XGLVcrControlsGui* xig{ nullptr };

@@ -3,7 +3,7 @@
 
 namespace XFifoTest
 {
-	XLOG_DECLARE("XFifoTest", XLTrace);
+	XLOG_DEFINE("XFifoTest", XLTrace);
 
 	Writer::Writer(XFifo* f) : pFifo(f), XThread("XFifoWriter")
 	{

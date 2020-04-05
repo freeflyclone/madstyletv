@@ -15,7 +15,7 @@ extern "C" {
 }
 
 namespace {
-	XLOG_DECLARE("Xh264Decoder", XLDebug);
+	XLOG_DEFINE("Xh264Decoder", XLDebug);
 	InputParameters inputParameters{ 0 };
 
 	// for decoded image display during development.  Ideally these
