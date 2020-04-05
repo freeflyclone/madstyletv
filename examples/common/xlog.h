@@ -11,8 +11,8 @@ enum XLogLevel {
 #include "xobject.h"
 #include <mutex>
 
-#define XLOG_DEFINE(r,...) XLog::Logger logger(r,__VA_ARGS__)
-#define XLOG(l,...) { logger.Log((l), __FUNCTION__, __VA_ARGS__); }
+#define XLOG_DEFINE(r,...) XLog::Logger logger(r,##__VA_ARGS__)
+#define XLOG(l,...) { logger.Log((l), __FUNCTION__, ##__VA_ARGS__); }
 
 namespace XLog {
 	class Logger : public XObject
@@ -32,6 +32,10 @@ namespace XLog {
 		static const XLogLevel defaultLevel{ XLError };
 		XLogLevel currentLevel{ XLError };
 		std::mutex mutexLock;
+
+		char timestamp[128];
+		const char* MakeTimestamp();
+		unsigned long epoch;
 	};
 }
 #endif //__cplusplus

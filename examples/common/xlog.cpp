@@ -7,6 +7,10 @@
 
 using namespace XLog;
 
+const char* Logger::MakeTimestamp() {
+	return "right-fucking-now";
+}
+
 void Logger::Log(const char*fmt, ...)
 {
 	va_list ap;
@@ -30,7 +34,7 @@ void Logger::Log(XLogLevel level, const char* fmt, ...)
 
 void Logger::Log(XLogLevel level, const char* func, const char* fmt, ...)
 {
-	if (level < currentLevel)
+	if (level >= currentLevel)
 		return;
 
 	int newSize = strlen(fmt) + 64;

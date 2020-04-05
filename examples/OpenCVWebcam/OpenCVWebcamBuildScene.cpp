@@ -34,11 +34,13 @@
 
 #include <xthread.h>
 
+XLOG_DEFINE("ocvWebcam", XLDebug);
 
 class CameraThread : public XObject, public XThread {
 public:
 	CameraThread(std::string n, int w, int h, int c) : XObject(n), XThread(n), width(w), height(h), channels(c), frameNumber(0) {
 		SetName(n);
+		XLOG(XLTrace);
 	};
 
 	~CameraThread() {
@@ -46,10 +48,12 @@ public:
 		cap.release();
 	}
 	void Run() {
+		XLOG(XLTrace, "-->");
+
 		cap.open(0);
 
 		if (!cap.isOpened()) {
-			xprintf("VideoCapture init failed\n");
+			XLOG(XLDebug, "VideoCapture init failed\n");
 			exit(-1);
 		}
 
@@ -67,6 +71,7 @@ public:
 			width = frame.cols;
 			height = frame.rows;
 		}
+		XLOG(XLTrace, "<--");
 	}
 
 	cv::VideoCapture cap;
@@ -102,11 +107,6 @@ void ExampleXGL::BuildScene() {
 			glBindTexture(GL_TEXTURE_2D, ipShape->texIds[0]);
 			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pct->width, pct->height, GL_BGR, GL_UNSIGNED_BYTE, pct->videoFrame[(pct->frameNumber-1)&3]);
 			GL_CHECK("glGetTexImage() didn't work");
-
-			//glActiveTexture(GL_TEXTURE1);
-			//glBindTexture(GL_TEXTURE_2D, ipShape->texIds[1]);
-			//glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pct->width, pct->height, GL_BGR, GL_UNSIGNED_BYTE, pct->videoFrame[(pct->frameNumber-2)&3]);
-			//GL_CHECK("glGetTexImage() didn't work");
 		}
 	});
 	pct->Start();
