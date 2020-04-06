@@ -29,13 +29,16 @@
 ** for.
 **************************************************************/
 #include "ExampleXGL.h"
-#include "xlog.h"
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-
 #include <xthread.h>
+#include "xlog.h"
+
+#include "opencv2/core.hpp"
+#include "opencv2/video.hpp"
+#include "opencv2/highgui.hpp"
 
 XLOG_DEFINE("ocvWebcam", XLDebug);
+
+using namespace cv;
 
 class CameraThread : public XObject, public XThread {
 public:
@@ -51,19 +54,23 @@ public:
 	void Run() {
 		XLOG(XLTrace, "-->");
 
-		cap.open(0);
+		cap.open(0, CAP_DSHOW);
 
 		if (!cap.isOpened()) {
 			XLOG(XLDebug, "VideoCapture init failed\n");
 			exit(-1);
 		}
 
+		auto backEnd = cap.getBackendName();
+
 		// this is hard-coded for Logitech C920 web cam. Also works
 		// on a Macbook Pro with internal camera.  May work with others.
-		cap.set(CV_CAP_PROP_FOURCC, CV_FOURCC('Y', 'U', 'Y', '2'));
-		cap.set(CV_CAP_PROP_FRAME_WIDTH, width);
-		cap.set(CV_CAP_PROP_FRAME_HEIGHT, height);
-		cap.set(CV_CAP_PROP_FPS, 30.0);
+		cap.set(CAP_PROP_FOURCC, VideoWriter::fourcc('Y', 'U', 'Y', '2'));
+		cap.set(CAP_PROP_FRAME_WIDTH, width);
+		cap.set(CAP_PROP_FRAME_HEIGHT, height);
+		cap.set(CAP_PROP_FPS, 30.0);
+
+		cap >> frame;
 
 		while (IsRunning()) {
 			cap >> frame;

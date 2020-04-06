@@ -8,11 +8,12 @@
   </PropertyGroup>
   <PropertyGroup>
     <IncludePath>$(OPENCV_DIR)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(OPENCV_DIR)\$(PlatformTarget)\vc12\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OPENCV_DIR)\$(PlatformTarget)\vc15\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
       <AdditionalDependencies>
+<!--    
         opencv_calib3d$(OPENCV_VERSION)$(DebugSuffix).lib;
         opencv_contrib$(OPENCV_VERSION)$(DebugSuffix).lib;
         opencv_core$(OPENCV_VERSION)$(DebugSuffix).lib;
@@ -32,6 +33,8 @@
         opencv_ts$(OPENCV_VERSION)$(DebugSuffix).lib;
         opencv_video$(OPENCV_VERSION)$(DebugSuffix).lib;
         opencv_videostab$(OPENCV_VERSION)$(DebugSuffix).lib;
+-->
+        opencv_world$(OPENCV_VERSION)$(DebugSuffix).lib;
         %(AdditionalDependencies)
       </AdditionalDependencies>
     </Link>
