@@ -73,7 +73,7 @@ public:
 	void Run() {
 		XLOG(XLTrace, "-->");
 
-		cap.open(0, CAP_DSHOW);
+		cap.open(cameraIndex, CAP_DSHOW);
 
 		if (!cap.isOpened()) {
 			XLOG(XLDebug, "VideoCapture init failed\n");
@@ -114,13 +114,29 @@ public:
 };
 
 void ExampleXGL::BuildScene() {
-	XGLWebcam *webcam;
+	XGLWebcam *webcam0;
+	XGLWebcam *webcam1;
+	XGLWebcam *webcam2;
 
-	AddShape("shaders/tex", [&](){ webcam = new XGLWebcam("Camera 1", 0); return webcam; });
+	AddShape("shaders/tex", [&](){ webcam0 = new XGLWebcam("Camera 1", 0); return webcam0; });
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(-10, 0, 5.625f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	webcam->model = translate * rotate * scale;
+	webcam0->model = translate * rotate * scale;
 
-	webcam->Start();
+	AddShape("shaders/tex", [&]() { webcam1 = new XGLWebcam("Camera 2", 1); return webcam1; });
+	scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
+	translate = glm::translate(glm::mat4(), glm::vec3(10, 0, 5.625f));
+	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	webcam1->model = translate * rotate * scale;
+
+	AddShape("shaders/tex", [&]() { webcam2 = new XGLWebcam("Camera 2", 2); return webcam2; });
+	scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
+	translate = glm::translate(glm::mat4(), glm::vec3(-30, 0, 5.625f));
+	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	webcam2->model = translate * rotate * scale;
+
+	webcam0->Start();
+	webcam1->Start();
+	webcam2->Start();
 }
