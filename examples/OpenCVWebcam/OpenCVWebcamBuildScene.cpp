@@ -40,17 +40,36 @@ XLOG_DEFINE("ocvWebcam", XLDebug);
 
 using namespace cv;
 
-class CameraThread : public XObject, public XThread {
+class XGLWebcam : public XGLTexQuad, public XThread
+{
 public:
-	CameraThread(std::string n, int w, int h, int c) : XObject(n), XThread(n), width(w), height(h), channels(c), frameNumber(0) {
+	XGLWebcam(std::string n, int idx = 0, int w = 640, int h = 360, int c = 3) 
+		: XThread("XGLWebcamThread"), 
+		XGLTexQuad(w,h,c),
+		cameraIndex(idx),
+		width(w), 
+		height(h), 
+		channels(c), 
+		frameNumber(0)
+	{
 		SetName(n);
+
+		SetAnimationFunction([&](float clock) {
+			if (IsRunning() && (frameNumber > 3)) {
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, texIds[0]);
+				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, videoFrame[(frameNumber - 1) & 3]);
+				GL_CHECK("glGetTexImage() didn't work");
+			}
+		});
 		XLOG(XLTrace);
 	};
 
-	~CameraThread() {
+	~XGLWebcam() {
 		Stop();
 		cap.release();
 	}
+
 	void Run() {
 		XLOG(XLTrace, "-->");
 
@@ -82,10 +101,11 @@ public:
 		XLOG(XLTrace, "<--");
 	}
 
-	cv::VideoCapture cap;
-	cv::Mat frame;
+	VideoCapture cap;
+	Mat frame;
 
 	int width, height, channels;
+	int cameraIndex{ 0 };
 	unsigned int frameNumber;
 
 	// ultra-simple quadruple-buffered intermediate frames from the camera
@@ -94,34 +114,13 @@ public:
 };
 
 void ExampleXGL::BuildScene() {
-	XGLTexQuad *shape;
-	const int camWidth = 640;
-	const int camHeight = 360;
-	const int camChannels = 3;
+	XGLWebcam *webcam;
 
-	CameraThread *pct = new CameraThread("CameraThread", camWidth, camHeight, camChannels);
-
-	AddShape("shaders/tex", [&](){ shape = new XGLTexQuad(camWidth, camHeight, camChannels); return shape; });
+	AddShape("shaders/tex", [&](){ webcam = new XGLWebcam("Camera 1", 0); return webcam; });
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(-10, 0, 5.625f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	shape->model = translate * rotate * scale;
+	webcam->model = translate * rotate * scale;
 
-	// animation function to grab a web cam frame from the web cam capture thread and upload it to texture memory
-	shape->SetAnimationFunction([pct,shape](float clock) {
-		XGLTexQuad *ipShape = (XGLTexQuad *)shape;
-		if (pct != NULL && pct->IsRunning() && (pct->frameNumber>3) ) {
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, ipShape->texIds[0]);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, pct->width, pct->height, GL_BGR, GL_UNSIGNED_BYTE, pct->videoFrame[(pct->frameNumber-1)&3]);
-			GL_CHECK("glGetTexImage() didn't work");
-		}
-	});
-
-	// Attaching a non XGL XObject to an XGLShape is accomplished as follows.
-	// Doing this attaches CameraThread object to the XGL object that renders it's output.
-	shape->XObject::AddChild(pct);
-
-	pct->Start();
-
+	webcam->Start();
 }
