@@ -20,4 +20,6 @@ void ExampleXGL::BuildScene() {
 		AddPreRenderFunction(pParticles->invokeComputeShader);
 
 	initHmd = false;
+
+	preferredSwapInterval = 0;
 }

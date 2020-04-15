@@ -25,6 +25,9 @@ XAL::XAL(ALCchar *dn, int sr, int fmt, int nb) : deviceName(dn), sampleRate(sr),
 	for (int i = 0; i < deviceList.size(); i++)
 		xprintf("Device: %s\n", deviceList[i].c_str());
 
+	for (int i = 0; i < captureDeviceList.size(); i++)
+		xprintf("Capture Device: %s\n", captureDeviceList[i].c_str());
+
 	if ((audioDevice = alcOpenDevice(deviceName)) == NULL)
 		throw std::runtime_error("alcOpenDevice() failed");
 
@@ -39,6 +42,9 @@ XAL::XAL(ALCchar *dn, int sr, int fmt, int nb) : deviceName(dn), sampleRate(sr),
 
 	alGenSources(1, &alSourceId);
 	AL_CHECK("alGenSources() failed");
+}
+
+XAL::XAL(ALCchar *dn) : deviceName(dn) {
 }
 
 XAL::~XAL() {
@@ -174,6 +180,11 @@ XALDeviceList XAL::EnumerateDevices() {
 			while (device && *device != '\0') {
 				deviceList.push_back(std::string(device));
 				device += strlen(device) + 1;
+			}
+			const ALCchar *captureDevice = alcGetString(NULL, ALC_CAPTURE_DEVICE_SPECIFIER);
+			while (captureDevice && *captureDevice != '\0') {
+				captureDeviceList.push_back(std::string(captureDevice));
+				captureDevice += strlen(captureDevice) + 1;
 			}
 		}
 	}

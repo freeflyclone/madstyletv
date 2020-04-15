@@ -46,6 +46,7 @@ typedef std::vector<std::string> XALDeviceList;
 class XAL {
 public:
 	XAL(ALCchar *dn = (NULL), int sr = defaultSamplerate, int fmt = defaultFormat, int nb=1);
+	XAL(ALCchar *dn = NULL);
 	virtual ~XAL();
 
 	void AddBuffers(int count);
@@ -71,6 +72,7 @@ public:
 	static const int defaultFormat = AL_FORMAT_STEREO16;
 private:
 	XALDeviceList deviceList;
+	XALDeviceList captureDeviceList;
 
 	ALCchar *deviceName;
 	ALCdevice *audioDevice;

@@ -84,7 +84,7 @@ public:
 
 		// this is hard-coded for Logitech C920 web cam. Also works
 		// on a Macbook Pro with internal camera.  May work with others.
-		cap.set(CAP_PROP_FOURCC, VideoWriter::fourcc('Y', 'U', 'Y', '2'));
+		cap.set(CAP_PROP_FOURCC, VideoWriter::fourcc('M', 'J', 'P', 'G'));
 		cap.set(CAP_PROP_FRAME_WIDTH, width);
 		cap.set(CAP_PROP_FRAME_HEIGHT, height);
 		cap.set(CAP_PROP_FPS, 30.0);

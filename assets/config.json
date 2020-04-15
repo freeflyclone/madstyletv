@@ -1,7 +1,7 @@
 { 
 	"AssetFolder" : "assets",
 	"ShaderFolder" : "shaders",
-	"SharedMemory" : false,
+	"SharedMemory" : true,
 	"SvgFile" : "assets/triangle.svg",
 	"VideoFile4" : "F:/videos/evan/evan-dv.01-03-11_16-09.00.avi",
 	"VideoFile" : "H:/Hero6/GH010155.mp4",
