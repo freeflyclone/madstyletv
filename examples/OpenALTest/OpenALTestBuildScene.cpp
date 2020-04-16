@@ -13,11 +13,13 @@
 #include "xal.h"
 
 XAL *pXal;
+XAL *pRecXal;
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
 	pXal = new XAL(NULL, XAL::defaultSamplerate, XAL::defaultFormat, XAL::maxBuffers);
+	pRecXal = new XAL(NULL);
 
 	std::string imgPath = pathToAssets + "/assets/AndroidDemo.png";
 

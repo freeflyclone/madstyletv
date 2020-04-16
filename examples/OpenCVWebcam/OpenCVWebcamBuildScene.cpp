@@ -40,16 +40,17 @@ XLOG_DEFINE("ocvWebcam", XLDebug);
 
 using namespace cv;
 
-class XGLWebcam : public XGLTexQuad, public XThread
+class XGLWebcam : public VideoCapture,  public XGLTexQuad, public XThread
 {
 public:
-	XGLWebcam(std::string n, int idx = 0, int w = 640, int h = 360, int c = 3) 
+	XGLWebcam(XGL* pXGL, std::string n, int idx = 0, int w = 640, int h = 360, int c = 3) 
 		: XThread("XGLWebcamThread"), 
 		XGLTexQuad(w,h,c),
 		cameraIndex(idx),
 		width(w), 
 		height(h), 
-		channels(c), 
+		channels(c),
+		pXGL(pXGL),
 		frameNumber(0)
 	{
 		SetName(n);
@@ -62,37 +63,66 @@ public:
 				GL_CHECK("glGetTexImage() didn't work");
 			}
 		});
+
 		XLOG(XLTrace);
 	};
 
 	~XGLWebcam() {
 		Stop();
-		cap.release();
+		release();
 	}
 
 	void Run() {
 		XLOG(XLTrace, "-->");
 
-		cap.open(cameraIndex, CAP_DSHOW);
+		open(cameraIndex, CAP_DSHOW);
 
-		if (!cap.isOpened()) {
+		if (!isOpened()) {
 			XLOG(XLDebug, "VideoCapture init failed\n");
 			exit(-1);
 		}
 
-		auto backEnd = cap.getBackendName();
+		auto backEnd = getBackendName();
 
 		// this is hard-coded for Logitech C920 web cam. Also works
-		// on a Macbook Pro with internal camera.  May work with others.
-		cap.set(CAP_PROP_FOURCC, VideoWriter::fourcc('M', 'J', 'P', 'G'));
-		cap.set(CAP_PROP_FRAME_WIDTH, width);
-		cap.set(CAP_PROP_FRAME_HEIGHT, height);
-		cap.set(CAP_PROP_FPS, 30.0);
+		// Note: the following is not presently true: on a Macbook Pro with internal camera.  May work with others.
+		set(CAP_PROP_FOURCC, VideoWriter::fourcc('M', 'J', 'P', 'G'));
+		set(CAP_PROP_FRAME_WIDTH, width);
+		set(CAP_PROP_FRAME_HEIGHT, height);
+		set(CAP_PROP_FPS, 30.0);
 
-		cap >> frame;
+		set(CAP_PROP_BRIGHTNESS, (double)brightness);
+		set(CAP_PROP_CONTRAST, (double)contrast);
+		set(CAP_PROP_SATURATION, (double)saturation);
+		set(CAP_PROP_HUE, (double)hue);
+		set(CAP_PROP_EXPOSURE, (double)exposure);
+
+		// this sort of works, but all 3 cameras share the same settings.  WTF?
+		pXGL->menuFunctions.push_back(([this]() {
+			if (ImGui::Begin("WebCam Controls", &guiWindow))
+			{
+				if (ImGui::SliderFloat("Brightness", &brightness, 0.0f, 256.0f, "%0.3f", 1))
+					set(CAP_PROP_BRIGHTNESS, (double)brightness);
+
+				if (ImGui::SliderFloat("Contrast", &contrast, 0.0f, 256.0f, "%0.3f", 1))
+					set(CAP_PROP_CONTRAST, (double)contrast);
+
+				if (ImGui::SliderFloat("saturation", &saturation, 0.0f, 256.0f, "%0.3f", 1))
+					set(CAP_PROP_SATURATION, (double)saturation);
+
+				if (ImGui::SliderFloat("hue", &hue, 0.0f, 256.0f, "%0.3f", 1))
+					set(CAP_PROP_HUE, (double)hue);
+
+				if (ImGui::SliderFloat("Exposure", &exposure, -10.0f, -2.0f, "%0.0f", 1))
+					set(CAP_PROP_EXPOSURE, (double)exposure);
+			}
+			ImGui::End();
+		}));
+
+		read(frame);
 
 		while (IsRunning()) {
-			cap >> frame;
+			read(frame);
 			memcpy(videoFrame[frameNumber & 3], frame.data, (frame.cols*frame.rows*frame.channels()));
 			frameNumber++;
 			width = frame.cols;
@@ -101,7 +131,6 @@ public:
 		XLOG(XLTrace, "<--");
 	}
 
-	VideoCapture cap;
 	Mat frame;
 
 	int width, height, channels;
@@ -111,26 +140,38 @@ public:
 	// ultra-simple quadruple-buffered intermediate frames from the camera
 	// (ping-ponged by frameNumber&3) TODO: size this programmatically.
 	GLubyte videoFrame[4][1920 * 1080 * 4];
+
+private:
+	bool guiWindow = true;
+	float brightness{ 128 };
+	float contrast{ 128 };
+	float saturation{ 128 };
+	float hue{ 128 };
+	float exposure{ -5 };
+
+	XGL* pXGL;
 };
 
-void ExampleXGL::BuildScene() {
-	XGLWebcam *webcam0;
-	XGLWebcam *webcam1;
-	XGLWebcam *webcam2;
 
-	AddShape("shaders/tex", [&](){ webcam0 = new XGLWebcam("Camera 1", 0); return webcam0; });
+XGLWebcam *webcam0{ nullptr };
+XGLWebcam *webcam1{ nullptr };
+XGLWebcam *webcam2{ nullptr };
+
+void ExampleXGL::BuildScene() {
+
+	AddShape("shaders/tex", [&](){ webcam0 = new XGLWebcam(this, "Camera 1", 0); return webcam0; });
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(-10, 0, 5.625f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	webcam0->model = translate * rotate * scale;
 
-	AddShape("shaders/tex", [&]() { webcam1 = new XGLWebcam("Camera 2", 1); return webcam1; });
+	AddShape("shaders/tex", [&]() { webcam1 = new XGLWebcam(this, "Camera 2", 1); return webcam1; });
 	scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
 	translate = glm::translate(glm::mat4(), glm::vec3(10, 0, 5.625f));
 	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	webcam1->model = translate * rotate * scale;
 
-	AddShape("shaders/tex", [&]() { webcam2 = new XGLWebcam("Camera 2", 2); return webcam2; });
+	AddShape("shaders/tex", [&]() { webcam2 = new XGLWebcam(this, "Camera 2", 2); return webcam2; });
 	scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
 	translate = glm::translate(glm::mat4(), glm::vec3(-30, 0, 5.625f));
 	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));

@@ -45,8 +45,8 @@ typedef std::vector<std::string> XALDeviceList;
 
 class XAL {
 public:
-	XAL(ALCchar *dn = (NULL), int sr = defaultSamplerate, int fmt = defaultFormat, int nb=1);
-	XAL(ALCchar *dn = NULL);
+	XAL(ALCchar *dn, int sr, int fmt, int nb);
+	XAL(ALCchar *dn);
 	virtual ~XAL();
 
 	void AddBuffers(int count);
@@ -63,6 +63,8 @@ public:
 	void TestTone(int count);
 
 	XALDeviceList EnumerateDevices();
+	XALDeviceList EnumerateCaptureDevices();
+	XALDeviceList EnumeratePlaybackDevices();
 
 	// these must both be powers of 2
 	static const int audioSamples = 128;
