@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
+    <FFMPEG_DIR>$(SolutionDir)\xclass\3rdParty\ffmpeg</FFMPEG_DIR>
   </PropertyGroup>
   <PropertyGroup>
     <IncludePath>$(FFMPEG_DIR)\include;$(IncludePath)</IncludePath>
@@ -12,5 +13,9 @@
       <AdditionalDependencies>avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;postproc.lib;swresample.lib;swscale.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <BuildMacro Include="FFMPEG_DIR">
+      <Value>$(FFMPEG_DIR)</Value>
+    </BuildMacro>
+  </ItemGroup>
 </Project>
