@@ -16,8 +16,8 @@ typedef std::function<void()> XGLFBORender;
 
 class XGLFramebuffer : public XObject {
 public:
-	static const int renderWidth = 3840;
-	static const int renderHeight = 2160;
+	static const int renderWidth = 1920;
+	static const int renderHeight = 1080;
 	static const int multiSamples = 8;
 
 	XGLFramebuffer(int w, int h, bool withColor = true, bool withDepth = true, GLuint texId = 0);

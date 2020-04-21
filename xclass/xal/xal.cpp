@@ -20,7 +20,7 @@ XAL::XAL(ALCchar *dn, int sr, int fmt, int nb) : deviceName(dn), sampleRate(sr),
 	if ( (nBuffers & ~(nBuffers - 1)) != nBuffers)
 		throw std::runtime_error("Number of audio buffers must be power of 2");
 
-	EnumerateDevices();
+	EnumeratePlaybackDevices();
 
 	for (int i = 0; i < deviceList.size(); i++)
 		xprintf("Device: %s\n", deviceList[i].c_str());
@@ -39,6 +39,22 @@ XAL::XAL(ALCchar *dn, int sr, int fmt, int nb) : deviceName(dn), sampleRate(sr),
 
 	alGenSources(1, &alSourceId);
 	AL_CHECK("alGenSources() failed");
+}
+
+XAL::XAL(ALCchar *dn) : deviceName(dn) {
+	EnumerateCaptureDevices();
+
+	for (int i = 0; i < captureDeviceList.size(); i++)
+		xprintf("Capture Device: %s\n", captureDeviceList[i].c_str());
+
+	auto recDevName = captureDeviceList[3].c_str();
+
+	xprintf("Fourth capture device is: %s\n", recDevName);
+
+	if ((audioDevice = alcCaptureOpenDevice(recDevName, defaultSamplerate, defaultFormat, 1024)) == NULL)
+		throw std::runtime_error("alcCaptureOpenDevice() failed");
+
+	xprintf("Recording Device %s is open!", recDevName);
 }
 
 XAL::~XAL() {
@@ -165,6 +181,48 @@ void XAL::TestTone(int count) {
 }
 
 XALDeviceList XAL::EnumerateDevices() {
+	ALboolean hasEnumerate;
+
+	if (deviceList.size() == 0) {
+		hasEnumerate = alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT");
+		if (hasEnumerate == AL_TRUE) {
+			const ALCchar *device = alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER);
+			while (device && *device != '\0') {
+				deviceList.push_back(std::string(device));
+				device += strlen(device) + 1;
+			}
+			const ALCchar *captureDevice = alcGetString(NULL, ALC_CAPTURE_DEVICE_SPECIFIER);
+			while (captureDevice && *captureDevice != '\0') {
+				captureDeviceList.push_back(std::string(captureDevice));
+				captureDevice += strlen(captureDevice) + 1;
+			}
+		}
+	}
+
+	return deviceList;
+}
+
+XALDeviceList XAL::EnumerateCaptureDevices()
+{
+	ALboolean hasEnumerate;
+	if (captureDeviceList.size() == 0) 
+	{
+		hasEnumerate = alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT");
+		if (hasEnumerate == AL_TRUE) 
+		{
+			const ALCchar *captureDevice = alcGetString(NULL, ALC_CAPTURE_DEVICE_SPECIFIER);
+			while (captureDevice && *captureDevice != '\0') {
+				captureDeviceList.push_back(std::string(captureDevice));
+				captureDevice += strlen(captureDevice) + 1;
+			}
+		}
+	}
+	return captureDeviceList;
+}
+
+
+XALDeviceList XAL::EnumeratePlaybackDevices()
+{
 	ALboolean hasEnumerate;
 
 	if (deviceList.size() == 0) {

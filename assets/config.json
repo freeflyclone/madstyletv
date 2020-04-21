@@ -1,26 +1,26 @@
-{ 
-	"AssetFolder" : "assets",
-	"ShaderFolder" : "shaders",
-	"SharedMemory" : false,
-	"SvgFile" : "assets/triangle.svg",
-	"VideoFile4" : "F:/videos/evan/evan-dv.01-03-11_16-09.00.avi",
-	"VideoFile" : "H:/Hero6/GH010155.mp4",
-	"VideoFile1" : "H:/Hero6/GH010150.mp4",
-	"VideoFile2" : "H:/Hero6/GH010154.mp4",
-	"VideoFile3" : "H:/Hero6/GH010155.mp4",
-	"FreeTypeText" : "THING",
-	"Encoder" : {
-		"enabled" : false,
-		"preset" : "faster",
-		"bitrate" : 4000000,
-		"width" : 1280,
-		"height" : 720,
-		"timebase" : [1, 60],
-		"gopsize" : 20,
-		"max_b_frames" : 4,
-		"pixelFormat" : "AV_PIX_FMT_YUV444P",
-		"udpaddress" : "224.1.1.1",
-		"udpport" : 5555
-	}
+{
+  "AssetFolder": "assets",
+  "ShaderFolder": "shaders",
+  "SharedMemory": false,
+  "SvgFile": "assets/triangle.svg",
+  "VideoFile4": "F:/videos/evan/evan-dv.01-03-11_16-09.00.avi",
+  "VideoFile": "assets/CulturalPhenomenon.mp4",
+  "VideoFile1": "H:/Hero6/GH010150.mp4",
+  "VideoFile2": "H:/Hero6/GH010154.mp4",
+  "VideoFile3": "H:/Hero6/GH010155.mp4",
+  "FreeTypeText": "THING",
+  "Encoder": {
+    "enabled": false,
+    "preset": "faster",
+    "bitrate": 4000000,
+    "width": 1280,
+    "height": 720,
+    "timebase": [ 1, 60 ],
+    "gopsize": 20,
+    "max_b_frames": 4,
+    "pixelFormat": "AV_PIX_FMT_YUV444P",
+    "udpaddress": "224.1.1.1",
+    "udpport": 5555
+  }
 }
 
