@@ -6,7 +6,7 @@
 	url = https://github.com/kcat/openal-soft.git
 [submodule "xclass/3rdParty/opencv"]
 	path = xclass/3rdParty/opencv
-	url = https://github.com/opencv/opencv.git
+	url = https://github.com/freeflyclone/opencv.git
 [submodule "xclass/3rdParty/mosquitto"]
 	path = xclass/3rdParty/mosquitto
 	url = https://github.com/eclipse/mosquitto.git
