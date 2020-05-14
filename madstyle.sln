@@ -314,6 +314,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IrrXML", "xclass\3rdParty\a
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "assimp", "xclass\3rdParty\assimp\build-vs15\code\assimp.vcxproj", "{FB3BE9B7-5B1F-3D11-B5B0-FBB423F7D393}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HDF5Dev", "examples\HDF5Dev\HDF5Dev.vcxproj", "{40C9F5C0-9B85-4D35-90F9-E13DA268E08B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -952,6 +954,18 @@ Global
 		{FB3BE9B7-5B1F-3D11-B5B0-FBB423F7D393}.Release|Win32.ActiveCfg = Release|x64
 		{FB3BE9B7-5B1F-3D11-B5B0-FBB423F7D393}.Release|x64.ActiveCfg = Release|x64
 		{FB3BE9B7-5B1F-3D11-B5B0-FBB423F7D393}.Release|x64.Build.0 = Release|x64
+		{40C9F5C0-9B85-4D35-90F9-E13DA268E08B}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{40C9F5C0-9B85-4D35-90F9-E13DA268E08B}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{40C9F5C0-9B85-4D35-90F9-E13DA268E08B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{40C9F5C0-9B85-4D35-90F9-E13DA268E08B}.Debug|Win32.Build.0 = Debug|Win32
+		{40C9F5C0-9B85-4D35-90F9-E13DA268E08B}.Debug|x64.ActiveCfg = Debug|x64
+		{40C9F5C0-9B85-4D35-90F9-E13DA268E08B}.Debug|x64.Build.0 = Debug|x64
+		{40C9F5C0-9B85-4D35-90F9-E13DA268E08B}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{40C9F5C0-9B85-4D35-90F9-E13DA268E08B}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{40C9F5C0-9B85-4D35-90F9-E13DA268E08B}.Release|Win32.ActiveCfg = Release|Win32
+		{40C9F5C0-9B85-4D35-90F9-E13DA268E08B}.Release|Win32.Build.0 = Release|Win32
+		{40C9F5C0-9B85-4D35-90F9-E13DA268E08B}.Release|x64.ActiveCfg = Release|x64
+		{40C9F5C0-9B85-4D35-90F9-E13DA268E08B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1014,6 +1028,7 @@ Global
 		{D122C032-DC5D-3DD2-A2B7-E8ECF7A7186A} = {AEF119EB-E8D2-4FC8-87DF-A818B128D5E0}
 		{8628FC2A-B121-30BA-80FC-1D0242A4A007} = {AEF119EB-E8D2-4FC8-87DF-A818B128D5E0}
 		{FB3BE9B7-5B1F-3D11-B5B0-FBB423F7D393} = {AEF119EB-E8D2-4FC8-87DF-A818B128D5E0}
+		{40C9F5C0-9B85-4D35-90F9-E13DA268E08B} = {24EAE59C-1779-4D00-8819-415B4A41868E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C05D074B-A148-477D-8D8B-145B090FAD2E}
