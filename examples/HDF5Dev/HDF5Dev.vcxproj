@@ -23,6 +23,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>HDF5Dev</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <ProjectName>NetCDFDev</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -177,7 +178,7 @@
     <ClCompile Include="..\common\ImGuiFileDialog.cpp" />
     <ClCompile Include="..\common\imgui_main.cpp" />
     <ClCompile Include="..\common\imgui_menu_bar.cpp" />
-    <ClCompile Include="HDF5DevBuildScene.cpp" />
+    <ClCompile Include="NetCDFDevBuildScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\shaders\diffuse.frag" />

@@ -24,9 +24,6 @@
     <ClCompile Include="..\common\ExampleGUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HDF5DevBuildScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\common\imgui_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -34,6 +31,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\common\ImGuiFileDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NetCDFDevBuildScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

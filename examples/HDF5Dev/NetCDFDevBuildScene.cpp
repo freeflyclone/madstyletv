@@ -1,5 +1,5 @@
 /**************************************************************
-** HDF5Dev: demonstrate use of HDF5 big data library
+** NetCDF: demonstrate use of NetCDF big data library
 **************************************************************/
 #include "ExampleXGL.h"
 
