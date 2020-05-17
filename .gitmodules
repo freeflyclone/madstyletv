@@ -37,6 +37,3 @@
 [submodule "xclass/3rdParty/netcdf-c"]
 	path = xclass/3rdParty/netcdf-c
 	url = https://github.com/freeflyclone/netcdf-c.git
-[submodule "xclass/3rdParty/hdf5"]
-	path = xclass/3rdParty/hdf5
-	url = https://github.com/freeflyclone/hdf5.git
