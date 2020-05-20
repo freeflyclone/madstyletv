@@ -92,5 +92,9 @@
     <None Include="..\..\shaders\gui-tex.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="NetCDF.props" />
+    <None Include="..\..\assets\config.json">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

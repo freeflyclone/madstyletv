@@ -314,7 +314,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IrrXML", "xclass\3rdParty\a
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "assimp", "xclass\3rdParty\assimp\build-vs15\code\assimp.vcxproj", "{FB3BE9B7-5B1F-3D11-B5B0-FBB423F7D393}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HDF5Dev", "examples\HDF5Dev\HDF5Dev.vcxproj", "{40C9F5C0-9B85-4D35-90F9-E13DA268E08B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetCDFDev", "examples\NetCDFDev\HDF5Dev.vcxproj", "{40C9F5C0-9B85-4D35-90F9-E13DA268E08B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

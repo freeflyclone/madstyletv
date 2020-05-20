@@ -9,6 +9,8 @@
   "VideoFile2": "D:/Hero6/GH010154.mp4",
   "VideoFile3": "D:/Hero6/GH010155.mp4",
   "FreeTypeText": "e-man.tv",
+  "NetCDFDir": "E:/Data/Climate/netcdf_merged/",
+  "NetCDFFile": "USC00047821.nc",
   "Encoder": {
     "enabled": false,
     "preset": "faster",

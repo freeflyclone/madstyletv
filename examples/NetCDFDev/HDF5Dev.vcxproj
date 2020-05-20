@@ -112,6 +112,9 @@
     <PostBuildEvent>
       <Command>copy  $(TargetPath) $(SolutionDir)\bin</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>echo NETCDF_DIR: $(NETCDF_DIR)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -129,6 +132,9 @@
     <PostBuildEvent>
       <Command>copy  $(TargetPath) $(SolutionDir)\bin</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>echo NETCDF_DIR: $(NETCDF_DIR)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -150,6 +156,9 @@
     <PostBuildEvent>
       <Command>copy  $(TargetPath) $(SolutionDir)\bin</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>echo NETCDF_DIR: $(NETCDF_DIR)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -171,6 +180,9 @@
     <PostBuildEvent>
       <Command>copy  $(TargetPath) $(SolutionDir)\bin</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>echo NETCDF_DIR: $(NETCDF_DIR)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\common\ExampleGUI.cpp" />
@@ -181,6 +193,7 @@
     <ClCompile Include="NetCDFDevBuildScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\assets\config.json" />
     <None Include="..\..\shaders\diffuse.frag" />
     <None Include="..\..\shaders\diffuse.vert" />
     <None Include="..\..\shaders\gui-tex.frag" />
