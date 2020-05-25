@@ -190,6 +190,7 @@
     <ClCompile Include="..\common\ImGuiFileDialog.cpp" />
     <ClCompile Include="..\common\imgui_main.cpp" />
     <ClCompile Include="..\common\imgui_menu_bar.cpp" />
+    <ClCompile Include="..\common\xglgraph.cpp" />
     <ClCompile Include="NetCDFDevBuildScene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -212,6 +213,9 @@
     <None Include="..\..\shaders\tex.vert" />
     <None Include="..\..\shaders\zz-gui.frag" />
     <None Include="..\..\shaders\zz-gui.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\common\xglgraph.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

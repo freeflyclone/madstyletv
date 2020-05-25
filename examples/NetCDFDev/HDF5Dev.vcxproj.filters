@@ -36,6 +36,9 @@
     <ClCompile Include="NetCDFDevBuildScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\common\xglgraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\shaders\lighting.frag">
@@ -92,9 +95,13 @@
     <None Include="..\..\shaders\gui-tex.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="NetCDF.props" />
     <None Include="..\..\assets\config.json">
       <Filter>Resource Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\common\xglgraph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

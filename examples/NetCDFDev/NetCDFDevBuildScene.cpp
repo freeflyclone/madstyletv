@@ -3,6 +3,7 @@
 **************************************************************/
 #include "ExampleXGL.h"
 #include "netcdf.h"
+#include "xglgraph.h"
 
 namespace {
 	// number of days from 1/1/1600 to 1/1/1752
@@ -97,115 +98,144 @@ struct Epoch {
 
 Epoch istiEpoch{1600, 1, 1, 0};
 
-void NetCDFInit(std::string file) {
-	int status, ncid, ndims, nvars, ngatts, unlimdimid;
-	size_t nObs;
+struct ISTIObservation {
+	GregorianDate date;
+	float averageMonthlyTemperature;
+};
 
-	if ((status = nc_open(file.c_str(), NC_NOWRITE, &ncid)) != NC_NOERR)
-	{
-		xprintf("%s: nc_open() failed: %d\n", __FUNCTION__, status);
-		return;
-	}
-	
-	if ((status = nc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)) != NC_NOERR)
-	{
-		xprintf("%s: nc_inq() failed: %d\n", __FUNCTION__, status);
-		nc_close(ncid);
-		return;
-	}
+typedef std::vector<ISTIObservation> ISTIObservations;
 
-	for (int i = 0; i < ndims; i++)
-	{
-		size_t dimlen = 0;
-		if ((status = nc_inq_dimlen(ncid, i, &dimlen)) != NC_NOERR)
+class NetCDFData : public ISTIObservations {
+public:
+	 NetCDFData(std::string file) {
+		int status, ncid, ndims, nvars, ngatts, unlimdimid;
+		size_t nObs;
+
+		if ((status = nc_open(file.c_str(), NC_NOWRITE, &ncid)) != NC_NOERR)
+		{
+			xprintf("%s: nc_open() failed: %d\n", __FUNCTION__, status);
+			return;
+		}
+
+		if ((status = nc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)) != NC_NOERR)
+		{
+			xprintf("%s: nc_inq() failed: %d\n", __FUNCTION__, status);
+			nc_close(ncid);
+			return;
+		}
+
+		for (int i = 0; i < ndims; i++)
+		{
+			size_t dimlen = 0;
+			if ((status = nc_inq_dimlen(ncid, i, &dimlen)) != NC_NOERR)
+			{
+				xprintf("%s: nc_inq_unlimdim() failed: %d\n", __FUNCTION__, status);
+				return;
+			}
+			xprintf("%s: dimension[%d]: %d\n", __FUNCTION__, i, dimlen);
+		}
+
+		// Question: how do I know "1" is the dimension ID I care about for "variable" length?
+		// Answer: Each "variable" can be multidimensional, so each must have its dimensions
+		//         precisely specified, and that specification involves *references* to the file's
+		//		   global list of possible dimension lengths.  "1" was observed to be the dimension
+		//		   ID used by the variables in the NetCDF files I care about, 
+		//		   ie: avg temperature time series from ISTI databank.
+		if ((status = nc_inq_dimlen(ncid, 1, &nObs)) != NC_NOERR)
 		{
 			xprintf("%s: nc_inq_unlimdim() failed: %d\n", __FUNCTION__, status);
 			return;
 		}
-		xprintf("%s: dimension[%d]: %d\n", __FUNCTION__, i, dimlen);
-	}
-		
-	// Question: how do I know "1" is the dimension ID I care about for "variable" length?
-	// Answer: Each "variable" can be multidimensional, so each must have its dimensions
-	//         precisely specified, and that specification involves *references* to the file's
-	//		   global list of possible dimension lengths.  "1" was observed to be the dimension
-	//		   ID used by the variables in the NetCDF files I care about, 
-	//		   ie: avg temperature time series from ISTI databank.
-	if ((status = nc_inq_dimlen(ncid, 1, &nObs)) != NC_NOERR)
-	{
-		xprintf("%s: nc_inq_unlimdim() failed: %d\n", __FUNCTION__, status);
-		return;
-	}
-	xprintf("%s(): nDims: %d, nvars: %d, ngatts: %d, unlimdimid: %d, nObs: %d\n", __FUNCTION__, ndims, nvars, ngatts, unlimdimid, nObs);
+		xprintf("%s(): nDims: %d, nvars: %d, ngatts: %d, unlimdimid: %d, nObs: %d\n", __FUNCTION__, ndims, nvars, ngatts, unlimdimid, nObs);
 
-	for (int i = 0; i < nvars; i++)
-	{
-		char varName[512];
-		int natts, type, ndims, dimIds[32];
-
-		if ((status = nc_inq_var(ncid, i, varName, &type, &ndims, dimIds, &natts)) != NC_NOERR)
+		for (int i = 0; i < nvars; i++)
 		{
-			xprintf("%s(): nc_inq_var() failed: %d\n", __FUNCTION__, status);
-			break;
-		}
+			char varName[512];
+			int natts, type, ndims, dimIds[32];
 
-		xprintf("%s(): var[%d]: %s, type: %d, ndims: %d", __FUNCTION__, i, varName, type, ndims);
-		if (ndims)
-			xprintf(" dimIds[0]: %d", dimIds[0]);
-		xprintf("\n");
-	}
-
-	if (true)
-	{
-		int surfaceAvgTempId;
-		float* avgTemps = new float[nObs];
-		int timeId;
-		int* times = new int[nObs];
-
-		if ((status = nc_inq_varid(ncid, "time", &timeId)) != NC_NOERR)
-		{
-			xprintf("%s(): nc_inq_varid() failed: %d\n", __FUNCTION__, status);
-		}
-		else {
-			if ((status = nc_inq_varid(ncid, "surface_average_temperature", &surfaceAvgTempId)) != NC_NOERR)
+			if ((status = nc_inq_var(ncid, i, varName, &type, &ndims, dimIds, &natts)) != NC_NOERR)
 			{
-				xprintf("%s(): nc_inq_varid() failed %d\n", __FUNCTION__, status);
+				xprintf("%s(): nc_inq_var() failed: %d\n", __FUNCTION__, status);
+				break;
 			}
-			else
-			{
-				if ((status = nc_get_var_int(ncid, timeId, times)) != NC_NOERR)
-				{
-					xprintf("%s(): nc_get_var_int() failed: %d\n", __FUNCTION__, status);
-				}
-				else 
-				{
-					if ((status = nc_get_var_float(ncid, surfaceAvgTempId, avgTemps)) != NC_NOERR)
-					{
-						xprintf("%s(): nc_get_var_float() failed: %d\n", __FUNCTION__, status);
-					}
-					else {
-						for (int i = 0; i < nObs; i++)
-						{
-							GregorianDate d = istiEpoch + times[i];
 
-							xprintf("%s(): %02d/%02d/%04d: avgTemp: %0.2f\n", __FUNCTION__, d.month, d.day, d.year, avgTemps[i]);
+			xprintf("%s(): var[%d]: %s, type: %d, ndims: %d", __FUNCTION__, i, varName, type, ndims);
+			if (ndims)
+				xprintf(" dimIds[0]: %d", dimIds[0]);
+			xprintf("\n");
+		}
+
+		if (true)
+		{
+			int surfaceAvgTempId;
+			float* avgTemps = new float[nObs];
+			int timeId;
+			int* times = new int[nObs];
+
+			if ((status = nc_inq_varid(ncid, "time", &timeId)) != NC_NOERR)
+			{
+				xprintf("%s(): nc_inq_varid() failed: %d\n", __FUNCTION__, status);
+			}
+			else {
+				if ((status = nc_inq_varid(ncid, "surface_average_temperature", &surfaceAvgTempId)) != NC_NOERR)
+				{
+					xprintf("%s(): nc_inq_varid() failed %d\n", __FUNCTION__, status);
+				}
+				else
+				{
+					if ((status = nc_get_var_int(ncid, timeId, times)) != NC_NOERR)
+					{
+						xprintf("%s(): nc_get_var_int() failed: %d\n", __FUNCTION__, status);
+					}
+					else
+					{
+						if ((status = nc_get_var_float(ncid, surfaceAvgTempId, avgTemps)) != NC_NOERR)
+						{
+							xprintf("%s(): nc_get_var_float() failed: %d\n", __FUNCTION__, status);
+						}
+						else {
+							for (int i = 0; i < nObs; i++)
+							{
+								GregorianDate d = istiEpoch + times[i];
+
+								push_back({d, avgTemps[i]});
+							}
 						}
 					}
 				}
 			}
+			delete avgTemps;
 		}
-		delete avgTemps;
+		nc_close(ncid);
 	}
-	nc_close(ncid);
-}
+
+private:
+};
+
+XGLGraph* temperatureGraph;
+std::vector<float> temps;
 
 void ExampleXGL::BuildScene() {
 	XGLShape* shape;
+	glm::mat4 translate;
 
 	std::string netCdfPath = config.WideToBytes(config.Find(L"NetCDFDir")->AsString());
 	std::string netCdfFile = config.WideToBytes(config.Find(L"NetCDFFile")->AsString());
 
-	NetCDFInit(netCdfPath + netCdfFile);
+	NetCDFData nc(netCdfPath + netCdfFile);
+	for (auto o : nc)
+		temps.push_back(o.averageMonthlyTemperature);
+
+	xprintf("nc has %d entries\n", nc.size());
 
 	AddShape("shaders/000-simple", [&]() { shape = new XGLTriangle(); return shape; });
+
+	AddShape("shaders/000-attributes", [&]() { 
+		temperatureGraph = new XGLGraph(temps); 
+		return temperatureGraph; 
+	});
+
+	temperatureGraph->attributes.diffuseColor = XGLColors::green;
+	translate = glm::translate(glm::mat4(), glm::vec3(0.0, 15, 0));
+	temperatureGraph->model = translate;
 }
