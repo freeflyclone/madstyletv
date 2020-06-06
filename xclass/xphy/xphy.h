@@ -7,6 +7,8 @@
 #include "type_ptr.hpp"
 
 typedef float XPhyMass;
+typedef float XPhySpeed;			// meters/sec
+typedef glm::vec3 XPhyDirection;	// direction of travel
 typedef glm::vec3 XPhyPoint;
 typedef glm::vec3 XPhyVelocity;
 typedef glm::fquat XPhyOrientation;

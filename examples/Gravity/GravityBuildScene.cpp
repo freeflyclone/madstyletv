@@ -12,40 +12,59 @@
 #include "ExampleXGL.h"
 #include "xphybody.h"
 
-const glm::vec3 g = { 0.0f, 0.0f, -9.80665f };
-XGLSphere *shape;
+XGLSphere *particle;
+XGLSphere *anchor;
 
 void ExampleXGL::BuildScene() {
 	extern bool initHmd;
 	initHmd = false;
-	AddShape("shaders/specular", [&](){ shape = new XGLSphere(0.5f, 64); return shape; });
 
-	shape->p = { 0.0f, 0.0f, 10.0f };
-	shape->m = 2.0f;
-	shape->SetMatrix();
+	AddShape("shaders/specular", [&]() { anchor = new XGLSphere(1.0, 64); return anchor; });
+	AddShape("shaders/specular", [&](){ particle = new XGLSphere(0.5f, 64); return particle; });
 
-	// A bouncing ball simulation, with damping
-	shape->SetAnimationFunction([&](float clock){
-		XPhyBody *b = static_cast<XPhyBody *>(shape);
+	// setup physics initial conditions for "anchor" (aka attractor)
+	anchor->attributes.diffuseColor = XGLColors::yellow;
+	anchor->m = 20.0f;
 
-		float g = 9.8f;
-		float dt = 0.01666f;
+	// setup initial physics state for "particle"
+	XPhyBody& b = *(XPhyBody*)particle;
+	XPhyPoint initialPosition{ 0, 5.0, 0 };
+	XPhyVelocity initialVelocity{ 0.1, 0.1, 0.1 };
+	XPhyMass initialMass{ 2.0 };
+	XPhySpeed initialSpeed{ 0.05 };
 
-		float T = 0.5f * b->m * b->v.z * b->v.z;
-		float V = b->m * (g*g) * b->p.z;
+	b = { initialMass, initialSpeed, initialPosition, initialVelocity };
 
-		float L = (T - V) * dt;
-		xprintf("L: %0.4f\n", L);
+	// set model matrix (affect the visuals) with the result
+	b.SetMatrix();
 
-		b->v.z -= g * dt;
-		b->p.z += b->v.z;
-		
-		if (b->p.z < 0.0f) {
-			b->p.z *= -0.9f;
-			b->v.z *= -0.9f;
-		}
+	// gravitational attraction between "anchor" and "particle"
+	// (at least that's the intent, not there yet)
+	particle->SetAnimationFunction([&](float clock){
+		XPhyBody& b = *static_cast<XPhyBody*>(particle);
+		XPhyBody& a = *static_cast<XPhyBody*>(anchor);
 
-		// set model matrix (affect the visuals) with the result
-		b->SetMatrix();
+		XPhyDirection direction = glm::normalize(a.p - b.p);
+		XPhyDirection stepDir = direction * b.s;
+
+		b.v += stepDir;
+		b.p += b.v;
+
+		b.SetMatrix();
 	});
+
+	XInputKeyFunc resetBall = [&](int key, int flags) {
+		const bool isDown = (flags & 0x8000) == 0;
+		const bool isRepeat = (flags & 0x4000) != 0;
+		static bool wireFrameMode = false;
+
+		if (isDown && !isRepeat) {
+			XPhyBody *b = static_cast<XPhyBody *>(particle);
+			b->p = { 0, 0, 10 };
+			b->v = { 0, 0, 0 };
+		}
+	};
+
+	AddKeyFunc('R', resetBall);
+	AddKeyFunc('r', resetBall);
 }
