@@ -176,6 +176,7 @@
     <ClCompile Include="..\common\ImGuiFileDialog.cpp" />
     <ClCompile Include="..\common\imgui_main.cpp" />
     <ClCompile Include="..\common\imgui_menu_bar.cpp" />
+    <ClCompile Include="..\common\xglimgui.cpp" />
     <ClCompile Include="GravityBuildScene.cpp" />
     <ClCompile Include="GravityGUI.cpp" />
   </ItemGroup>

@@ -15,6 +15,13 @@
 XGLSphere *particle;
 XGLSphere *anchor;
 
+XPhyPoint initialPosition{ 0, 5.0, 0 };
+XPhyVelocity initialVelocity{ 0.1, 0.1, 0.1 };
+XPhyMass initialMass{ 2.0 };
+XPhySpeed initialSpeed{ 0.05 };
+
+bool ctlWindow{ true };
+
 void ExampleXGL::BuildScene() {
 	extern bool initHmd;
 	initHmd = false;
@@ -28,11 +35,6 @@ void ExampleXGL::BuildScene() {
 
 	// setup initial physics state for "particle"
 	XPhyBody& b = *(XPhyBody*)particle;
-	XPhyPoint initialPosition{ 0, 5.0, 0 };
-	XPhyVelocity initialVelocity{ 0.1, 0.1, 0.1 };
-	XPhyMass initialMass{ 2.0 };
-	XPhySpeed initialSpeed{ 0.05 };
-
 	b = { initialMass, initialSpeed, initialPosition, initialVelocity };
 
 	// set model matrix (affect the visuals) with the result
@@ -59,12 +61,20 @@ void ExampleXGL::BuildScene() {
 		static bool wireFrameMode = false;
 
 		if (isDown && !isRepeat) {
-			XPhyBody *b = static_cast<XPhyBody *>(particle);
-			b->p = { 0, 0, 10 };
-			b->v = { 0, 0, 0 };
+			XPhyBody& b = *(XPhyBody*)particle;
+			b = { initialMass, initialSpeed, initialPosition, initialVelocity };
 		}
 	};
 
 	AddKeyFunc('R', resetBall);
 	AddKeyFunc('r', resetBall);
+	menuFunctions.push_back(([&]() {
+		if (ImGui::Begin("Gravity Controls", &ctlWindow))
+		{
+			ImGui::SliderFloat("Initial Speed", &initialSpeed, 0.0f, 1.0f, "%0.4f");
+			ImGui::SliderFloat("Initial Mass", &initialMass, 0.0f, 200.0f, "%0.4f");
+		}
+		ImGui::End();
+	}));
+
 }
