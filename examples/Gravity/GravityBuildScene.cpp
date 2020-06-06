@@ -19,24 +19,29 @@ void ExampleXGL::BuildScene() {
 	extern bool initHmd;
 	initHmd = false;
 	AddShape("shaders/specular", [&](){ shape = new XGLSphere(0.5f, 64); return shape; });
+
 	shape->p = { 0.0f, 0.0f, 10.0f };
-	shape->m = 1.0f;
+	shape->m = 0.05f;
 	shape->SetMatrix();
 
 	// A bouncing ball simulation, with damping
 	shape->SetAnimationFunction([&](float clock){
-		XPhyBody *pb = static_cast<XPhyBody *>(shape);
+		XPhyBody *b = static_cast<XPhyBody *>(shape);
 
-		if (pb->p.z <= shape->radius) {
-			pb->v *= -0.6f;				// semi elastic bounce
-			pb->p.z = shape->radius;	// fix overshoot	
-		}
-		else
-			pb->v += (g / 600.0f);		// integrate velocity
+		float g = -9.8f;
+		float dt = 0.01666f;
 
-		pb->p += pb->v;
+		float T = 0.5f * b->m * b->v.z;
+		float V = b->m * (g*g) * b->p.z;
+
+		float L = T * V * dt;
+
+		xprintf("L: %0.5f\n", L);
+
+		b->v.z += g * dt;
+		b->p.z += L;
 
 		// set model matrix (affect the visuals) with the result
-		pb->SetMatrix();
+		b->SetMatrix();
 	});
 }

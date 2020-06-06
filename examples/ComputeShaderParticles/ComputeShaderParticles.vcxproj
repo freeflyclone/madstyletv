@@ -188,7 +188,6 @@
     <None Include="..\..\shaders\compute-shader" />
     <None Include="..\..\shaders\diffuse.frag" />
     <None Include="..\..\shaders\diffuse.vert" />
-    <None Include="..\..\shaders\particle-system" />
     <None Include="..\..\shaders\particles.comp" />
     <None Include="..\..\shaders\tex.frag" />
     <None Include="..\..\shaders\tex.vert" />

@@ -24,12 +24,12 @@ public:
 	AnimationFn invokeComputeShader;
 
 	VertexList verts;
-	GLuint vbo,vao;
-	GLuint tex;
-	XGLShader *computeShader;
-	int numParticles;
-	int maxInvocations;
-	int sx, sy, sz;
-	int cx, cy, cz;
+	GLuint vbo{ 0 }, vao{ 0 };
+	GLuint tex{ 0 };
+	XGLShader *computeShader{ nullptr };
+	int numParticles{ 0 };
+	int maxInvocations{ 0 };
+	int sx{ 0 }, sy{ 0 }, sz{ 0 };
+	int cx{ 0 }, cy{ 0 }, cz{ 0 };
 };
 
