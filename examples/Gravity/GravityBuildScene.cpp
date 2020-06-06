@@ -21,25 +21,29 @@ void ExampleXGL::BuildScene() {
 	AddShape("shaders/specular", [&](){ shape = new XGLSphere(0.5f, 64); return shape; });
 
 	shape->p = { 0.0f, 0.0f, 10.0f };
-	shape->m = 0.05f;
+	shape->m = 2.0f;
 	shape->SetMatrix();
 
 	// A bouncing ball simulation, with damping
 	shape->SetAnimationFunction([&](float clock){
 		XPhyBody *b = static_cast<XPhyBody *>(shape);
 
-		float g = -9.8f;
+		float g = 9.8f;
 		float dt = 0.01666f;
 
-		float T = 0.5f * b->m * b->v.z;
+		float T = 0.5f * b->m * b->v.z * b->v.z;
 		float V = b->m * (g*g) * b->p.z;
 
-		float L = T * V * dt;
+		float L = (T - V) * dt;
+		xprintf("L: %0.4f\n", L);
 
-		xprintf("L: %0.5f\n", L);
-
-		b->v.z += g * dt;
-		b->p.z += L;
+		b->v.z -= g * dt;
+		b->p.z += b->v.z;
+		
+		if (b->p.z < 0.0f) {
+			b->p.z *= -0.9f;
+			b->v.z *= -0.9f;
+		}
 
 		// set model matrix (affect the visuals) with the result
 		b->SetMatrix();
