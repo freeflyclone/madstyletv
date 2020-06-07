@@ -1,24 +1,29 @@
 /**************************************************************
 ** GravityBuildScene.cpp
 **
-** Simulate gravity: a ground plane and a bouncing ball.
+** Simulate gravity: an adventure in n-body simulation math.
 **
-** To learn about basic physics math, it helps to have visual
-** representations of what the math actually does.
+** My knowledge of math is weaker than I'd like.
 **
-** Here, we'll look at Kinetic Energy (KE), elastic collisions,
-** and friction.
+** I'm curious how physics simulations actually work,
+** and implementing my own (however imperfect) will require 
+** me to advance my math skills, and that will hopefully stave 
+** off mental decay as I age.
 **************************************************************/
 #include "ExampleXGL.h"
 #include "xphybody.h"
 
-XGLSphere *particle;
-XGLSphere *anchor;
+XGLSphere *p1, *p2;
 
-XPhyPoint initialPosition{ 0, 5.0, 0 };
-XPhyVelocity initialVelocity{ 0.1, 0.1, 0.1 };
+XPhyPoint initialPosition{ 10, 0, 0 };
+XPhyVelocity initialVelocity{ 0.0, 0.0, 0.0 };
 XPhyMass initialMass{ 2.0 };
-XPhySpeed initialSpeed{ 0.05 };
+XPhySpeed initialSpeed{ 0.0 };
+XPhyForce force;
+
+XPhyMagnitude g{ 9.8 };
+XPhyMagnitude dt{ 0.01 };
+bool isRunning{ true };
 
 bool ctlWindow{ true };
 
@@ -26,33 +31,38 @@ void ExampleXGL::BuildScene() {
 	extern bool initHmd;
 	initHmd = false;
 
-	AddShape("shaders/specular", [&]() { anchor = new XGLSphere(1.0, 64); return anchor; });
-	AddShape("shaders/specular", [&](){ particle = new XGLSphere(0.5f, 64); return particle; });
+	AddShape("shaders/specular", [&]() { p1 = new XGLSphere(1.0, 64); return p1; });
+	AddShape("shaders/specular", [&](){ p2 = new XGLSphere(0.5f, 64); return p2; });
 
-	// setup physics initial conditions for "anchor" (aka attractor)
-	anchor->attributes.diffuseColor = XGLColors::yellow;
-	anchor->m = 20.0f;
+	// setup initial initial state for "p1"
+	XPhyBody& b1 = *(XPhyBody*)p1;
+	b1 = { 20, initialSpeed, {0,0,0}, {0,0,0} };
+	b1.SetMatrix();
 
-	// setup initial physics state for "particle"
-	XPhyBody& b = *(XPhyBody*)particle;
-	b = { initialMass, initialSpeed, initialPosition, initialVelocity };
+	// setup initial physics state for "p2"
+	XPhyBody& b2 = *(XPhyBody*)p2;
+	b2 = { initialMass, initialSpeed, initialPosition, initialVelocity };
+	b2.SetMatrix();
 
-	// set model matrix (affect the visuals) with the result
-	b.SetMatrix();
+	// gravitational attraction between p1 and p2
+	p2->SetAnimationFunction([&](float clock){
+		XPhyBody& b1 = *static_cast<XPhyBody*>(p1);
+		XPhyBody& b2 = *static_cast<XPhyBody*>(p2);
+		
+		if (isRunning) {
+			XPhyDirection dir = glm::normalize(b1.p - b2.p);
+			float distance = glm::length(b1.p - b2.p);
 
-	// gravitational attraction between "anchor" and "particle"
-	// (at least that's the intent, not there yet)
-	particle->SetAnimationFunction([&](float clock){
-		XPhyBody& b = *static_cast<XPhyBody*>(particle);
-		XPhyBody& a = *static_cast<XPhyBody*>(anchor);
+			if (distance == 0.0f)
+				distance = 0.0000000001f;
 
-		XPhyDirection direction = glm::normalize(a.p - b.p);
-		XPhyDirection stepDir = direction * b.s;
+			force = { dir, g * (b1.m * b2.m / pow(distance, 2)) };
 
-		b.v += stepDir;
-		b.p += b.v;
+			b2.v += (force.d * dt);
+			b2.p += b2.v;
 
-		b.SetMatrix();
+			b2.SetMatrix();
+		}
 	});
 
 	XInputKeyFunc resetBall = [&](int key, int flags) {
@@ -61,7 +71,7 @@ void ExampleXGL::BuildScene() {
 		static bool wireFrameMode = false;
 
 		if (isDown && !isRepeat) {
-			XPhyBody& b = *(XPhyBody*)particle;
+			XPhyBody& b = *(XPhyBody*)p2;
 			b = { initialMass, initialSpeed, initialPosition, initialVelocity };
 		}
 	};
@@ -71,10 +81,28 @@ void ExampleXGL::BuildScene() {
 	menuFunctions.push_back(([&]() {
 		if (ImGui::Begin("Gravity Controls", &ctlWindow))
 		{
-			ImGui::SliderFloat("Initial Speed", &initialSpeed, 0.0f, 1.0f, "%0.4f");
-			ImGui::SliderFloat("Initial Mass", &initialMass, 0.0f, 200.0f, "%0.4f");
+			int changes{ 0 };
+			changes += ImGui::Checkbox("Running", &isRunning);
+
+			ImGui::SameLine();
+
+			changes += ImGui::SliderFloat("dt", &dt, 0.0f, 1.0f, "%0.4f");
+			changes += ImGui::SliderFloat("initial x", &initialPosition.x, -100.0f, 100.0f, "%0.4f");
+			changes += ImGui::SliderFloat("initial y", &initialPosition.y, -100.0f, 100.0f, "%0.4f");
+			changes += ImGui::SliderFloat("initial z", &initialPosition.z, -100.0f, 100.0f, "%0.4f");
+
+			ImGui::SliderFloat("p2.p.x", &p2->p.x, -100.0f, 100.0f, "%0.4f");
+			ImGui::SliderFloat("p2.p.y", &p2->p.y, -100.0f, 100.0f, "%0.4f");
+			ImGui::SliderFloat("p2.p.z", &p2->p.z, -100.0f, 100.0f, "%0.4f");
+
+			ImGui::Text("Force: %0.4f", force.m);
+
+			if (!isRunning && changes) {
+				XPhyBody& b = *(XPhyBody*)p2;
+				b = { initialMass, initialSpeed, initialPosition, initialVelocity };
+				b.SetMatrix();
+			}
 		}
 		ImGui::End();
 	}));
-
 }
