@@ -7,30 +7,36 @@
 
 // Default struct alignment is 8 in VS 2017 64-bit. We want 4
 #pragma pack(push, 4)
+
+struct _data {
+	uint32_t range;
+	uint16_t signal;
+	uint16_t reflect;
+	uint32_t noise;
+};
+
+typedef _data dataBlock[64];
+
 struct ousterAzimuthBlock
 {
 	uint64_t ts;
 	uint16_t fId;
 	uint16_t mId;
 	uint32_t encCount;
-
-	struct {
-		uint32_t range;
-		uint16_t signal;
-		uint16_t reflect;
-		uint32_t noise;
-	} db[64];
+	dataBlock db;
 	uint32_t azimuthBlockStatus;
 };
 #pragma pack(pop)
 
-class OusterSensor {
+class OusterSensor : public XGLPointCloud {
 public:
-	OusterSensor(std::string fn) : fileName(fn)
+	OusterSensor(std::string fn) : fileName(fn), XGLPointCloud(64 * 1024)
 	{
-		xprintf("%s: fileName: %s, sizeof(ousterAzimuthBlock): %d\n", 
-			__FUNCTION__, 
-			fileName.c_str(), 
+		ReadConfig();
+
+		xprintf("%s: fileName: %s, sizeof(ousterAzimuthBlock): %d\n",
+			__FUNCTION__,
+			fileName.c_str(),
 			sizeof(ousterAzimuthBlock));
 
 		if ((fp = fopen(fileName.c_str(), "rb")) == nullptr)
@@ -40,18 +46,17 @@ public:
 		for (int i = 0; i < 0xE0; i++)
 			fread(&ab, sizeof(ab), 1, fp);
 
+		v.clear();
+
+		xprintf("sizeof(dataBlock): %d\n", sizeof(dataBlock));
+
 		// read one scan's worth of data
 		for (int i = 0; i < nColumns; i++) {
 			fread(&ab, sizeof(ab), 1, fp);
 
-			for (int y = 0; y < nRows; y++) {
-				uint32_t* p = rBuffer + i + (y * nColumns);
-				*p = ab.db[y].range;
-			}
-
-			xprintf("%016X, %04X %04X, %d - %08X, %08X, %04X, %04X, %08X\n", 
-				ab.ts, 
-				ab.mId, 
+			xprintf("%016X, %04X %04X, %5d - %08X, %08X, %04X, %04X, %08X\n",
+				ab.ts,
+				ab.mId,
 				ab.fId,
 				ab.encCount,
 				ab.azimuthBlockStatus,
@@ -62,9 +67,23 @@ public:
 		}
 	}
 
-	~OusterSensor() 
+	void ReadConfig() {
+		XAssets sensorCfg("C:/Users/evan/Desktop/lombard_street_config-1024x10.json");
+
+		JSONArray beam_altitude_angles = sensorCfg.Find(L"beam_altitude_angles")->AsArray();
+		JSONArray beam_azimuth_angles = sensorCfg.Find(L"beam_azimuth_angles")->AsArray();
+
+		for (JSONValue* altitude : beam_altitude_angles)
+			beamAltitudeAngles.push_back(altitude->AsNumber());
+
+		for (JSONValue* azimuth : beam_azimuth_angles)
+			beamAzimuthAngles.push_back(azimuth->AsNumber());
+	}
+
+	~OusterSensor()
 	{
 	}
+
 
 private:
 	std::string fileName;
@@ -72,18 +91,32 @@ private:
 
 	ousterAzimuthBlock ab;
 
-	static const int nRows{ 64 };
 	static const int nColumns{ 1024 };
-	uint32_t rBuffer[nRows*nColumns];
+	static const int nRows{ 64 };
+
+	uint32_t rBuffer[nColumns * nRows];
+
+	std::vector<float> beamAltitudeAngles;
+	std::vector<float> beamAzimuthAngles;
+
+	XGLTexQuad* rangeImage;
 };
 
 void ExampleXGL::BuildScene() {
+	OusterSensor *pOS;
+
 	try
 	{
-		OusterSensor os("C:/Users/evan/Desktop/lombard_street_OS1.raw");
+		AddShape("shaders/000-simple", [&]() {
+			pOS = new OusterSensor("C:/Users/evan/Desktop/lombard_street_OS1.raw");
+			return pOS;
+		});
 	}
 	catch (std::exception e)
 	{
 		xprintf("OusterSensor error: %s\n", e.what());
 	}
 }
+
+/*
+*/

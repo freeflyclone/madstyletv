@@ -11,6 +11,7 @@
   "FreeTypeText": "e-man.tv",
   "NetCDFDir": "E:/Data/Climate/netcdf_merged/",
   "NetCDFFile": "USC00047821.nc",
+  "OusterSensorConfig": "\"C:/Users/Evan/Desktop/lombard_street_config-1024x10.json",
   "Encoder": {
     "enabled": false,
     "preset": "faster",
