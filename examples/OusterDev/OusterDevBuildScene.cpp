@@ -79,25 +79,28 @@ public:
 
 		firstFrameOffset = ifs.tellg();
 
-		ifs.read((char*)&oub, sizeof(oub));
-		if (!ifs)
-			throw std::runtime_error("Failed to read complete UDP block");
+		for (int blockNum = 0; blockNum < nBlocks; blockNum++)
+		{
+			ifs.read((char*)&oub, sizeof(oub));
+			if (!ifs)
+				throw std::runtime_error("Failed to read complete UDP block");
 
-		for (int i = 0; i<nColumns; i++) {
-			float theta = (float)i / nColumns * M_PI * 2;
-			auto x = sin(theta);
-			auto y = cos(theta);
+			for (int i = 0; i < nAzimuthBlocks; i++) {
+				ousterAzimuthBlock& ab = oub[i];
+				float theta = (float)(blockNum * nAzimuthBlocks + i) / nColumns * M_PI * 2;
+				auto x = sin(theta);
+				auto y = cos(theta);
 
-			for (int j = 0; j < nRows; j++) {
-				float phi = beamAltitudeAngles[j] / 360.0 * M_PI * 2;
-				//float range = (float)ab.db[j].range / 100000.0f;
-				float range = 10;
+				for (int j = 0; j < nRows; j++) {
+					float phi = beamAltitudeAngles[j] / 360.0 * M_PI * 2;
+					float range = (float)ab.db[j].range / 1000.0f;
 
-				auto xr = range * x;
-				auto yr = range * y;
-				auto z = range * sin(phi);
+					auto xr = range * x;
+					auto yr = range * y;
+					auto z = range * sin(phi);
 
-				v.push_back({ {xr,yr,z}, {}, {}, XGLColors::white });
+					v.push_back({ {xr,yr,z}, {}, {}, XGLColors::white });
+				}
 			}
 		}
 	}
@@ -124,6 +127,7 @@ public:
 
 		nColumns = std::stoi(modeColumns);
 		nFps = std::stoi(modeFps);
+		nBlocks = nColumns / nAzimuthBlocks;
 	}
 
 	~OusterSensor()
@@ -142,12 +146,11 @@ private:
 	static const int nRows{ 64 };
 	static const int nAzimuthBlocks{ 16 };
 	int nFps{ 10 };
+	int nBlocks{ 1024 / 16 };
 
 	std::vector<float> beamAltitudeAngles;
 	std::vector<float> beamAzimuthAngles;
 	std::string lidarMode;
-
-	XGLTexQuad* rangeImage;
 };
 
 void ExampleXGL::BuildScene() {
