@@ -5,6 +5,11 @@
 **************************************************************/
 #include "ExampleXGL.h"
 
+#include <locale>
+#include <codecvt>
+#include <iostream>
+#include <fstream>
+
 // Default struct alignment is 8 in VS 2017 64-bit. We want 4
 #pragma pack(push, 4)
 
@@ -20,50 +25,80 @@ typedef _data dataBlock[64];
 struct ousterAzimuthBlock
 {
 	uint64_t ts;
-	uint16_t fId;
 	uint16_t mId;
+	uint16_t fId;
 	uint32_t encCount;
 	dataBlock db;
 	uint32_t azimuthBlockStatus;
 };
+
+typedef ousterAzimuthBlock ousterUdpBlock[16];
+
 #pragma pack(pop)
 
 class OusterSensor : public XGLPointCloud {
 public:
-	OusterSensor(std::string fn) : fileName(fn), XGLPointCloud(64 * 1024)
+	OusterSensor(std::string fn) : fileName(fn), XGLPointCloud(0)
 	{
 		ReadConfig();
 
-		xprintf("%s: fileName: %s, sizeof(ousterAzimuthBlock): %d\n",
-			__FUNCTION__,
-			fileName.c_str(),
-			sizeof(ousterAzimuthBlock));
+		XGLPointCloud::drawFn = [&]()
+		{
+			if (v.size())
+			{
+				glPointSize(2.0f);
+				glDrawArrays(GL_POINTS, 0, GLsizei(v.size()));
+				GL_CHECK("glDrawPoints() failed");
+			}
+		};
 
-		if ((fp = fopen(fileName.c_str(), "rb")) == nullptr)
-			throw std::runtime_error("Unable to open file.");
+		ifs.open(fileName, std::ifstream::binary);
+		if (ifs)
+		{
+			ousterAzimuthBlock ab;
 
-		// flush turd at start of file
-		for (int i = 0; i < 0xE0; i++)
-			fread(&ab, sizeof(ab), 1, fp);
+			ifs.read((char*)&ab, sizeof(ab));
+			if (!ifs)
+				throw std::runtime_error("Failed to read initial AzimuthBlock");
 
-		v.clear();
+			// Skip to start of complete scan, if needed.
+			if (ab.mId != 0) {
+				do {
+					ifs.read((char*)&ab, sizeof(ab));
+					if (!ifs)
+						throw std::runtime_error("Failed to read AzimuthBlock");
 
-		xprintf("sizeof(dataBlock): %d\n", sizeof(dataBlock));
+					// if we detect (hard-coded for now) max measurement Id, we're done.
+					if (ab.mId == (nColumns-1))
+						break;
+				} while (ifs);
+			}
+		}
+		else 
+			throw std::runtime_error("Failed to open input file");
 
-		// read one scan's worth of data
-		for (int i = 0; i < nColumns; i++) {
-			fread(&ab, sizeof(ab), 1, fp);
+		firstFrameOffset = ifs.tellg();
 
-			xprintf("%016X, %04X %04X, %5d - %08X, %08X, %04X, %04X, %08X\n",
-				ab.ts,
-				ab.mId,
-				ab.fId,
-				ab.encCount,
-				ab.azimuthBlockStatus,
-				ab.db[0].range,
-				ab.db[0].signal,
-				ab.db[0].reflect,
-				ab.db[0].noise);
+		ifs.read((char*)&oub, sizeof(oub));
+		if (!ifs)
+			throw std::runtime_error("Failed to read complete UDP block");
+
+		for (int i = 0; i<nColumns; i++) {
+			float theta = (float)i / nColumns * M_PI * 2;
+			auto x = sin(theta);
+			auto y = cos(theta);
+
+			for (int j = 0; j < nRows; j++) {
+				float phi = beamAltitudeAngles[j] / 360.0 * M_PI * 2;
+				//float range = (float)ab.db[j].range / 100000.0f;
+				float range = 10;
+
+				auto xr = range * x;
+				auto yr = range * y;
+				auto z = range * sin(phi);
+
+				v.push_back({ {xr,yr,z}, {}, {}, XGLColors::white });
+			}
 		}
 	}
 
@@ -73,11 +108,22 @@ public:
 		JSONArray beam_altitude_angles = sensorCfg.Find(L"beam_altitude_angles")->AsArray();
 		JSONArray beam_azimuth_angles = sensorCfg.Find(L"beam_azimuth_angles")->AsArray();
 
+		std::wstring lidar_mode = sensorCfg.Find(L"lidar_mode")->AsString();
+		// Pesky JSON uses 16 bit char, so do the codecvt thing to get std::string
+		lidarMode = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(lidar_mode);
+
 		for (JSONValue* altitude : beam_altitude_angles)
 			beamAltitudeAngles.push_back(altitude->AsNumber());
 
 		for (JSONValue* azimuth : beam_azimuth_angles)
 			beamAzimuthAngles.push_back(azimuth->AsNumber());
+
+		std::string delimiter("x");
+		std::string modeColumns = lidarMode.substr(0, lidarMode.find(delimiter));
+		std::string modeFps = lidarMode.substr(lidarMode.find(delimiter)+1);
+
+		nColumns = std::stoi(modeColumns);
+		nFps = std::stoi(modeFps);
 	}
 
 	~OusterSensor()
@@ -87,17 +133,19 @@ public:
 
 private:
 	std::string fileName;
-	FILE *fp;
+	std::ifstream ifs;
+	int firstFrameOffset{ 0 };
 
-	ousterAzimuthBlock ab;
+	ousterUdpBlock oub;
 
-	static const int nColumns{ 1024 };
+	int nColumns{ 1024 };
 	static const int nRows{ 64 };
-
-	uint32_t rBuffer[nColumns * nRows];
+	static const int nAzimuthBlocks{ 16 };
+	int nFps{ 10 };
 
 	std::vector<float> beamAltitudeAngles;
 	std::vector<float> beamAzimuthAngles;
+	std::string lidarMode;
 
 	XGLTexQuad* rangeImage;
 };
