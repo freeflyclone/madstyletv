@@ -68,16 +68,26 @@ public:
 					if (!ifs)
 						throw std::runtime_error("Failed to read AzimuthBlock");
 
-					// if we detect (hard-coded for now) max measurement Id, we're done.
-					if (ab.mId == (nColumns-1))
+					// if we detect max measurement Id, we're done.
+					if (ab.mId == (nColumns - 1))
 						break;
 				} while (ifs);
 			}
 		}
-		else 
+		else
 			throw std::runtime_error("Failed to open input file");
 
 		firstFrameOffset = ifs.tellg();
+
+		ReadSensorFrame();
+	}
+
+	void ReadSensorFrame()
+	{
+		int frameSize = sizeof(ousterUdpBlock) * nBlocks;
+		int totalOffset = firstFrameOffset + frameIdx * frameSize;
+
+		ifs.seekg(totalOffset, std::ios_base::beg);
 
 		for (int blockNum = 0; blockNum < nBlocks; blockNum++)
 		{
@@ -128,6 +138,34 @@ public:
 		nColumns = std::stoi(modeColumns);
 		nFps = std::stoi(modeFps);
 		nBlocks = nColumns / nAzimuthBlocks;
+
+		int frameSize = sizeof(ousterUdpBlock) * nBlocks;
+		xprintf("nBlocks: %d, sizeof(ousterUdpBlock): %d, frameSize: %d\n", nBlocks, sizeof(ousterUdpBlock), frameSize);
+	}
+
+	void StepFrame(int delta)
+	{
+		if (delta < 0)
+		{
+			if (frameIdx + delta < 0)
+				frameIdx = 0;
+			else
+				frameIdx += delta;
+		}
+		else if (delta > 0)
+		{
+			if (frameIdx + delta > nMaxFrameNum)
+				frameIdx = nMaxFrameNum;
+			else
+				frameIdx += delta;
+		}
+
+		if (delta)
+		{
+			v.clear();
+			ReadSensorFrame();
+			Load(shader, v);
+		}
 	}
 
 	~OusterSensor()
@@ -147,14 +185,17 @@ private:
 	static const int nAzimuthBlocks{ 16 };
 	int nFps{ 10 };
 	int nBlocks{ 1024 / 16 };
+	int nMaxFrameNum{ 2086 };
+	int frameIdx{ 0 };
 
 	std::vector<float> beamAltitudeAngles;
 	std::vector<float> beamAzimuthAngles;
 	std::string lidarMode;
 };
 
+OusterSensor *pOS;
+
 void ExampleXGL::BuildScene() {
-	OusterSensor *pOS;
 
 	try
 	{
@@ -167,7 +208,26 @@ void ExampleXGL::BuildScene() {
 	{
 		xprintf("OusterSensor error: %s\n", e.what());
 	}
-}
 
-/*
-*/
+	XInputKeyFunc frameStep = [&](int key, int flags) {
+		bool isDown = (flags & 0x8000) == 0;
+		const bool isRepeat = (flags & 0x4000) != 0;
+
+		if (isDown) {
+			if (key == 'L' || key == 'l')
+			{
+				pOS->StepFrame(1);
+			}
+			else if (key == 'H' || key == 'h')
+			{
+				pOS->StepFrame(-1);
+			}
+		}
+	};
+
+	AddKeyFunc('L', frameStep);
+	AddKeyFunc('l', frameStep);
+	AddKeyFunc('H', frameStep);
+	AddKeyFunc('h', frameStep);
+
+}
