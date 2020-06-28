@@ -2,7 +2,7 @@
 
 #include "XOuster.h"
 
-XOuster::XOuster(std::string fn) : fileName(fn), XGLPointCloud(0)
+XOuster::XOuster(XGL* pxgl, std::string fn) : pXgl(pxgl), fileName(fn), XGLPointCloud(0)
 {
 	ReadConfig();
 

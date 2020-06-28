@@ -14,7 +14,7 @@ void ExampleXGL::BuildScene()
 	try
 	{
 		AddShape("shaders/000-simple", [&]() {
-			pOS = new XOuster("C:/Users/evan/Desktop/lombard_street_OS1.raw");
+			pOS = new XOuster(this, "C:/Users/evan/Desktop/lombard_street_OS1.raw");
 			return pOS;
 		});
 	}

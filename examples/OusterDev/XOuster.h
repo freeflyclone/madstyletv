@@ -42,7 +42,7 @@ typedef ousterAzimuthBlock ousterPacketBlock[16];
 
 class XOuster : public XGLPointCloud {
 public:
-	XOuster(std::string fn);
+	XOuster(XGL* pXgl, std::string fn);
 	~XOuster();
 
 	void ReadSensorFrame();
@@ -51,6 +51,7 @@ public:
 	void StepFrame(int delta);
 
 private:
+	XGL* pXgl{ nullptr };
 	std::string fileName;
 	std::ifstream inputFileStream;
 	int firstFrameOffset{ 0 };
