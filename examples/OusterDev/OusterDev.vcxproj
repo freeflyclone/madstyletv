@@ -172,6 +172,7 @@
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
     <ClCompile Include="OusterDevBuildScene.cpp" />
+    <ClCompile Include="XOuster.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\shaders\diffuse.frag" />
@@ -182,6 +183,9 @@
     <None Include="..\..\shaders\simple.vert" />
     <None Include="..\..\shaders\textShader.frag" />
     <None Include="..\..\shaders\textShader.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="XOuster.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
