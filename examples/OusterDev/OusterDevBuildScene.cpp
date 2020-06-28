@@ -2,14 +2,6 @@
 ** OusterDevBuildScene.cpp
 **
 ** Let's experiment with Ouster Lidar Sensor data!
-** Rudimentary file reading, just so I can get actual data
-** to play with. 
-**
-** Since sensors are UDP, a decent stream IO scheme is in order.  
-**
-** Thankfully, FFFFFFFF precedes the first word of an 
-** azimuth block, and that looks to be unlikely in the data 
-** itself, so maybe it's safe to use for frame sync purposes.
 **************************************************************/
 #include "ExampleXGL.h"
 
@@ -17,8 +9,8 @@
 
 XOuster *pOS;
 
-void ExampleXGL::BuildScene() {
-
+void ExampleXGL::BuildScene() 
+{
 	try
 	{
 		AddShape("shaders/000-simple", [&]() {
@@ -31,11 +23,13 @@ void ExampleXGL::BuildScene() {
 		xprintf("OusterSensor error: %s\n", e.what());
 	}
 
-	XInputKeyFunc frameStep = [&](int key, int flags) {
+	XInputKeyFunc frameStep = [&](int key, int flags) 
+	{
 		bool isDown = (flags & 0x8000) == 0;
 		const bool isRepeat = (flags & 0x4000) != 0;
 
-		if (isDown) {
+		if (isDown) 
+		{
 			if (key == 'L' || key == 'l')
 			{
 				pOS->StepFrame(1);
@@ -51,5 +45,4 @@ void ExampleXGL::BuildScene() {
 	AddKeyFunc('l', frameStep);
 	AddKeyFunc('H', frameStep);
 	AddKeyFunc('h', frameStep);
-
 }
