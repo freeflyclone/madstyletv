@@ -2,6 +2,14 @@
 ** OusterDevBuildScene.cpp
 **
 ** Let's experiment with Ouster Lidar Sensor data!
+** Rudimentary file reading, just so I can get actual data
+** to play with. 
+**
+** Since sensors are UDP, a decent stream IO scheme is in order.  
+**
+** Thankfully, FFFFFFFF precedes the first word of an 
+** azimuth block, and that looks to be unlikely in the data 
+** itself, so maybe it's safe to use for frame sync purposes.
 **************************************************************/
 #include "ExampleXGL.h"
 
@@ -11,29 +19,23 @@
 #include <fstream>
 
 // Default struct alignment is 8 in VS 2017 64-bit. We want 4
+// This is little-endian CPU version.
 #pragma pack(push, 4)
-
-struct _data {
-	uint32_t range;
-	uint16_t signal;
-	uint16_t reflect;
-	uint32_t noise;
-};
-
-typedef _data dataBlock[64];
-
 struct ousterAzimuthBlock
 {
 	uint64_t ts;
 	uint16_t mId;
 	uint16_t fId;
 	uint32_t encCount;
-	dataBlock db;
+	struct {
+		uint32_t range;
+		uint16_t signal;
+		uint16_t reflect;
+		uint32_t noise;
+	} db[64];
 	uint32_t azimuthBlockStatus;
 };
-
 typedef ousterAzimuthBlock ousterUdpBlock[16];
-
 #pragma pack(pop)
 
 class OusterSensor : public XGLPointCloud {
@@ -74,7 +76,7 @@ public:
 		{
 			ifs.read((char*)&oub, sizeof(oub));
 			if (!ifs)
-				throw std::runtime_error("Failed to read complete UDP block");
+				throwXException("Failed to read complete UDP block");
 
 			for (int i = 0; i < nAzimuthBlocks; i++) {
 				ousterAzimuthBlock& ab = oub[i];
@@ -104,14 +106,14 @@ public:
 
 			ifs.read((char*)&ab, sizeof(ab));
 			if (!ifs)
-				throw std::runtime_error("Failed to read ousterAzimuthBlock");
+				throwXException("Failed to read ousterAzimuthBlock");
 
 			// Skip to start of complete scan, if needed.
 			if (ab.mId != 0) {
 				do {
 					ifs.read((char*)&ab, sizeof(ab));
 					if (!ifs)
-						throw std::runtime_error("Failed to read AzimuthBlock");
+						throwXException("Failed to read AzimuthBlock");
 
 					// if we detect max measurement Id, we're done.
 					if (ab.mId == (nColumns - 1))
