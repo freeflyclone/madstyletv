@@ -15,5 +15,5 @@
 #include "xmavlink.h"
 #include "xmqtt.h"
 #include "xutils.h"
-
+#include "xexception.h"
 #endif

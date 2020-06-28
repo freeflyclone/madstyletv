@@ -53,33 +53,14 @@ public:
 		};
 
 		ifs.open(fileName, std::ifstream::binary);
-		if (ifs)
-		{
-			ousterAzimuthBlock ab;
 
-			ifs.read((char*)&ab, sizeof(ab));
-			if (!ifs)
-				throw std::runtime_error("Failed to read initial AzimuthBlock");
+		if (ifs) {
+			SkipToNextFrame();
 
-			// Skip to start of complete scan, if needed.
-			if (ab.mId != 0) {
-				do {
-					ifs.read((char*)&ab, sizeof(ab));
-					if (!ifs)
-						throw std::runtime_error("Failed to read AzimuthBlock");
+			firstFrameOffset = ifs.tellg();
 
-					// if we detect max measurement Id, we're done.
-					if (ab.mId == (nColumns - 1))
-						break;
-				} while (ifs);
-			}
+			ReadSensorFrame();
 		}
-		else
-			throw std::runtime_error("Failed to open input file");
-
-		firstFrameOffset = ifs.tellg();
-
-		ReadSensorFrame();
 	}
 
 	void ReadSensorFrame()
@@ -111,6 +92,31 @@ public:
 
 					v.push_back({ {xr,yr,z}, {}, {}, XGLColors::white });
 				}
+			}
+		}
+	}
+
+	void SkipToNextFrame()
+	{
+		if (ifs)
+		{
+			ousterAzimuthBlock ab;
+
+			ifs.read((char*)&ab, sizeof(ab));
+			if (!ifs)
+				throw std::runtime_error("Failed to read ousterAzimuthBlock");
+
+			// Skip to start of complete scan, if needed.
+			if (ab.mId != 0) {
+				do {
+					ifs.read((char*)&ab, sizeof(ab));
+					if (!ifs)
+						throw std::runtime_error("Failed to read AzimuthBlock");
+
+					// if we detect max measurement Id, we're done.
+					if (ab.mId == (nColumns - 1))
+						break;
+				} while (ifs);
 			}
 		}
 	}
