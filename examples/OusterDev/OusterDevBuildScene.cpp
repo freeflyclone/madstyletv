@@ -45,4 +45,8 @@ void ExampleXGL::BuildScene()
 	AddKeyFunc('l', frameStep);
 	AddKeyFunc('H', frameStep);
 	AddKeyFunc('h', frameStep);
+
+	pOS->SetAnimationFunction([&](float clock) {
+		pOS->StepFrame(3);
+	});
 }
