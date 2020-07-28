@@ -37,8 +37,6 @@ ASObject::ASObject()
 ASLink::ASLink()
 {
 	emplace("@context", std::vector<std::string>{"https://www.w3.org/ns/activitystreams"});
-	emplace("type", std::string{ "Link" });
-	auto yourMom = (*this)["type"];
-	yourMom.push_back("Actor");
+	emplace("type", std::vector<std::string>{ "Link" });
 }
 
