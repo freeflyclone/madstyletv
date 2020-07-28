@@ -170,13 +170,17 @@
   <ItemGroup>
     <ClCompile Include="..\common\ExampleGUI.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
-    <ClCompile Include="..\common\main.cpp" />
+    <ClCompile Include="..\common\ImGuiFileDialog.cpp" />
+    <ClCompile Include="..\common\imgui_main.cpp" />
+    <ClCompile Include="..\common\imgui_menu_bar.cpp" />
+    <ClCompile Include="..\common\xglimgui.cpp" />
     <ClCompile Include="ActivityStream.cpp" />
     <ClCompile Include="ActivityStreamBuildScene.cpp" />
     <ClCompile Include="DebugOutput.cpp" />
     <ClCompile Include="DebugOutput.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\common\ImGuiFileDialog.h" />
     <ClInclude Include="ActivityStream.h" />
   </ItemGroup>
   <ItemGroup>

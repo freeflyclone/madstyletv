@@ -11,8 +11,31 @@
 #include "ActivityStream.h"
 #include "DebugOutput.h"
 
+namespace {
+	class ActivityStreamGui : public XGLImGui 
+	{
+	public:
+		void menuFunction() {
+			if (ImGui::Begin("Activity Stream Browser", &browserWindow))
+			{
+				ImGui::SliderInt("Idx#", &currentViewIdx, 0, 1000);
+			}
+			ImGui::End();
+		}
+
+	private:
+		bool browserWindow{ true };
+		int currentViewIdx;
+	};
+
+	ActivityStreamGui* asGui;
+}
+
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
+
+	asGui = new ActivityStreamGui();
+	menuFunctions.push_back([&]() { asGui->menuFunction(); });
 
 	try {
 		ASLink asLink;
