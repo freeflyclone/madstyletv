@@ -49,13 +49,20 @@ void XOuster::ReadSensorFrame()
 
 			for (int j = 0; j < nRows; j++) {
 				float phi = beamAltitudeAngles[j] / 360.0 * M_PI * 2;
-				float range = (float)ab.db[j].range / 1000.0f;
+				float range = (float)ab.db[j].range / 10000.0f;
 
 				auto xr = range * x;
 				auto yr = range * y;
 				auto z = range * sin(phi);
 
-				v.push_back({ {xr,yr,z}, {}, {}, XGLColors::white });
+				float signal = (float)ab.db[j].signal / 65536.0f;
+				float noise = (float)ab.db[j].signal / 65536.0f;
+
+				//signal -= noise;
+
+				XGLColor sigColor = { signal,signal,signal,1.0f };
+
+				v.push_back({ {xr,yr,z}, {}, {}, sigColor });
 			}
 		}
 	}

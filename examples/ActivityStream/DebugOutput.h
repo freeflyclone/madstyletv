@@ -6,7 +6,7 @@
 #include "ExampleXGL.h"
 #include "ActivityStream.h"
 
-/// \brief This class is derives from basic_stringbuf which will output
+/// \brief This class is derived from basic_stringbuf which will output
 /// all the written data using the OutputDebugString function
 class OutputDebugStringBuf : public std::basic_stringbuf<char, std::char_traits<char>> {
 public:
@@ -21,16 +21,17 @@ public:
 
 	static_assert(std::is_same<char, char>::value, "OutputDebugStringBuf only supports char types");
 
-	int sync() 
-	try 
-	{
-		MessageOutputer<char, std::char_traits<char>>()(pbase(), pptr());
-		setp(_buffer.data(), _buffer.data(), _buffer.data() + _buffer.size());
-		return 0;
-	}
-	catch (...) 
-	{
-		return -1;
+	int sync() {
+		try
+		{
+			MessageOutputer<char, std::char_traits<char>>()(pbase(), pptr());
+			setp(_buffer.data(), _buffer.data(), _buffer.data() + _buffer.size());
+			return 0;
+		}
+		catch (...)
+		{
+			return -1;
+		}
 	}
 
 	int_type overflow(int_type c = std::char_traits<char>::eof()) 

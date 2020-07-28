@@ -179,7 +179,15 @@
   <ItemGroup>
     <ClInclude Include="ActivityStream.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\assets\actor.json" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties _1_1_4_1_1_4assets_4actor_1json__JSONSchema="https://www.w3.org/ns/activitystreams" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>
