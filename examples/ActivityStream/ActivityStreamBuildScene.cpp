@@ -42,30 +42,54 @@ void ExampleXGL::BuildScene() {
 
 		InitStdLog();
 
-		// Create a temporary  ASLink and load it from an std::ifstream input json file
-		{
-			ASLink j;
+		std::ifstream(pathToAssets + "/assets/actor.json") >> asLink;
 
-			// First: let's log a fresh ASLink object to see its initial state.
-			std::clog << "Logging 'j' immediately after creating it." << std::endl;
-			std::clog << std::setw(2) << j << std::endl;
-
-			// Second: read ActivityStream.actor object from JSON file into same ASLink object, then log that
-
-			std::clog << "Logging 'j' with assets/actor.json update" << std::endl;
-			std::ifstream(pathToAssets + "/assets/actor.json") >> j;
-			std::clog << std::setw(2) << j << std::endl;
-		}
-
-		// Third: add something programatically to new ASLink object, then log that.
-		asLink["@context"].push_back("https://e-man.tv/.well_known");
-		asLink["preview"] = "https://hq.e-man.tv/hls-test.html";
-		asLink["type"].push_back("yourMom");
-
-		std::clog << "Logging aslink after programmatic update" << std::endl;
 		std::clog << std::setw(2) << asLink << std::endl;
 
-		std::clog << asLink["type"][0] << std::endl;
+		using value_t = json::value_t;
+		value_t type = asLink.type();
+
+		switch (type) {
+			case value_t::null:
+				xprintf("type is null\n");
+				break;
+			
+			case value_t::object:
+				{
+					xprintf("type is object\n");
+					auto dump = asLink.dump(2);
+					xprintf("Dump: {%s}\n", dump.c_str());
+				}
+				break;
+
+			case value_t::array:
+				xprintf("type is array\n");
+				break;
+
+			case value_t::string:
+				xprintf("type is string\n");
+				break;
+
+			case value_t::boolean:
+				xprintf("type is boolean\n");
+				break;
+
+			case value_t::number_integer:
+				xprintf("type is number_integer\n");
+				break;
+
+			case value_t::number_unsigned:
+				xprintf("type is number_unsigned\n");
+				break;
+
+			case value_t::number_float:
+				xprintf("type is number_float\n");
+				break;
+
+			case value_t::discarded:
+				xprintf("type is discarded\n");
+				break;
+		}
 	}
 	catch (std::exception e)
 	{

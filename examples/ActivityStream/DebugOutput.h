@@ -4,7 +4,6 @@
 #include <ostream>
 
 #include "ExampleXGL.h"
-#include "ActivityStream.h"
 
 /// \brief This class is derived from basic_stringbuf which will output
 /// all the written data using the OutputDebugString function
