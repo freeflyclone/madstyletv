@@ -28,9 +28,6 @@
 [submodule "xclass/3rdParty/poco"]
 	path = xclass/3rdParty/poco
 	url = https://github.com/freeflyclone/poco.git
-[submodule "xclass/3rdParty/bento4"]
-	path = xclass/3rdParty/bento4
-	url = https://github.com/freeflyclone/Bento4.git
 [submodule "xclass/3rdParty/JM"]
 	path = xclass/3rdParty/JM
 	url = https://github.com/freeflyclone/JM.git
@@ -40,3 +37,6 @@
 [submodule "xclass/3rdParty/netcdf-cxx4"]
 	path = xclass/3rdParty/netcdf-cxx4
 	url = https://github.com/freeflyclone/netcdf-cxx4.git
+[submodule "xclass/3rdParty/bent04"]
+	path = xclass/3rdParty/bent04
+	url = https://github.com/freeflyclone/bento4.git
