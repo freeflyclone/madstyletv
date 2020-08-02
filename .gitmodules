@@ -1,6 +1,3 @@
-[submodule "xclass/3rdParty/openal-soft"]
-	path = xclass/3rdParty/openal-soft
-	url = https://github.com/kcat/openal-soft.git
 [submodule "xclass/3rdParty/opencv"]
 	path = xclass/3rdParty/opencv
 	url = https://github.com/freeflyclone/opencv.git
@@ -31,9 +28,15 @@
 [submodule "xclass/3rdParty/netcdf-cxx4"]
 	path = xclass/3rdParty/netcdf-cxx4
 	url = https://github.com/freeflyclone/netcdf-cxx4.git
-[submodule "xclass/3rdParty/bent04"]
-	path = xclass/3rdParty/bent04
-	url = https://github.com/freeflyclone/bento4.git
 [submodule "xclass/3rdParty/mavlink/c_library_v1"]
 	path = xclass/3rdParty/mavlink/c_library_v1
 	url = https://github.com/freeflyclone/c_library_v1.git
+[submodule "xclass/3rdParty/mosquitto"]
+	path = xclass/3rdParty/mosquitto
+	url = https://github.com/freeflyclone/mosquitto.git
+[submodule "xclass/3rdParty/bento4"]
+	path = xclass/3rdParty/bento4
+	url = https://github.com/freeflyclone/bento4.git
+[submodule "xclass/3rdParty/openal-soft"]
+	path = xclass/3rdParty/openal-soft
+	url = https://github.com/freeflyclone/openal-soft.git
