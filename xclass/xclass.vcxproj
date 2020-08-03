@@ -372,6 +372,7 @@
     <None Include="3rdParty\3rdPartyCopy.proj">
       <SubType>Designer</SubType>
     </None>
+    <None Include="3rdParty\ffmpeg\get_ffmpeg.bat" />
     <None Include="Assimp.props">
       <SubType>Designer</SubType>
     </None>

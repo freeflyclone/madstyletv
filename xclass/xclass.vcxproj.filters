@@ -82,6 +82,9 @@
     <Filter Include="sqlite\Sources">
       <UniqueIdentifier>{8bf93448-00ce-4818-b7cc-3dbc2a4e7aba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ffmpeg">
+      <UniqueIdentifier>{f4b80f37-cdc7-442b-b94e-55ef452b7590}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -535,5 +538,8 @@
     <None Include="PhysX.props" />
     <None Include="Assimp.props" />
     <None Include="poco.props" />
+    <None Include="3rdParty\ffmpeg\get_ffmpeg.bat">
+      <Filter>ffmpeg</Filter>
+    </None>
   </ItemGroup>
 </Project>
