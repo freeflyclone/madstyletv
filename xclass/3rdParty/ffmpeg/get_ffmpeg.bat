@@ -3,14 +3,18 @@ rem unless you have curl & tar in your path
 rem ------------------------------------------
 cd %1
 if not exist ffmpeg.zip (
-	echo "Downloading ffmpeg.zip from libs.madstyle.tv"
+	echo Downloading ffmpeg.zip from libs.madstyle.tv
 	curl http://libs.madstyle.tv/libffmpeg_4.4.r98605_msvc15_x64.zip --output ffmpeg.zip
 )
 
 if not exist lib (
-	echo "lib folder not found, expanding ffmpeg.zip"
+	echo lib folder not found, expanding ffmpeg.zip
 	tar xf ffmpeg.zip
+) else (
+	echo ffmpeg lib folder found, nothing to do
 )
-else (
-	echo "ffmpeg lib folder found, nothing to do"
+
+if not exist ..\..\..\bin\avcodec.dll (
+	copy bin\x64\*.dll ..\..\..\bin
 )
+
