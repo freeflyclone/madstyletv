@@ -885,16 +885,16 @@ void XGLPointCloud::Draw(){
 		drawFn();
 }
 
-XGLCameraFlyer::XGLCameraFlyer(XGL *xgl) : XGLSled(false) {
+XGLCameraFlyer::XGLCameraFlyer(XGL *xgl) : XGLSled(true) {
 	// use the left stick to control yaw, right stick to control pitch & roll of the sled (typical R/C transmitter layout)
 	// XGLSled::SampleInput(float yaw, float pitch, float roll) also calls XGLSled::GetFinalMatrix()
-	xgl->AddProportionalFunc("Xbox360Controller0", [this, xgl](float v) { SampleInput(-v, 0.0f, 0.0f); SetCamera(xgl); });
-	xgl->AddProportionalFunc("Xbox360Controller2", [this, xgl](float v) { SampleInput(0.0f, 0.0f, v); SetCamera(xgl); });
-	xgl->AddProportionalFunc("Xbox360Controller3", [this, xgl](float v) { SampleInput(0.0f, -v, 0.0f); SetCamera(xgl); });
+	xgl->AddProportionalFunc("XboxController0", [this, xgl](float v) { SampleInput(-v, 0.0f, 0.0f); SetCamera(xgl); });
+	xgl->AddProportionalFunc("XboxController2", [this, xgl](float v) { SampleInput(0.0f, 0.0f, v); SetCamera(xgl); });
+	xgl->AddProportionalFunc("XboxController3", [this, xgl](float v) { SampleInput(0.0f, -v, 0.0f); SetCamera(xgl); });
 
 	// move sled with Xbox360 controller left & right triggers
-	xgl->AddProportionalFunc("Xbox360Controller4", [this, xgl](float v) { MoveFunc(xgl, v); });
-	xgl->AddProportionalFunc("Xbox360Controller5", [this, xgl](float v) { MoveFunc(xgl, -v); });
+	xgl->AddProportionalFunc("XboxController4", [this, xgl](float v) { MoveFunc(xgl, v); });
+	xgl->AddProportionalFunc("XboxController5", [this, xgl](float v) { MoveFunc(xgl, -v); });
 }
 void XGLCameraFlyer::MoveFunc(XGL* xgl, float v) {
 	glm::vec4 f = glm::toMat4(o) * glm::vec4(0.0, v / 10.0f, 0.0, 0.0);
