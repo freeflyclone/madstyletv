@@ -3,8 +3,9 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <IncludePath>$(PHYSX_DIR)\..\PxShared\include;$(PHYSX_DIR)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(PHYSX_DIR)\bin\win.x86_64.vc141.mt\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(PHYSX_DIR)\install\vc15win64\PhysX\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(PHYSX_DIR)\install\vc15win64\PxShared\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(PHYSX_DIR)\install\vc15win64\PhysX\bin\win.x86_64.vc141.md\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup />
   <ItemGroup />
