@@ -4,18 +4,23 @@
   <PropertyGroup Label="UserMacros">
     <LibDir Condition="'$(PlatformTarget)'=='x64'">Win64</LibDir>
     <LibDir Condition="'$(PlatformTarget)'=='x86'">Win32</LibDir>
+    <OPENAL_DIR>$(SolutionDir)\xclass\3rdParty\openal-soft</OPENAL_DIR>
   </PropertyGroup>
   <PropertyGroup>
     <IncludePath>$(OPENAL_DIR)\include;$(OPENAL_DIR)\include\AL;$(IncludePath)</IncludePath>
-    <LibraryPath>$(OPENAL_DIR)\libs\$(LibDir);$(OPENAL_DIR)\libs\$(LibDir)\EFX-Util_MT;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OPENAL_DIR)\build\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
       <AdditionalDependencies>OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>copy $(SolutionDir)\xclass\3rdParty\openal-soft\bin\openal32.dll $(SolutionDir)\bin</Command>
-    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>copy $(SolutionDir)\xclass\3rdParty\openal-soft\build\$(Configuration)\OpenAL32.dll $(SolutionDir)\bin</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <BuildMacro Include="OPENAL_DIR">
+      <Value>$(OPENAL_DIR)</Value>
+    </BuildMacro>
+  </ItemGroup>
 </Project>
