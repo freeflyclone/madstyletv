@@ -19,10 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{DB9C3A3B-FA33-4EBB-B5CD-A52A9500B707}</ProjectGuid>
+    <ProjectGuid>{40C9F5C0-9B85-4D35-90F9-E13DA268E08B}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>ComputeShaderParticles</RootNamespace>
+    <RootNamespace>HDF5Dev</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <ProjectName>NetCDFDev</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -57,23 +58,27 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\xclass\xclass.props" />
+    <Import Project="..\examples.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\xclass\xclass.props" />
+    <Import Project="..\examples.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\xclass\xclass.props" />
+    <Import Project="..\examples.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\xclass\xclass.props" />
+    <Import Project="..\examples.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir);$(SolutionDir)\examples\common;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -97,16 +102,19 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>OPENGL_MAJOR_VERSION=4;OPENGL_MINOR_VERSION=3;_USE_MATH_DEFINES;XML_STATIC;GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>xclass.lib;freetype.lib;expat.lib;opengl32.lib;glu32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy  $(TargetPath) $(SolutionDir)\bin</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>echo NETCDF_DIR: $(NETCDF_DIR)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -114,16 +122,19 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>OPENGL_MAJOR_VERSION=4;OPENGL_MINOR_VERSION=3;_USE_MATH_DEFINES;XML_STATIC;GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>xclass.lib;freetype.lib;expat.lib;opengl32.lib;glu32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy  $(TargetPath) $(SolutionDir)\bin</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>echo NETCDF_DIR: $(NETCDF_DIR)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -133,18 +144,21 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>OPENGL_MAJOR_VERSION=4;OPENGL_MINOR_VERSION=3;_USE_MATH_DEFINES;XML_STATIC;GLEW_STATIC;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>xclass.lib;freetype.lib;expat.lib;opengl32.lib;glu32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy  $(TargetPath) $(SolutionDir)\bin</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>echo NETCDF_DIR: $(NETCDF_DIR)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -154,43 +168,54 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>OPENGL_MAJOR_VERSION=4;OPENGL_MINOR_VERSION=3;_USE_MATH_DEFINES;XML_STATIC;GLEW_STATIC;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>xclass.lib;freetype.lib;expat.lib;opengl32.lib;glu32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy  $(TargetPath) $(SolutionDir)\bin</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>echo NETCDF_DIR: $(NETCDF_DIR)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\common\ExampleGUI.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\ImGuiFileDialog.cpp" />
     <ClCompile Include="..\common\imgui_main.cpp" />
     <ClCompile Include="..\common\imgui_menu_bar.cpp" />
-    <ClCompile Include="ComputeShaderGUI.cpp" />
-    <ClCompile Include="ComputeShaderParticlesBuildScene.cpp" />
-    <ClCompile Include="Particles.cpp" />
+    <ClCompile Include="..\common\xglgraph.cpp" />
+    <ClCompile Include="NetCDFDevBuildScene.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\shaders\uniforms.h" />
-    <ClInclude Include="Particles.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\shaders\000-simple.frag" />
-    <None Include="..\..\shaders\000-simple.vert" />
-    <None Include="..\..\shaders\000-simple2.frag" />
-    <None Include="..\..\shaders\000-simple2.vert" />
-    <None Include="..\..\shaders\compute-shader" />
+    <None Include="..\..\assets\config.json" />
     <None Include="..\..\shaders\diffuse.frag" />
     <None Include="..\..\shaders\diffuse.vert" />
-    <None Include="..\..\shaders\particles.comp" />
+    <None Include="..\..\shaders\gui-tex.frag" />
+    <None Include="..\..\shaders\gui-tex.vert" />
+    <None Include="..\..\shaders\gui.frag" />
+    <None Include="..\..\shaders\gui.vert" />
+    <None Include="..\..\shaders\imageflip.frag" />
+    <None Include="..\..\shaders\imageflip.vert" />
+    <None Include="..\..\shaders\lighting.frag" />
+    <None Include="..\..\shaders\lighting.vert" />
+    <None Include="..\..\shaders\simple.frag" />
+    <None Include="..\..\shaders\simple.vert" />
+    <None Include="..\..\shaders\specular.frag" />
+    <None Include="..\..\shaders\specular.vert" />
     <None Include="..\..\shaders\tex.frag" />
     <None Include="..\..\shaders\tex.vert" />
+    <None Include="..\..\shaders\zz-gui.frag" />
+    <None Include="..\..\shaders\zz-gui.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\common\xglgraph.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

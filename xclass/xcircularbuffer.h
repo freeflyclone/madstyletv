@@ -47,7 +47,7 @@ public:
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
 
 		std::lock_guard<std::mutex> lock(mutexLock);
-		for (int i = 0; i<n; i++) {
+		for (size_t i = 0; i<n; i++) {
 			*b++ = buff[rIdx&(size - 1)];
 			rIdx++;
 		}

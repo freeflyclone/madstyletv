@@ -14,70 +14,55 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="Shaders">
-      <UniqueIdentifier>{be84bb6f-3da4-4808-9d1b-15f0964907c6}</UniqueIdentifier>
+      <UniqueIdentifier>{8df307f8-6797-4a44-9c41-3c9b2abca92a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\common\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\common\ExampleXGL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ComputeShaderParticlesBuildScene.cpp">
+    <ClCompile Include="OusterDevBuildScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ComputeShaderGUI.cpp">
+    <ClCompile Include="..\common\ExampleGUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Particles.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\common\imgui_main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\common\imgui_menu_bar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\common\ImGuiFileDialog.cpp">
+    <ClCompile Include="XOuster.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\shaders\uniforms.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Particles.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\shaders\compute-shader">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\shaders\000-simple.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\shaders\000-simple.vert">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="..\..\shaders\diffuse.frag">
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\..\shaders\diffuse.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\shaders\000-simple2.frag">
+    <None Include="..\..\shaders\lighting.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\shaders\000-simple2.vert">
+    <None Include="..\..\shaders\lighting.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\shaders\particles.comp">
+    <None Include="..\..\shaders\simple.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\shaders\tex.frag">
+    <None Include="..\..\shaders\simple.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\shaders\tex.vert">
+    <None Include="..\..\shaders\textShader.frag">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\shaders\textShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="XOuster.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

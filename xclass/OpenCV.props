@@ -4,16 +4,27 @@
   <PropertyGroup Label="UserMacros">
     <!-- debug suffix -->
     <DebugSuffix Condition="'$(Configuration)'=='Debug'">d</DebugSuffix>
-    <DebugSuffix Condition="'$(Configuration)'!='Debug'"></DebugSuffix>
+    <DebugSuffix Condition="'$(Configuration)'!='Debug'">
+    </DebugSuffix>
+    <OPENCV_DIR>$(SolutionDir)\xclass\3rdParty\opencv\build\install</OPENCV_DIR>
+    <OPENCV_VERSION>430</OPENCV_VERSION>
   </PropertyGroup>
   <PropertyGroup>
     <IncludePath>$(OPENCV_DIR)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(OPENCV_DIR)\$(PlatformTarget)\vc15\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <ItemGroup>
+    <BuildMacro Include="OPENCV_DIR">
+      <Value>$(OPENCV_DIR)</Value>
+    </BuildMacro>
+    <BuildMacro Include="OPENCV_VERSION">
+      <Value>$(OPENCV_VERSION)</Value>
+    </BuildMacro>
+  </ItemGroup>
   <ItemDefinitionGroup>
     <Link>
       <AdditionalDependencies>
-<!--    
+        <!--    
         opencv_calib3d$(OPENCV_VERSION)$(DebugSuffix).lib;
         opencv_contrib$(OPENCV_VERSION)$(DebugSuffix).lib;
         opencv_core$(OPENCV_VERSION)$(DebugSuffix).lib;

@@ -6,6 +6,7 @@
     <Import Project="mosquitto.props" />
     <Import Project="poco.props" />
     <Import Project="ffmpeg.props" />
+    <Import Project="NetCDF.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
     <LibDir Condition="'$(PlatformTarget)'=='x64'">Win64</LibDir>

@@ -2,7 +2,7 @@
 /*
 ASObject::ASObject()
 {
-	j["@context"] = "https://www.we.org/ns/activitystreams";
+	j["@context"] = "https://www.w3.org/ns/activitystreams";
 	j["type"] = "Object";
 	j.emplace("attachment");
 	j.emplace("attributedTo");
@@ -36,7 +36,7 @@ ASObject::ASObject()
 
 ASLink::ASLink()
 {
-	emplace("@context", std::vector<std::string>{"https://www.we.org/ns/activitystreams"});
-	emplace("type", "Link");
+	emplace("@context", std::vector<std::string>{"https://www.w3.org/ns/activitystreams"});
+	emplace("type", std::vector<std::string>{ "Link" });
 }
 

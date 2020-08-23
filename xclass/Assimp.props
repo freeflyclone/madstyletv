@@ -9,12 +9,12 @@
   </PropertyGroup>
   <PropertyGroup>
     <IncludePath>$(XCLASS_DIR)\3rdParty\assimp\include;$(XCLASS_DIR)\3rdParty\assimp\build\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(XCLASS_DIR)\3rdParty\assimp\build\code\lib64\$(Configuration);$(XCLASS_DIR)\3rdParty\assimp\build\contrib\zlib\lib64\$(Configuration);$(XCLASS_DIR)\3rdParty\assimp\build\contrib\irrXML\lib64\$(Configuration);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(XCLASS_DIR)\3rdParty\assimp\build\code\$(Configuration);$(XCLASS_DIR)\3rdParty\assimp\build\contrib\zlib\$(Configuration);$(XCLASS_DIR)\3rdParty\assimp\build\contrib\irrXML\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
       <AdditionalDependencies>
-        assimp-vc120-mt$(DebugSuffix).lib;
+        assimp-vc141-mt$(DebugSuffix).lib;
         IrrXML$(DebugSuffix).lib;
         zlibstatic$(DebugSuffix).lib;
         %(AdditionalDependencies)

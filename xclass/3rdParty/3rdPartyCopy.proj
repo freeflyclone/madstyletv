@@ -19,6 +19,11 @@
     <ATBLib32 Include="anttweakbar\lib32\**\anttweakbar.lib" />
   </ItemGroup>
 
+  <Target Name="PreBuildEvent">
+    <Message Text="MSBuildThisFileDirectory: $(MSBuildThisFileDirectory)"/>
+    <Exec Command="ffmpeg\get_ffmpeg.bat ffmpeg"/>
+  </Target>
+  
   <Target Name="3rdParty">
     <Copy SourceFiles="@(ExpatIncludes)" DestinationFolder="..\include" />
     <Copy SourceFiles="@(FreetypeIncludes)" DestinationFiles="@(FreetypeIncludes->'..\include\%(RecursiveDir)%(Filename)%(Extension)')" />
