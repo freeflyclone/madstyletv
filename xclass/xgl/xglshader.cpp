@@ -12,7 +12,7 @@ namespace {
 	// declare a GLSL shader extension map for use by the XGLShaderComponent class
 	// to map to our extensions in "shaders" folder.
 	struct ShaderComponentExtensions {
-		typedef std::map<int, char*> ExtensionMap;
+		typedef std::map<int, const char*> ExtensionMap;
 
 		ShaderComponentExtensions() {
 			mEM[GL_VERTEX_SHADER] = ".vert";
@@ -24,7 +24,7 @@ namespace {
 		}
 
 		const char* operator[] (int idx) {
-			char *ret = mEM[idx];
+			const char *ret = mEM[idx];
 
 			// return empty string if "idx" is ill-defined
 			return ret?ret:"";
