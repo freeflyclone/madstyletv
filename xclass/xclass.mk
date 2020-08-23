@@ -31,6 +31,8 @@ CXXFLAGS +=-std=c++14\
 	-I${THIRDPARTYDIR}/ftdi/include \
 	-I${THIRDPARTYDIR}/ftdi/include/linux \
 	-I${THIRDPARTYDIR}/mosquitto/lib \
+	-I${THIRDPARTYDIR}/imgui \
+	-I${THIRDPARTYDIR}/imgui/examples \
 	-I${THIRDPARTYDIR}/OculusSDK/LibOVR/Include \
 	-I${THIRDPARTYDIR}/NuclexTimer/Include \
 	-I${THIRDPARTYDIR}/NuclexTimer/Source \
