@@ -68,9 +68,10 @@ LDFLAGS +=\
 	-L${THIRDPARTYDIR}/mosquitto/lib \
 	-L${THIRDPARTYDIR}/OculusSDK/LibOVR/Projects/Linux \
 	-L/usr/local/lib \
+	-L/usr/lib/aarch64-linux-gnu \
 	-L/usr/lib/x86_64-linux-gnu
 
-LIBS =-lxclass -lglfw3 -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXinerama -lXcursor -lpthread -lexpat -lfreetype -lmosquitto
+LIBS =-lxclass -lglfw -lGLU -lGL -lX11 -ldl -lXxf86vm -lX11 -lXrandr -lXi -lXinerama -lXcursor -lpthread -lexpat -lfreetype -lmosquitto
 
 #------------------------------------------------------------------------
 # if ffmpeg development libraries are installed, uncomment the following

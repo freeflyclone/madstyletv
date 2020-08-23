@@ -1,4 +1,4 @@
-SUBDIRS=Example02 \
+SUBDIRS= \
 	ExampleSpring \
 	OpenALTest \
 	OpenCVTest \
