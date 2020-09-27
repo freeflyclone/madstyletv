@@ -116,7 +116,11 @@ void XGLGuiCanvas::RenderText(std::string text, int pixelSize) {
 
 void XGLGuiCanvas::RenderText(std::wstring text, int pixelSize) {
 	if (buffer) {
-		font.SetPixelSize(pixelSize);
+		if (newDefaultPixelSize)
+			font.SetPixelSize(newDefaultPixelSize);
+		else
+			font.SetPixelSize(pixelSize);
+
 		font.RenderText(text, buffer, width, height, &penX, &penY);
 
 		// this should probably be done with just the rectangle of the line in question

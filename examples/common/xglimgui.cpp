@@ -27,8 +27,6 @@ XGLImGui::XGLImGui() : XGLTexQuad(pathToAssets + "/assets/icons-64.png", 4) {
 
 void XGLImGui::Draw() {
 	if (menuFuncs.size() == 0) {
-		ImGui::ShowDemoWindow();
-
 		if (ImGui::Begin("Icons", &demoWindow)) {
 			if (ImGui::CollapsingHeader("Controls")) {
 				ImGui::SliderInt("Column", &iconX, 0, 13);
