@@ -1,7 +1,4 @@
 #include "ExampleXGL.h"
-#include "xsocket.h"
-
-XSocket xsock;
 
 void ExampleXGL::BuildGUI() {
 	XGLGuiManager *gm;

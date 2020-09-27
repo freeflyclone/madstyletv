@@ -9,19 +9,26 @@ namespace {
 	class ImGuiMenu : public XGLImGui {
 	public:
 		bool show = true;
-		std::string hostName = "madstyle.social";
-		char ipAddr[64];
+		std::string hostName = "hq.e-man.tv";
+		std::string ipAddr;
+		int port = 80;
+		int type = SOCK_STREAM;
+		int proto = IPPROTO_TCP;
+		int bindFlag = false;
 	};
 
 	ImGuiMenu *xig = nullptr;
 	XGLGuiCanvas *canvas = nullptr;
+	XGLGuiCanvas *console = nullptr;
+	XSocket xsock;
+	SOCKET sock = -1;
 };
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
 	glm::vec3 cameraPosition(0, -20, 5.4f);
-	glm::vec3 cameraDirection = glm::normalize(cameraPosition * -1.0f + glm::vec3(0, 0, 6.4));
+	glm::vec3 cameraDirection = glm::normalize(cameraPosition * -1.0f + glm::vec3(2.5, 0, 6.4));
 	glm::vec3 cameraUp = { 0, 0, 1 };
 	camera.Set(cameraPosition, cameraDirection, cameraUp);
 
@@ -40,14 +47,41 @@ void ExampleXGL::BuildScene() {
 				ImGui::SameLine();
 				ImGui::InputText("", &xig->hostName);
 				ImGui::SameLine();
+
 				if (ImGui::Button("Lookup")) {
 					xprintf("Lookup pressed: host name is: %s\n", xig->hostName.c_str());
-					std::string addr = XSocket::Host2Addr(xig->hostName);
+					xig->ipAddr = XSocket::Host2Addr(xig->hostName);
 					if (canvas)
 					{
 						canvas->Clear();
-						canvas->RenderText("Address of \"" + xig->hostName + "\" is: " + addr + "\n");
+						canvas->RenderText("Address of \"" + xig->hostName + "\" is: " + xig->ipAddr + "\n");
 					}
+				}
+
+				ImGui::Text("Open params:");
+				ImGui::SameLine();
+				ImGui::Text("addr: %s", xig->ipAddr.c_str());
+				ImGui::SameLine();
+				ImGui::Text("port: %d", xig->port);
+				ImGui::SameLine();
+				ImGui::Text("type: %d", xig->type);
+				ImGui::SameLine();
+				ImGui::Text("proto: %d", xig->proto);
+				ImGui::SameLine();
+				ImGui::Text("flag: %d", xig->bindFlag);
+				ImGui::SameLine();
+				if (ImGui::Button("Open")) {
+					xprintf("Open pressed\n");
+					sock = xsock.Open(xig->ipAddr, xig->port);
+					if (console)
+					{
+						console->Clear();
+						if (sock != -1)
+							console->RenderText("Socket opened!");
+						else
+							console->RenderText("Socket did not open");
+					}
+
 				}
 			}
 			ImGui::End();
@@ -57,4 +91,6 @@ void ExampleXGL::BuildScene() {
 
 	if( (canvas = (XGLGuiCanvas*)FindObject("SocketStuff")) != nullptr)
 		canvas->RenderText("Socket test...\n");
+	if ((console = (XGLGuiCanvas*)FindObject("ConsoleOut")) != nullptr)
+		xprintf("Found 'ConsoleOut'\n");
 }

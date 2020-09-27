@@ -12,7 +12,7 @@ static char hostName[MAX_PATH] = "\0";
 
 char *SocketHostToAddr(char *host)
 {
-	struct hostent *pHE;
+	struct hostent *pHE = NULL;
 	static char addrStr[MAX_PATH];
 
 	if( !host || strlen(host) == 0 )
@@ -87,7 +87,7 @@ int SocketsSetup()
 		int err;
 		WSADATA wsaData;
 
-		wVersionRequested = MAKEWORD(1, 1);
+		wVersionRequested = MAKEWORD(2, 2);
 
 		if ((err = WSAStartup(wVersionRequested, &wsaData)) != 0)
 		{
@@ -95,11 +95,7 @@ int SocketsSetup()
 			return INVALID_SOCKET;
 		}
 
-		/*
-			if ( LOBYTE( wsaData.wVersion ) == 2 && HIBYTE( wsaData.wVersion ) == 2 )
-				return 0;
-		*/
-		if (LOBYTE(wsaData.wVersion) == 1 && HIBYTE(wsaData.wVersion) == 1) {
+		if (LOBYTE(wsaData.wVersion) == 2 && HIBYTE(wsaData.wVersion) == 2) {
 			isInitialized = 1;
 			return 0;
 		}
