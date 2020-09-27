@@ -13,21 +13,21 @@ static char hostName[MAX_PATH] = "\0";
 char *SocketHostToAddr(char *host)
 {
 	struct hostent *pHE;
-	unsigned char *s;
 	static char addrStr[MAX_PATH];
 
 	if( !host || strlen(host) == 0 )
 		return NULL;
 
-	pHE = gethostbyname(host);
-
-	if( pHE )
+	if ((pHE = gethostbyname(host)) != NULL)
 	{
+		unsigned char *s = pHE->h_addr;
+
 		s = pHE->h_addr;
-		sprintf(addrStr, "%d.%d.%d.%d",s[0],s[1],s[2],s[3]);
+		sprintf(hostAddrStr, "%d.%d.%d.%d", s[0], s[1], s[2], s[3]);
+		return hostAddrStr;
 	}
 
-	return hostAddrStr;
+	return NULL;
 }
 
 char *SocketHostAddr()
@@ -80,27 +80,34 @@ void SockAddrIN(SOCKADDR_IN *sa, char *addrStr, int port)
 
 int SocketsSetup()
 {
-	WORD wVersionRequested;
-	int err;
-	WSADATA wsaData;
+	static char isInitialized = 0;
 
-	wVersionRequested = MAKEWORD( 1, 1 );
-	 
-	if( (err = WSAStartup( wVersionRequested, &wsaData )) != 0 )
-	{
-		xprintf("SocketsSetup() WSAStartup() failed: %d\n", WSAGetLastError());
+	if (!isInitialized) {
+		WORD wVersionRequested;
+		int err;
+		WSADATA wsaData;
+
+		wVersionRequested = MAKEWORD(1, 1);
+
+		if ((err = WSAStartup(wVersionRequested, &wsaData)) != 0)
+		{
+			xprintf("SocketsSetup() WSAStartup() failed: %d\n", WSAGetLastError());
+			return INVALID_SOCKET;
+		}
+
+		/*
+			if ( LOBYTE( wsaData.wVersion ) == 2 && HIBYTE( wsaData.wVersion ) == 2 )
+				return 0;
+		*/
+		if (LOBYTE(wsaData.wVersion) == 1 && HIBYTE(wsaData.wVersion) == 1) {
+			isInitialized = 1;
+			return 0;
+		}
+
+		WSACleanup();
 		return INVALID_SOCKET;
 	}
-
-/*
-	if ( LOBYTE( wsaData.wVersion ) == 2 && HIBYTE( wsaData.wVersion ) == 2 ) 
-		return 0;
-*/
-	if ( LOBYTE( wsaData.wVersion ) == 1 && HIBYTE( wsaData.wVersion ) == 1 ) 
-		return 0;
-
-	WSACleanup( );
-	return INVALID_SOCKET; 
+	return 0;
 }
 
 SOCKET SocketOpen(char *addrStr, int port, int type, int proto, int bindFlag)
