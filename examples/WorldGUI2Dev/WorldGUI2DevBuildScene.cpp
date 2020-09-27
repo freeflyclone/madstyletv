@@ -9,7 +9,11 @@
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
+	XGLImGui *xig;
+
+	AddShape("shaders/zzz", [&]() { xig = new XGLImGui(); return xig; });
 
 	AddShape("shaders/diffuse", [&](){ shape = new XGLSphere(1.0, 32); return shape; });
+
 	shape->model = glm::translate(glm::mat4(), glm::vec3(0.0, -5.0, 0.0));
 }
