@@ -313,6 +313,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlibstatic", "xclass\3rdParty\assimp\build\contrib\zlib\zlibstatic.vcxproj", "{354D0A12-8750-3A4D-BD67-A68DCEA3CB0F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WorldGUI2Dev", "examples\WorldGUI2Dev\WorldGUI2Dev.vcxproj", "{79F223D4-F0CC-4556-9B21-DF773BA91BC9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AC4080D2-1C42-4812-943D-79CA13A1D86C} = {AC4080D2-1C42-4812-943D-79CA13A1D86C}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

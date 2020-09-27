@@ -21,14 +21,13 @@ namespace {
 	XGLGuiCanvas *canvas = nullptr;
 	XGLGuiCanvas *console = nullptr;
 	XSocket xsock;
-	SOCKET sock = -1;
 };
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
-	glm::vec3 cameraPosition(0, -20, 5.4f);
-	glm::vec3 cameraDirection = glm::normalize(cameraPosition * -1.0f + glm::vec3(2.5, 0, 6.4));
+	glm::vec3 cameraPosition(0, -25, 5.4f);
+	glm::vec3 cameraDirection = glm::normalize(cameraPosition * -1.0f + glm::vec3(5, 0, 6.4));
 	glm::vec3 cameraUp = { 0, 0, 1 };
 	camera.Set(cameraPosition, cameraDirection, cameraUp);
 
@@ -58,7 +57,7 @@ void ExampleXGL::BuildScene() {
 					}
 				}
 
-				ImGui::Text("Open params:");
+				ImGui::Text("Open params: ");
 				ImGui::SameLine();
 				ImGui::Text("addr: %s", xig->ipAddr.c_str());
 				ImGui::SameLine();
@@ -71,20 +70,50 @@ void ExampleXGL::BuildScene() {
 				ImGui::Text("flag: %d", xig->bindFlag);
 				ImGui::SameLine();
 				if (ImGui::Button("Open")) {
-					xprintf("Open pressed\n");
-					sock = xsock.Open(xig->ipAddr, xig->port);
+					xprintf("Open clicked\n");
+					int retVal = xsock.Open(xig->ipAddr, xig->port);
 					if (console)
 					{
 						console->Clear();
-						if (sock != -1)
-							console->RenderText("Socket opened!");
+						if (retVal != -1)
+							console->RenderText("Socket opened!\n");
 						else
-							console->RenderText("Socket did not open");
+							console->RenderText("Socket did not open\n");
 					}
 
 				}
+				ImGui::SameLine();
+				if (ImGui::Button("Close")) {
+					xprintf("Close clicked\n");
+					int ret = xsock.Close();
+					if (console) {
+						if (ret == 0)
+							console->RenderText("Socket closed.\n");
+						else
+							console->RenderText("xsock.Close() failed\n");
+					}
+				}
+
+				ImGui::Text("Connect params: ");
+				ImGui::SameLine();
+				ImGui::Text("addr: %s", xig->ipAddr.c_str());
+				ImGui::SameLine();
+				ImGui::Text("port: %d", xig->port);
+				ImGui::SameLine();
+				if (ImGui::Button("Connect")) {
+					xprintf("Connect clicked\n");
+					int ret = xsock.Connect();
+					if (console)
+					{
+						if (ret == 0)
+							console->RenderText("Socket connected.\n");
+						else
+							console->RenderText("xsock.Connect() failed\n");
+					}
+				}
 			}
 			ImGui::End();
+			xsock.GetLastError();
 		}));
 		return xig;
 	});
