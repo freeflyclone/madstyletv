@@ -9,7 +9,12 @@ XSocket::~XSocket() {
 }
 
 std::string XSocket::Host2Addr(std::string host) {
-	return SocketHostToAddr((char *)host.c_str());
+	const char* addrStr = SocketHostToAddr((char*)host.c_str());
+	
+	if (addrStr)
+		return addrStr;
+
+	return "NotFound";
 }
 
 int XSocket::GetLastError() {
@@ -44,11 +49,22 @@ int XSocket::Connect() {
 	sockaddr_in sai;
 	int retVal;
 
-	sai.sin_family = AF_INET;
-	sai.sin_addr.s_addr = inet_addr(m_addr.c_str());
-	sai.sin_port = htons(m_port);
+	SockAddrIN(&sai, (char*)m_addr.c_str(), m_port);
 
 	retVal = connect(m_socket, (SOCKADDR*)&sai, sizeof(sai));
+	if (retVal == SOCKET_ERROR)
+		m_error = WSAGetLastError();
+
+	return retVal;
+}
+
+int XSocket::Send(const char *buffer, int length) {
+	sockaddr_in sai;
+	int retVal = 0;
+
+	SockAddrIN(&sai, (char*)m_addr.c_str(), m_port);
+
+	retVal = sendto(m_socket, buffer, length, 0, (SOCKADDR *)&sai, sizeof(sai));
 	if (retVal == SOCKET_ERROR)
 		m_error = WSAGetLastError();
 

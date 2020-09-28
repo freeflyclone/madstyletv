@@ -21,6 +21,13 @@ namespace {
 	XGLGuiCanvas *canvas = nullptr;
 	XGLGuiCanvas *console = nullptr;
 	XSocket xsock;
+
+	std::string request(
+		"GET /\r\n"
+		"Host: hq.e-man-tv\r\n"
+		"User-Agent: curl/7.54.0\r\n"
+		"Accept: */*\r\n"
+		"\r\n");
 };
 
 void ExampleXGL::BuildScene() {
@@ -109,6 +116,22 @@ void ExampleXGL::BuildScene() {
 							console->RenderText("Socket connected.\n");
 						else
 							console->RenderText("xsock.Connect() failed\n");
+					}
+				}
+
+
+				ImGui::Text("Send params: ");
+				ImGui::SameLine();
+				if (ImGui::Button("Send")) {
+					xprintf("Send clicked\n");
+					console->RenderText("Send clicked\n");
+					int ret = xsock.Send(request.c_str(), request.size());
+					if (console)
+					{
+						if (ret == request.size())
+							console->RenderText("Sent " + std::to_string(ret) + " bytes\n");
+						else
+							console->RenderText("xsock.Send() failed, sent " + std::to_string(ret) + " bytes\n");
 					}
 				}
 			}

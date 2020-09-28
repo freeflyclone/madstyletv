@@ -13,6 +13,7 @@ public:
 	int Open(std::string addr, int port, int type = SOCK_STREAM, int proto = IPPROTO_TCP, int flag = false);
 	int Close();
 	int Connect();
+	int Send(const char*, int);
 
 	static std::string Host2Addr(std::string host);
 	int GetLastError();
