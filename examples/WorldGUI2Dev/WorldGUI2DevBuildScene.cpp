@@ -22,12 +22,14 @@ namespace {
 	XGLGuiCanvas *console = nullptr;
 	XSocket xsock;
 
-	std::string request(
-		"GET /\r\n"
-		"Host: hq.e-man-tv\r\n"
-		"User-Agent: curl/7.54.0\r\n"
-		"Accept: */*\r\n"
-		"\r\n");
+	char requestRaw[2048] {
+		"GET /\n"
+		"Host: hq.e-man-tv\n"
+		"User-Agent: curl/7.54.0\n"
+		"Accept: */*\n"
+		"\n" 
+	};
+	char requestCooked[4096];
 };
 
 void ExampleXGL::BuildScene() {
@@ -122,9 +124,21 @@ void ExampleXGL::BuildScene() {
 
 				ImGui::Text("Send params: ");
 				ImGui::SameLine();
+				ImGui::InputTextMultiline(" ", requestRaw, sizeof(requestRaw));
+				ImGui::SameLine();
 				if (ImGui::Button("Send")) {
 					xprintf("Send clicked\n");
-					console->RenderText("Send clicked\n");
+					char *s, *d;
+					for (s = requestRaw, d = requestCooked; *s; s++, d++)
+					{
+						if (*s == '\n')
+							*d++ = '\r';
+						*d = *s;
+					}
+					*d = 0;
+
+					std::string request(requestCooked);
+
 					int ret = xsock.Send(request.c_str(), request.size());
 					if (console)
 					{
