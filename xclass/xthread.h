@@ -105,7 +105,7 @@ public:
 	void wait(int n = 1) {
 		std::unique_lock<std::mutex> lock(mutex);
 		waitNum = n;
-		cv.wait(lock, [this]{ return (count > waitNum); });
+		cv.wait(lock, [this]{ return (count >= waitNum); });
 
 		count -= waitNum;
 	}
