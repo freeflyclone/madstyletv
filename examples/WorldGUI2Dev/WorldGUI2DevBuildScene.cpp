@@ -5,8 +5,62 @@
 #include "imgui_stdlib.h"
 #include "xsocket.h"
 
-
 #include <queue>
+
+#define FUNCIN(...) xprintf("%s(%d) -->\n", __FUNCTION__, std::this_thread::get_id())
+#define FUNCOUT(...) xprintf("%s(%d) <--\n", __FUNCTION__, std::this_thread::get_id())
+#define FUNC(...) { xprintf("%s(%d): ", __FUNCTION__, std::this_thread::get_id()) ; xprintf(__VA_ARGS__); }
+#define FLESS(...) { xprintf(" %s:%d (%d) : ", __FILE__, __LINE__, std::this_thread::get_id()) ; xprintf(__VA_ARGS__); }
+
+class XDispatchQueue : public XThread {
+	typedef std::function<void()> Function;
+	typedef std::queue<Function> Queue;
+
+public:
+	XDispatchQueue() : XThread("DispatchQueue") {};
+
+	~XDispatchQueue() {
+		Stop();
+	}
+
+	void operator += (Function fn) {
+		std::unique_lock<std::mutex> lock(m_lock);
+		m_q.push(fn);
+		lock.unlock();
+		m_signal.notify();
+	};
+
+	Function& operator& () {
+		if (m_q.size()) {
+			std::unique_lock<std::mutex> lock(m_lock);
+			m_fn = m_q.front();
+			m_q.pop();
+			return m_fn;
+		}
+		else
+			return m_emptyFn;
+	}
+
+	void Run() {
+		while (IsRunning()) {
+			m_signal.wait();
+			if (m_q.size()) {
+				std::unique_lock<std::mutex> lock(m_lock);
+				Function fn = m_q.front();
+
+				m_q.pop();
+				fn();
+			}
+		}
+	}
+
+private:
+	std::mutex m_lock;
+	XDispatchQueue::Queue m_q;
+	XSemaphore m_signal;
+	Function m_emptyFn{ []() {} };
+	Function m_fn;
+};
 
 namespace {
 	class ImGuiMenu : public XGLImGui {
@@ -18,6 +72,7 @@ namespace {
 		int type = SOCK_STREAM;
 		int proto = IPPROTO_TCP;
 		int bindFlag = false;
+		XDispatchQueue xdq;
 	};
 
 	ImGuiMenu *xig = nullptr;
@@ -45,123 +100,10 @@ namespace {
 		std::thread::id tid;
 	};
 	const MainThreadId tid;
+
 };
 
-
-#define FUNCIN(...) xprintf("%s(%d) -->\n", __FUNCTION__, std::this_thread::get_id())
-#define FUNCOUT(...) xprintf("%s(%d) <--\n", __FUNCTION__, std::this_thread::get_id())
-#define FUNC(...) { xprintf("%s(%d): ", __FUNCTION__, std::this_thread::get_id()) ; xprintf(__VA_ARGS__); }
-#define FLESS(...) { xprintf(" %s:%d (%d) : ", __FILE__, __LINE__, std::this_thread::get_id()) ; xprintf(__VA_ARGS__); }
-
-class XSemaphore2 {
-public:
-	// Initially, this semaphore must be notify()'d before a wait() will be satisfied
-	XSemaphore2(int c = 0) : count(c) {
-		FUNCIN();
-		FUNCOUT();
-	};
-
-	void operator()(int c) {
-		FUNCIN();
-		std::unique_lock<std::mutex> lock(mutex);
-		count = c;
-		FUNCOUT();
-	}
-
-	void notify(int n = 1) {
-		FUNCIN();
-		std::unique_lock<std::mutex> lock(mutex);
-		count += n;
-		cv.notify_one();
-		FUNCOUT();
-	}
-
-	void wait(int n = 1) {
-		FUNCIN();
-		std::unique_lock<std::mutex> lock(mutex);
-		waitNum = n;
-		cv.wait(lock, [this] { return (count >= waitNum); });
-
-		count -= waitNum;
-		FUNCOUT();
-	}
-
-	bool wait_for(int dlyInMillis, int n = 1) {
-		FUNCIN();
-		std::unique_lock<std::mutex> lock(mutex);
-		waitForNum = n;
-		bool retVal = cv.wait_for(lock, std::chrono::milliseconds(dlyInMillis), [this] { return (count >= waitForNum); });
-
-		// if retVal is true, it means we didn't time out.
-		if (retVal)
-			count -= waitForNum;
-
-		FUNCOUT();
-		return retVal;
-	}
-
-	unsigned int get_count() {
-		FUNCIN();
-		std::unique_lock<std::mutex> lock(mutex);
-		FUNCOUT();
-		return count;
-	}
-
-private:
-	unsigned int count;
-	unsigned int waitNum;
-	unsigned int waitForNum;
-	std::mutex mutex;
-	std::condition_variable cv;
-};
-
-class XDispatchQueue : public XThread {
-	typedef std::function<void()> Function;
-	typedef std::queue<Function> Queue;
-
-public:
-	XDispatchQueue() : XThread("DispatchQueue") {
-		FUNCIN();
-		FUNCOUT();
-	};
-
-	~XDispatchQueue() {
-		FUNCIN();
-		Stop();
-		FUNCOUT();
-	}
-
-	void operator += (Function fn) {
-		FUNCIN();
-		std::unique_lock<std::mutex> lock(m_lock);
-		m_q.push(fn);
-		lock.unlock();
-		m_signal.notify();
-		FUNCOUT();
-	};
-	
-	void Run() {
-		FUNCIN();
-		while (IsRunning()) {
-			m_signal.wait();
-			if (m_q.size())	{
-				std::unique_lock<std::mutex> lock(m_lock);
-				Function fn = m_q.front();
-
-				m_q.pop();
-				fn();
-			}
-		}
-		FUNCOUT();
-	}
-
-private:
-	std::mutex m_lock;
-	XDispatchQueue::Queue m_q;
-	XSemaphore m_signal;
-};
-
-XDispatchQueue xgdc;
+XDispatchQueue gxdq;
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
@@ -280,21 +222,27 @@ void ExampleXGL::BuildScene() {
 					}
 				}
 				if (ImGui::Button("Fire APC")) {
-					xgdc += [&]() {	FLESS("\"Fire APC\" Button Pushed\n"); };
-					//xsh.m_signal.notify();
+					xig->xdq += [&]() {
+						console->RenderText("APC fired!\n");
+					};
 				}
 			}
 			ImGui::End();
 			xsock.GetLastError();
 		}));
+
+		xig->SetAnimationFunction([&](double clock) {
+			(&xig->xdq)();
+		});
+
 		return xig;
 	});
+
 
 	if( (canvas = (XGLGuiCanvas*)FindObject("SocketStuff")) != nullptr)
 		canvas->RenderText("Socket test...\n");
 	if ((console = (XGLGuiCanvas*)FindObject("ConsoleOut")) != nullptr)
 		xprintf("Found 'ConsoleOut'\n");
 
-	xgdc.Start();
 	FUNC("tid is: %d\n", tid);
 }
