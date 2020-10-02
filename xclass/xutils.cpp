@@ -6,22 +6,18 @@
 #include <stdarg.h>
 #include <string.h>
 
-namespace {
-#ifdef _WIN32
-	CRITICAL_SECTION cs;
-
-	class CSInitializer {
-	public:
-		CSInitializer() { InitializeCriticalSection(&cs); }
-	};
-
-	CSInitializer csi;
-#endif
-}
-
+static bool isInitialized = false;
+static CRITICAL_SECTION cs;
 
 extern "C" int xprintf(char *fmt,...)
 {
+	static int _initialized = 0;
+	if (!_initialized)
+	{
+		InitializeCriticalSection(&cs);
+		_initialized = 1;
+	}
+
 	static char buff[8192];
 	va_list ap;
 
