@@ -21,7 +21,12 @@
 *
 * Run() method waits on an XSemaphore() then pops a Function and runs it in a separate thread.
 *
-* One must call XDispatchQueue::Start() to start the thread.  (for now)
+* One must call XDispatchQueue::Start() to start the thread for background dequeueing & call of Function.
+*
+* Use of the & overload can be leveraged by let's say an XGLShape::SetAnimationFunc() for 
+* dequeueing & call of Function in XGL::Display() thread. (main).
+*
+* Use of both simultaneously is undefined.
 */
 class XDispatchQueue : public XThread {
 	typedef std::function<void()> Function;
@@ -102,6 +107,15 @@ namespace {
 	char requestCooked[4096];
 	char replyRaw[2048];
 	char replyCooked[4096];
+	void CookHttpRequest() {
+		char *s, *d;
+		for (s = requestRaw, d = requestCooked; *s && (s-requestRaw < sizeof(requestRaw)-1); s++, d++) {
+			if (*s == '\n')
+				*d++ = '\r';
+			*d = *s;
+		}
+		*d = 0;
+	}
 
 	class MainThreadId {
 	public:
@@ -115,16 +129,6 @@ namespace {
 	};
 	const MainThreadId tid;
 
-	void CookRequest() {
-		char *s, *d;
-		for (s = requestRaw, d = requestCooked; *s; s++, d++)
-		{
-			if (*s == '\n')
-				*d++ = '\r';
-			*d = *s;
-		}
-		*d = 0;
-	}
 };
 
 XDispatchQueue gxdq;
@@ -227,21 +231,22 @@ void ExampleXGL::BuildScene() {
 				if (ImGui::Button("Send")) {
 					xprintf("Send clicked\n");
 
-					CookRequest();
-
+					// line-ending converted (LF -> CRLF)
+					CookHttpRequest();
 					std::string request(requestCooked);
 
 					// we're running in display loop (main) thread
-					int ret = xsock.Send(request.c_str(), request.size());
+					int nWritten = xsock.Send(request.c_str(), request.size());
 					if (console)
 					{
-						if (ret == request.size())
+						// 
+						if (nWritten == request.size())
 						{
-							console->RenderText("Sent " + std::to_string(ret) + " bytes\n");
+							console->RenderText("Sent " + std::to_string(nWritten) + " bytes\n");
 
 							// gxdq run it's own background thread 
 							gxdq += [&]() {
-								FLESS("Send wrote %d bytes\n", ret);
+								FLESS("Send wrote %d bytes\n", nWritten);
 								int nRead = xsock.Recv(replyRaw, sizeof(replyRaw));
 								FLESS("Got %d bytes back", nRead);
 
@@ -252,7 +257,7 @@ void ExampleXGL::BuildScene() {
 							};
 						}
 						else
-							console->RenderText("xsock.Send() failed, sent " + std::to_string(ret) + " bytes\n");
+							console->RenderText("xsock.Send() failed, sent " + std::to_string(nWritten) + " bytes\n");
 					}
 				}
 				if (ImGui::Button("Fire APC")) {
