@@ -12,6 +12,17 @@
 #define FUNC(...) { xprintf("%s(%d): ", __FUNCTION__, std::this_thread::get_id()) ; xprintf(__VA_ARGS__); }
 #define FLESS(...) { xprintf(" %s:%d (%d) : ", __FILE__, __LINE__, std::this_thread::get_id()) ; xprintf(__VA_ARGS__); }
 
+/**
+* Simple dispatch queue for async Function object execution on alternate thread(s)
+* FIFO implemented with std::queue. 
+*
+* operator += overload adds a Function to the Queue
+* operator & overload pops a Function from Queue, or an empty Function if Queue is empty
+*
+* Run() method waits on an XSemaphore() then pops a Function and runs it in a separate thread.
+*
+* One must call XDispatchQueue::Start() to start the thread.  (for now)
+*/
 class XDispatchQueue : public XThread {
 	typedef std::function<void()> Function;
 	typedef std::queue<Function> Queue;
@@ -25,16 +36,17 @@ public:
 
 	void operator += (Function fn) {
 		std::unique_lock<std::mutex> lock(m_lock);
-		m_q.push(fn);
+		m_queue.push(fn);
 		lock.unlock();
 		m_signal.notify();
 	};
 
 	Function& operator& () {
-		if (m_q.size()) {
+		if (m_queue.size()) {
 			std::unique_lock<std::mutex> lock(m_lock);
-			m_fn = m_q.front();
-			m_q.pop();
+			m_fn = m_queue.front();
+			m_queue.pop();
+			lock.unlock();
 			return m_fn;
 		}
 		else
@@ -44,11 +56,11 @@ public:
 	void Run() {
 		while (IsRunning()) {
 			m_signal.wait();
-			if (m_q.size()) {
+			if (m_queue.size()) {
 				std::unique_lock<std::mutex> lock(m_lock);
-				Function fn = m_q.front();
+				Function fn = m_queue.front();
 
-				m_q.pop();
+				m_queue.pop();
 				fn();
 			}
 		}
@@ -56,9 +68,9 @@ public:
 
 private:
 	std::mutex m_lock;
-	XDispatchQueue::Queue m_q;
+	XDispatchQueue::Queue m_queue;
 	XSemaphore m_signal;
-	Function m_emptyFn{ []() {} };
+	Function m_emptyFn{ []() {}  };
 	Function m_fn;
 };
 
@@ -88,6 +100,8 @@ namespace {
 		"\n" 
 	};
 	char requestCooked[4096];
+	char replyRaw[2048];
+	char replyCooked[4096];
 
 	class MainThreadId {
 	public:
@@ -101,6 +115,16 @@ namespace {
 	};
 	const MainThreadId tid;
 
+	void CookRequest() {
+		char *s, *d;
+		for (s = requestRaw, d = requestCooked; *s; s++, d++)
+		{
+			if (*s == '\n')
+				*d++ = '\r';
+			*d = *s;
+		}
+		*d = 0;
+	}
 };
 
 XDispatchQueue gxdq;
@@ -121,6 +145,7 @@ void ExampleXGL::BuildScene() {
 	AddShape("shaders/diffuse", [&]() { 
 		xig = new ImGuiMenu();
 
+		// Menu function runs once per display refresh.
 		xig->AddMenuFunc(([&]() {
 			if (ImGui::Begin("Socket Noodler", &xig->show))
 			{
@@ -201,22 +226,31 @@ void ExampleXGL::BuildScene() {
 				ImGui::SameLine();
 				if (ImGui::Button("Send")) {
 					xprintf("Send clicked\n");
-					char *s, *d;
-					for (s = requestRaw, d = requestCooked; *s; s++, d++)
-					{
-						if (*s == '\n')
-							*d++ = '\r';
-						*d = *s;
-					}
-					*d = 0;
+
+					CookRequest();
 
 					std::string request(requestCooked);
 
+					// we're running in display loop (main) thread
 					int ret = xsock.Send(request.c_str(), request.size());
 					if (console)
 					{
 						if (ret == request.size())
+						{
 							console->RenderText("Sent " + std::to_string(ret) + " bytes\n");
+
+							// gxdq run it's own background thread 
+							gxdq += [&]() {
+								FLESS("Send wrote %d bytes\n", ret);
+								int nRead = xsock.Recv(replyRaw, sizeof(replyRaw));
+								FLESS("Got %d bytes back", nRead);
+
+								// lambda: xig's Animation() func runs this, ie: main thread.
+								xig->xdq += [&]() {
+									console->RenderText(replyRaw);
+								};
+							};
+						}
 						else
 							console->RenderText("xsock.Send() failed, sent " + std::to_string(ret) + " bytes\n");
 					}
@@ -244,5 +278,6 @@ void ExampleXGL::BuildScene() {
 	if ((console = (XGLGuiCanvas*)FindObject("ConsoleOut")) != nullptr)
 		xprintf("Found 'ConsoleOut'\n");
 
-	FUNC("tid is: %d\n", tid);
+	gxdq.Start();
+	xprintf("Main TID: %d\n", tid);
 }
