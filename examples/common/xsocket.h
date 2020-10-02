@@ -14,6 +14,7 @@ public:
 	int Close();
 	int Connect();
 	int Send(const char*, int);
+	int Recv(char*, int);
 
 	static std::string Host2Addr(std::string host);
 	int GetLastError();

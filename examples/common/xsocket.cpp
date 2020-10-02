@@ -1,5 +1,7 @@
 #include "xsocket.h"
 
+const static XSocket _xsock;
+
 XSocket::XSocket() {
 	SocketsSetup();
 }
@@ -69,4 +71,19 @@ int XSocket::Send(const char *buffer, int length) {
 		m_error = WSAGetLastError();
 
 	return retVal;
+}
+
+int XSocket::Recv(char *buffer, int size) {
+	sockaddr_in sai;
+	int nRead = 0;
+
+	SockAddrIN(&sai, (char*)m_addr.c_str(), m_port);
+
+	nRead = recv(m_socket, buffer, size, 0);
+	if (nRead == SOCKET_ERROR)
+		m_error = WSAGetLastError();
+
+	return nRead;
+
+
 }
