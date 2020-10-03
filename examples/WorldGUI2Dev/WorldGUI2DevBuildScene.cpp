@@ -4,118 +4,93 @@
 #include "ExampleXGL.h"
 #include "imgui_stdlib.h"
 #include "xsocket.h"
-
-#include <queue>
+#include "xdispatchq.h"
 
 #define FUNCIN(...) xprintf("%s(%d) -->\n", __FUNCTION__, std::this_thread::get_id())
 #define FUNCOUT(...) xprintf("%s(%d) <--\n", __FUNCTION__, std::this_thread::get_id())
 #define FUNC(...) { xprintf("%s(%d): ", __FUNCTION__, std::this_thread::get_id()) ; xprintf(__VA_ARGS__); }
 #define FLESS(...) { xprintf(" %s:%d (%d) : ", __FILE__, __LINE__, std::this_thread::get_id()) ; xprintf(__VA_ARGS__); }
 
-/**
-* Simple dispatch queue for async Function object execution on alternate thread(s)
-* FIFO implemented with std::queue. 
-*
-* operator += overload adds a Function to the Queue
-* operator & overload pops a Function from Queue, or an empty Function if Queue is empty
-*
-* Run() method waits on an XSemaphore() then pops a Function and runs it in a separate thread.
-*
-* One must call XDispatchQueue::Start() to start the thread for background dequeueing & call of Function.
-*
-* Use of the & overload can be leveraged by let's say an XGLShape::SetAnimationFunc() for 
-* dequeueing & call of Function in XGL::Display() thread. (main).
-*
-* Use of both simultaneously is undefined.
-*/
-class XDispatchQueue : public XThread {
-	typedef std::function<void()> Function;
-	typedef std::queue<Function> Queue;
-
+class XHttpClient {
 public:
-	XDispatchQueue() : XThread("DispatchQueue") {};
-
-	~XDispatchQueue() {
-		Stop();
+	XHttpClient() {
+		if (hostName.size())
+			GetHostAddr();
 	}
 
-	void operator += (Function fn) {
-		std::unique_lock<std::mutex> lock(m_lock);
-		m_queue.push(fn);
-		lock.unlock();
-		m_signal.notify();
-	};
-
-	Function& operator& () {
-		if (m_queue.size()) {
-			std::unique_lock<std::mutex> lock(m_lock);
-			m_fn = m_queue.front();
-			m_queue.pop();
-			lock.unlock();
-			return m_fn;
-		}
-		else
-			return m_emptyFn;
+	std::string GetHostAddr() {
+		ipAddr = XSocket::Host2Addr(hostName);
+		return ipAddr;
 	}
 
-	void Run() {
-		while (IsRunning()) {
-			m_signal.wait();
-			if (m_queue.size()) {
-				std::unique_lock<std::mutex> lock(m_lock);
-				Function fn = m_queue.front();
+	std::string GetHostName() {	return hostName; }
+	std::string GetAddr() { return ipAddr; }
+	int GetPort() { return port; }
+	int GetSocketType() { return type; }
+	int GetSocketProto() { return proto; }
 
-				m_queue.pop();
-				fn();
-			}
-		}
-	}
+	int Open() { return xsock.Open(ipAddr, port); }
+	int Close() { return xsock.Close(); }
+	int Connect() { return xsock.Connect(); }
+	int Send(const char *src, int length) { return xsock.Send(src, length); }
+	int Recv(char *dst, int size) { return xsock.Recv(dst, size); }
 
-private:
-	std::mutex m_lock;
-	XDispatchQueue::Queue m_queue;
-	XSemaphore m_signal;
-	Function m_emptyFn{ []() {}  };
-	Function m_fn;
-};
+	int GetLastError() { return xsock.GetLastError(); }
 
-namespace {
-	class ImGuiMenu : public XGLImGui {
-	public:
-		bool show = true;
-		std::string hostName = "hq.e-man.tv";
-		std::string ipAddr;
-		int port = 80;
-		int type = SOCK_STREAM;
-		int proto = IPPROTO_TCP;
-		int bindFlag = false;
-		XDispatchQueue xdq;
-	};
+	char *RequestRaw() { return requestRaw; }
+	int RequestRawSize() { return sizeof(requestRaw); }
+	char *RequestCooked() { return requestCooked; }
+	int RequestCookedSize() { return sizeof(requestCooked); }
 
-	ImGuiMenu *xig = nullptr;
-	XGLGuiCanvas *canvas = nullptr;
-	XGLGuiCanvas *console = nullptr;
-	XSocket xsock;
+	char *ReplyRaw() { return replyRaw; }
+	int ReplyRawSize() { return sizeof(replyRaw); }
+	char *ReplyCooked() { return replyCooked; }
+	int ReplyCookedSize() { return sizeof(replyCooked); }
 
-	char requestRaw[2048] {
-		"GET /\n"
-		"Host: hq.e-man-tv\n"
-		"User-Agent: curl/7.54.0\n"
-		"Accept: */*\n"
-		"\n" 
-	};
-	char requestCooked[4096];
-	char replyRaw[2048];
-	char replyCooked[4096];
 	void CookHttpRequest() {
 		char *s, *d;
-		for (s = requestRaw, d = requestCooked; *s && (s-requestRaw < sizeof(requestRaw)-1); s++, d++) {
+		for (s = requestRaw, d = requestCooked; *s && (s - requestRaw < sizeof(requestRaw) - 1); s++, d++) {
 			if (*s == '\n')
 				*d++ = '\r';
 			*d = *s;
 		}
 		*d = 0;
 	}
+
+private:
+	std::string hostName = "hq.e-man.tv";
+	std::string ipAddr;
+	int port = 80;
+	int type = SOCK_STREAM;
+	int proto = IPPROTO_TCP;
+	int bindFlag = false;
+	XDispatchQueue xdq;
+	XSocket xsock;
+
+	char requestRaw[2048]{
+		"GET / HTTP/1.1\n"
+		"Host: hq.e-man-tv\n"
+		"User-Agent: curl/7.54.0\n"
+		"Accept: */*\n"
+		"\n"
+	};
+	char requestCooked[4096];
+	char replyRaw[2048];
+	char replyCooked[4096];
+};
+
+namespace {
+	class ImGuiMenu : public XGLImGui {
+	public:
+		ImGuiMenu() : XGLImGui() {};
+		bool show = true;
+		XHttpClient client;
+		XDispatchQueue xdq;
+	};
+
+	ImGuiMenu *xig = nullptr;
+	XGLGuiCanvas *canvas = nullptr;
+	XGLGuiCanvas *console = nullptr;
 
 	class MainThreadId {
 	public:
@@ -132,6 +107,8 @@ namespace {
 };
 
 XDispatchQueue gxdq;
+XHttpClient client;
+char replyBuff[2048];
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
@@ -155,34 +132,32 @@ void ExampleXGL::BuildScene() {
 			{
 				ImGui::Text("Host name: ");
 				ImGui::SameLine();
-				ImGui::InputText("", &xig->hostName);
+				ImGui::InputText("", &client.GetHostName());
 				ImGui::SameLine();
 
 				if (ImGui::Button("Lookup")) {
-					xprintf("Lookup pressed: host name is: %s\n", xig->hostName.c_str());
-					xig->ipAddr = XSocket::Host2Addr(xig->hostName);
+					xprintf("Lookup pressed: host name is: %s\n", client.GetHostName().c_str());
 					if (canvas)
 					{
 						canvas->Clear();
-						canvas->RenderText("Address of \"" + xig->hostName + "\" is: " + xig->ipAddr + "\n");
+						canvas->RenderText("Address of \"" + client.GetHostName() + "\" is: " + client.GetHostAddr() + "\n");
 					}
 				}
 
 				ImGui::Text("Open params: ");
 				ImGui::SameLine();
-				ImGui::Text("addr: %s", xig->ipAddr.c_str());
+				ImGui::Text("addr: %s", client.GetAddr().c_str());
 				ImGui::SameLine();
-				ImGui::Text("port: %d", xig->port);
+				ImGui::Text("port: %d", client.GetPort());
 				ImGui::SameLine();
-				ImGui::Text("type: %d", xig->type);
+				ImGui::Text("type: %d", client.GetSocketType());
 				ImGui::SameLine();
-				ImGui::Text("proto: %d", xig->proto);
+				ImGui::Text("proto: %d", client.GetSocketProto());
 				ImGui::SameLine();
-				ImGui::Text("flag: %d", xig->bindFlag);
-				ImGui::SameLine();
+
 				if (ImGui::Button("Open")) {
 					xprintf("Open clicked\n");
-					int retVal = xsock.Open(xig->ipAddr, xig->port);
+					int retVal = client.Open();
 					if (console)
 					{
 						console->Clear();
@@ -191,12 +166,12 @@ void ExampleXGL::BuildScene() {
 						else
 							console->RenderText("Socket did not open\n");
 					}
-
 				}
 				ImGui::SameLine();
+
 				if (ImGui::Button("Close")) {
 					xprintf("Close clicked\n");
-					int ret = xsock.Close();
+					int ret = client.Close();
 					if (console) {
 						if (ret == 0)
 							console->RenderText("Socket closed.\n");
@@ -205,15 +180,15 @@ void ExampleXGL::BuildScene() {
 					}
 				}
 
-				ImGui::Text("Connect params: ");
+				ImGui::Text("Connect params: "); 
 				ImGui::SameLine();
-				ImGui::Text("addr: %s", xig->ipAddr.c_str());
+				ImGui::Text("addr: %s", client.GetAddr().c_str());
 				ImGui::SameLine();
-				ImGui::Text("port: %d", xig->port);
+				ImGui::Text("port: %d", client.GetPort());
 				ImGui::SameLine();
 				if (ImGui::Button("Connect")) {
 					xprintf("Connect clicked\n");
-					int ret = xsock.Connect();
+					int ret = client.Connect();
 					if (console)
 					{
 						if (ret == 0)
@@ -223,55 +198,53 @@ void ExampleXGL::BuildScene() {
 					}
 				}
 
-
 				ImGui::Text("Send params: ");
 				ImGui::SameLine();
-				ImGui::InputTextMultiline(" ", requestRaw, sizeof(requestRaw));
+				ImGui::InputTextMultiline(" ", client.RequestRaw(), client.RequestRawSize());
 				ImGui::SameLine();
 				if (ImGui::Button("Send")) {
 					xprintf("Send clicked\n");
 
-					// line-ending converted (LF -> CRLF)
-					CookHttpRequest();
-					std::string request(requestCooked);
+					client.CookHttpRequest();
+					std::string request(client.RequestCooked());
 
 					// we're running in display loop (main) thread
-					int nWritten = xsock.Send(request.c_str(), request.size());
+					int nWritten = client.Send(request.c_str(), request.size());
 					if (console)
 					{
-						// 
 						if (nWritten == request.size())
 						{
 							console->RenderText("Sent " + std::to_string(nWritten) + " bytes\n");
 
-							// gxdq run it's own background thread 
-							gxdq += [&]() {
+							// gxdq runs it's own background thread
+							gxdq.Post( [&]() {
 								FLESS("Send wrote %d bytes\n", nWritten);
-								int nRead = xsock.Recv(replyRaw, sizeof(replyRaw));
+								int nRead = client.Recv(replyBuff, sizeof(replyBuff));
 								FLESS("Got %d bytes back", nRead);
 
 								// lambda: xig's Animation() func runs this, ie: main thread.
-								xig->xdq += [&]() {
-									console->RenderText(replyRaw);
-								};
-							};
+								xig->xdq.Post( [&]() {
+									console->RenderText(replyBuff);
+								});
+							});
 						}
 						else
 							console->RenderText("xsock.Send() failed, sent " + std::to_string(nWritten) + " bytes\n");
 					}
 				}
 				if (ImGui::Button("Fire APC")) {
-					xig->xdq += [&]() {
+					xig->xdq.Post( [&]() {
 						console->RenderText("APC fired!\n");
-					};
+					});
 				}
 			}
 			ImGui::End();
-			xsock.GetLastError();
+			client.GetLastError();
 		}));
 
 		xig->SetAnimationFunction([&](double clock) {
-			(&xig->xdq)();
+			XDispatchQueue::Function fn = xig->xdq.Remove();
+			fn();
 		});
 
 		return xig;

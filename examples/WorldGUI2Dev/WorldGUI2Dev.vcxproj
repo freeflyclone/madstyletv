@@ -172,6 +172,7 @@
     <ClCompile Include="..\common\ImGuiFileDialog.cpp" />
     <ClCompile Include="..\common\imgui_main.cpp" />
     <ClCompile Include="..\common\imgui_menu_bar.cpp" />
+    <ClCompile Include="..\common\xdispatchq.cpp" />
     <ClCompile Include="..\common\xglimgui.cpp" />
     <ClCompile Include="..\common\xsocket.cpp" />
     <ClCompile Include="WorldGUI2DevBuildScene.cpp" />
@@ -189,6 +190,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\common\ImGuiFileDialog.h" />
+    <ClInclude Include="..\common\xdispatchq.h" />
     <ClInclude Include="..\common\xsocket.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
