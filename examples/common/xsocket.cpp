@@ -1,5 +1,10 @@
 #include "xsocket.h"
 
+// Static object initialization of file-scope object "_xsock"
+// forces XSocket constructor to call SocketsSetup at LOAD time which, on 
+// Windows, causes the Winsock initializer WSAStartup() to be called.
+//
+// From then on, Berkeley sockets semantics are mostly like POSIX counterparts.
 const static XSocket _xsock;
 
 XSocket::XSocket() {
