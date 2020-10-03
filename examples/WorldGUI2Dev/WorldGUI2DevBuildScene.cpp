@@ -72,6 +72,7 @@ private:
 		"Host: hq.e-man-tv\n"
 		"User-Agent: curl/7.54.0\n"
 		"Accept: */*\n"
+		//"Range: bytes=0-100\n"
 		"\n"
 	};
 	char requestCooked[4096];
@@ -220,12 +221,14 @@ void ExampleXGL::BuildScene() {
 							gxdq.Post( [&]() {
 								FLESS("Send wrote %d bytes\n", nWritten);
 								int nRead = client.Recv(replyBuff, sizeof(replyBuff));
-								FLESS("Got %d bytes back", nRead);
+								if (nRead > 0) {
+									FLESS("Got %d bytes back", nRead);
 
-								// lambda: xig's Animation() func runs this, ie: main thread.
-								xig->xdq.Post( [&]() {
-									console->RenderText(replyBuff);
-								});
+									// lambda: xig's Animation() func runs this, ie: main thread.
+									xig->xdq.Post([&]() {
+										console->RenderText(replyBuff);
+									});
+								}
 							});
 						}
 						else
