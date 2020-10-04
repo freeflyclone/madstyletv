@@ -231,8 +231,8 @@ ImGuiMenu *xig = nullptr;
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
-	glm::vec3 cameraPosition(0, -25, 5.4f);
-	glm::vec3 cameraDirection = glm::normalize(cameraPosition * -1.0f + glm::vec3(5, 0, 6.4));
+	glm::vec3 cameraPosition(-5, -30, 5.4f);
+	glm::vec3 cameraDirection = glm::normalize(cameraPosition * -1.0f + glm::vec3(10, 0, 10));
 	glm::vec3 cameraUp = { 0, 0, 1 };
 	camera.Set(cameraPosition, cameraDirection, cameraUp);
 
