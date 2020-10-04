@@ -5,11 +5,15 @@
 #include "imgui_stdlib.h"
 #include "xsocket.h"
 #include "xdispatchq.h"
+#include <string>
 
 #define FUNCIN(...) xprintf("%s(%d) -->\n", __FUNCTION__, std::this_thread::get_id())
 #define FUNCOUT(...) xprintf("%s(%d) <--\n", __FUNCTION__, std::this_thread::get_id())
 #define FUNC(...) { xprintf("%s(%d): ", __FUNCTION__, std::this_thread::get_id()) ; xprintf(__VA_ARGS__); }
 #define FLESS(...) { xprintf(" %s:%d (%d) : ", __FILE__, __LINE__, std::this_thread::get_id()) ; xprintf(__VA_ARGS__); }
+
+XDispatchQueue gxdq;
+char replyBuff[2048];
 
 class XHttpClient {
 public:
@@ -82,36 +86,147 @@ private:
 	char replyCooked[4096];
 };
 
-namespace {
-	class ImGuiMenu : public XGLImGui {
-	public:
-		ImGuiMenu() : XGLImGui() {};
-		bool show = true;
-		XHttpClient client;
-		XDispatchQueue xdq;
+class ImGuiMenu : public XGLImGui {
+public:
+	ImGuiMenu(XGL& xgl) : XGLImGui() {
+		AddMenuFunc(std::bind(&ImGuiMenu::Handler, this));
+
+		if ((m_sockwin = (XGLGuiCanvas*)xgl.FindObject("SocketStuff")) != nullptr)
+			m_sockwin->RenderText("Socket test...\n");
+		if ((m_console = (XGLGuiCanvas*)xgl.FindObject("ConsoleOut")) != nullptr)
+			m_console->RenderText("Found 'ConsoleOut'\n");
+
+		SetAnimationFunction([&](double clock) {
+			XDispatchQueue::Function fn = xdq.Remove();
+			fn();
+		});
+
+		m_tid = std::this_thread::get_id();
 	};
 
-	ImGuiMenu *xig = nullptr;
-	XGLGuiCanvas *sockwin = nullptr;
-	XGLGuiCanvas *console = nullptr;
+	void Handler() {
+		using namespace ImGui;
 
-	class MainThreadId {
-	public:
-		MainThreadId() { tid = std::this_thread::get_id(); }
-		std::thread::id operator & () {
-			return tid;
+		if (Begin("Socket Noodler", &show)) {
+			if (Button("Fire APC")) {
+				gxdq.Post([&]() {
+					FUNC("APC fired, m_tid: %d.\n", m_tid);
+					xdq.Post([&]() {
+						if (m_console) {
+							m_console->RenderText("APC fired: ");
+						}
+					});
+				});
+			}
+			Text("Host name: ");
+			SameLine();
+			InputText("", &client.GetHostName());
+			SameLine();
+
+			if (Button("Lookup")) {
+				xprintf("Lookup: host name is: %s\n", client.GetHostName().c_str());
+				if (m_sockwin)
+				{
+					m_sockwin->Clear();
+					m_sockwin->RenderText("Address of \"" + client.GetHostName() + "\" is: " + client.GetHostAddr() + "\n");
+				}
+			}
+
+			Text("Open params: ");    				    SameLine();
+			Text("addr: %s", client.GetAddr().c_str()); SameLine();
+			Text("port: %d", client.GetPort());         SameLine();
+			Text("type: %d", client.GetSocketType());   SameLine();
+			Text("proto: %d", client.GetSocketProto()); SameLine();
+
+			if (Button("Open")) {
+				xprintf("Open clicked\n");
+				int retVal = client.Open();
+				if (m_sockwin) {
+					m_sockwin->Clear();
+					if (retVal != -1)
+						m_sockwin->RenderText("Socket opened!\n");
+					else
+						m_sockwin->RenderText("Socket did not open\n");
+				}
+			}
+			SameLine();
+
+			if (Button("Close")) {
+				xprintf("Close clicked\n");
+				int ret = client.Close();
+				if (m_sockwin) {
+					if (ret == 0)
+						m_sockwin->RenderText("Socket closed.\n");
+					else
+						m_sockwin->RenderText("m_xsock.Close() failed\n");
+				}
+			}
+
+			Text("Connect params: ");
+			SameLine();
+			Text("addr: %s", client.GetAddr().c_str());
+			SameLine();
+			Text("port: %d", client.GetPort());
+			SameLine();
+			if (Button("Connect")) {
+				xprintf("Connect clicked\n");
+				int ret = client.Connect();
+				if (m_sockwin) {
+					if (ret == 0)
+						m_sockwin->RenderText("Socket connected.\n");
+					else
+						m_sockwin->RenderText("m_xsock.Connect() failed\n");
+				}
+			}
+
+			Text("Send params: ");
+			SameLine();
+			InputTextMultiline(" ", client.RequestRaw(), client.RequestRawSize());
+			SameLine();
+			if (Button("Send")) {
+				std::string request = client.CookHttpRequest();
+
+				// we're running in display loop (main) thread
+				int nWritten = client.Send(request.c_str(), request.size());
+				if (m_console) {
+					if (nWritten == request.size()) {
+						if (m_sockwin)
+							m_sockwin->RenderText("Sent " + std::to_string(nWritten) + " bytes\n");
+
+						// gxdq runs it's own background thread
+						gxdq.Post([&]() {
+							FLESS("Send wrote %d bytes\n", nWritten);
+							memset(replyBuff, 0, sizeof(replyBuff));
+							int nRead = client.Recv(replyBuff, sizeof(replyBuff));
+							if (nRead > 0) {
+								FLESS("Got %d bytes back\n", nRead);
+
+								// lambda: xig's Animation() func runs this, ie: main thread.
+								xdq.Post([&]() {
+									m_console->Clear();
+									m_console->RenderText(replyBuff);
+								});
+							}
+						});
+					}
+					else
+						m_console->RenderText("m_xsock.Send() failed, sent " + std::to_string(nWritten) + " bytes\n");
+				}
+			}
+
 		}
+		End();
+	}
 
-	private:
-		std::thread::id tid;
-	};
-	const MainThreadId tid;
-
+	bool show = true;
+	XHttpClient client;
+	XDispatchQueue xdq;
+	XGLGuiCanvas *m_sockwin = nullptr;
+	XGLGuiCanvas *m_console = nullptr;
+	std::thread::id m_tid;
 };
 
-XDispatchQueue gxdq;
-XHttpClient client;
-char replyBuff[2048];
+ImGuiMenu *xig = nullptr;
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
@@ -126,140 +241,7 @@ void ExampleXGL::BuildScene() {
 		shape->model = glm::translate(glm::mat4(), glm::vec3(0.0, -5.0, 0.0));
 	});
 
-	AddShape("shaders/diffuse", [&]() { 
-		xig = new ImGuiMenu();
-
-		// Menu function runs once per display refresh.
-		xig->AddMenuFunc(([&]() {
-			if (ImGui::Begin("Socket Noodler", &xig->show))
-			{
-				ImGui::Text("Host name: ");
-				ImGui::SameLine();
-				ImGui::InputText("", &client.GetHostName());
-				ImGui::SameLine();
-
-				if (ImGui::Button("Lookup")) {
-					xprintf("Lookup pressed: host name is: %s\n", client.GetHostName().c_str());
-					if (sockwin)
-					{
-						sockwin->Clear();
-						sockwin->RenderText("Address of \"" + client.GetHostName() + "\" is: " + client.GetHostAddr() + "\n");
-					}
-				}
-
-				ImGui::Text("Open params: ");
-				ImGui::SameLine();
-				ImGui::Text("addr: %s", client.GetAddr().c_str());
-				ImGui::SameLine();
-				ImGui::Text("port: %d", client.GetPort());
-				ImGui::SameLine();
-				ImGui::Text("type: %d", client.GetSocketType());
-				ImGui::SameLine();
-				ImGui::Text("proto: %d", client.GetSocketProto());
-				ImGui::SameLine();
-
-				if (ImGui::Button("Open")) {
-					xprintf("Open clicked\n");
-					int retVal = client.Open();
-					if (sockwin)
-					{
-						console->Clear();
-						if (retVal != -1)
-							sockwin->RenderText("Socket opened!\n");
-						else
-							sockwin->RenderText("Socket did not open\n");
-					}
-				}
-				ImGui::SameLine();
-
-				if (ImGui::Button("Close")) {
-					xprintf("Close clicked\n");
-					int ret = client.Close();
-					if (sockwin) {
-						if (ret == 0)
-							sockwin->RenderText("Socket closed.\n");
-						else
-							sockwin->RenderText("m_xsock.Close() failed\n");
-					}
-				}
-
-				ImGui::Text("Connect params: "); 
-				ImGui::SameLine();
-				ImGui::Text("addr: %s", client.GetAddr().c_str());
-				ImGui::SameLine();
-				ImGui::Text("port: %d", client.GetPort());
-				ImGui::SameLine();
-				if (ImGui::Button("Connect")) {
-					xprintf("Connect clicked\n");
-					int ret = client.Connect();
-					if (sockwin)
-					{
-						if (ret == 0)
-							sockwin->RenderText("Socket connected.\n");
-						else
-							sockwin->RenderText("m_xsock.Connect() failed\n");
-					}
-				}
-
-				ImGui::Text("Send params: ");
-				ImGui::SameLine();
-				ImGui::InputTextMultiline(" ", client.RequestRaw(), client.RequestRawSize());
-				ImGui::SameLine();
-				if (ImGui::Button("Send")) {
-					std::string request = client.CookHttpRequest();
-
-					// we're running in display loop (main) thread
-					int nWritten = client.Send(request.c_str(), request.size());
-					if (console)
-					{
-						if (nWritten == request.size())
-						{
-							if(sockwin)
-								sockwin->RenderText("Sent " + std::to_string(nWritten) + " bytes\n");
-
-							// gxdq runs it's own background thread
-							gxdq.Post( [&]() {
-								FLESS("Send wrote %d bytes\n", nWritten);
-								int nRead = client.Recv(replyBuff, sizeof(replyBuff));
-								if (nRead > 0) {
-									FLESS("Got %d bytes back\n", nRead);
-
-									// lambda: xig's Animation() func runs this, ie: main thread.
-									xig->xdq.Post([&]() {
-										console->Clear();
-										console->RenderText(replyBuff);
-									});
-								}
-							});
-						}
-						else
-							console->RenderText("m_xsock.Send() failed, sent " + std::to_string(nWritten) + " bytes\n");
-					}
-				}
-				if (ImGui::Button("Fire APC")) {
-					xig->xdq.Post( [&]() {
-						console->RenderText("APC fired!\n");
-					});
-				}
-			}
-			ImGui::End();
-			client.GetLastError();
-		}));
-
-		xig->SetAnimationFunction([&](double clock) {
-			XDispatchQueue::Function fn = xig->xdq.Remove();
-			fn();
-		});
-
-		return xig;
-	});
-
-
-	if( (sockwin = (XGLGuiCanvas*)FindObject("SocketStuff")) != nullptr)
-		sockwin->RenderText("Socket test...\n");
-	if ((console = (XGLGuiCanvas*)FindObject("ConsoleOut")) != nullptr)
-		xprintf("Found 'ConsoleOut'\n");
+	AddShape("shaders/diffuse", [&]() { xig = new ImGuiMenu(*this);	return xig;	});
 
 	gxdq.Start();
-	xprintf("Main TID: %d\n", tid);
 }
