@@ -14,28 +14,28 @@
 class XHttpClient {
 public:
 	XHttpClient() {
-		if (hostName.size())
+		if (m_hostName.size())
 			GetHostAddr();
 	}
 
 	std::string GetHostAddr() {
-		ipAddr = XSocket::Host2Addr(hostName);
-		return ipAddr;
+		m_ipAddr = XSocket::Host2Addr(m_hostName);
+		return m_ipAddr;
 	}
 
-	std::string GetHostName() {	return hostName; }
-	std::string GetAddr() { return ipAddr; }
-	int GetPort() { return port; }
-	int GetSocketType() { return type; }
-	int GetSocketProto() { return proto; }
+	std::string GetHostName() {	return m_hostName; }
+	std::string GetAddr() { return m_ipAddr; }
+	int GetPort() { return m_port; }
+	int GetSocketType() { return m_type; }
+	int GetSocketProto() { return m_proto; }
 
-	int Open() { return xsock.Open(ipAddr, port); }
-	int Close() { return xsock.Close(); }
-	int Connect() { return xsock.Connect(); }
-	int Send(const char *src, int length) { return xsock.Send(src, length); }
-	int Recv(char *dst, int size) { return xsock.Recv(dst, size); }
+	int Open() { return m_xsock.Open(m_ipAddr, m_port); }
+	int Close() { return m_xsock.Close(); }
+	int Connect() { return m_xsock.Connect(); }
+	int Send(const char *src, int length) { return m_xsock.Send(src, length); }
+	int Recv(char *dst, int size) { return m_xsock.Recv(dst, size); }
 
-	int GetLastError() { return xsock.GetLastError(); }
+	int GetLastError() { return m_xsock.GetLastError(); }
 
 	char *RequestRaw() { return requestRaw; }
 	int RequestRawSize() { return sizeof(requestRaw); }
@@ -47,7 +47,7 @@ public:
 	char *ReplyCooked() { return replyCooked; }
 	int ReplyCookedSize() { return sizeof(replyCooked); }
 
-	void CookHttpRequest() {
+	std::string CookHttpRequest() {
 		char *s, *d;
 		for (s = requestRaw, d = requestCooked; *s && (s - requestRaw < sizeof(requestRaw) - 1); s++, d++) {
 			if (*s == '\n')
@@ -55,17 +55,19 @@ public:
 			*d = *s;
 		}
 		*d = 0;
+
+		return requestCooked;
 	}
 
 private:
-	std::string hostName = "hq.e-man.tv";
-	std::string ipAddr;
-	int port = 80;
-	int type = SOCK_STREAM;
-	int proto = IPPROTO_TCP;
-	int bindFlag = false;
-	XDispatchQueue xdq;
-	XSocket xsock;
+	std::string m_hostName = "hq.e-man.tv";
+	std::string m_ipAddr;
+	int m_port = 80;
+	int m_type = SOCK_STREAM;
+	int m_proto = IPPROTO_TCP;
+	int m_bindFlag = false;
+	XDispatchQueue m_xdq;
+	XSocket m_xsock;
 
 	char requestRaw[2048]{
 		"GET / HTTP/1.1\n"
@@ -90,7 +92,7 @@ namespace {
 	};
 
 	ImGuiMenu *xig = nullptr;
-	XGLGuiCanvas *canvas = nullptr;
+	XGLGuiCanvas *sockwin = nullptr;
 	XGLGuiCanvas *console = nullptr;
 
 	class MainThreadId {
@@ -138,10 +140,10 @@ void ExampleXGL::BuildScene() {
 
 				if (ImGui::Button("Lookup")) {
 					xprintf("Lookup pressed: host name is: %s\n", client.GetHostName().c_str());
-					if (canvas)
+					if (sockwin)
 					{
-						canvas->Clear();
-						canvas->RenderText("Address of \"" + client.GetHostName() + "\" is: " + client.GetHostAddr() + "\n");
+						sockwin->Clear();
+						sockwin->RenderText("Address of \"" + client.GetHostName() + "\" is: " + client.GetHostAddr() + "\n");
 					}
 				}
 
@@ -159,13 +161,13 @@ void ExampleXGL::BuildScene() {
 				if (ImGui::Button("Open")) {
 					xprintf("Open clicked\n");
 					int retVal = client.Open();
-					if (console)
+					if (sockwin)
 					{
 						console->Clear();
 						if (retVal != -1)
-							console->RenderText("Socket opened!\n");
+							sockwin->RenderText("Socket opened!\n");
 						else
-							console->RenderText("Socket did not open\n");
+							sockwin->RenderText("Socket did not open\n");
 					}
 				}
 				ImGui::SameLine();
@@ -173,11 +175,11 @@ void ExampleXGL::BuildScene() {
 				if (ImGui::Button("Close")) {
 					xprintf("Close clicked\n");
 					int ret = client.Close();
-					if (console) {
+					if (sockwin) {
 						if (ret == 0)
-							console->RenderText("Socket closed.\n");
+							sockwin->RenderText("Socket closed.\n");
 						else
-							console->RenderText("xsock.Close() failed\n");
+							sockwin->RenderText("m_xsock.Close() failed\n");
 					}
 				}
 
@@ -190,12 +192,12 @@ void ExampleXGL::BuildScene() {
 				if (ImGui::Button("Connect")) {
 					xprintf("Connect clicked\n");
 					int ret = client.Connect();
-					if (console)
+					if (sockwin)
 					{
 						if (ret == 0)
-							console->RenderText("Socket connected.\n");
+							sockwin->RenderText("Socket connected.\n");
 						else
-							console->RenderText("xsock.Connect() failed\n");
+							sockwin->RenderText("m_xsock.Connect() failed\n");
 					}
 				}
 
@@ -204,10 +206,7 @@ void ExampleXGL::BuildScene() {
 				ImGui::InputTextMultiline(" ", client.RequestRaw(), client.RequestRawSize());
 				ImGui::SameLine();
 				if (ImGui::Button("Send")) {
-					xprintf("Send clicked\n");
-
-					client.CookHttpRequest();
-					std::string request(client.RequestCooked());
+					std::string request = client.CookHttpRequest();
 
 					// we're running in display loop (main) thread
 					int nWritten = client.Send(request.c_str(), request.size());
@@ -215,24 +214,26 @@ void ExampleXGL::BuildScene() {
 					{
 						if (nWritten == request.size())
 						{
-							console->RenderText("Sent " + std::to_string(nWritten) + " bytes\n");
+							if(sockwin)
+								sockwin->RenderText("Sent " + std::to_string(nWritten) + " bytes\n");
 
 							// gxdq runs it's own background thread
 							gxdq.Post( [&]() {
 								FLESS("Send wrote %d bytes\n", nWritten);
 								int nRead = client.Recv(replyBuff, sizeof(replyBuff));
 								if (nRead > 0) {
-									FLESS("Got %d bytes back", nRead);
+									FLESS("Got %d bytes back\n", nRead);
 
 									// lambda: xig's Animation() func runs this, ie: main thread.
 									xig->xdq.Post([&]() {
+										console->Clear();
 										console->RenderText(replyBuff);
 									});
 								}
 							});
 						}
 						else
-							console->RenderText("xsock.Send() failed, sent " + std::to_string(nWritten) + " bytes\n");
+							console->RenderText("m_xsock.Send() failed, sent " + std::to_string(nWritten) + " bytes\n");
 					}
 				}
 				if (ImGui::Button("Fire APC")) {
@@ -254,8 +255,8 @@ void ExampleXGL::BuildScene() {
 	});
 
 
-	if( (canvas = (XGLGuiCanvas*)FindObject("SocketStuff")) != nullptr)
-		canvas->RenderText("Socket test...\n");
+	if( (sockwin = (XGLGuiCanvas*)FindObject("SocketStuff")) != nullptr)
+		sockwin->RenderText("Socket test...\n");
 	if ((console = (XGLGuiCanvas*)FindObject("ConsoleOut")) != nullptr)
 		xprintf("Found 'ConsoleOut'\n");
 
