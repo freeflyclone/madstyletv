@@ -5,12 +5,8 @@
 #include "imgui_stdlib.h"
 #include "xsocket.h"
 #include "xdispatchq.h"
+#include "xlog.h"
 #include <string>
-
-#define FUNCIN(...) xprintf("%s(%d) -->\n", __FUNCTION__, std::this_thread::get_id())
-#define FUNCOUT(...) xprintf("%s(%d) <--\n", __FUNCTION__, std::this_thread::get_id())
-#define FUNC(...) { xprintf("%s(%d): ", __FUNCTION__, std::this_thread::get_id()) ; xprintf(__VA_ARGS__); }
-#define FLESS(...) { xprintf(" %s:%d (%d) : ", __FILE__, __LINE__, std::this_thread::get_id()) ; xprintf(__VA_ARGS__); }
 
 XDispatchQueue gxdq;
 char replyBuff[2048];
@@ -70,7 +66,7 @@ private:
 	int m_type = SOCK_STREAM;
 	int m_proto = IPPROTO_TCP;
 	int m_bindFlag = false;
-	XDispatchQueue m_xdq;
+	//XDispatchQueue m_xdq;
 	XSocket m_xsock;
 
 	char requestRaw[2048]{
@@ -89,6 +85,7 @@ private:
 class ImGuiMenu : public XGLImGui {
 public:
 	ImGuiMenu(XGL& xgl) : XGLImGui() {
+		xdq = new XDispatchQueue("ImGuiDispatchQueue");
 		AddMenuFunc(std::bind(&ImGuiMenu::Handler, this));
 
 		if ((m_sockwin = (XGLGuiCanvas*)xgl.FindObject("SocketStuff")) != nullptr)
@@ -97,7 +94,7 @@ public:
 			m_console->RenderText("Found 'ConsoleOut'\n");
 
 		SetAnimationFunction([&](double clock) {
-			XDispatchQueue::Function fn = xdq.Remove();
+			XDispatchQueue::Function fn = xdq->Remove();
 			fn();
 		});
 
@@ -111,7 +108,7 @@ public:
 			if (Button("Fire APC")) {
 				gxdq.Post([&]() {
 					FUNC("APC fired, m_tid: %d.\n", m_tid);
-					xdq.Post([&]() {
+					xdq->Post([&]() {
 						if (m_console) {
 							m_console->RenderText("APC fired: ");
 						}
@@ -202,7 +199,7 @@ public:
 								FLESS("Got %d bytes back\n", nRead);
 
 								// lambda: xig's Animation() func runs this, ie: main thread.
-								xdq.Post([&]() {
+								xdq->Post([&]() {
 									m_console->Clear();
 									m_console->RenderText(replyBuff);
 								});
@@ -220,7 +217,7 @@ public:
 
 	bool show = true;
 	XHttpClient client;
-	XDispatchQueue xdq;
+	XDispatchQueue* xdq;
 	XGLGuiCanvas *m_sockwin = nullptr;
 	XGLGuiCanvas *m_console = nullptr;
 	std::thread::id m_tid;
@@ -243,5 +240,5 @@ void ExampleXGL::BuildScene() {
 
 	AddShape("shaders/diffuse", [&]() { xig = new ImGuiMenu(*this);	return xig;	});
 
-	gxdq.Start();
+	//gxdq.Start();
 }

@@ -1,10 +1,29 @@
 #include "xdispatchq.h"
 
-XDispatchQueue::XDispatchQueue() : XThread("DispatchQueue") {
+XDispatchQueue::XDispatchQueue() : m_thread(&XDispatchQueue::Run, this) {
+	m_begin = true;
 };
 
+XDispatchQueue::XDispatchQueue(const char* queueName) : m_name(queueName) {
+	FUNC("name: %s\n", m_name.c_str());
+}
+
 XDispatchQueue::~XDispatchQueue() {
-	Stop();
+	m_isRunning = false;
+	m_thread.join();
+}
+
+void XDispatchQueue::Run() {
+	while (!m_begin)
+		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
+
+	while (m_isRunning) {
+		// Using wait_for() eases thread termination, by setting m_isRunning to false
+		if (m_signal.wait_for(250)) {
+			auto fn = Remove();
+			fn();
+		}
+	}
 }
 
 void XDispatchQueue::Post(Function fn) {
@@ -28,13 +47,3 @@ XDispatchQueue::Function& XDispatchQueue::Remove() {
 		return m_emptyFn;
 }
 
-void XDispatchQueue::Run() {
-	while (IsRunning()) {
-		// Using wait_for() allows periodic checking of IsRunning(),
-		// which is useful for allowing XThread::Stop() to actually work.
-		if (m_signal.wait_for(250)) {
-			auto fn = Remove();
-			fn();
-		}
-	}
-}
