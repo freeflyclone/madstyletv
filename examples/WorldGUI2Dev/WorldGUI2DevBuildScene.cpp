@@ -9,6 +9,7 @@
 #include <string>
 
 XDispatchQueue gxdq;
+class ImGuiMenu *xig = nullptr;
 char replyBuff[2048];
 
 class XHttpClient {
@@ -223,8 +224,6 @@ public:
 	std::thread::id m_tid;
 };
 
-ImGuiMenu *xig = nullptr;
-
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
@@ -239,6 +238,4 @@ void ExampleXGL::BuildScene() {
 	});
 
 	AddShape("shaders/diffuse", [&]() { xig = new ImGuiMenu(*this);	return xig;	});
-
-	//gxdq.Start();
 }
