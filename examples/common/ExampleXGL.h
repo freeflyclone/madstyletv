@@ -19,6 +19,7 @@
 #include "xinput.h"
 #include "xglworldcursor.h"
 #include "InputTrackers.h"
+#include "Python.h"
 
 class ExampleXGL : public XGL {
 public:

@@ -9,6 +9,7 @@ bool initHmd = false;
 // Additional constructor so as not to break WinMain() based ExampleXGL projects.
 // Although those could be deprecated and I wouldn't care.
 ExampleXGL::ExampleXGL(GLFWwindow* w) : wc(&shaderMatrix) {
+	Py_Initialize();
 	Initialize(w);
 }
 
@@ -168,4 +169,5 @@ bool ExampleXGL::Display() {
 ExampleXGL::~ExampleXGL() {
 	if (pHmd)
 		delete pHmd;
+	Py_Finalize();
 }

@@ -7,6 +7,7 @@
     <Import Project="poco.props" />
     <Import Project="ffmpeg.props" />
     <Import Project="NetCDF.props" />
+    <Import Project="Python.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
     <LibDir Condition="'$(PlatformTarget)'=='x64'">Win64</LibDir>
