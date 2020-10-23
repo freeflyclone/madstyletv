@@ -201,7 +201,7 @@ public:
 				std::string request = m_client.CookHttpRequest();
 
 				// we're running in display loop (main) thread
-				size_t nWritten = m_client.Send(request.c_str(), request.size());
+				size_t nWritten = m_client.Send(request.c_str(), (int)request.size());
 				if (m_console) {
 					if (nWritten == request.size()) {
 						if (m_sockwin)
