@@ -8,9 +8,10 @@
 #include "xlog.h"
 #include <string>
 
+// For running running stuff in the background.
 XDispatchQueue gxdq;
+
 class ImGuiMenu *xig = nullptr;
-char replyBuff[2048];
 
 class XHttpClient {
 public:
@@ -60,6 +61,21 @@ public:
 		return requestCooked;
 	}
 
+	std::string CookHttpReply(char *s) {
+		char *start = s;
+		char *d = replyCooked;
+
+		for (; s && *s && (s - start < sizeof(replyCooked) - 1); ) {
+			if (*s == '\r') {
+				s++;
+				continue;
+			}
+			*d++ = *s++;
+		}
+		*d = 0;
+
+		return replyCooked;
+	}
 private:
 	std::string m_hostName = "hq.e-man.tv";
 	std::string m_ipAddr;
@@ -80,7 +96,7 @@ private:
 	};
 	char requestCooked[4096];
 	char replyRaw[2048];
-	char replyCooked[4096];
+	char replyCooked[2048];
 };
 
 class ImGuiMenu : public XGLImGui {
@@ -185,7 +201,7 @@ public:
 				std::string request = m_client.CookHttpRequest();
 
 				// we're running in display loop (main) thread
-				int nWritten = m_client.Send(request.c_str(), request.size());
+				size_t nWritten = m_client.Send(request.c_str(), request.size());
 				if (m_console) {
 					if (nWritten == request.size()) {
 						if (m_sockwin)
@@ -194,15 +210,21 @@ public:
 						// gxdq runs it's own background thread
 						gxdq.Post([&]() {
 							FLESS("Send wrote %d bytes\n", nWritten);
+
+							char replyBuff[2048];
 							memset(replyBuff, 0, sizeof(replyBuff));
+
 							int nRead = m_client.Recv(replyBuff, sizeof(replyBuff));
+
+							std::string reply = m_client.CookHttpReply(replyBuff);
+
 							if (nRead > 0) {
 								FLESS("Got %d bytes back\n", nRead);
 
 								// lambda: xig's Animation() func runs this, ie: main thread.
-								m_xdq->Post([&]() {
+								m_xdq->Post([&,reply]() {
 									m_console->Clear();
-									m_console->RenderText(replyBuff);
+									m_console->RenderText(reply);
 								});
 							}
 						});
@@ -211,7 +233,6 @@ public:
 						m_console->RenderText("m_xsock.Send() failed, sent " + std::to_string(nWritten) + " bytes\n");
 				}
 			}
-
 		}
 		End();
 	}
@@ -238,11 +259,4 @@ void ExampleXGL::BuildScene() {
 	});
 
 	AddShape("shaders/diffuse", [&]() { xig = new ImGuiMenu(*this);	return xig;	});
-
-	// quick test of embedded python
-	char script[] {
-		"from time import time, ctime\n"
-		"print ('Today is:', ctime(time()))\n"
-	};
-	PyRun_SimpleString(script);
 }
