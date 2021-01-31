@@ -4,8 +4,7 @@
   <PropertyGroup Label="UserMacros">
     <!-- debug suffix -->
     <DebugSuffix Condition="'$(Configuration)'=='Debug'">d</DebugSuffix>
-    <DebugSuffix Condition="'$(Configuration)'!='Debug'">
-    </DebugSuffix>
+    <DebugSuffix Condition="'$(Configuration)'!='Debug'"></DebugSuffix>
   </PropertyGroup>
   <PropertyGroup>
     <IncludePath>$(XCLASS_DIR)\3rdParty\assimp\include;$(XCLASS_DIR)\3rdParty\assimp\build\include;$(IncludePath)</IncludePath>
