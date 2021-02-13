@@ -7,12 +7,13 @@
 #include <cstdlib>
 
 #include "R3DSDK.h"
-static const char* clipName = "BMX.RDC/A006_A050_0808WW_001.R3D";
 
 class R3DPlayer : public XGLTexQuad {
 public:
-	R3DPlayer(const char* clipName) : XGLTexQuad() {
+	R3DPlayer(const std::string& fname) : fileName(fname), XGLTexQuad() {
 		using namespace R3DSDK;
+		const char* clipName = fileName.c_str();
+
 		InitializeStatus initStat;
 
 		initStat = InitializeSdk(".", OPTION_RED_NONE);
@@ -128,17 +129,21 @@ public:
 		XGLTexQuad::Draw();
 	}
 
-	int width, height;
-	uint8_t *unalignedImgbuffer;
-	uint16_t *imgbuffer;
+private:
+	int width{ 0 };
+	int height{ 0 };
+	uint8_t *unalignedImgbuffer{ nullptr };
+	uint16_t *imgbuffer{ nullptr };
+	std::string fileName;
 };
 
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
+	std::string r3DClipName = config.WideToBytes(config.Find(L"R3DFile")->AsString());
 
-	AddShape("shaders/tex16planar", [&](){ shape = new R3DPlayer(clipName); return shape; });
-	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(9.6f, 5.4f, 1.0f));
+	AddShape("shaders/tex16planar", [&](){ shape = new R3DPlayer(r3DClipName); return shape; });
+	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(24.0f, 10.0f, 1.0f));
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 5.4f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	shape->model = translate * rotate * scale;

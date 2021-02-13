@@ -178,6 +178,7 @@
     <ClCompile Include="R3DDevBuildScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\assets\config.json" />
     <None Include="..\..\shaders\tex.frag" />
     <None Include="..\..\shaders\tex.vert" />
     <None Include="..\..\shaders\tex16planar.frag" />
