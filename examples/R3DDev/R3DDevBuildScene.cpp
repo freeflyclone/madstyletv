@@ -119,33 +119,11 @@ public:
 		if (imgbuffer == nullptr)
 			return;
 
-		// assume the "yuv" shader was specified for this XGLShape,
-		// hence we need 3 texture units for Y,U,V respectively.
+		// assume the "tex16planar" shader was specified for this XGLShape,
+		// hence we need 3 texture units for R16, G16, and B16 respectively.
 		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit0"), 0);
 		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit1"), 1);
 		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit2"), 2);
-
-		uint16_t *r = imgbuffer;
-		uint16_t *g = r + (width*height);
-		uint16_t *b = g + (width*height);
-
-		// R
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texIds[0]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_R16, width, height, 0, GL_RED, GL_UNSIGNED_SHORT, (GLvoid *)r);
-		GL_CHECK("glGetTexImage() didn't work");
-
-		// g
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texIds[1]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_R16, width, height, 0, GL_RED, GL_UNSIGNED_SHORT, (GLvoid *)g);
-		GL_CHECK("glGetTexImage() didn't work");
-
-		// b
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, texIds[2]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_R16, width, height, 0, GL_RED, GL_UNSIGNED_SHORT, (GLvoid *)b);
-		GL_CHECK("glGetTexImage() didn't work");
 
 		XGLTexQuad::Draw();
 	}
