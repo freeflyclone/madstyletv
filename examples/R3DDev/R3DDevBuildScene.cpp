@@ -257,7 +257,10 @@ public:
 		m_width = clip->Width();
 		m_height = clip->Height();
 
-		CPUDecode1stFrame(clip);
+		AllocateAlignedHostBuffer(clip);
+
+		//CPUDecode1stFrame(clip);
+		//CudaDecode1stFrame(clip);
 
 		GenR3DTextureBuffer(m_width, m_height);
 
@@ -267,8 +270,8 @@ public:
 	};
 
 	~R3DPlayer() {
-		if (unalignedImgbuffer)
-			delete unalignedImgbuffer;
+		if (m_unalignedImgbuffer)
+			delete m_unalignedImgbuffer;
 	}
 
 	Clip* InitializeClip(const std::string& fname) {
@@ -300,36 +303,33 @@ public:
 		return clip;
 	}
 
-	uint16_t* AllocateAlignedHostBuffer(Clip* clip, size_t& memNeeded) {
+	uint16_t* AllocateAlignedHostBuffer(Clip* clip) {
 		size_t width = clip->Width();
 		size_t height = clip->Height();
 
 		// three channels (RGB) in 16-bit (2 bytes) requires this much memory:
-		memNeeded = width * height * 3 * 2;
-		size_t adjusted = memNeeded + 16;
+		m_imgSize = width * height * 3 * 2;
+		size_t adjusted = m_imgSize + 16;
 
 		// alloc this memory 16-byte aligned
-		unalignedImgbuffer = new uint8_t[adjusted];
-		if (unalignedImgbuffer == NULL) {
-			xprintf("Failed to allocate %d bytes of memory for output image\n", static_cast<unsigned int>(memNeeded));
+		m_unalignedImgbuffer = new uint8_t[adjusted];
+		if (m_unalignedImgbuffer == NULL) {
+			xprintf("Failed to allocate %d bytes of memory for output image\n", static_cast<unsigned int>(m_imgSize));
 			return nullptr;
 		}
 
-		imgbuffer = (uint16_t*)(std::align(16, memNeeded, (void*&)unalignedImgbuffer, adjusted));
-		return imgbuffer;
+		m_imgbuffer = (uint16_t*)(std::align(16, m_imgSize, (void*&)m_unalignedImgbuffer, adjusted));
+		return m_imgbuffer;
 	}
 
 	void CPUDecode1stFrame(Clip* clip) {
 		VideoDecodeJob job;
 
-		size_t imgSize{ 0 };
-		uint16_t* img = AllocateAlignedHostBuffer(clip, imgSize);
-
 		// setup decoder parameters
 		job.BytesPerRow = m_width * 2U;
-		job.OutputBufferSize = imgSize;
+		job.OutputBufferSize = m_imgSize;
 		job.Mode = DECODE_FULL_RES_PREMIUM;
-		job.OutputBuffer = img;
+		job.OutputBuffer = m_imgbuffer;
 		job.PixelType = PixelType_16Bit_RGB_Planar;
 
 		// decode the first frame (0) of the clip
@@ -342,6 +342,10 @@ public:
 			FinalizeSdk();
 			return;
 		}
+	}
+
+	void CudaDecode1stFrame(Clip* clip) {
+		xprintf("Inside: %s()\n", __FUNCTION__);
 	}
 
 	void GenR3DTextureBuffer(const int width, const int height) {
@@ -359,7 +363,7 @@ public:
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_R16, width, height, 0, GL_RED, GL_UNSIGNED_SHORT, (void *)(imgbuffer + (width*height*i)));
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_R16, width, height, 0, GL_RED, GL_UNSIGNED_SHORT, (void *)(m_imgbuffer + (width*height*i)));
 
 			GL_CHECK("Eh, something failed");
 
@@ -369,7 +373,7 @@ public:
 
 	void Draw()
 	{
-		if (imgbuffer == nullptr)
+		if (m_imgbuffer == nullptr)
 			return;
 
 		// The "tex16planar" shader is require for R3DPlayer,
@@ -384,8 +388,9 @@ public:
 private:
 	int m_width{ 0 };
 	int m_height{ 0 };
-	uint8_t *unalignedImgbuffer{ nullptr };
-	uint16_t *imgbuffer{ nullptr };
+	uint8_t *m_unalignedImgbuffer{ nullptr };
+	uint16_t *m_imgbuffer{ nullptr };
+	size_t m_imgSize;
 	std::string fileName;
 };
 
