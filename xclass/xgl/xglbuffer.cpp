@@ -157,7 +157,11 @@ void XGLBuffer::AddTexture(std::string texName, int forceChannels){
     SOIL_free_image_data(img);
 }
 
-void XGLBuffer::AddTexture(int width, int height, int channels, GLubyte *img, bool flipColors){
+void XGLBuffer::AddTexture(int width, int height, int channels, GLubyte *img, bool flipColors) {
+	AddTexture(width, height, channels, img, GL_RGBA, flipColors);
+}
+
+void XGLBuffer::AddTexture(int width, int height, int channels, GLubyte *, GLenum type, bool flipColors = false) {
 	GLenum format = GL_RGBA;
 	GLuint texId;
 

@@ -29,6 +29,7 @@ public:
     virtual void Load(XGLShader *shader, std::vector<XGLVertexAttributes> va, std::vector<XGLIndex> ib = {});
     virtual void AddTexture(std::string name, int forceChannels = 0);
 	virtual void AddTexture(int, int, int, GLubyte *, bool flipColors = false);
+	virtual void AddTexture(int, int, int, GLubyte *, GLenum type, bool flipColors = false);
 	virtual void AddTexture(int, int, int);
 	virtual void AddTexture(GLuint);
 

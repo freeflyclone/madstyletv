@@ -9,6 +9,40 @@
 #include "R3DSDK.h"
 static const char* clipName = "BMX.RDC/A006_A050_0808WW_001.R3D";
 
+class R3DPlayer : public XGLTexQuad {
+public:
+	R3DPlayer(std::string clipName, int width, int height) : width(width), height(height), XGLTexQuad() {
+		GLuint texId;
+		glGenTextures(1, &texId);
+		GL_CHECK("glGetTextures() failed");
+
+		glActiveTexture(GL_TEXTURE0 + numTextures);
+		GL_CHECK("glActiveTexture(GL_TEXTURE0) failed");
+
+		glBindTexture(GL_TEXTURE_2D, texId);
+		GL_CHECK("glBindTexture() failed");
+
+		glActiveTexture(GL_TEXTURE0 + numTextures);
+		GL_CHECK("glActiveTexture(GL_TEXTURE0) failed");
+
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		GL_CHECK("glPixelStorei() failes");
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		GL_CHECK("glTexParameteri() failed");
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		GL_CHECK("glTexParameteri() failed");
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		GL_CHECK("glTexParameteri() failed");
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		GL_CHECK("glTexParameteri() failed");
+
+		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_SHORT, img);
+	};
+
+	int width, height;
+};
+
 void ExampleXGL::BuildScene() {
 	using namespace R3DSDK;
 
@@ -60,24 +94,11 @@ void ExampleXGL::BuildScene() {
 	// decoder knows what you want it to do
 	VideoDecodeJob job;
 
-	// calculate the bytes per row, for a planar 16-bit image
-    // this is the width times two
+	// setup decoder parameters
 	job.BytesPerRow = width * 2U;
-
-	// letting the decoder know how big the buffer is (we do that here
-	// since AlignedMalloc below will overwrite the value in this
 	job.OutputBufferSize = memNeeded;
-
-	// we're going with the clip's default image processing
-	// see the next sample on how to change some settings
-
-	// decode at half resolution at very good but not premium quality
 	job.Mode = DECODE_FULL_RES_PREMIUM;
-
-	// store the image here
 	job.OutputBuffer = imgbuffer;
-
-	// store the image in a 16-bit planar RGB format
 	job.PixelType = PixelType_16Bit_RGB_Planar;
 
 	// decode the first frame (0) of the clip
@@ -95,8 +116,10 @@ void ExampleXGL::BuildScene() {
 	FinalizeSdk();
 
 	AddShape("shaders/tex", [&](){ shape = new XGLTexQuad(width,height,4,imgbuffer); return shape; });
-		glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(9.6f, 5.4f, 1.0f));
-		glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 5.4f));
-		glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		shape->model = translate * rotate * scale;
+	delete unAlignedImgBuffer;
+
+	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(9.6f, 5.4f, 1.0f));
+	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 5.4f));
+	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	shape->model = translate * rotate * scale;
 }
