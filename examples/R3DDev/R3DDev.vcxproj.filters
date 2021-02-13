@@ -30,6 +30,9 @@
     <ClCompile Include="R3DDevBuildScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\3rdParty\R3DSDKv8_0_0\Sample code\GPU decoding\REDCudaSample.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\shaders\tex.frag">
