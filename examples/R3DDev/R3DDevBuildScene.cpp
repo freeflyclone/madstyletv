@@ -53,10 +53,6 @@ public:
 			return;
 		}
 
-		xprintf("Width: %d, Height: %d\n", width, height);
-
-		// create and fill out a decode job structure so the
-		// decoder knows what you want it to do
 		VideoDecodeJob job;
 
 		// setup decoder parameters
@@ -67,7 +63,7 @@ public:
 		job.PixelType = PixelType_16Bit_RGB_Planar;
 
 		// decode the first frame (0) of the clip
-		xprintf("Decoding image at %d x %d\n", static_cast<unsigned int>(width), static_cast<unsigned int>(height));
+		xprintf("Image is %d x %d\n", width, height);
 
 		if (clip->DecodeVideoFrame(0U, job) != DSDecodeOK)
 		{
@@ -83,33 +79,29 @@ public:
 		FinalizeSdk();
 	};
 
+	~R3DPlayer() {
+		if (unalignedImgbuffer)
+			delete unalignedImgbuffer;
+	}
+
 	void GenR3DTextureBuffer(const int width, const int height) {
+		// Output of R3D decoder is 16 bit planar, in RGB order
+		// Each plane gets it's own texture unit, cuz that's super
+		// easy, at the expense of being sub-optimal
 		for (int i = 0; i < 3; i++) {
 			GLuint texId;
 
 			glGenTextures(1, &texId);
-			GL_CHECK("glGetTextures() failed");
-
 			glActiveTexture(GL_TEXTURE0 + numTextures);
-			GL_CHECK("glActiveTexture(GL_TEXTURE0) failed");
-
 			glBindTexture(GL_TEXTURE_2D, texId);
-			GL_CHECK("glBindTexture() failed");
-
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-			GL_CHECK("glPixelStorei() failes");
-
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			GL_CHECK("glTexParameteri() failed");
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			GL_CHECK("glTexParameteri() failed");
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			GL_CHECK("glTexParameteri() failed");
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			GL_CHECK("glTexParameteri() failed");
-
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_R16, width, height, 0, GL_RED, GL_UNSIGNED_SHORT, (void *)(imgbuffer + (width*height*i)));
-			GL_CHECK("glTexParameteri() failed");
+
+			GL_CHECK("Eh, something failed");
 
 			AddTexture(texId);
 		}
@@ -120,8 +112,8 @@ public:
 		if (imgbuffer == nullptr)
 			return;
 
-		// assume the "tex16planar" shader was specified for this XGLShape,
-		// hence we need 3 texture units for R16, G16, and B16 respectively.
+		// The "tex16planar" shader is require for R3DPlayer,
+		// it uses a textureUnit per color, ie: R16, G16, and B16 respectively.
 		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit0"), 0);
 		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit1"), 1);
 		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit2"), 2);
