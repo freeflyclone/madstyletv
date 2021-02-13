@@ -65,7 +65,7 @@ Xh264Decoder::Xh264Decoder() : XThread("Xh264Decoder"), XGLTexQuad()
 
 	AddTexture(imageWidth, imageHeight, 1, y);
 	AddTexture(imageUVWidth, imageUVHeight, 1, u);
-	AddTexture(imageUVWidth, imageUVHeight, 1, u);
+	AddTexture(imageUVWidth, imageUVHeight, 1, v);
 
 	if (!write_out_picture)
 		write_out_picture = _callback;

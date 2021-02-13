@@ -320,6 +320,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WorldGUI2Dev", "examples\Wo
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "R3DDev", "examples\R3DDev\R3DDev.vcxproj", "{8611B650-F460-4F74-A497-FF36356A91BC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AC4080D2-1C42-4812-943D-79CA13A1D86C} = {AC4080D2-1C42-4812-943D-79CA13A1D86C}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

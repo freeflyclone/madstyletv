@@ -28,8 +28,8 @@ public:
     virtual void Unbind();
     virtual void Load(XGLShader *shader, std::vector<XGLVertexAttributes> va, std::vector<XGLIndex> ib = {});
     virtual void AddTexture(std::string name, int forceChannels = 0);
-	virtual void AddTexture(int, int, int, GLubyte *, bool flipColors = false);
-	virtual void AddTexture(int, int, int, GLubyte *, GLenum type, bool flipColors = false);
+	virtual void AddTexture(int, int, int, uint8_t *img, bool flipColors = false);
+	virtual void AddTexture(int, int, int, uint8_t *img, GLenum type, bool flipColors = false);
 	virtual void AddTexture(int, int, int);
 	virtual void AddTexture(GLuint);
 

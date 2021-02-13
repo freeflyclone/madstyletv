@@ -161,7 +161,7 @@ void XGLBuffer::AddTexture(int width, int height, int channels, GLubyte *img, bo
 	AddTexture(width, height, channels, img, GL_RGBA, flipColors);
 }
 
-void XGLBuffer::AddTexture(int width, int height, int channels, GLubyte *, GLenum type, bool flipColors = false) {
+void XGLBuffer::AddTexture(int width, int height, int channels, GLubyte *img, GLenum type, bool flipColors) {
 	GLenum format = GL_RGBA;
 	GLuint texId;
 
