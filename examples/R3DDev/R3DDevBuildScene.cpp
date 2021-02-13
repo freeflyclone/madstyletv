@@ -8,10 +8,31 @@
 
 #include "R3DSDK.h"
 
+using namespace R3DSDK;
+
 class R3DPlayer : public XGLTexQuad {
 public:
-	R3DPlayer(const std::string& fname) : fileName(fname), XGLTexQuad() {
-		using namespace R3DSDK;
+	R3DPlayer(const std::string& fname) : XGLTexQuad() {
+		Clip* clip = InitializeClip(fname);
+
+		m_width = clip->Width();
+		m_height = clip->Height();
+
+		Decode1stFrame(clip);
+
+		GenR3DTextureBuffer(m_width, m_height);
+
+		delete clip;
+		FinalizeSdk();
+	};
+
+	~R3DPlayer() {
+		if (unalignedImgbuffer)
+			delete unalignedImgbuffer;
+	}
+
+	Clip* InitializeClip(const std::string& fname) {
+		fileName = fname;
 		const char* clipName = fileName.c_str();
 
 		InitializeStatus initStat;
@@ -20,7 +41,7 @@ public:
 		if (initStat != ISInitializeOK)
 		{
 			xprintf("Failed to initialize SDK: %d\n", initStat);
-			return;
+			return nullptr;
 		}
 
 		// load the clip
@@ -32,38 +53,47 @@ public:
 			xprintf("Error loading %s: %d\n", clipName, clip->Status());
 			delete clip;
 			FinalizeSdk();
-			return;
+			return nullptr;
 		}
 
 		xprintf("Loaded %s\n", clipName);
+		return clip;
+	}
 
+	uint16_t* AllocateAlignedHostBuffer(Clip* clip, size_t& memNeeded) {
 		size_t width = clip->Width();
 		size_t height = clip->Height();
 
 		// three channels (RGB) in 16-bit (2 bytes) requires this much memory:
-		size_t memNeeded = width * height * 3U * 2;
+		memNeeded = width * height * 3 * 2;
 		size_t adjusted = memNeeded + 16;
 
 		// alloc this memory 16-byte aligned
 		unalignedImgbuffer = new uint8_t[adjusted];
-		imgbuffer = (uint16_t*)(std::align(16, memNeeded, (void*&)unalignedImgbuffer, adjusted));
-
-		if (imgbuffer == NULL) {
+		if (unalignedImgbuffer == NULL) {
 			xprintf("Failed to allocate %d bytes of memory for output image\n", static_cast<unsigned int>(memNeeded));
-			return;
+			return nullptr;
 		}
 
+		imgbuffer = (uint16_t*)(std::align(16, memNeeded, (void*&)unalignedImgbuffer, adjusted));
+		return imgbuffer;
+	}
+
+	void Decode1stFrame(Clip* clip) {
 		VideoDecodeJob job;
 
+		size_t imgSize{ 0 };
+		uint16_t* img = AllocateAlignedHostBuffer(clip, imgSize);
+
 		// setup decoder parameters
-		job.BytesPerRow = width * 2U;
-		job.OutputBufferSize = memNeeded;
+		job.BytesPerRow = m_width * 2U;
+		job.OutputBufferSize = imgSize;
 		job.Mode = DECODE_FULL_RES_PREMIUM;
-		job.OutputBuffer = imgbuffer;
+		job.OutputBuffer = img;
 		job.PixelType = PixelType_16Bit_RGB_Planar;
 
 		// decode the first frame (0) of the clip
-		xprintf("Image is %d x %d\n", width, height);
+		xprintf("Image is %d x %d\n", m_width, m_height);
 
 		if (clip->DecodeVideoFrame(0U, job) != DSDecodeOK)
 		{
@@ -72,16 +102,6 @@ public:
 			FinalizeSdk();
 			return;
 		}
-
-		GenR3DTextureBuffer(width, height);
-
-		delete clip;
-		FinalizeSdk();
-	};
-
-	~R3DPlayer() {
-		if (unalignedImgbuffer)
-			delete unalignedImgbuffer;
 	}
 
 	void GenR3DTextureBuffer(const int width, const int height) {
@@ -122,8 +142,8 @@ public:
 	}
 
 private:
-	int width{ 0 };
-	int height{ 0 };
+	int m_width{ 0 };
+	int m_height{ 0 };
 	uint8_t *unalignedImgbuffer{ nullptr };
 	uint16_t *imgbuffer{ nullptr };
 	std::string fileName;
