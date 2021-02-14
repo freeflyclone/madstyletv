@@ -34,6 +34,14 @@ public:
 	~R3DPlayer() {
 	}
 
+	static void CpuCallback(R3DSDK::AsyncDecompressJob * item, R3DSDK::DecodeStatus decodeStatus)
+	{
+		R3DPlayer* pThis = (R3DPlayer*)(item->PrivateData);
+		FUNCENTER;
+		LOG("pThis->fileName: %s", pThis->fileName.c_str());
+		FUNCEXIT;
+	}
+
 	void Run() {
 		FUNCENTER;
 
@@ -45,6 +53,23 @@ public:
 		}
 
 		LOG("Clip resolution = %u x %u", clip->Width(), clip->Height());
+
+		R3DSDK::AsyncDecompressJob *job = new R3DSDK::AsyncDecompressJob();
+		job->Clip = clip;
+		job->Mode = R3DSDK::DECODE_FULL_RES_PREMIUM;
+		job->OutputBufferSize = R3DSDK::GpuDecoder::GetSizeBufferNeeded(*job);
+		size_t adjustedSize = job->OutputBufferSize;
+		job->OutputBuffer = m_pXglRedCuda->AlignedMalloc(adjustedSize);
+		job->VideoFrameNo = 0;
+		job->VideoTrackNo = 0;
+		job->Callback = CpuCallback;
+		job->PrivateData = this;
+
+		if (m_pXglRedCuda->m_pGpuDecoder->DecodeForGpuSdk(*job) != R3DSDK::DSDecodeOK)
+		{
+			printf("CPU decode submit failed\n");
+			return;
+		}
 
 		while (IsRunning()) {
 			LOG("%s", "running...");
