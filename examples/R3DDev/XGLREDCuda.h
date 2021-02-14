@@ -2,14 +2,17 @@
 
 #include "XGLMemoryPool.h"
 
-class XGLREDCuda : public R3DSDK::REDCuda, public R3DSDK::GpuDecoder
+class XGLREDCuda 
 {
+public:
+	XGLREDCuda();
+
 	static void getCurrentTimestamp();
 
 	R3DSDK::DebayerCudaJob* DebayerAllocate(
-			const R3DSDK::AsyncDecompressJob* job,
-			R3DSDK::ImageProcessingSettings* imageProcessingSettings,
-			R3DSDK::VideoPixelType pixelType);
+		const R3DSDK::AsyncDecompressJob* job,
+		R3DSDK::ImageProcessingSettings* imageProcessingSettings,
+		R3DSDK::VideoPixelType pixelType);
 
 	void DebayerFree(R3DSDK::DebayerCudaJob * job);
 
@@ -53,6 +56,10 @@ class XGLREDCuda : public R3DSDK::REDCuda, public R3DSDK::GpuDecoder
 	void CpuCallback(R3DSDK::AsyncDecompressJob * item, R3DSDK::DecodeStatus decodeStatus);
 	unsigned char* AlignedMalloc(size_t & sizeNeeded);
 
+public:
+	R3DSDK::REDCuda* m_pREDCuda{ nullptr };
+	R3DSDK::GpuDecoder* m_pGpuDecoder{ nullptr };
+
 	R3DSDK::REDCuda * OpenCuda(int & deviceId);
 
 	volatile bool firstFrameDecoded = false;
@@ -63,4 +70,3 @@ class XGLREDCuda : public R3DSDK::REDCuda, public R3DSDK::GpuDecoder
 	volatile int cpuDone = 0;
 	volatile int gpuDone = 0;
 };
-

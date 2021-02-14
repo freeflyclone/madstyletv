@@ -1,4 +1,25 @@
 #include "XGLREDCuda.h"
+#include "xutils.h"
+
+#define printf xprintf
+
+XGLREDCuda::XGLREDCuda() {
+	// initialize SDK
+	R3DSDK::InitializeStatus init_status = R3DSDK::InitializeSdk(".", OPTION_RED_CUDA);
+	if (init_status != R3DSDK::ISInitializeOK)
+	{
+		R3DSDK::FinalizeSdk();
+		printf("Failed to load R3DSDK Lib: %d\n", init_status);
+		return;
+	}
+
+	m_pREDCuda = OpenCuda(CUDA_DEVICE_ID);
+	m_pGpuDecoder = new R3DSDK::GpuDecoder();
+	m_pGpuDecoder->Open();
+
+	std::thread* gpuThread = new std::thread(std::bind(&XGLREDCuda::GpuThread, this, 0));
+	std::thread* completionThread = new std::thread(std::bind(&XGLREDCuda::CompletionThread, this));
+}
 
 void XGLREDCuda::getCurrentTimestamp()
 {
@@ -22,7 +43,7 @@ void XGLREDCuda::getCurrentTimestamp()
 R3DSDK::DebayerCudaJob* XGLREDCuda::DebayerAllocate(const R3DSDK::AsyncDecompressJob * job, R3DSDK::ImageProcessingSettings * imageProcessingSettings, R3DSDK::VideoPixelType pixelType)
 {
 	//allocate the debayer job
-	R3DSDK::DebayerCudaJob *data = createDebayerJob();
+	R3DSDK::DebayerCudaJob *data = m_pREDCuda->createDebayerJob();
 
 	data->raw_host_mem = job->OutputBuffer;
 	data->mode = job->Mode;
@@ -35,7 +56,7 @@ R3DSDK::DebayerCudaJob* XGLREDCuda::DebayerAllocate(const R3DSDK::AsyncDecompres
 	if (err != cudaSuccess)
 	{
 		printf("Failed to allocate raw frame on GPU: %d\n", err);
-		releaseDebayerJob(data);
+		m_pREDCuda->releaseDebayerJob(data);
 		return NULL;
 	}
 
@@ -50,7 +71,7 @@ R3DSDK::DebayerCudaJob* XGLREDCuda::DebayerAllocate(const R3DSDK::AsyncDecompres
 	{
 		printf("Failed to allocate result frame on card %d\n", err);
 		XGLCudaMemoryPool::cudaFree(data->raw_device_mem);
-		releaseDebayerJob(data);
+		m_pREDCuda->releaseDebayerJob(data);
 		return NULL;
 	}
 
@@ -61,11 +82,12 @@ void  XGLREDCuda::DebayerFree(R3DSDK::DebayerCudaJob * job)
 {
 	XGLCudaMemoryPool::cudaFree(job->raw_device_mem);
 	XGLCudaMemoryPool::cudaFree(job->output_device_mem);
-	releaseDebayerJob(job);
+	m_pREDCuda->releaseDebayerJob(job);
 }
 
 void XGLREDCuda::CompletionThread()
 {
+	printf("Inside CompletionThread()\n");
 	for (;;)
 	{
 		R3DSDK::AsyncDecompressJob * job = NULL;
@@ -93,7 +115,7 @@ void XGLREDCuda::CompletionThread()
 		if (cpuDone < TOTAL_FRAMES)
 		{
 			cpuDone++;
-			if (DecodeForGpuSdk(*job) != R3DSDK::DSDecodeOK)
+			if (m_pGpuDecoder->DecodeForGpuSdk(*job) != R3DSDK::DSDecodeOK)
 			{
 				printf("CPU decode submit failed\n");
 			}
@@ -103,6 +125,8 @@ void XGLREDCuda::CompletionThread()
 
 void XGLREDCuda::GpuThread(int device)
 {
+	printf("Inside GpuThread()!\n");
+
 	cudaSetDevice(device);
 
 	cudaStream_t stream[NUM_STREAMS];
@@ -146,7 +170,7 @@ void XGLREDCuda::GpuThread(int device)
 
 		int idx = frameCount++ % NUM_STREAMS;
 
-		R3DSDK::REDCuda::Status status = processAsync(device, stream[idx], cudaJob, err);
+		R3DSDK::REDCuda::Status status = m_pREDCuda->processAsync(device, stream[idx], cudaJob, err);
 
 		if (status != R3DSDK::REDCuda::Status_Ok)
 		{
