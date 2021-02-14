@@ -371,7 +371,7 @@ public:
 
 		InitializeStatus initStat;
 
-		initStat = InitializeSdk(".", OPTION_RED_NONE);
+		initStat = InitializeSdk(".", OPTION_RED_CUDA);
 		if (initStat != ISInitializeOK)
 		{
 			xprintf("Failed to initialize SDK: %d\n", initStat);
@@ -454,6 +454,24 @@ public:
 			return 5;
 		}
 
+		//size the result buffer will be returned from debayer
+		size_t result_buffer_size = 0;
+		//buffer in host memory filled by example code in debayer routine.
+		void *result_host_memory_buffer = NULL;
+
+		//Debayer Logic has been completely seperated to illustrate it's independence from the decompression step.
+		//Debayer a Raw Buffer into a frame of the selected pixel type
+		R3DSDK::REDCuda::Status debayer_status = Debayer(raw_buffer, raw_buffer_size, pixelType, mode, *ips, &result_host_memory_buffer, result_buffer_size);
+		if (raw_buffer)
+		{
+			// free the original pointer, not the one adjusted for alignment
+			free(((unsigned char *)raw_buffer) - raw_buffer_aligned_ptr_adjustment);
+		}
+
+		// wrong format, but there's an image there now.
+		memcpy(m_imgbuffer, result_host_memory_buffer, result_buffer_size);
+
+		return 0;
 	}
 
 	void GenR3DTextureBuffer(const int width, const int height) {
