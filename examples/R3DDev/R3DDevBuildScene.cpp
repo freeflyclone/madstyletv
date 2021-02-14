@@ -21,6 +21,29 @@ void asyncCallback(R3DSDK::AsyncDecompressJob * item, R3DSDK::DecodeStatus decod
 	decodeDone = true;
 }
 
+unsigned char * AlignedMalloc(size_t & sizeNeeded)
+{
+	// alloc 15 bytes more to make sure we can align the buffer in case it isn't
+	unsigned char * buffer = (unsigned char *)malloc(sizeNeeded + 15U);
+
+	if (!buffer)
+		return NULL;
+
+	sizeNeeded = 0U;
+
+	// cast to a 32-bit or 64-bit (depending on platform) integer so we can do the math
+	uintptr_t ptr = (uintptr_t)buffer;
+
+	// check if it's already aligned, if it is we're done
+	if ((ptr % 16U) == 0U)
+		return buffer;
+
+	// calculate how many bytes we need
+	sizeNeeded = 16U - (ptr % 16U);
+
+	return buffer + sizeNeeded;
+}
+
 R3DSDK::REDCuda::Status Debayer(void *source_raw_host_memory_buffer, size_t raw_buffer_size, R3DSDK::VideoPixelType pixelType, R3DSDK::VideoDecodeMode mode, R3DSDK::ImageProcessingSettings &ips, void **result_host_memory_buffer, size_t &result_buffer_size)
 {
 	//setup Cuda for the current thread
@@ -249,6 +272,74 @@ R3DSDK::REDCuda::Status Debayer(void *source_raw_host_memory_buffer, size_t raw_
 	return R3DSDK::REDCuda::Status_Ok;
 }//end Debayer
 
+R3DSDK::DecodeStatus Decompress(const char *filename, size_t frame_number, R3DSDK::ImageProcessingSettings &ips_to_be_filled_with_defaults, R3DSDK::VideoDecodeMode mode, void **raw_buffer, size_t &raw_buffer_size, size_t &raw_buffer_aligned_ptr_adjustment)
+{
+	R3DSDK::Clip *clip = new R3DSDK::Clip(filename);
+	if (clip->Status() != R3DSDK::LSClipLoaded)
+	{
+		printf("Failed to load clip %d\n", clip->Status());
+		return R3DSDK::DSNoClipOpen;
+	}
+
+	//setup R3DSDK to decode a frame
+	R3DSDK::AsyncDecompressJob *job = new R3DSDK::AsyncDecompressJob();
+	job->Clip = clip;
+	job->Mode = mode;
+
+	raw_buffer_size = 3 * R3DSDK::AsyncDecoder::GetSizeBufferNeeded(*job);
+	raw_buffer_aligned_ptr_adjustment = raw_buffer_size;
+	*raw_buffer = AlignedMalloc(raw_buffer_aligned_ptr_adjustment);
+	
+	job->OutputBuffer = *raw_buffer;
+	job->OutputBufferSize = raw_buffer_size;
+	job->PrivateData = new R3DSDK::DecodeStatus();
+	*((R3DSDK::DecodeStatus*)job->PrivateData) = R3DSDK::DSOutputBufferInvalid;
+	job->VideoFrameNo = 0;
+	job->VideoTrackNo = 0;
+	job->Callback = asyncCallback;
+
+	R3DSDK::AsyncDecoder *r3dAsync = new R3DSDK::AsyncDecoder();
+	r3dAsync->Open(r3dAsync->ThreadsAvailable());
+	//Decode a frame using the R3DSDK
+	R3DSDK::DecodeStatus decompress_status = r3dAsync->DecodeForGpuSdk(*job);
+	if (decompress_status != R3DSDK::DSDecodeOK)
+	{
+		printf("Failed to start decompression %d\n", decompress_status);
+
+		//abort clearing up allocated memory.
+		r3dAsync->Close();
+		delete (R3DSDK::DecodeStatus*)job->PrivateData;
+		delete job;
+		delete r3dAsync;
+		clip->Close();
+		delete clip;
+		// free the original pointer, not the one adjusted for alignment
+		free(((unsigned char *)*raw_buffer) - raw_buffer_aligned_ptr_adjustment);
+		return decompress_status;
+	}
+	while (!decodeDone)
+	{
+		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
+	}
+	R3DSDK::DecodeStatus callback_status = *((R3DSDK::DecodeStatus*)job->PrivateData);
+	//tear down the Async decoder as we are done with that now
+	r3dAsync->Close();
+	delete (R3DSDK::DecodeStatus*)job->PrivateData;
+	delete job;
+	delete r3dAsync;
+
+	//get the image processing settings for the frame from the clip.
+
+	clip->GetDefaultImageProcessingSettings(ips_to_be_filled_with_defaults);
+
+	//we no longer need the clip around.
+	clip->Close();
+	delete clip;
+
+	return callback_status;
+}//end Decompress
+
+//------------------------------------------ Start of R3DPlayer ----------------------------------------
 class R3DPlayer : public XGLTexQuad {
 public:
 	R3DPlayer(const std::string& fname) : XGLTexQuad() {
@@ -260,7 +351,7 @@ public:
 		AllocateAlignedHostBuffer(clip);
 
 		//CPUDecode1stFrame(clip);
-		//CudaDecode1stFrame(clip);
+		CudaDecode1stFrame(clip);
 
 		GenR3DTextureBuffer(m_width, m_height);
 
@@ -344,8 +435,25 @@ public:
 		}
 	}
 
-	void CudaDecode1stFrame(Clip* clip) {
+	int CudaDecode1stFrame(Clip* clip) {
 		xprintf("Inside: %s()\n", __FUNCTION__);
+		R3DSDK::VideoDecodeMode mode = R3DSDK::DECODE_FULL_RES_PREMIUM;
+		R3DSDK::VideoPixelType pixelType = R3DSDK::PixelType_16Bit_RGB_Interleaved;
+		R3DSDK::ImageProcessingSettings *ips = new R3DSDK::ImageProcessingSettings();
+		void *raw_buffer = NULL;
+		size_t raw_buffer_size = 0;
+		size_t raw_buffer_aligned_ptr_adjustment = 0;
+
+		//Decompress the R3D Source frame into a Raw Buffer using the AsnycDecompressor
+		R3DSDK::DecodeStatus decompress_status = Decompress(fileName.c_str(), 0, *ips, mode, &raw_buffer, raw_buffer_size, raw_buffer_aligned_ptr_adjustment);
+		if (decompress_status != R3DSDK::DSDecodeOK)
+		{
+			//failed to decode
+			printf("Error decompressing frame: %d\n", decompress_status);
+			R3DSDK::FinalizeSdk();
+			return 5;
+		}
+
 	}
 
 	void GenR3DTextureBuffer(const int width, const int height) {
@@ -400,6 +508,7 @@ void ExampleXGL::BuildScene() {
 	std::string r3DClipName = config.WideToBytes(config.Find(L"R3DFile")->AsString());
 
 	AddShape("shaders/tex16planar", [&](){ shape = new R3DPlayer(r3DClipName); return shape; });
+
 	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(24.0f, 10.0f, 1.0f));
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 10.0f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
