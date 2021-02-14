@@ -176,6 +176,12 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\3rdParty\R3DSDKv8_0_0\Sample code\GPU decoding\REDCudaGpuDecodeSample.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\3rdParty\R3DSDKv8_0_0\Sample code\GPU decoding\REDCudaSample.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -186,6 +192,8 @@
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
     <ClCompile Include="R3DDevBuildScene.cpp" />
+    <ClCompile Include="XGLMemoryPool.cpp" />
+    <ClCompile Include="XGLREDCuda.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\config.json" />
@@ -195,6 +203,10 @@
     <None Include="..\..\shaders\tex16planar.vert" />
     <None Include="..\..\shaders\yuv.frag" />
     <None Include="..\..\shaders\yuv.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="XGLMemoryPool.h" />
+    <ClInclude Include="XGLREDCuda.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

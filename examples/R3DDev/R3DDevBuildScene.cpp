@@ -11,6 +11,8 @@
 #include "R3DSDKCuda.h"
 #include <R3DSDKDefinitions.h>
 
+#include "XGLMemoryPool.h"
+
 using namespace R3DSDK;
 
 volatile bool decodeDone = false;
