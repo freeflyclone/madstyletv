@@ -286,7 +286,7 @@ R3DSDK::DecodeStatus Decompress(const char *filename, size_t frame_number, R3DSD
 	job->Clip = clip;
 	job->Mode = mode;
 
-	raw_buffer_size = 3 * R3DSDK::AsyncDecoder::GetSizeBufferNeeded(*job);
+	raw_buffer_size = R3DSDK::AsyncDecoder::GetSizeBufferNeeded(*job);
 	raw_buffer_aligned_ptr_adjustment = raw_buffer_size;
 	*raw_buffer = AlignedMalloc(raw_buffer_aligned_ptr_adjustment);
 	
@@ -300,6 +300,8 @@ R3DSDK::DecodeStatus Decompress(const char *filename, size_t frame_number, R3DSD
 
 	R3DSDK::AsyncDecoder *r3dAsync = new R3DSDK::AsyncDecoder();
 	r3dAsync->Open(r3dAsync->ThreadsAvailable());
+
+	// ----------------------- Loop this for video -------------------------------
 	//Decode a frame using the R3DSDK
 	R3DSDK::DecodeStatus decompress_status = r3dAsync->DecodeForGpuSdk(*job);
 	if (decompress_status != R3DSDK::DSDecodeOK)
@@ -317,10 +319,14 @@ R3DSDK::DecodeStatus Decompress(const char *filename, size_t frame_number, R3DSD
 		free(((unsigned char *)*raw_buffer) - raw_buffer_aligned_ptr_adjustment);
 		return decompress_status;
 	}
+	// ---------------------------End loop this for video -----------------------
+
+	// I added the thread sleep.
 	while (!decodeDone)
 	{
 		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1));
 	}
+
 	R3DSDK::DecodeStatus callback_status = *((R3DSDK::DecodeStatus*)job->PrivateData);
 	//tear down the Async decoder as we are done with that now
 	r3dAsync->Close();
@@ -353,7 +359,8 @@ public:
 		//CPUDecode1stFrame(clip);
 		CudaDecode1stFrame(clip);
 
-		GenR3DTextureBuffer(m_width, m_height);
+		//GenR3DPlanarTextureBuffer(m_width, m_height);
+		GenR3DInterleavedTextureBuffer(m_width, m_height);
 
 		delete clip;
 
@@ -474,7 +481,7 @@ public:
 		return 0;
 	}
 
-	void GenR3DTextureBuffer(const int width, const int height) {
+	void GenR3DPlanarTextureBuffer(const int width, const int height) {
 		// Output of R3D decoder is 16 bit planar, in RGB order
 		// Each plane gets it's own texture unit, cuz that's super
 		// easy, at the expense of being sub-optimal
@@ -497,18 +504,22 @@ public:
 		}
 	}
 
-	void Draw()
-	{
-		if (m_imgbuffer == nullptr)
-			return;
+	void GenR3DInterleavedTextureBuffer(const int width, const int height) {
+		GLuint texId;
 
-		// The "tex16planar" shader is require for R3DPlayer,
-		// it uses a textureUnit per color, ie: R16, G16, and B16 respectively.
-		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit0"), 0);
-		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit1"), 1);
-		glProgramUniform1i(shader->programId, glGetUniformLocation(shader->programId, "texUnit2"), 2);
+		glGenTextures(1, &texId);
+		glActiveTexture(GL_TEXTURE0 + numTextures);
+		glBindTexture(GL_TEXTURE_2D, texId);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16, width, height, 0, GL_RGB, GL_UNSIGNED_SHORT, (void *)(m_imgbuffer));
 
-		XGLTexQuad::Draw();
+		GL_CHECK("Eh, something failed");
+
+		AddTexture(texId);
 	}
 
 private:
@@ -525,10 +536,10 @@ void ExampleXGL::BuildScene() {
 
 	std::string r3DClipName = config.WideToBytes(config.Find(L"R3DFile")->AsString());
 
-	AddShape("shaders/tex16planar", [&](){ shape = new R3DPlayer(r3DClipName); return shape; });
+	AddShape("shaders/tex", [&](){ shape = new R3DPlayer(r3DClipName); return shape; });
 
-	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(24.0f, 10.0f, 1.0f));
-	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 10.0f));
+	glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(16.0f, 9.0f, 1.0f));
+	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 9.0f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	shape->model = translate * rotate * scale;
 }

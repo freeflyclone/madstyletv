@@ -105,7 +105,7 @@ void ExampleXGL::BuildScene() {
 	shape->model = translate * rotate * scale;
 
 	shape->SetAnimationFunction([shape](float clock) {
-		shape->RunKernel(clock / 5.000f);
+		shape->RunKernel(clock / 50.000f);
 	});
 
 	preferredSwapInterval = 1;
