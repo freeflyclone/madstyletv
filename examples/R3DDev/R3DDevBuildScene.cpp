@@ -37,9 +37,14 @@ public:
 	static void CpuCallback(R3DSDK::AsyncDecompressJob * item, R3DSDK::DecodeStatus decodeStatus)
 	{
 		R3DPlayer* pThis = (R3DPlayer*)(item->PrivateData);
-		FUNCENTER;
-		LOG("pThis->fileName: %s", pThis->fileName.c_str());
-		FUNCEXIT;
+		if (pThis) {
+			FUNCENTER;
+			LOG("pThis->fileName: %s", pThis->fileName.c_str());
+
+			pThis->m_pXglRedCuda->JobQueue.push(item);
+
+			FUNCEXIT;
+		}
 	}
 
 	void Run() {
@@ -67,7 +72,7 @@ public:
 
 		if (m_pXglRedCuda->m_pGpuDecoder->DecodeForGpuSdk(*job) != R3DSDK::DSDecodeOK)
 		{
-			printf("CPU decode submit failed\n");
+			printf("GPU decode submit failed\n");
 			return;
 		}
 

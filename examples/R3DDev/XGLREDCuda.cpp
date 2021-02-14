@@ -103,15 +103,16 @@ void XGLREDCuda::CompletionThread()
 		cudaJob->completeAsync();
 
 		// frame ready for use or download etc.
-		printf("Completed frame %d .\n", gpuDone);
+		printf("Completed frame %d.\n", gpuDone);
 
 		gpuDone++;
 
 		DebayerFree(cudaJob);
 
-		job->PrivateData = NULL;
+		//job->PrivateData = NULL;
 
 		// queue up next frame for decode
+/*
 		if (cpuDone < TOTAL_FRAMES)
 		{
 			cpuDone++;
@@ -120,6 +121,7 @@ void XGLREDCuda::CompletionThread()
 				printf("CPU decode submit failed\n");
 			}
 		}
+*/
 	}
 }
 
@@ -155,6 +157,8 @@ void XGLREDCuda::GpuThread(int device)
 		// exit thread
 		if (job == NULL)
 			break;
+
+		printf("%s()\n", __FUNCTION__);
 
 		const R3DSDK::VideoPixelType pixelType = R3DSDK::PixelType_16Bit_RGB_Interleaved;
 
