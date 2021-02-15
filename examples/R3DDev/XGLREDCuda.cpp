@@ -109,6 +109,9 @@ void XGLREDCuda::CompletionThread()
 		// frame ready for use or download etc.
 		printf("Completed frame %d.\n", gpuDone);
 
+		for (auto cf : completionFuncs)
+			cf(cudaJob);
+
 		gpuDone++;
 
 		DebayerFree(cudaJob);
@@ -271,4 +274,8 @@ R3DSDK::REDCuda * XGLREDCuda::OpenCuda(int & deviceId)
 void XGLREDCuda::FirstFrameCallback(R3DSDK::AsyncDecompressJob * item, R3DSDK::DecodeStatus decodeStatus)
 {
 	firstFrameDecoded = true;
+}
+
+void XGLREDCuda::AddCompletionFunction(XGLREDCuda::CompletionFunc fn) {
+	completionFuncs.push_back(fn);
 }

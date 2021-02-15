@@ -5,6 +5,9 @@
 class XGLREDCuda 
 {
 public:
+	typedef std::function<void(R3DSDK::DebayerCudaJob*)> CompletionFunc;
+	typedef std::vector<CompletionFunc> CompletionFuncs;
+
 	XGLREDCuda();
 
 	static void getCurrentTimestamp();
@@ -55,6 +58,7 @@ public:
 	void GpuThread(int device);
 	void CpuCallback(R3DSDK::AsyncDecompressJob * item, R3DSDK::DecodeStatus decodeStatus);
 	unsigned char* AlignedMalloc(size_t & sizeNeeded);
+	void AddCompletionFunction(XGLREDCuda::CompletionFunc fn);
 
 public:
 	R3DSDK::REDCuda* m_pREDCuda{ nullptr };
@@ -69,4 +73,5 @@ public:
 	int CUDA_DEVICE_ID = 0;
 	volatile int cpuDone = 0;
 	volatile int gpuDone = 0;
+	CompletionFuncs completionFuncs;
 };
