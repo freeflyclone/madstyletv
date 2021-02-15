@@ -27,29 +27,21 @@ public:
 		m_width = clip->Width();
 		m_height = clip->Height();
 
+		GenR3DInterleavedTextureBuffer(m_width, m_height);
+
 		LOG("Clip resolution = %u x %u", m_width, m_height);
 
 		m_decodeJob = new R3DSDK::AsyncDecompressJob();
+
 		m_decodeJob->Clip = clip;
 		m_decodeJob->Mode = R3DSDK::DECODE_FULL_RES_PREMIUM;
 		m_decodeJob->OutputBufferSize = R3DSDK::GpuDecoder::GetSizeBufferNeeded(*m_decodeJob);
 		size_t adjustedSize = m_decodeJob->OutputBufferSize;
 		m_decodeJob->OutputBuffer = AlignedMalloc(adjustedSize);
-		m_decodeJob->VideoFrameNo = 0;
+		m_decodeJob->VideoFrameNo = 200;
 		m_decodeJob->VideoTrackNo = 0;
 		m_decodeJob->Callback = CpuCallback;
 		m_decodeJob->PrivateData = this;
-
-		AddCompletionFunction([&](R3DSDK::AsyncDecompressJob* job) {
-			xprintf("Inside %s()", __FUNCTION__);
-		});
-
-		//AllocateAlignedHostBuffer(clip);
-
-		// if we don't call AllocateAlignedBuffer() above, GenR3DInterleavedTestureBuffer()
-		// will pass nullptr to glTexImage2D() which causes it to create a device buffer that's all zeros
-		// and NOT backed by a host side buffer.
-		GenR3DInterleavedTextureBuffer(clip->Width(), clip->Height());
 
 		FUNCEXIT;
 	};
@@ -79,33 +71,13 @@ public:
 			return;
 		}
 
-		/*
 		while (IsRunning()) {
-			LOG("%s", "running...");
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(100));
 		}
-		*/
 
 		FUNCEXIT;
 	}
 
-	void GenR3DInterleavedTextureBuffer(const int width, const int height) {
-		GLuint texId;
-
-		glGenTextures(1, &texId);
-		glActiveTexture(GL_TEXTURE0 + numTextures);
-		glBindTexture(GL_TEXTURE_2D, texId);
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16, width, height, 0, GL_RGB, GL_UNSIGNED_SHORT, (void *)(m_imgbuffer));
-
-		GL_CHECK("Eh, something failed");
-
-		AddTexture(texId);
-	}
 
 private:
 	std::string fileName;
@@ -130,6 +102,10 @@ void ExampleXGL::BuildScene() {
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(0, 0, 9.0f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	player->model = translate * rotate * scale;
+
+	player->SetAnimationFunction([&](float clock) {
+		xprintf("%s\n", __FUNCTION__);
+	});
 
 	player->Start();
 }

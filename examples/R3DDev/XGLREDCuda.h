@@ -31,6 +31,7 @@ public:
 
 	XGLREDCuda();
 	void AllocatePBOOutputBuffer();
+	void GenR3DInterleavedTextureBuffer(const int width, const int height);
 	void Draw();
 
 	static void getCurrentTimestamp();
