@@ -21,12 +21,10 @@
 #include "XGLMemoryPool.h"
 #include "XGLREDCuda.h"
 
-class R3DPlayer : public XGLTexQuad, public XThread {
+class R3DPlayer : public XGLREDCuda, public XThread {
 public:
-	R3DPlayer(const std::string& fname) : XGLTexQuad(), XThread("R3DPlayerThread"), fileName(fname) {
+	R3DPlayer(const std::string& fname) : XGLREDCuda(), XThread("R3DPlayerThread"), fileName(fname) {
 		FUNCENTER;
-
-		m_pXglRedCuda = new XGLREDCuda();
 
 		R3DSDK::Clip *clip = new R3DSDK::Clip(fileName.c_str());
 		if (clip->Status() != R3DSDK::LSClipLoaded)
@@ -45,13 +43,13 @@ public:
 		m_decodeJob->Mode = R3DSDK::DECODE_FULL_RES_PREMIUM;
 		m_decodeJob->OutputBufferSize = R3DSDK::GpuDecoder::GetSizeBufferNeeded(*m_decodeJob);
 		size_t adjustedSize = m_decodeJob->OutputBufferSize;
-		m_decodeJob->OutputBuffer = m_pXglRedCuda->AlignedMalloc(adjustedSize);
+		m_decodeJob->OutputBuffer = AlignedMalloc(adjustedSize);
 		m_decodeJob->VideoFrameNo = 0;
 		m_decodeJob->VideoTrackNo = 0;
 		m_decodeJob->Callback = CpuCallback;
 		m_decodeJob->PrivateData = this;
 
-		m_pXglRedCuda->AddCompletionFunction([&](R3DSDK::AsyncDecompressJob* job) {
+		AddCompletionFunction([&](R3DSDK::AsyncDecompressJob* job) {
 			xprintf("Inside %s()", __FUNCTION__);
 		});
 
@@ -75,7 +73,7 @@ public:
 			FUNCENTER;
 			LOG("pThis->fileName: %s", pThis->fileName.c_str());
 
-			pThis->m_pXglRedCuda->JobQueue.push(item);
+			pThis->JobQueue.push(item);
 
 			FUNCEXIT;
 		}
@@ -84,7 +82,7 @@ public:
 	void Run() {
 		FUNCENTER;
 
-		if (m_pXglRedCuda->m_pGpuDecoder->DecodeForGpuSdk(*m_decodeJob) != R3DSDK::DSDecodeOK)
+		if (m_pGpuDecoder->DecodeForGpuSdk(*m_decodeJob) != R3DSDK::DSDecodeOK)
 		{
 			printf("GPU decode submit failed\n");
 			return;
@@ -140,7 +138,6 @@ public:
 private:
 	std::string fileName;
 
-	XGLREDCuda *m_pXglRedCuda;
 	R3DSDK::AsyncDecompressJob* m_decodeJob{ nullptr };
 
 	uint16_t* m_imgbuffer{ nullptr };

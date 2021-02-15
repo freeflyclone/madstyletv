@@ -1,8 +1,9 @@
 #pragma once
 
 #include "XGLMemoryPool.h"
+#include "XGL.h"
 
-class XGLREDCuda 
+class XGLREDCuda : public XGLTexQuad
 {
 public:
 	typedef std::function<void(R3DSDK::AsyncDecompressJob*)> CompletionFunc;
