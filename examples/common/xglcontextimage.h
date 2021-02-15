@@ -117,17 +117,12 @@ public:
 		}
 		GL_CHECK("XGLContextImage::XGLContextImage(): something went wrong with texture allocation");
 
-		// init a black image buffer (YUV420)
-		black = new uint8_t[pboSize];
-		memset(black, 0, ySize);
-		memset(black + ySize, 127, uvSize);
-		memset(black + ySize + uvSize, 127, uvSize);
+		// initialize the entire pboBuffer with gray
+		memset(pboBuffer, 127, pboSize * numFrames);
 
-		// init a white image buffer (YUV420)
-		white = new uint8_t[pboSize];
-		memset(white, 127, ySize);
-		memset(white + ySize, 255, uvSize);
-		memset(white + ySize + uvSize, 0, uvSize);
+		// now initialize alternating Y planes with black, then white
+		for(int i=0; i<numFrames; i++) 
+			memset(pboBuffer + (i*pboSize), (i&1)?0:255, ySize);
 
 		// initialize fill and render fences
 		for (int i = 0; i < numFrames; i++) {
