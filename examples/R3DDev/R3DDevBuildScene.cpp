@@ -14,34 +14,11 @@
 
 class R3DPlayer : public XGLREDCuda, public XThread {
 public:
-	R3DPlayer(const std::string& fname) : XGLREDCuda(), XThread("R3DPlayerThread"), fileName(fname) {
+	R3DPlayer(const std::string& fname) : XGLREDCuda(fname), XThread("R3DPlayerThread") {
 		FUNCENTER;
 
-		R3DSDK::Clip *clip = new R3DSDK::Clip(fileName.c_str());
-		if (clip->Status() != R3DSDK::LSClipLoaded)
-		{
-			LOG("Failed to load clip %d", clip->Status());
-			return;
-		}
-
-		m_width = clip->Width();
-		m_height = clip->Height();
-
-		GenR3DInterleavedTextureBuffer(m_width, m_height);
 
 		LOG("Clip resolution = %u x %u", m_width, m_height);
-
-		m_decodeJob = new R3DSDK::AsyncDecompressJob();
-
-		m_decodeJob->Clip = clip;
-		m_decodeJob->Mode = R3DSDK::DECODE_FULL_RES_PREMIUM;
-		m_decodeJob->OutputBufferSize = R3DSDK::GpuDecoder::GetSizeBufferNeeded(*m_decodeJob);
-		size_t adjustedSize = m_decodeJob->OutputBufferSize;
-		m_decodeJob->OutputBuffer = AlignedMalloc(adjustedSize);
-		m_decodeJob->VideoFrameNo = 200;
-		m_decodeJob->VideoTrackNo = 0;
-		m_decodeJob->Callback = CpuCallback;
-		m_decodeJob->PrivateData = this;
 
 		FUNCEXIT;
 	};
@@ -49,27 +26,8 @@ public:
 	~R3DPlayer() {
 	}
 
-	static void CpuCallback(R3DSDK::AsyncDecompressJob * item, R3DSDK::DecodeStatus decodeStatus)
-	{
-		R3DPlayer* pThis = (R3DPlayer*)(item->PrivateData);
-		if (pThis) {
-			FUNCENTER;
-			LOG("pThis->fileName: %s", pThis->fileName.c_str());
-
-			pThis->JobQueue.push(item);
-
-			FUNCEXIT;
-		}
-	}
-
 	void Run() {
 		FUNCENTER;
-
-		if (m_pGpuDecoder->DecodeForGpuSdk(*m_decodeJob) != R3DSDK::DSDecodeOK)
-		{
-			printf("GPU decode submit failed\n");
-			return;
-		}
 
 		while (IsRunning()) {
 			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(100));
@@ -78,16 +36,6 @@ public:
 		FUNCEXIT;
 	}
 
-
-private:
-	std::string fileName;
-
-	R3DSDK::AsyncDecompressJob* m_decodeJob{ nullptr };
-
-	uint16_t* m_imgbuffer{ nullptr };
-	uint8_t* m_unalignedImgbuffer{ nullptr };
-	size_t m_imgSize{ 0 };
-	size_t m_width, m_height;
 };
 
 R3DPlayer *player;

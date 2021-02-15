@@ -3,7 +3,7 @@
 
 #define printf xprintf
 
-XGLREDCuda::XGLREDCuda() {
+XGLREDCuda::XGLREDCuda(std::string cn) : clipName(cn) {
 	// initialize SDK
 	R3DSDK::InitializeStatus init_status = R3DSDK::InitializeSdk(".", OPTION_RED_CUDA);
 	if (init_status != R3DSDK::ISInitializeOK)
@@ -13,6 +13,29 @@ XGLREDCuda::XGLREDCuda() {
 		return;
 	}
 
+	R3DSDK::Clip *clip = new R3DSDK::Clip(clipName.c_str());
+	if (clip->Status() != R3DSDK::LSClipLoaded)
+	{
+		printf("Failed to load clip %d", clip->Status());
+		return;
+	}
+
+	m_width = clip->Width();
+	m_height = clip->Height();
+
+	R3DSDK::AsyncDecompressJob* job = new R3DSDK::AsyncDecompressJob();
+
+	job->Clip = clip;
+	job->Mode = R3DSDK::DECODE_FULL_RES_PREMIUM;
+	job->OutputBufferSize = R3DSDK::GpuDecoder::GetSizeBufferNeeded(*job);
+	size_t adjustedSize = job->OutputBufferSize;
+	job->OutputBuffer = AlignedMalloc(adjustedSize);
+	job->VideoFrameNo = 200;
+	job->VideoTrackNo = 0;
+	job->Callback = CpuCallback;
+	job->PrivateData = this;
+
+	GenR3DInterleavedTextureBuffer(m_width, m_height);
 	// initialize a R3DSDK::REDCuda nugget - does debayering on the GPU
 	m_pREDCuda = OpenCuda(CUDA_DEVICE_ID);
 
@@ -25,6 +48,13 @@ XGLREDCuda::XGLREDCuda() {
 	// there doesn't appear to be any harm in spawning these here.
 	std::thread* gpuThread = new std::thread(std::bind(&XGLREDCuda::GpuThread, this, 0));
 	std::thread* completionThread = new std::thread(std::bind(&XGLREDCuda::CompletionThread, this));
+
+	// Okay... we should be ready to go.
+	if (m_pGpuDecoder->DecodeForGpuSdk(*job) != R3DSDK::DSDecodeOK)
+	{
+		printf("GPU decode submit failed\n");
+		return;
+	}
 }
 
 void XGLREDCuda::GenR3DInterleavedTextureBuffer(const int width, const int height) {
@@ -284,7 +314,9 @@ void XGLREDCuda::GpuThread(int device)
 
 void XGLREDCuda::CpuCallback(R3DSDK::AsyncDecompressJob * item, R3DSDK::DecodeStatus decodeStatus)
 {
-	JobQueue.push(item);
+	XGLREDCuda* pThis = (XGLREDCuda*)item->PrivateData;
+	printf("Inside %s\n", __FUNCTION__);
+	pThis->JobQueue.push(item);
 }
 
 unsigned char * XGLREDCuda::AlignedMalloc(size_t & sizeNeeded)

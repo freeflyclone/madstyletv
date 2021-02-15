@@ -29,7 +29,7 @@ public:
 	typedef std::function<void(R3DSDK::AsyncDecompressJob*)> CompletionFunc;
 	typedef std::vector<CompletionFunc> CompletionFuncs;
 
-	XGLREDCuda();
+	XGLREDCuda(std::string clipName);
 	void AllocatePBOOutputBuffer();
 	void GenR3DInterleavedTextureBuffer(const int width, const int height);
 	void Draw();
@@ -80,11 +80,12 @@ public:
 
 	void CompletionThread();
 	void GpuThread(int device);
-	void CpuCallback(R3DSDK::AsyncDecompressJob * item, R3DSDK::DecodeStatus decodeStatus);
+	static void CpuCallback(R3DSDK::AsyncDecompressJob * item, R3DSDK::DecodeStatus decodeStatus);
 	unsigned char* AlignedMalloc(size_t & sizeNeeded);
 	void AddCompletionFunction(XGLREDCuda::CompletionFunc fn);
 
 public:
+	std::string clipName;
 	R3DSDK::REDCuda* m_pREDCuda{ nullptr };
 	R3DSDK::GpuDecoder* m_pGpuDecoder{ nullptr };
 
