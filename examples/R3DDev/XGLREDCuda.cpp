@@ -13,10 +13,14 @@ XGLREDCuda::XGLREDCuda() {
 		return;
 	}
 
+	// initialize a R3DSDK::REDCuda nugget - does debayering on the GPU
 	m_pREDCuda = OpenCuda(CUDA_DEVICE_ID);
+
+	// initialize a R3DSDK::GpuDecoder nugget - does decoding (wavelet decompression) on a frame
 	m_pGpuDecoder = new R3DSDK::GpuDecoder();
 	m_pGpuDecoder->Open();
 
+	// there doesn't appear to be any harm in spawning these here.
 	std::thread* gpuThread = new std::thread(std::bind(&XGLREDCuda::GpuThread, this, 0));
 	std::thread* completionThread = new std::thread(std::bind(&XGLREDCuda::CompletionThread, this));
 }
