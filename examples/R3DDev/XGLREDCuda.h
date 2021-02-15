@@ -5,7 +5,7 @@
 class XGLREDCuda 
 {
 public:
-	typedef std::function<void(R3DSDK::DebayerCudaJob*)> CompletionFunc;
+	typedef std::function<void(R3DSDK::AsyncDecompressJob*)> CompletionFunc;
 	typedef std::vector<CompletionFunc> CompletionFuncs;
 
 	XGLREDCuda();

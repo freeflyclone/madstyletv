@@ -110,7 +110,7 @@ void XGLREDCuda::CompletionThread()
 		printf("Completed frame %d.\n", gpuDone);
 
 		for (auto cf : completionFuncs)
-			cf(cudaJob);
+			cf(job);
 
 		gpuDone++;
 

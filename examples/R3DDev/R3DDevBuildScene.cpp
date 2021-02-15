@@ -35,7 +35,10 @@ public:
 			return;
 		}
 
-		LOG("Clip resolution = %u x %u", clip->Width(), clip->Height());
+		m_width = clip->Width();
+		m_height = clip->Height();
+
+		LOG("Clip resolution = %u x %u", m_width, m_height);
 
 		m_decodeJob = new R3DSDK::AsyncDecompressJob();
 		m_decodeJob->Clip = clip;
@@ -48,7 +51,7 @@ public:
 		m_decodeJob->Callback = CpuCallback;
 		m_decodeJob->PrivateData = this;
 
-		m_pXglRedCuda->AddCompletionFunction([&](R3DSDK::DebayerCudaJob* job) {
+		m_pXglRedCuda->AddCompletionFunction([&](R3DSDK::AsyncDecompressJob* job) {
 			xprintf("Inside %s()", __FUNCTION__);
 		});
 
@@ -143,6 +146,7 @@ private:
 	uint16_t* m_imgbuffer{ nullptr };
 	uint8_t* m_unalignedImgbuffer{ nullptr };
 	size_t m_imgSize{ 0 };
+	size_t m_width, m_height;
 };
 
 R3DPlayer *player;
