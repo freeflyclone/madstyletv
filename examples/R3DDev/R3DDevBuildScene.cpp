@@ -4,21 +4,12 @@
 ** Mission: Integrate R3DSDK fully, including CUDA
 **************************************************************/
 #include "ExampleXGL.h"
-#include <cstdlib>
-#include <cuda_runtime.h>
-#include <string.h>
-#include <stdio.h>
 
 #define __BASEFILE__ (strrchr(__FILE__, '\\') + 1)
 #define FUNCENTER (xprintf("%s:%d: >> %s()\n", __BASEFILE__, __LINE__, __FUNCTION__))
 #define FUNCEXIT  (xprintf("%s:%d: << %s()\n", __BASEFILE__, __LINE__, __FUNCTION__))
 #define LOG(fmt, ...) { xprintf("%s:%d: " fmt "\n", __BASEFILE__, __LINE__, __VA_ARGS__); }
 
-#include "R3DSDK.h"
-#include "R3DSDKCuda.h"
-#include <R3DSDKDefinitions.h>
-
-#include "XGLMemoryPool.h"
 #include "XGLREDCuda.h"
 
 class R3DPlayer : public XGLREDCuda, public XThread {

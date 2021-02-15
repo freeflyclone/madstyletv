@@ -1,7 +1,18 @@
-#pragma once
+#ifndef XGLREDCUDA_H
+#define XGLREDCUDA_H
+
+#include <cstdlib>
+#include <cuda_runtime.h>
+#include <string.h>
+#include <stdio.h>
+
+#include "R3DSDK.h"
+#include "R3DSDKCuda.h"
+#include <R3DSDKDefinitions.h>
 
 #include "XGLMemoryPool.h"
 #include "XGL.h"
+
 
 class XGLREDCuda : public XGLTexQuad
 {
@@ -76,3 +87,7 @@ public:
 	volatile int gpuDone = 0;
 	CompletionFuncs completionFuncs;
 };
+
+
+#endif
+
