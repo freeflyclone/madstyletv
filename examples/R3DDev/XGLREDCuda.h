@@ -15,6 +15,13 @@
 
 #include "XGLMemoryPool.h"
 
+// max expected dimensions for known RED sensors currently on the planet
+const int defaultCudaTexWidth = 8192;
+const int defaultCudaTexHeight = 4320;
+
+struct XGLREDCudaRGB16 {
+	uint16_t r, g, b;
+};
 
 class XGLREDCuda : public XGLTexQuad
 {
@@ -23,6 +30,7 @@ public:
 	typedef std::vector<CompletionFunc> CompletionFuncs;
 
 	XGLREDCuda();
+	void AllocatePBOOutputBuffer();
 
 	static void getCurrentTimestamp();
 
@@ -88,6 +96,9 @@ public:
 	volatile int cpuDone = 0;
 	volatile int gpuDone = 0;
 	CompletionFuncs completionFuncs;
+
+	GLuint pbo;
+	cudaGraphicsResource *cudaPboResource;
 };
 
 

@@ -20,9 +20,41 @@ XGLREDCuda::XGLREDCuda() {
 	m_pGpuDecoder = new R3DSDK::GpuDecoder();
 	m_pGpuDecoder->Open();
 
+	AllocatePBOOutputBuffer();
+
 	// there doesn't appear to be any harm in spawning these here.
 	std::thread* gpuThread = new std::thread(std::bind(&XGLREDCuda::GpuThread, this, 0));
 	std::thread* completionThread = new std::thread(std::bind(&XGLREDCuda::CompletionThread, this));
+}
+
+void XGLREDCuda::AllocatePBOOutputBuffer() {
+	cudaError_t cudaStatus;
+
+	// generate a Pixel Buffer Object for CUDA to write to.
+	glGenBuffers(1, &pbo);
+	GL_CHECK("glGenBuffers() didn't work");
+
+	// bind it to the pixel unpack buffer (texture source)
+	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
+	GL_CHECK("glBindBuffer() didn't work");
+
+	// tell OpenGL to allocate the pixel buffer, (without giving it any initial data)
+	glBufferData(GL_PIXEL_UNPACK_BUFFER, defaultCudaTexWidth * defaultCudaTexHeight * sizeof(XGLREDCudaRGB16), NULL, GL_DYNAMIC_DRAW);
+	GL_CHECK("glBufferData() didn't work");
+
+	// Choose which GPU to run on
+	cudaStatus = cudaSetDevice(0);
+	if (cudaStatus != cudaSuccess) {
+		xprintf("cudaSetDevice failed!  Do you have a CUDA-capable GPU installed?");
+		return;
+	}
+
+	// Register PBO with CUDA.  We can now pass this buffer to the CUDA kernel, see RunKernel() below.
+	cudaStatus = cudaGraphicsGLRegisterBuffer(&cudaPboResource, pbo, cudaGraphicsMapFlagsWriteDiscard);
+	if (cudaStatus != cudaSuccess) {
+		xprintf("cudaGraphicsGLRegisterBuffer failed: %s\n", cudaGetErrorString(cudaStatus));
+		return;
+	}
 }
 
 void XGLREDCuda::getCurrentTimestamp()
