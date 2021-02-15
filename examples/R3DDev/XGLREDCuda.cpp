@@ -55,6 +55,32 @@ void XGLREDCuda::AllocatePBOOutputBuffer() {
 		xprintf("cudaGraphicsGLRegisterBuffer failed: %s\n", cudaGetErrorString(cudaStatus));
 		return;
 	}
+
+	// map PBO resource for writing from CUDA
+	cudaStatus = cudaGraphicsMapResources(1, &cudaPboResource, 0);
+	if (cudaStatus != cudaSuccess) {
+		xprintf("cudaGraphicsMapResources() failed: %s\n", cudaGetErrorString(cudaStatus));
+		return;
+	}
+
+	// the R3DSDK::DebayerCudaJob needs an output buffer.
+	// Rather than allocate and deallocate on the fly (as the example code does), let's just get
+	// a mapped (for CUDA) ptr to our previously registered PBO.
+	//
+	// I believe that leaving this persistently mapped is OK.  Certainly works for the 1st frame.
+	// Actual successive decodings may prove me wrong.
+	//
+	// The GpuThread this runs in balks at this call because the graphics context isn't current.
+	// This persistent mapping is intended to circumvent the need for setting the context in the GpuThread().
+	// Although that *might* be doable.  So map it here, hold onto the device memory pointer and size as
+	// state in this object, so GpuThread can just use it.
+	cudaStatus = cudaGraphicsResourceGetMappedPointer((void **)&pPboCudaMemory, &pboCudaMemorySize, cudaPboResource);
+	if (cudaStatus != cudaSuccess) {
+		xprintf("cudaGraphicsResourceGetMappedPointer() failed: %s\n", cudaGetErrorString(cudaStatus));
+		return;
+	}
+
+	return;
 }
 
 void XGLREDCuda::getCurrentTimestamp()
@@ -81,6 +107,9 @@ R3DSDK::DebayerCudaJob* XGLREDCuda::DebayerAllocate(const R3DSDK::AsyncDecompres
 	//allocate the debayer job
 	R3DSDK::DebayerCudaJob *data = m_pREDCuda->createDebayerJob();
 
+	m_width = job->Clip->Width();
+	m_height = job->Clip->Height();
+
 	data->raw_host_mem = job->OutputBuffer;
 	data->mode = job->Mode;
 	data->imageProcessingSettings = imageProcessingSettings;
@@ -96,12 +125,9 @@ R3DSDK::DebayerCudaJob* XGLREDCuda::DebayerAllocate(const R3DSDK::AsyncDecompres
 		return NULL;
 	}
 
-	data->output_device_mem_size = R3DSDK::DebayerCudaJob::ResultFrameSize(data);
-
-	//YOU MUST specify an existing buffer for the result image
-	//Set DebayerCudaJob::output_device_mem_size >= result_buffer_size
-	//and a pointer to the device buffer in DebayerCudaJob::output_device_mem
-	err = XGLCudaMemoryPool::cudaMalloc(&(data->output_device_mem), data->output_device_mem_size);
+	// specify output buffer as our pre-mapped PBO buffer.
+	data->output_device_mem = pPboCudaMemory;
+	data->output_device_mem_size = pboCudaMemorySize;
 
 	if (err != cudaSuccess)
 	{
@@ -310,4 +336,27 @@ void XGLREDCuda::FirstFrameCallback(R3DSDK::AsyncDecompressJob * item, R3DSDK::D
 
 void XGLREDCuda::AddCompletionFunction(XGLREDCuda::CompletionFunc fn) {
 	completionFuncs.push_back(fn);
+}
+
+void XGLREDCuda::Draw() {
+	glEnable(GL_BLEND);
+	GL_CHECK("glEnable(GL_BLEND) failed");
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	GL_CHECK("glBlendFunc() failed");
+
+	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
+	GL_CHECK("glBindBuffer() failed");
+
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, GL_RGB, GL_UNSIGNED_SHORT, (GLvoid *)0);
+	GL_CHECK("glTexSubImage2D() failed");
+
+	glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
+	GL_CHECK("glDrawElements() failed");
+
+	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+	GL_CHECK("glBindBuffer() failed");
+
+	glDisable(GL_BLEND);
+	GL_CHECK("glDisable(GL_BLEND) failed");
 }

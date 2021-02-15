@@ -89,25 +89,6 @@ public:
 		FUNCEXIT;
 	}
 
-	uint16_t* AllocateAlignedHostBuffer(R3DSDK::Clip* clip) {
-		size_t width = clip->Width();
-		size_t height = clip->Height();
-
-		// three channels (RGB) in 16-bit (2 bytes) requires this much memory:
-		m_imgSize = width * height * 3 * 2;
-		size_t adjusted = m_imgSize + 16;
-
-		// alloc this memory 16-byte aligned
-		m_unalignedImgbuffer = new uint8_t[adjusted];
-		if (m_unalignedImgbuffer == NULL) {
-			xprintf("Failed to allocate %d bytes of memory for output image\n", static_cast<unsigned int>(m_imgSize));
-			return nullptr;
-		}
-
-		m_imgbuffer = (uint16_t*)(std::align(16, m_imgSize, (void*&)m_unalignedImgbuffer, adjusted));
-		return m_imgbuffer;
-	}
-
 	void GenR3DInterleavedTextureBuffer(const int width, const int height) {
 		GLuint texId;
 

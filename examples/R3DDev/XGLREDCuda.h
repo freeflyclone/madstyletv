@@ -31,6 +31,7 @@ public:
 
 	XGLREDCuda();
 	void AllocatePBOOutputBuffer();
+	void Draw();
 
 	static void getCurrentTimestamp();
 
@@ -99,6 +100,9 @@ public:
 
 	GLuint pbo;
 	cudaGraphicsResource *cudaPboResource;
+	void* pPboCudaMemory{ nullptr };
+	size_t pboCudaMemorySize{ 0 };
+	size_t m_width, m_height;
 };
 
 
