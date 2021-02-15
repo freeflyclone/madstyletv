@@ -1,17 +1,19 @@
 #ifndef XGLREDCUDA_H
 #define XGLREDCUDA_H
 
+#include "XGL.h"
+
 #include <cstdlib>
 #include <cuda_runtime.h>
+#include <cuda_gl_interop.h>
 #include <string.h>
 #include <stdio.h>
 
-#include "R3DSDK.h"
-#include "R3DSDKCuda.h"
+#include <R3DSDK.h>
+#include <R3DSDKCuda.h>
 #include <R3DSDKDefinitions.h>
 
 #include "XGLMemoryPool.h"
-#include "XGL.h"
 
 
 class XGLREDCuda : public XGLTexQuad
