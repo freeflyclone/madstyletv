@@ -31,6 +31,8 @@ XGLREDCuda::XGLREDCuda(std::string cn) : clipName(cn) {
 	m_pGpuDecoder->Open();
 
 	GenR3DInterleavedTextureBuffer(m_width, m_height);
+	GenR3DInterleavedTextureBuffer(m_width, m_height);
+	AllocatePBOOutputBuffer();
 	AllocatePBOOutputBuffer();
 
 	// there doesn't appear to be any harm in spawning these here.
@@ -85,12 +87,14 @@ void XGLREDCuda::GenR3DInterleavedTextureBuffer(const int width, const int heigh
 void XGLREDCuda::AllocatePBOOutputBuffer() {
 	cudaError_t cudaStatus;
 
+	InteropBuffer ib;
+
 	// generate a Pixel Buffer Object for CUDA to write to.
-	glGenBuffers(1, &pbo);
+	glGenBuffers(1, &ib.pbo);
 	GL_CHECK("glGenBuffers() didn't work");
 
 	// bind it to the pixel unpack buffer (texture source)
-	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
+	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, ib.pbo);
 	GL_CHECK("glBindBuffer() didn't work");
 
 	// tell OpenGL to allocate the pixel buffer, (without giving it any initial data)
@@ -105,14 +109,14 @@ void XGLREDCuda::AllocatePBOOutputBuffer() {
 	}
 
 	// Register PBO with CUDA.  We can now pass this buffer to the CUDA kernel, see RunKernel() below.
-	cudaStatus = cudaGraphicsGLRegisterBuffer(&cudaPboResource, pbo, cudaGraphicsMapFlagsWriteDiscard);
+	cudaStatus = cudaGraphicsGLRegisterBuffer(&ib.cudaPboResource, ib.pbo, cudaGraphicsMapFlagsWriteDiscard);
 	if (cudaStatus != cudaSuccess) {
 		xprintf("cudaGraphicsGLRegisterBuffer failed: %s\n", cudaGetErrorString(cudaStatus));
 		return;
 	}
 
 	// map PBO resource for writing from CUDA
-	cudaStatus = cudaGraphicsMapResources(1, &cudaPboResource, 0);
+	cudaStatus = cudaGraphicsMapResources(1, &ib.cudaPboResource, 0);
 	if (cudaStatus != cudaSuccess) {
 		xprintf("cudaGraphicsMapResources() failed: %s\n", cudaGetErrorString(cudaStatus));
 		return;
@@ -129,11 +133,13 @@ void XGLREDCuda::AllocatePBOOutputBuffer() {
 	// This persistent mapping is intended to circumvent the need for setting the context in the GpuThread().
 	// Although that *might* be doable.  So map it here, hold onto the device memory pointer and size as
 	// state in this object, so GpuThread can just use it.
-	cudaStatus = cudaGraphicsResourceGetMappedPointer((void **)&pPboCudaMemory, &pboCudaMemorySize, cudaPboResource);
+	cudaStatus = cudaGraphicsResourceGetMappedPointer((void **)&ib.pPboCudaMemory, &pboCudaMemorySize, ib.cudaPboResource);
 	if (cudaStatus != cudaSuccess) {
 		xprintf("cudaGraphicsResourceGetMappedPointer() failed: %s\n", cudaGetErrorString(cudaStatus));
 		return;
 	}
+
+	interopPointers.push_back(ib);
 
 	return;
 }
@@ -181,7 +187,7 @@ R3DSDK::DebayerCudaJob* XGLREDCuda::DebayerAllocate(const R3DSDK::AsyncDecompres
 	}
 
 	// specify output buffer as our pre-mapped PBO buffer.
-	data->output_device_mem = pPboCudaMemory;
+	data->output_device_mem = interopPointers[gpuDone % interopPointers.size()].pPboCudaMemory;
 	data->output_device_mem_size = pboCudaMemorySize;
 
 	if (err != cudaSuccess)
@@ -398,7 +404,9 @@ void XGLREDCuda::Draw() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	GL_CHECK("glBlendFunc() failed");
 
-	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
+	int index = (gpuDone - 1) % interopPointers.size();
+
+	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, interopPointers[index].pbo);
 	GL_CHECK("glBindBuffer() failed");
 
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, GL_RGB, GL_UNSIGNED_SHORT, (GLvoid *)0);

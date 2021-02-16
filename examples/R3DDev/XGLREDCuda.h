@@ -103,9 +103,20 @@ public:
 	volatile int gpuDone = 0;
 	CompletionFuncs completionFuncs;
 
-	GLuint pbo;
-	cudaGraphicsResource *cudaPboResource;
-	void* pPboCudaMemory{ nullptr };
+	// holds the set of handles that associate a PBO, cudaGraphicsResource, and Cuda device buffer
+	struct InteropBuffer {
+		GLuint pbo;
+		cudaGraphicsResource *cudaPboResource;
+		void* pPboCudaMemory{ nullptr };
+	};
+	// multiple buffers (ping-pong) hides tearing.
+	// Every call to  GenR3DInterleavedTextureBuffer() should have a
+	// call to AllocatePBOOutputBuffer() subsequent.
+	// AllocatePBOOutputBuffer() updates the following vector.
+	// At present only two are needed.
+	std::vector<InteropBuffer> interopPointers;
+
+
 	size_t pboCudaMemorySize{ 0 };
 	size_t m_width, m_height;
 
