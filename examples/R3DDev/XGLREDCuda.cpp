@@ -36,10 +36,6 @@ XGLREDCuda::XGLREDCuda(std::string cn) : clipName(cn) {
 	// there doesn't appear to be any harm in spawning these here.
 	std::thread* gpuThread = new std::thread(std::bind(&XGLREDCuda::GpuThread, this, 0));
 	std::thread* completionThread = new std::thread(std::bind(&XGLREDCuda::CompletionThread, this));
-
-	StartVideoDecode(0);
-	StartVideoDecode(1);
-	StartVideoDecode(2);
 }
 
 void XGLREDCuda::StartVideoDecode(int frame) {
@@ -50,7 +46,7 @@ void XGLREDCuda::StartVideoDecode(int frame) {
 	job->OutputBufferSize = R3DSDK::GpuDecoder::GetSizeBufferNeeded(*job);
 	size_t adjustedSize = job->OutputBufferSize;
 	job->OutputBuffer = AlignedMalloc(adjustedSize);
-	job->VideoFrameNo = 200;
+	job->VideoFrameNo = frame;
 	job->VideoTrackNo = 0;
 	job->Callback = CpuCallback;
 	job->PrivateData = this;
@@ -197,13 +193,13 @@ R3DSDK::DebayerCudaJob* XGLREDCuda::DebayerAllocate(const R3DSDK::AsyncDecompres
 void  XGLREDCuda::DebayerFree(R3DSDK::DebayerCudaJob * job)
 {
 	XGLCudaMemoryPool::cudaFree(job->raw_device_mem);
-	XGLCudaMemoryPool::cudaFree(job->output_device_mem);
+	//XGLCudaMemoryPool::cudaFree(job->output_device_mem);
 	m_pREDCuda->releaseDebayerJob(job);
 }
 
 void XGLREDCuda::CompletionThread()
 {
-	printf("Inside CompletionThread()\n");
+	//printf("Inside CompletionThread()\n");
 	for (;;)
 	{
 		R3DSDK::AsyncDecompressJob * job = NULL;
@@ -214,24 +210,24 @@ void XGLREDCuda::CompletionThread()
 		if (job == NULL)
 			break;
 
-		R3DSDK::DebayerCudaJob * cudaJob = reinterpret_cast<R3DSDK::DebayerCudaJob *>(job->PrivateData);
+		XGLREDCuda* pRedCuda = reinterpret_cast<XGLREDCuda*>(job->PrivateData);
+		R3DSDK::DebayerCudaJob* cudaJob = pRedCuda->m_debayerJob;
 
 		cudaJob->completeAsync();
 
 		// frame ready for use or download etc.
-		printf("Completed frame %d.\n", gpuDone);
+		//("Completed frame %d.\n", gpuDone);
 
 		for (auto cf : completionFuncs)
-			cf(job);
+			cf(pRedCuda);
 
 		gpuDone++;
 
 		DebayerFree(cudaJob);
-
-		//job->PrivateData = NULL;
+/*
+		job->PrivateData = NULL;
 
 		// queue up next frame for decode
-/*
 		if (cpuDone < TOTAL_FRAMES)
 		{
 			cpuDone++;
@@ -272,19 +268,16 @@ void XGLREDCuda::GpuThread(int device)
 		R3DSDK::AsyncDecompressJob * job = NULL;
 
 		JobQueue.pop(job);
+		XGLREDCuda* pRedCuda = (XGLREDCuda*)job->PrivateData;
 
 		// exit thread
 		if (job == NULL)
 			break;
 
-		printf("%s()\n", __FUNCTION__);
-
-		const R3DSDK::VideoPixelType pixelType = R3DSDK::PixelType_16Bit_RGB_Interleaved;
-
 		R3DSDK::ImageProcessingSettings * ips = new R3DSDK::ImageProcessingSettings();
 		job->Clip->GetDefaultImageProcessingSettings(*ips);
 
-		R3DSDK::DebayerCudaJob * cudaJob = DebayerAllocate(job, ips, pixelType);
+		m_debayerJob = DebayerAllocate(job, ips, R3DSDK::PixelType_16Bit_RGB_Interleaved);
 
 		if (err != cudaSuccess)
 		{
@@ -293,7 +286,7 @@ void XGLREDCuda::GpuThread(int device)
 
 		int idx = frameCount++ % NUM_STREAMS;
 
-		R3DSDK::REDCuda::Status status = m_pREDCuda->processAsync(device, stream[idx], cudaJob, err);
+		R3DSDK::REDCuda::Status status = m_pREDCuda->processAsync(device, stream[idx], m_debayerJob, err);
 
 		if (status != R3DSDK::REDCuda::Status_Ok)
 		{
@@ -306,7 +299,7 @@ void XGLREDCuda::GpuThread(int device)
 		}
 		else
 		{
-			job->PrivateData = cudaJob;
+			job->PrivateData = pRedCuda;
 			CompletionQueue.push(job);
 		}
 	}
@@ -321,7 +314,6 @@ void XGLREDCuda::GpuThread(int device)
 void XGLREDCuda::CpuCallback(R3DSDK::AsyncDecompressJob * item, R3DSDK::DecodeStatus decodeStatus)
 {
 	XGLREDCuda* pThis = (XGLREDCuda*)item->PrivateData;
-	printf("Inside %s\n", __FUNCTION__);
 	pThis->JobQueue.push(item);
 }
 

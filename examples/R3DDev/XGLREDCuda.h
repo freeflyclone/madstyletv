@@ -2,6 +2,7 @@
 #define XGLREDCUDA_H
 
 #include "XGL.h"
+#include "xdispatchq.h"
 
 #include <cstdlib>
 #include <cuda_runtime.h>
@@ -26,7 +27,7 @@ struct XGLREDCudaRGB16 {
 class XGLREDCuda : public XGLTexQuad
 {
 public:
-	typedef std::function<void(R3DSDK::AsyncDecompressJob*)> CompletionFunc;
+	typedef std::function<void(XGLREDCuda*)> CompletionFunc;
 	typedef std::vector<CompletionFunc> CompletionFuncs;
 
 	XGLREDCuda(std::string clipName);
@@ -109,8 +110,15 @@ public:
 	size_t m_width, m_height;
 
 	R3DSDK::Clip *m_clip{ nullptr };
+	R3DSDK::DebayerCudaJob *m_debayerJob{ nullptr };
+
+	XDispatchQueue queue;
 };
 
+#define __BASEFILE__ (strrchr(__FILE__, '\\') + 1)
+#define FUNCENTER (xprintf("%s:%d: >> %s()\n", __BASEFILE__, __LINE__, __FUNCTION__))
+#define FUNCEXIT  (xprintf("%s:%d: << %s()\n", __BASEFILE__, __LINE__, __FUNCTION__))
+#define LOG(fmt, ...) { xprintf("%s:%d: " fmt "\n", __BASEFILE__, __LINE__, __VA_ARGS__); }
 
 #endif
 

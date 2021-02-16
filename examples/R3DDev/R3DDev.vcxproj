@@ -191,6 +191,7 @@
     <ClCompile Include="..\common\ExampleGUI.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
+    <ClCompile Include="..\common\xdispatchq.cpp" />
     <ClCompile Include="R3DDevBuildScene.cpp" />
     <ClCompile Include="XGLMemoryPool.cpp" />
     <ClCompile Include="XGLREDCuda.cpp" />
