@@ -23,7 +23,6 @@ XGLREDCuda::XGLREDCuda(std::string cn) : clipName(cn) {
 	m_width = m_clip->Width();
 	m_height = m_clip->Height();
 
-	GenR3DInterleavedTextureBuffer(m_width, m_height);
 	// initialize a R3DSDK::REDCuda nugget - does debayering on the GPU
 	m_pREDCuda = OpenCuda(CUDA_DEVICE_ID);
 
@@ -31,6 +30,7 @@ XGLREDCuda::XGLREDCuda(std::string cn) : clipName(cn) {
 	m_pGpuDecoder = new R3DSDK::GpuDecoder();
 	m_pGpuDecoder->Open();
 
+	GenR3DInterleavedTextureBuffer(m_width, m_height);
 	AllocatePBOOutputBuffer();
 
 	// there doesn't appear to be any harm in spawning these here.
@@ -45,7 +45,12 @@ void XGLREDCuda::StartVideoDecode(int frame) {
 	job->Mode = R3DSDK::DECODE_FULL_RES_PREMIUM;
 	job->OutputBufferSize = R3DSDK::GpuDecoder::GetSizeBufferNeeded(*job);
 	size_t adjustedSize = job->OutputBufferSize;
-	job->OutputBuffer = AlignedMalloc(adjustedSize);
+
+	// only one output buffer, since it doesn't get free()'d anywhere (and we don't really need it?) 
+	if (m_outputBuffer == nullptr)
+		m_outputBuffer = AlignedMalloc(adjustedSize);
+
+	job->OutputBuffer = m_outputBuffer;
 	job->VideoFrameNo = frame;
 	job->VideoTrackNo = 0;
 	job->Callback = CpuCallback;
@@ -319,12 +324,8 @@ void XGLREDCuda::CpuCallback(R3DSDK::AsyncDecompressJob * item, R3DSDK::DecodeSt
 
 unsigned char * XGLREDCuda::AlignedMalloc(size_t & sizeNeeded)
 {
-	// only allocate on host buffer, to plug memory leak
-	if (m_outputBuffer == nullptr)
-		m_outputBuffer = (unsigned char *)malloc(sizeNeeded + 15U);
-
 	// alloc 15 bytes more to make sure we can align the buffer in case it isn't
-	unsigned char * buffer = m_outputBuffer;
+	unsigned char * buffer = (unsigned char *)malloc(sizeNeeded + 15U);;
 
 	if (!buffer)
 		return NULL;
