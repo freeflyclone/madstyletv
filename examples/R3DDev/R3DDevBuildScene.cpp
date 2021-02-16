@@ -38,7 +38,7 @@ void ExampleXGL::BuildScene() {
 	});
 
 	player->AddCompletionFunction([&](XGLREDCuda* pRedCuda) {
-		pRedCuda->StartVideoDecode(pRedCuda->gpuDone+1);
+		pRedCuda->StartVideoDecode(pRedCuda->gpuDone);
 	});
 
 	player->Start();

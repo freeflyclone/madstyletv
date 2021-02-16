@@ -319,8 +319,12 @@ void XGLREDCuda::CpuCallback(R3DSDK::AsyncDecompressJob * item, R3DSDK::DecodeSt
 
 unsigned char * XGLREDCuda::AlignedMalloc(size_t & sizeNeeded)
 {
+	// only allocate on host buffer, to plug memory leak
+	if (m_outputBuffer == nullptr)
+		m_outputBuffer = (unsigned char *)malloc(sizeNeeded + 15U);
+
 	// alloc 15 bytes more to make sure we can align the buffer in case it isn't
-	unsigned char * buffer = (unsigned char *)malloc(sizeNeeded + 15U);
+	unsigned char * buffer = m_outputBuffer;
 
 	if (!buffer)
 		return NULL;

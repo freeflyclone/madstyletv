@@ -113,6 +113,7 @@ public:
 	R3DSDK::DebayerCudaJob *m_debayerJob{ nullptr };
 
 	XDispatchQueue queue;
+	unsigned char* m_outputBuffer{ nullptr };
 };
 
 #define __BASEFILE__ (strrchr(__FILE__, '\\') + 1)
