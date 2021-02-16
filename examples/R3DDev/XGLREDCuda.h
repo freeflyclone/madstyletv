@@ -30,6 +30,8 @@ public:
 	typedef std::vector<CompletionFunc> CompletionFuncs;
 
 	XGLREDCuda(std::string clipName);
+	void StartVideoDecode(int frame);
+
 	void AllocatePBOOutputBuffer();
 	void GenR3DInterleavedTextureBuffer(const int width, const int height);
 	void Draw();
@@ -105,6 +107,8 @@ public:
 	void* pPboCudaMemory{ nullptr };
 	size_t pboCudaMemorySize{ 0 };
 	size_t m_width, m_height;
+
+	R3DSDK::Clip *m_clip{ nullptr };
 };
 
 
