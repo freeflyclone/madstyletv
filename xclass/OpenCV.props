@@ -7,11 +7,11 @@
     <DebugSuffix Condition="'$(Configuration)'!='Debug'">
     </DebugSuffix>
     <OPENCV_DIR>$(SolutionDir)\xclass\3rdParty\opencv\build\install</OPENCV_DIR>
-    <OPENCV_VERSION>430</OPENCV_VERSION>
+    <OPENCV_VERSION>440</OPENCV_VERSION>
   </PropertyGroup>
   <PropertyGroup>
     <IncludePath>$(OPENCV_DIR)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(OPENCV_DIR)\$(PlatformTarget)\vc15\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OPENCV_DIR)\$(PlatformTarget)\vc15\staticlib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemGroup>
     <BuildMacro Include="OPENCV_DIR">
@@ -24,29 +24,18 @@
   <ItemDefinitionGroup>
     <Link>
       <AdditionalDependencies>
-        <!--    
-        opencv_calib3d$(OPENCV_VERSION)$(DebugSuffix).lib;
-        opencv_contrib$(OPENCV_VERSION)$(DebugSuffix).lib;
-        opencv_core$(OPENCV_VERSION)$(DebugSuffix).lib;
-        opencv_features2d$(OPENCV_VERSION)$(DebugSuffix).lib;
-        opencv_flann$(OPENCV_VERSION)$(DebugSuffix).lib;
-        opencv_gpu$(OPENCV_VERSION)$(DebugSuffix).lib;
-        opencv_highgui$(OPENCV_VERSION)$(DebugSuffix).lib;
-        opencv_imgproc$(OPENCV_VERSION)$(DebugSuffix).lib;
-        opencv_legacy$(OPENCV_VERSION)$(DebugSuffix).lib;
-        opencv_ml$(OPENCV_VERSION)$(DebugSuffix).lib;
-        opencv_nonfree$(OPENCV_VERSION)$(DebugSuffix).lib;
-        opencv_objdetect$(OPENCV_VERSION)$(DebugSuffix).lib;
-        opencv_ocl$(OPENCV_VERSION)$(DebugSuffix).lib;
-        opencv_photo$(OPENCV_VERSION)$(DebugSuffix).lib;
-        opencv_stitching$(OPENCV_VERSION)$(DebugSuffix).lib;
-        opencv_superres$(OPENCV_VERSION)$(DebugSuffix).lib;
-        opencv_ts$(OPENCV_VERSION)$(DebugSuffix).lib;
-        opencv_video$(OPENCV_VERSION)$(DebugSuffix).lib;
-        opencv_videostab$(OPENCV_VERSION)$(DebugSuffix).lib;
--->
-        opencv_world$(OPENCV_VERSION)$(DebugSuffix).lib;
-        %(AdditionalDependencies)
+      	opencv_world$(OPENCV_VERSION)$(DebugSuffix).lib;
+      	ippicvmt.lib;
+      	ippiw$(DebugSuffix).lib;
+      	libwebp$(DebugSuffix).lib;
+      	libjpeg-turbo$(DebugSuffix).lib;
+      	libtiff$(DebugSuffix).lib;
+      	libpng$(DebugSuffix).lib;
+      	zlib$(DebugSuffix).lib;
+      	IlmImf$(DebugSuffix).lib;
+      	libjasper$(DebugSuffix).lib;
+      	ittnotify$(DebugSuffix).lib;
+      	%(AdditionalDependencies)
       </AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

@@ -58,7 +58,11 @@ public:
 		SetAnimationFunction([&](float clock) {
 			if (IsRunning() && (frameNumber > 3)) {
 				glActiveTexture(GL_TEXTURE0);
+				GL_CHECK("glActiveTexture() didn't work");
+
 				glBindTexture(GL_TEXTURE_2D, texIds[0]);
+				GL_CHECK("glBindTexture() didn't work");
+
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, videoFrame[(frameNumber - 1) & 3]);
 				GL_CHECK("glGetTexImage() didn't work");
 			}
@@ -164,7 +168,7 @@ void ExampleXGL::BuildScene() {
 	glm::mat4 translate = glm::translate(glm::mat4(), glm::vec3(-10, 0, 5.625f));
 	glm::mat4 rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	webcam0->model = translate * rotate * scale;
-
+	/*
 	AddShape("shaders/tex", [&]() { webcam1 = new XGLWebcam(this, "Camera 2", 1); return webcam1; });
 	scale = glm::scale(glm::mat4(), glm::vec3(10.0f, 5.625f, 1.0f));
 	translate = glm::translate(glm::mat4(), glm::vec3(10, 0, 5.625f));
@@ -176,8 +180,9 @@ void ExampleXGL::BuildScene() {
 	translate = glm::translate(glm::mat4(), glm::vec3(-30, 0, 5.625f));
 	rotate = glm::rotate(glm::mat4(), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	webcam2->model = translate * rotate * scale;
+	*/
 
 	webcam0->Start();
-	webcam1->Start();
-	webcam2->Start();
+	//webcam1->Start();
+	//webcam2->Start();
 }
