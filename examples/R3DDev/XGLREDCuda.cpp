@@ -23,6 +23,8 @@ XGLREDCuda::XGLREDCuda(std::string cn) : clipName(cn) {
 	m_width = m_clip->Width();
 	m_height = m_clip->Height();
 
+	printf("Clip is: %d x %d\n", m_width, m_height);
+
 	// initialize a R3DSDK::REDCuda nugget - does debayering on the GPU
 	m_pREDCuda = OpenCuda(CUDA_DEVICE_ID);
 
@@ -61,8 +63,14 @@ void XGLREDCuda::StartVideoDecode(int frame) {
 	// Okay... we should be ready to go.
 	if (m_pGpuDecoder->DecodeForGpuSdk(*job) != R3DSDK::DSDecodeOK)
 	{
-		printf("GPU decode submit failed\n");
-		return;
+		gpuDone = 0;
+		cpuDone = 0;
+		job->VideoFrameNo = 0;
+		if (m_pGpuDecoder->DecodeForGpuSdk(*job) != R3DSDK::DSDecodeOK)
+		{
+			printf("GPU decode submit failed again\n");
+			return;
+		}
 	}
 }
 
