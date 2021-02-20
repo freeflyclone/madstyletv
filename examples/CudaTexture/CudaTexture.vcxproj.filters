@@ -27,14 +27,9 @@
     <ClCompile Include="CudaTextureBuildScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="XGLCuda.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="XGLCudaInterop.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClCompile Include="..\common\XGLCuda.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="CudaTextureKernel.cu">

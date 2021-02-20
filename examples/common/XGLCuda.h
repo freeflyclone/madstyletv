@@ -2,9 +2,14 @@
 #include "XGLCudaInterop.h"
 
 extern cudaError_t LaunchKernel(XGLRGBA*, int, int, float);
+const int defaultCudaTexWidth = 960;
+const int defaultCudaTexHeight = 540;
+
 
 class XGLCuda : public XGLTexQuad {
 public:
+	XGLCuda::XGLCuda(int width = defaultCudaTexWidth, int height = defaultCudaTexHeight);
+
 	XGLCuda(XGL *, std::string);
 
 	// Run the CUDA kernel defined in <projectName>Kernel.cu
@@ -17,7 +22,8 @@ public:
 	void Draw();
 
 private:
-	XGL* pXgl;
+	int m_width, m_height;
+	//XGL* pXgl;
 	GLuint pbo;
 	cudaGraphicsResource *cudaPboResource;
 	XGLRGBA* dptr;

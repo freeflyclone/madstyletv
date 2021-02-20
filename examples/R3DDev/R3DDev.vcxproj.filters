@@ -30,16 +30,13 @@
     <ClCompile Include="R3DDevBuildScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\3rdParty\R3DSDKv8_0_0\Sample code\GPU decoding\REDCudaSample.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\3rdParty\R3DSDKv8_0_0\Sample code\GPU decoding\REDCudaGpuDecodeSample.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="XGLMemoryPool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="XGLREDCuda.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\xdispatchq.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

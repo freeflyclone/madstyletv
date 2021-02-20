@@ -176,21 +176,10 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\3rdParty\R3DSDKv8_0_0\Sample code\GPU decoding\REDCudaGpuDecodeSample.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\3rdParty\R3DSDKv8_0_0\Sample code\GPU decoding\REDCudaSample.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\common\ExampleGUI.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
+    <ClCompile Include="..\common\xdispatchq.cpp" />
     <ClCompile Include="R3DDevBuildScene.cpp" />
     <ClCompile Include="XGLMemoryPool.cpp" />
     <ClCompile Include="XGLREDCuda.cpp" />
