@@ -17,11 +17,11 @@
 //#include "example.h"
 
 #define STREAM          RS2_STREAM_DEPTH  // rs2_stream is a types of data provided by RealSense device           //
-#define FORMAT          RS2_FORMAT_Z16    // rs2_format identifies how binary data is encoded within a frame      //
-#define WIDTH           640               // Defines the number of columns for each frame or zero for auto resolve//
+#define FORMAT          RS2_FORMAT_ANY    // rs2_format identifies how binary data is encoded within a frame      //
+#define WIDTH           1024              // Defines the number of columns for each frame or zero for auto resolve//
 #define HEIGHT          0                 // Defines the number of lines for each frame or zero for auto resolve  //
 #define FPS             30                // Defines the rate of frames per second                                //
-#define STREAM_INDEX    0                 // Defines the stream index, used for multiple streams of the same type //
+#define STREAM_INDEX    -1                // Defines the stream index, used for multiple streams of the same type //
 #define HEIGHT_RATIO    20                // Defines the height ratio between the original frame to the new frame //
 #define WIDTH_RATIO     10                // Defines the width ratio between the original frame to the new frame  //
 
@@ -31,82 +31,80 @@ public:
 		GenUShortZMap(WIDTH, HEIGHT);
 	}
 
+	~XGLDepthCam() {
+		xprintf("%s\n", __FUNCTION__);
+	}
+
 	void InitRealSense() {
 		rs2_error* e{ nullptr };
 
 		m_ctx = rs2_create_context(RS2_API_VERSION, &e);
 		check_error(e);
 
-		rs2_device_list* device_list = rs2_query_devices(m_ctx, &e);
+		m_device_list = rs2_query_devices(m_ctx, &e);
 		check_error(e);
 
-		int dev_count = rs2_get_device_count(device_list, &e);
+		m_dev_count = rs2_get_device_count(m_device_list, &e);
 		check_error(e);
-		xprintf("There are %d connected RealSense devices.\n", dev_count);
-		if (0 == dev_count)
+		xprintf("There are %d connected RealSense devices.\n", m_dev_count);
+		if (0 == m_dev_count)
 			return;
 
 		// Get the first connected device
 		// The returned object should be released with rs2_delete_device(...)
-		rs2_device* dev = rs2_create_device(device_list, 0, &e);
+		m_dev = rs2_create_device(m_device_list, 0, &e);
 		check_error(e);
 
 		/* Determine depth value corresponding to one meter */
-		m_one_meter = (uint16_t)(1.0f / get_depth_unit_value(dev));
+		m_one_meter = (uint16_t)(1.0f / get_depth_unit_value(m_dev));
 
 		xprintf("one_meter: 1/%d\n", m_one_meter);
 
 		// Create a pipeline to configure, start and stop camera streaming
 		// The returned object should be released with rs2_delete_pipeline(...)
-		pipeline = rs2_create_pipeline(m_ctx, &e);
+		m_pipeline = rs2_create_pipeline(m_ctx, &e);
 		check_error(e);
 
 		// Create a config instance, used to specify hardware configuration
 		// The retunred object should be released with rs2_delete_config(...)
-		rs2_config* config = rs2_create_config(&e);
+		m_config = rs2_create_config(&e);
 		check_error(e);
 
 		// Request a specific configuration
-		rs2_config_enable_stream(config, STREAM, STREAM_INDEX, WIDTH, HEIGHT, FORMAT, FPS, &e);
+		rs2_config_enable_stream(m_config, STREAM, STREAM_INDEX, WIDTH, HEIGHT, FORMAT, FPS, &e);
 		check_error(e);
 
 		// Start the pipeline streaming
 		// The retunred object should be released with rs2_delete_pipeline_profile(...)
-		rs2_pipeline_profile* pipeline_profile = rs2_pipeline_start_with_config(pipeline, config, &e);
+		m_pipeline_profile = rs2_pipeline_start_with_config(m_pipeline, m_config, &e);
 		if (e)
 		{
 			xprintf("The connected device doesn't support depth streaming!\n");
 			exit(EXIT_FAILURE);
 		}
 
-		rs2_stream_profile_list* stream_profile_list = rs2_pipeline_profile_get_streams(pipeline_profile, &e);
+		m_stream_profile_list = rs2_pipeline_profile_get_streams(m_pipeline_profile, &e);
 		if (e)
 		{
 			xprintf("Failed to create stream profile list!\n");
 			exit(EXIT_FAILURE);
 		}
 
-		rs2_stream_profile* stream_profile = (rs2_stream_profile*)rs2_get_stream_profile(stream_profile_list, 0, &e);
+		m_stream_profile = (rs2_stream_profile*)rs2_get_stream_profile(m_stream_profile_list, 0, &e);
 		if (e)
 		{
 			xprintf("Failed to create stream profile!\n");
 			exit(EXIT_FAILURE);
 		}
 
-		rs2_stream stream; 
-		rs2_format format; 
-		int index; 
-		int unique_id; 
-		int framerate;
-
-		rs2_get_stream_profile_data(stream_profile, &stream, &format, &index, &unique_id, &framerate, &e);
+		rs2_get_stream_profile_data(m_stream_profile, &m_stream, &m_format, &m_index, &m_unique_id, &m_framerate, &e);
 		if (e)
 		{
 			xprintf("Failed to get stream profile data!\n");
 			exit(EXIT_FAILURE);
 		}
 
-		rs2_get_video_stream_resolution(stream_profile, &m_width, &m_height, &e);
+		rs2_get_video_stream_resolution(m_stream_profile, &m_width, &m_height, &e);
 		if (e)
 		{
 			xprintf("Failed to get video stream resolution data!\n");
@@ -121,6 +119,25 @@ public:
 		xprintf("End of %s with no blow-ups.\n", __FUNCTION__);
 	}
 
+	void TerminateRealSense() {
+		// Release resources
+		rs2_delete_pipeline_profile(m_pipeline_profile);
+		rs2_delete_stream_profiles_list(m_stream_profile_list);
+		rs2_delete_stream_profile(m_stream_profile);
+		rs2_delete_config(m_config);
+		rs2_delete_pipeline(m_pipeline);
+		rs2_delete_device(m_dev);
+		rs2_delete_device_list(m_device_list);
+		rs2_delete_context(m_ctx);
+	}
+
+	void ShowFrameParams(rs2_frame* frame) {
+		rs2_error* e{ nullptr };
+
+		xprintf("Frame: %d x %d\n", rs2_get_frame_width(frame, &e), rs2_get_frame_height(frame, &e));
+		check_error(e);
+	}
+
 	void Run(void) {
 		rs2_error* e{ nullptr };
 		int rows = m_height / HEIGHT_RATIO;
@@ -131,22 +148,17 @@ public:
 		InitRealSense();
 
 		while (IsRunning()) {
-			char* out = NULL;
-
 			// This call waits until a new composite_frame is available
 			// composite_frame holds a set of frames. It is used to prevent frame drops
 			// The returned object should be released with rs2_release_frame(...)
-			rs2_frame* frames = rs2_pipeline_wait_for_frames(pipeline, RS2_DEFAULT_TIMEOUT, &e);
+			rs2_frame* frames = rs2_pipeline_wait_for_frames(m_pipeline, RS2_DEFAULT_TIMEOUT, &e);
 			check_error(e);
 
 			// Returns the number of frames embedded within the composite frame
 			int num_of_frames = rs2_embedded_frames_count(frames, &e);
 			check_error(e);
 
-			xprintf("%d frames\n", num_of_frames);
-
-			int i;
-			for (i = 0; i < num_of_frames; ++i)
+			for (int i = 0; i < num_of_frames; ++i)
 			{
 				// The retunred object should be released with rs2_release_frame(...)
 				rs2_frame* frame = rs2_extract_frame(frames, i, &e);
@@ -164,18 +176,22 @@ public:
 				const uint16_t* depth_frame_data = (const uint16_t*)(rs2_get_frame_data(frame, &e));
 				check_error(e);
 
-				/* Print a simple text-based representation of the image, by breaking it into 10x5 pixel regions and approximating the coverage of pixels within one meter */
-				out = m_buffer;
-				int x, y, i;
+				ShowFrameParams(frame);
 
-				xprintf("Depth frame found\n");
+				// Here is where the visualization code needs to go to render the depth info.
+				// When I figure out how.
+
 				rs2_release_frame(frame);
 			}
 
 			rs2_release_frame(frames);
-
-			std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
+			//std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
 		}
+
+		xprintf("%s terminating\n", __FUNCTION__);
+		rs2_pipeline_stop(m_pipeline, &e);
+		check_error(e);
+
 	}
 
 	void GenUShortZMap(const int width, const int height) {
@@ -257,11 +273,25 @@ public:
 	}
 
 private:
+	rs2_config* m_config{ nullptr };
+	rs2_device_list* m_device_list{ nullptr };
+	rs2_device* m_dev{ nullptr };
+	rs2_context* m_ctx{ nullptr };
+	rs2_pipeline* m_pipeline{ nullptr };
+	rs2_pipeline_profile* m_pipeline_profile{ nullptr };
+	rs2_stream_profile_list* m_stream_profile_list{ nullptr };
+	rs2_stream_profile* m_stream_profile{ nullptr };
+	rs2_stream m_stream{ RS2_STREAM_ANY };
+	rs2_format m_format{ RS2_FORMAT_ANY };
+	int m_dev_count{ 0 };
+	int m_index{ -1 };
+	int m_unique_id{ 0 };
+	int m_framerate{ 0 };
+
 	uint16_t m_one_meter{ 0 };
-	rs2_context* m_ctx;
-	char* m_buffer;
-	rs2_pipeline* pipeline{ nullptr };
-	int m_width; int m_height;
+	char* m_buffer{ nullptr };
+	int m_width{ 0 }; 
+	int m_height{ 0 };
 
 };
 
