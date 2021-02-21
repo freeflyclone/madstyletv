@@ -388,6 +388,7 @@
     <None Include="PhysX.props" />
     <None Include="poco.props" />
     <None Include="R3DSDK.props" />
+    <None Include="RealSenseSdk.props" />
     <None Include="xclass-copy.proj">
       <SubType>Designer</SubType>
     </None>

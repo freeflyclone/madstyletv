@@ -542,5 +542,6 @@
       <Filter>ffmpeg</Filter>
     </None>
     <None Include="R3DSDK.props" />
+    <None Include="RealSenseSdk.props" />
   </ItemGroup>
 </Project>
