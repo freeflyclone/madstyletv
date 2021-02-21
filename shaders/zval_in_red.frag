@@ -46,5 +46,5 @@ void main() {
 
     //finalColor = (brightness * diffuse * fragColor) + (ambient * 0.1);
     //finalColor = (brightness * diffuse) + (ambient * 0.1);
-	finalColor = vec4(1.0, 1.0, 1.0, 1.0);
+	finalColor = diffuse;
 }
