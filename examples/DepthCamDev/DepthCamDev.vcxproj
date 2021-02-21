@@ -182,6 +182,8 @@
     <None Include="..\..\shaders\tex.vert" />
     <None Include="..\..\shaders\textShader.frag" />
     <None Include="..\..\shaders\textShader.vert" />
+    <None Include="..\..\shaders\zval_in_red.frag" />
+    <None Include="..\..\shaders\zval_in_red.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

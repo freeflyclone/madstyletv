@@ -44,5 +44,11 @@
     <None Include="..\..\shaders\textShader.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\shaders\zval_in_red.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\zval_in_red.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
