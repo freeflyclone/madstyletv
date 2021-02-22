@@ -175,6 +175,7 @@
     <ClCompile Include="..\common\ExampleGUI.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
+    <ClCompile Include="..\common\xframequeue.cpp" />
     <ClCompile Include="DepthCamDevBuildScene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -184,6 +185,9 @@
     <None Include="..\..\shaders\textShader.vert" />
     <None Include="..\..\shaders\zval_in_red.frag" />
     <None Include="..\..\shaders\zval_in_red.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\common\xframequeue.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

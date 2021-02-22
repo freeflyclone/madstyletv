@@ -30,6 +30,9 @@
     <ClCompile Include="DepthCamDevBuildScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\common\xframequeue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\shaders\tex.frag">
@@ -50,5 +53,10 @@
     <None Include="..\..\shaders\zval_in_red.vert">
       <Filter>Shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\common\xframequeue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

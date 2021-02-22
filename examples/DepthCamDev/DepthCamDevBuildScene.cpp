@@ -27,8 +27,12 @@
 
 class XGLDepthCam : public XGLTexQuad, public XThread {
 public:
+	static const int m_numFrames{ 4 };
+
 	XGLDepthCam() : XGLTexQuad(), XThread("DepthCamThread") {
 		GenUShortZMap(WIDTH, HEIGHT);
+
+		InitRealSense();
 	}
 
 	~XGLDepthCam() {
@@ -110,13 +114,14 @@ public:
 			xprintf("Failed to get video stream resolution data!\n");
 			exit(EXIT_FAILURE);
 		}
-		int rows = m_height / HEIGHT_RATIO;
-		int row_length = m_width / WIDTH_RATIO;
-		int display_size = (rows + 1) * (row_length + 1);
-		int buffer_size = display_size * sizeof(char);
 
-		m_buffer = new char[display_size, sizeof(char)];
-		xprintf("End of %s with no blow-ups.\n", __FUNCTION__);
+		int display_size = m_width * m_height;
+		m_buffer_size = display_size * sizeof(uint16_t);
+
+		for (int i = 0; i < m_numFrames; i++)
+			m_buffers[i] = new uint16_t[display_size];
+
+		xprintf("End of %s with no blow-ups: %d x %d, bufferSize: %d.\n", __FUNCTION__, m_width, m_height, m_buffer_size);
 	}
 
 	void TerminateRealSense() {
@@ -134,18 +139,14 @@ public:
 	void ShowFrameParams(rs2_frame* frame) {
 		rs2_error* e{ nullptr };
 
-		xprintf("Frame: %d x %d\n", rs2_get_frame_width(frame, &e), rs2_get_frame_height(frame, &e));
+		xprintf("Frame: %d x %d, %d\n", rs2_get_frame_width(frame, &e), rs2_get_frame_height(frame, &e), rs2_get_frame_data_size(frame, &e));
 		check_error(e);
 	}
 
 	void Run(void) {
 		rs2_error* e{ nullptr };
-		int rows = m_height / HEIGHT_RATIO;
-		int row_length = m_width / WIDTH_RATIO;
-		int display_size = (rows + 1) * (row_length + 1);
-		int buffer_size = display_size * sizeof(char);
 
-		InitRealSense();
+		//InitRealSense();
 
 		while (IsRunning()) {
 			// This call waits until a new composite_frame is available
@@ -176,10 +177,11 @@ public:
 				const uint16_t* depth_frame_data = (const uint16_t*)(rs2_get_frame_data(frame, &e));
 				check_error(e);
 
-				ShowFrameParams(frame);
+				//ShowFrameParams(frame);
 
 				// Here is where the visualization code needs to go to render the depth info.
 				// When I figure out how.
+				memcpy(m_buffers[m_wIdx++ & (m_numFrames-1)], depth_frame_data, m_buffer_size);
 
 				rs2_release_frame(frame);
 			}
@@ -191,7 +193,6 @@ public:
 		xprintf("%s terminating\n", __FUNCTION__);
 		rs2_pipeline_stop(m_pipeline, &e);
 		check_error(e);
-
 	}
 
 	void GenUShortZMap(const int width, const int height) {
@@ -272,6 +273,29 @@ public:
 		return depth_scale;
 	}
 
+	void Draw() {
+		glEnable(GL_BLEND);
+		GL_CHECK("glEnable(GL_BLEND) failed");
+
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		GL_CHECK("glBlendFunc() failed");
+
+		if (m_wIdx > m_rIdx) {
+			int index = (m_rIdx++) % m_numFrames;
+
+			if (m_buffers[index]) {
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, m_width, m_height, 0, GL_RED, GL_UNSIGNED_SHORT, (void *)(m_buffers[index]));
+				GL_CHECK("glTexSubImage2D() failed");
+			}
+		}
+
+		glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
+		GL_CHECK("glDrawElements() failed");
+
+		glDisable(GL_BLEND);
+		GL_CHECK("glDisable(GL_BLEND) failed");
+	}
+
 private:
 	rs2_config* m_config{ nullptr };
 	rs2_device_list* m_device_list{ nullptr };
@@ -289,17 +313,19 @@ private:
 	int m_framerate{ 0 };
 
 	uint16_t m_one_meter{ 0 };
-	char* m_buffer{ nullptr };
+	uint16_t* m_buffers[m_numFrames]{ nullptr };
+	int m_buffer_size{ 0 };
 	int m_width{ 0 }; 
 	int m_height{ 0 };
-
+	uint64_t m_wIdx{ 0 };
+	uint64_t m_rIdx{ 0 };
 };
 
 void ExampleXGL::BuildScene() {
 	XGLDepthCam *depthCam;
 
 	AddShape("shaders/zval_in_red", [&depthCam]() { depthCam = new XGLDepthCam(); return depthCam; });
-	depthCam->attributes.diffuseColor = XGLColors::yellow;
+	depthCam->attributes.diffuseColor = XGLColors::white;
 	depthCam->model = glm::scale(glm::mat4(), glm::vec3(10.0f, 7.5f, 1.0f));
 
 	depthCam->Start();
