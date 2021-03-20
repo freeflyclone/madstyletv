@@ -89,7 +89,7 @@ XGLParticleSystem::XGLParticleSystem(int n) : numParticles(n) {
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, vbo);
 
 		// fire the compute shader
-		glDispatchCompute(1000, 100, 1);
+		glDispatchCompute(7000, 4, 1);
 
 		// wait until the compute shader has completed before rendering it's results
 		//glMemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
@@ -100,7 +100,7 @@ XGLParticleSystem::XGLParticleSystem(int n) : numParticles(n) {
 void XGLParticleSystem::Draw() {
 	//glPointSize(2.0f);
 
-	glPointSize(4.0);
+	//glPointSize(4.0);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_3D, tex);

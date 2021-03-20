@@ -7,7 +7,7 @@
 #include "ExampleXGL.h"
 #include "Particles.h"
 
-const static int nParticles = 1000;
+const static int nParticles = 1024*768;
 
 XGLParticleSystem *pParticles;
 

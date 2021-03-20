@@ -19,7 +19,7 @@ public:
 
 	XGLParticleSystem(int n = 0);
 	virtual void Draw();
-	GLuint CreateNoiseTexture4f3D(int w = 16, int h = 16, int d = 16, GLint internalFormat = GL_RGBA8_SNORM);
+	GLuint CreateNoiseTexture4f3D(int w = 2, int h = 2, int d = 2, GLint internalFormat = GL_RGBA8_SNORM);
 
 	AnimationFn invokeComputeShader;
 

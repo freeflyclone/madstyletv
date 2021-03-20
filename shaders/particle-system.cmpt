@@ -11,10 +11,20 @@ layout (std140, binding = 1) buffer VertexBuffer {
 	VertexData verts[];
 };
 
-layout (local_size_x = 1000, local_size_y = 1, local_size_z = 1) in;
+layout (local_size_x = 250, local_size_y = 1, local_size_z = 1) in;
+
+float foo = 0.01;
+float radius = 60.0;
+
+vec4 attractor1 = vec4(-radius, 0.0, 0.0, foo);
+vec4 attractor2 = vec4(radius, 0.0, 0.0, foo);
+vec4 attractor3 = vec4(0.0, 0.0, radius, foo);
+vec4 attractor4 = vec4(0.0, 0.0, -radius, foo);
+vec4 attractor5 = vec4(0.0, radius, 0.0, foo);
+vec4 attractor6 = vec4(0.0, -radius, 0.0, foo);
 
 vec3 attract(vec3 p, vec3 p2) {
-    const float softeningSquared = 0.01;
+    const float softeningSquared = 0.5;
 
 	// get the displacement of the particle from the attractor
     vec3 v = p2 - p;
@@ -39,16 +49,13 @@ void main() {
 	uint idx = gl_GlobalInvocationID.x;
 	vec3 pos = verts[idx].pos.xyz;
 	vec3 vel = verts[idx].vel.xyz;
-	float foo = 0.00001;
-	vec4 attractor1 = vec4(-20.0, 0.0, 0.0, foo);
-	vec4 attractor2 = vec4(0.0, 20.0, 0.0, foo);
-	vec4 attractor3 = vec4(0.0, 0.0, 20.0, foo);
-	vec4 attractor4 = vec4(20.0, 0.0, 20.0, foo);
 
 	vel += attract(pos, attractor1.xyz) * attractor1.w;
 	vel += attract(pos, attractor2.xyz) * attractor2.w;
 	vel += attract(pos, attractor3.xyz) * attractor3.w;
 	vel += attract(pos, attractor4.xyz) * attractor4.w;
+	vel += attract(pos, attractor5.xyz) * attractor5.w;
+	vel += attract(pos, attractor6.xyz) * attractor6.w;
 
 	float speed = length(vel);
 	pos += vel;
