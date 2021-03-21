@@ -14,12 +14,15 @@
 #include <librealsense2/h/rs_pipeline.h>
 #include <librealsense2/h/rs_option.h>
 #include <librealsense2/h/rs_frame.h>
+
+#include "DepthCloud.h"
+
 //#include "example.h"
 
 #define STREAM          RS2_STREAM_DEPTH  // rs2_stream is a types of data provided by RealSense device           //
 #define FORMAT          RS2_FORMAT_ANY    // rs2_format identifies how binary data is encoded within a frame      //
 #define WIDTH           1024              // Defines the number of columns for each frame or zero for auto resolve//
-#define HEIGHT          0                 // Defines the number of lines for each frame or zero for auto resolve  //
+#define HEIGHT          768                 // Defines the number of lines for each frame or zero for auto resolve  //
 #define FPS             30                // Defines the rate of frames per second                                //
 #define STREAM_INDEX    -1                // Defines the stream index, used for multiple streams of the same type //
 #define HEIGHT_RATIO    20                // Defines the height ratio between the original frame to the new frame //
@@ -323,10 +326,19 @@ private:
 
 void ExampleXGL::BuildScene() {
 	XGLDepthCam *depthCam;
+	XGLDepthCloud *depthCloud;
 
+	AddShape("shaders/flat", [&depthCloud]() { depthCloud = new XGLDepthCloud(); return depthCloud; });
+	depthCloud->attributes.diffuseColor = XGLColors::white;
+	depthCloud->model = glm::scale(glm::mat4(), glm::vec3(4*10.24f, 4*7.68f, 1.0f));
+
+	AddPreRenderFunction(depthCloud->invokeComputeShader);
+
+	/*
 	AddShape("shaders/zval_in_red", [&depthCam]() { depthCam = new XGLDepthCam(); return depthCam; });
 	depthCam->attributes.diffuseColor = XGLColors::white;
-	depthCam->model = glm::scale(glm::mat4(), glm::vec3(10.0f, 7.5f, 1.0f));
+	depthCam->model = glm::scale(glm::mat4(), glm::vec3(10.24f, 7.68f, 1.0f));
 
 	depthCam->Start();
+	*/
 }

@@ -33,14 +33,11 @@
     <ClCompile Include="..\common\xframequeue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DepthCloud.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\shaders\tex.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\shaders\tex.vert">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="..\..\shaders\textShader.frag">
       <Filter>Shaders</Filter>
     </None>
@@ -53,9 +50,27 @@
     <None Include="..\..\shaders\zval_in_red.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\shaders\depth-cloud.cmpt">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\diffuse.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\diffuse.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\flat.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\shaders\flat.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\common\xframequeue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthCloud.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

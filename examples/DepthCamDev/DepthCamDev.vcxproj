@@ -177,10 +177,14 @@
     <ClCompile Include="..\common\main.cpp" />
     <ClCompile Include="..\common\xframequeue.cpp" />
     <ClCompile Include="DepthCamDevBuildScene.cpp" />
+    <ClCompile Include="DepthCloud.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\shaders\tex.frag" />
-    <None Include="..\..\shaders\tex.vert" />
+    <None Include="..\..\shaders\depth-cloud.cmpt" />
+    <None Include="..\..\shaders\diffuse.frag" />
+    <None Include="..\..\shaders\diffuse.vert" />
+    <None Include="..\..\shaders\flat.frag" />
+    <None Include="..\..\shaders\flat.vert" />
     <None Include="..\..\shaders\textShader.frag" />
     <None Include="..\..\shaders\textShader.vert" />
     <None Include="..\..\shaders\zval_in_red.frag" />
@@ -188,6 +192,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\common\xframequeue.h" />
+    <ClInclude Include="DepthCloud.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
