@@ -187,7 +187,8 @@ private:
 
 class XGLPointCloud : public XGLShape {
 public:
-	XGLPointCloud(int nPoints = 1024, float radius = 5.0f, XGLColor color = { 1.0, 1.0, 1.0, 1.0 }, XGLVertex center = { 0.0, 0.0, 0.0 });
+	XGLPointCloud();
+	XGLPointCloud(int nPoints, float radius = 5.0f, XGLColor color = { 1.0, 1.0, 1.0, 1.0 }, XGLVertex center = { 0.0, 0.0, 0.0 });
 	void Draw();
 	DrawFn drawFn;
 };

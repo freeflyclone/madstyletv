@@ -860,6 +860,10 @@ void XGLSled::SampleInput(float yaw, float pitch, float roll) {
 	model = GetFinalMatrix();
 }
 
+XGLPointCloud::XGLPointCloud() : drawFn(nullptr) {
+	SetName("XGLPointCloud");
+}
+
 XGLPointCloud::XGLPointCloud(int nPoints, float radius, XGLColor color, XGLVertex center) : drawFn(nullptr) {
 	SetName("XGLPointCloud");
 

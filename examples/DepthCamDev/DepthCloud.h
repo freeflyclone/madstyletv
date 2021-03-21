@@ -13,31 +13,17 @@
 
 #include "ExampleXGL.h"
 
-class XGLDepthCloud : public XGLShape {
+class XGLDepthCloud : public XGLPointCloud {
 public:
-	/*
-	struct VertexAttributes {
-		glm::vec4 pos;
-		glm::vec4 norm;
-		glm::vec4 color;
-	};
-	*/
-	typedef XGLVertexAttributes VertexAttributes;
-	typedef std::vector<VertexAttributes> VertexList;
-
-	XGLDepthCloud(int n = 0);
+	XGLDepthCloud(int w = 0, int h = 0);
 	virtual void Draw();
 
 	AnimationFn invokeComputeShader;
 
 private:
-	VertexList verts;
-	GLuint vbo{ 0 }, vao{ 0 }, tex{ 0 };
-	XGLShader *computeShader{ nullptr };
-	int numParticles{ 0 };
+	XGLShader *m_computeShader{ nullptr };
+	int m_width, m_height;
 	int maxInvocations{ 0 };
-	int sx{ 0 }, sy{ 0 }, sz{ 0 };
-	int cx{ 0 }, cy{ 0 }, cz{ 0 };
 };
 
 

@@ -328,7 +328,7 @@ void ExampleXGL::BuildScene() {
 	XGLDepthCam *depthCam;
 	XGLDepthCloud *depthCloud;
 
-	AddShape("shaders/flat", [&depthCloud]() { depthCloud = new XGLDepthCloud(); return depthCloud; });
+	AddShape("shaders/flat", [&depthCloud]() { depthCloud = new XGLDepthCloud(1024, 768); return depthCloud; });
 	depthCloud->attributes.diffuseColor = XGLColors::white;
 	depthCloud->model = glm::scale(glm::mat4(), glm::vec3(4*10.24f, 4*7.68f, 1.0f));
 
