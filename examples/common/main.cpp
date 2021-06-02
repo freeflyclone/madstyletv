@@ -15,11 +15,11 @@
 
 static ExampleXGL *exgl = NULL;
 #ifndef OPENGL_MAJOR_VERSION
-#define OPENGL_MAJOR_VERSION 3
+#define OPENGL_MAJOR_VERSION 4
 #endif
 
 #ifndef OPENGL_MINOR_VERSION
-#define OPENGL_MINOR_VERSION 2
+#define OPENGL_MINOR_VERSION 3
 #endif
 
 #ifndef GLFW_WINDOW_TITLE

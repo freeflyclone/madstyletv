@@ -28,11 +28,11 @@
 #define HEIGHT_RATIO    20                // Defines the height ratio between the original frame to the new frame //
 #define WIDTH_RATIO     10                // Defines the width ratio between the original frame to the new frame  //
 
-class XGLDepthCam : public XGLTexQuad, public XThread {
+class XGLDepthCam : public XGLDepthCloud, public XThread {
 public:
 	static const int m_numFrames{ 4 };
 
-	XGLDepthCam() : XGLTexQuad(), XThread("DepthCamThread") {
+	XGLDepthCam() : XGLDepthCloud(WIDTH, HEIGHT), XThread("DepthCamThread") {
 		GenUShortZMap(WIDTH, HEIGHT);
 
 		InitRealSense();
@@ -184,7 +184,7 @@ public:
 
 				// Here is where the visualization code needs to go to render the depth info.
 				// When I figure out how.
-				memcpy(m_buffers[m_wIdx++ & (m_numFrames-1)], depth_frame_data, m_buffer_size);
+				memcpy(m_buffers[m_wIdx++ & (m_numFrames - 1)], depth_frame_data, m_buffer_size);
 
 				rs2_release_frame(frame);
 			}
@@ -199,13 +199,11 @@ public:
 	}
 
 	void GenUShortZMap(const int width, const int height) {
-		GLuint texId;
-
-		glGenTextures(1, &texId);
+		glGenTextures(1, &m_texId);
 		GL_CHECK("Eh, something failed");
 		glActiveTexture(GL_TEXTURE0 + numTextures);
 		GL_CHECK("Eh, something failed");
-		glBindTexture(GL_TEXTURE_2D, texId);
+		glBindTexture(GL_TEXTURE_2D, m_texId);
 		GL_CHECK("Eh, something failed");
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		GL_CHECK("Eh, something failed");
@@ -220,9 +218,9 @@ public:
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_SHORT, (void *)(nullptr));
 		GL_CHECK("Eh, something failed");
 
-		AddTexture(texId);
+		AddTexture(m_texId);
 	}
-
+	
 	void check_error(rs2_error* e)
 	{
 		if (e)
@@ -277,26 +275,36 @@ public:
 	}
 
 	void Draw() {
-		glEnable(GL_BLEND);
-		GL_CHECK("glEnable(GL_BLEND) failed");
+		if (v.size()) {
+			glPointSize(4.0f);
 
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		GL_CHECK("glBlendFunc() failed");
+			glEnable(GL_BLEND);
+			GL_CHECK("glEnable(GL_BLEND) failed");
 
-		if (m_wIdx > m_rIdx) {
-			int index = (m_rIdx++) % m_numFrames;
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			GL_CHECK("glBlendFunc() failed");
 
-			if (m_buffers[index]) {
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, m_width, m_height, 0, GL_RED, GL_UNSIGNED_SHORT, (void *)(m_buffers[index]));
-				GL_CHECK("glTexSubImage2D() failed");
+			if (m_wIdx > m_rIdx) {
+				int index = (m_rIdx++) % m_numFrames;
+
+				if (m_buffers[index]) {
+					glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, m_width, m_height, 0, GL_RED, GL_UNSIGNED_SHORT, (void *)(m_buffers[index]));
+					GL_CHECK("glTexSubImage2D() failed");
+
+					glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_ssboId);
+					GL_CHECK("Eh, something failed");
+
+					glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, m_width*m_height * sizeof(uint16_t), (void*)(m_buffers[index]));
+					GL_CHECK("Eh, something failed");
+				}
 			}
+
+			glDrawArrays(GL_POINTS, 0, (GLuint)v.size());
+			GL_CHECK("glDrawArrays() failed");
+
+			glDisable(GL_BLEND);
+			GL_CHECK("glDisable(GL_BLEND) failed");
 		}
-
-		glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)(idx.size()), XGLIndexType, 0);
-		GL_CHECK("glDrawElements() failed");
-
-		glDisable(GL_BLEND);
-		GL_CHECK("glDisable(GL_BLEND) failed");
 	}
 
 private:
@@ -315,6 +323,8 @@ private:
 	int m_unique_id{ 0 };
 	int m_framerate{ 0 };
 
+	GLuint m_texId{ 0 };
+
 	uint16_t m_one_meter{ 0 };
 	uint16_t* m_buffers[m_numFrames]{ nullptr };
 	int m_buffer_size{ 0 };
@@ -326,6 +336,7 @@ private:
 
 void ExampleXGL::BuildScene() {
 	XGLDepthCam *depthCam;
+	/*
 	XGLDepthCloud *depthCloud;
 
 	AddShape("shaders/flat", [&depthCloud]() { depthCloud = new XGLDepthCloud(1024, 768); return depthCloud; });
@@ -333,12 +344,12 @@ void ExampleXGL::BuildScene() {
 	depthCloud->model = glm::scale(glm::mat4(), glm::vec3(4*10.24f, 4*7.68f, 1.0f));
 
 	AddPreRenderFunction(depthCloud->invokeComputeShader);
+	*/
 
-	/*
 	AddShape("shaders/zval_in_red", [&depthCam]() { depthCam = new XGLDepthCam(); return depthCam; });
 	depthCam->attributes.diffuseColor = XGLColors::white;
-	depthCam->model = glm::scale(glm::mat4(), glm::vec3(10.24f, 7.68f, 1.0f));
+	depthCam->model = glm::scale(glm::mat4(), glm::vec3(4*10.24f, 4*7.68f, 102.4f));
+	AddPreRenderFunction(depthCam->invokeComputeShader);
 
 	depthCam->Start();
-	*/
 }

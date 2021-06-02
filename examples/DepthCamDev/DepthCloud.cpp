@@ -3,6 +3,8 @@
 XGLDepthCloud::XGLDepthCloud(int w, int h) : XGLPointCloud(), m_width(w), m_height(h) {
 	SetName("XGLDepthCloud");
 
+	GenUShortSSBO(m_width, m_height);
+
 	glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &maxInvocations);
 	xprintf("Max Invocations: %d\n", maxInvocations);
 
@@ -12,7 +14,7 @@ XGLDepthCloud::XGLDepthCloud(int w, int h) : XGLPointCloud(), m_width(w), m_heig
 			float yCoord = (float)y / (float)m_height;
 			XGLVertexAttributes vrtx;
 
-			vrtx.v = { xCoord, yCoord, 0.1 };
+			vrtx.v = { xCoord, yCoord, 0.0 };
 			vrtx.t = { xCoord, yCoord };
 			vrtx.c = XGLColors::white;
 			vrtx.n = { 0.0, 0.0, 1.0 };
@@ -31,6 +33,10 @@ XGLDepthCloud::XGLDepthCloud(int w, int h) : XGLPointCloud(), m_width(w), m_heig
 
 		// map our VBO as SSBO, so compute shader can diddle our VBO objects
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, vbo);
+		GL_CHECK("Eh, Something failed");
+
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_ssboId);
+		GL_CHECK("Eh, Something failed");
 
 		// fire the compute shader
 		glDispatchCompute(maxInvocations, 1, 1);
@@ -40,6 +46,22 @@ XGLDepthCloud::XGLDepthCloud(int w, int h) : XGLPointCloud(), m_width(w), m_heig
 		GL_CHECK("Dispatch compute shader");
 	};
 }
+
+void XGLDepthCloud::GenUShortSSBO(const int width, const int height) {
+	int requiredSize = width * height * sizeof(uint16_t);
+
+	glGenBuffers(1, &m_ssboId);
+	GL_CHECK("Eh, something failed");
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssboId);
+	GL_CHECK("Eh, something failed");
+
+	glBufferData(GL_SHADER_STORAGE_BUFFER, requiredSize, nullptr, GL_DYNAMIC_DRAW);
+	GL_CHECK("Eh, something failed");
+
+	return;
+}
+
 
 void XGLDepthCloud::Draw() {
 	if (v.size()) {

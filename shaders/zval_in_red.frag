@@ -40,5 +40,6 @@ void main() {
 
     //finalColor = (brightness * diffuse * fragColor) + (ambient * 0.1);
     //finalColor = (brightness * diffuse) + (ambient * 0.1);
-	finalColor = vec4(surfaceColor.r, surfaceColor.r, surfaceColor.r, 1.0);
+	//finalColor = vec4(surfaceColor.r, surfaceColor.r, surfaceColor.r, 1.0);
+	finalColor = diffuse;
 }

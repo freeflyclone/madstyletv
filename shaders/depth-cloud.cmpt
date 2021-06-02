@@ -11,14 +11,20 @@ layout (std140, binding = 1) buffer VertexBuffer {
 	VertexData verts[];
 };
 
+layout (std140, binding = 2) buffer ZDepth {
+	float zValue[];
+};
+
 layout (local_size_x = 1024, local_size_y = 1, local_size_z = 1) in;
 
 void main() {
-
 	uint idx = gl_GlobalInvocationID.x;
 
 	// Texture has depth data from camera: as 16-bit monochrome buffer, (in red channel)
-	vec3 pos = verts[idx].pos.xyz;
+	vec3 pos = verts[idx].pos;
+	float zPos = zValue[idx];
+
+	pos = vec3(pos.x, pos.y, zPos);
 
 	verts[idx].pos = pos;
 }

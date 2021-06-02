@@ -17,12 +17,14 @@ class XGLDepthCloud : public XGLPointCloud {
 public:
 	XGLDepthCloud(int w = 0, int h = 0);
 	virtual void Draw();
+	void GenUShortSSBO(const int width, const int height);
 
 	AnimationFn invokeComputeShader;
 
-private:
 	XGLShader *m_computeShader{ nullptr };
 	int m_width, m_height;
+	GLuint m_ssboId{ 0 };
+
 	int maxInvocations{ 0 };
 };
 

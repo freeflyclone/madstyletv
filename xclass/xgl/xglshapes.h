@@ -189,7 +189,7 @@ class XGLPointCloud : public XGLShape {
 public:
 	XGLPointCloud();
 	XGLPointCloud(int nPoints, float radius = 5.0f, XGLColor color = { 1.0, 1.0, 1.0, 1.0 }, XGLVertex center = { 0.0, 0.0, 0.0 });
-	void Draw();
+	virtual void Draw();
 	DrawFn drawFn;
 };
 
