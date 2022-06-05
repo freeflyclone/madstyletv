@@ -247,6 +247,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImGuiDev", "examples\ImGuiD
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Header Files", "Header Files", "{DCE87CD9-B13B-4D53-B81F-67DC2E5BE5FD}"
 	ProjectSection(SolutionItems) = preProject
+		examples\common\DebugOutput.h = examples\common\DebugOutput.h
 		examples\common\ExampleXGL.h = examples\common\ExampleXGL.h
 		examples\common\ImGuiFileDialog.h = examples\common\ImGuiFileDialog.h
 		examples\common\InputTrackers.h = examples\common\InputTrackers.h
@@ -263,6 +264,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Header Files", "Header File
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source Files", "Source Files", "{7F74C7DF-1E26-448B-9952-31463567B8A3}"
 	ProjectSection(SolutionItems) = preProject
+		examples\common\DebugOutput.cpp = examples\common\DebugOutput.cpp
 		examples\common\ExampleGUI.cpp = examples\common\ExampleGUI.cpp
 		examples\common\ExampleXGL.cpp = examples\common\ExampleXGL.cpp
 		examples\common\imgui_main.cpp = examples\common\imgui_main.cpp

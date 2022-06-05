@@ -12,6 +12,7 @@
 
 #define __CL_ENABLE_EXCEPTIONS
 #include "CL/cl.hpp"
+#include "DebugOutput.h"
 
 // Compute c = a + b.
 static const char source[] =
@@ -38,6 +39,8 @@ static const char source[] =
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 	const size_t N = 1 << 20;
+
+	InitStdLog();
 
 	try {
 		std::vector<cl::Platform> platform;
