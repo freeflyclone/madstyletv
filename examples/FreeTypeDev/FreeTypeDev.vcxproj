@@ -185,6 +185,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\A.poly" />
+    <None Include="..\..\assets\config.json" />
     <None Include="..\..\assets\test.poly" />
     <None Include="..\..\assets\test2.poly" />
   </ItemGroup>

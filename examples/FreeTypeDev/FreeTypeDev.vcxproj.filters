@@ -53,6 +53,9 @@
     <None Include="..\..\assets\test2.poly">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="..\..\assets\config.json">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Triangulator.h">
