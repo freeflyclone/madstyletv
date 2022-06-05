@@ -4,14 +4,14 @@
   "SharedMemory": false,
   "SvgFile": "assets/triangle.svg",
   "VideoFile4": "F:/videos/evan/evan-dv.01-03-11_16-09.00.avi",
-  "VideoFile": "E:\\Data\\Video\\GoPro 20200711/GH010190.mp4",
+  "VideoFile": "E:\\Video\\GoPro\\GH010149.mp4",
   "VideoFile1": "D:/Hero6/GH010150.mp4",
   "VideoFile2": "D:/Hero6/GH010154.mp4",
   "VideoFile3": "D:/Hero6/GH010155.mp4",
   "FreeTypeText": "e-man.tv",
   "NetCDFDir": "E:/Data/Climate/netcdf_merged/",
   "NetCDFFile": "USC00047821.nc",
-  "R3DFile": "A008_A008_0813UE_001.R3D",
+  "R3DFile": "E:\\Data\\RED footage\\v-raptor-8k-vv-bee\\W015_C012_0430X2.RDC\\W015_C012_0430X2_001.R3D",
 
   "OusterSensorConfig": "\"C:/Users/Evan/Desktop/lombard_street_config-1024x10.json",
   "Encoder": {

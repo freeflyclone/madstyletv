@@ -1,1 +1,40 @@
-{"@context":["https://www.w3.org/ns/activitystreams","https://w3id.org/security/v1",{"manuallyApprovesFollowers":"as:manuallyApprovesFollowers","toot":"http://joinmastodon.org/ns#","featured":{"@id":"toot:featured","@type":"@id"},"alsoKnownAs":{"@id":"as:alsoKnownAs","@type":"@id"},"movedTo":{"@id":"as:movedTo","@type":"@id"},"schema":"http://schema.org#","PropertyValue":"schema:PropertyValue","value":"schema:value","IdentityProof":"toot:IdentityProof","discoverable":"toot:discoverable"}],"id":"https://social.e-man.tv/actor","type":"Application","inbox":"https://social.e-man.tv/actor/inbox","preferredUsername":"hq.e-man.tv","url":"https://social.e-man.tv/about/more?instance_actor=true","manuallyApprovesFollowers":true,"publicKey":{"id":"https://social.e-man.tv/actor#main-key","owner":"https://social.e-man.tv/actor","publicKeyPem":"-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzcqMPfzfDPfRquN/TAb1\ndzk6iyAPcUmGeedB2r71MCkH7HQwGXOS+0RG+XNebIQ3ZeoMOhYkHtzjQLVA1oqZ\nDDOZ/c5Bi+c1G+Tc5/D5D491wPf/35e07qzU+T4W0+ONLHxRiVFTvJLT3/s+/7a3\n57JL5k8FNPM5c6Kii8zg8nVX/bz6LmXCwDesThNakdLhkNCthvAOL2WoeBfakiKg\ng8t5RHXcR12jvLdA1lN51tdgLbTxMTINXvXbDnrkMrXi6fatnOzADep6CtrI/+zN\nKHEvCLMPB72Kwypsu8rRQXeeP+RfW0s/os+NxW1zrE9K4Pe/uaVmwHBuhws5aDsy\nHQIDAQAB\n-----END PUBLIC KEY-----\n"},"endpoints":{"sharedInbox":"https://social.e-man.tv/inbox"}}
+{
+  
+  "@context": [
+    "https://www.w3.org/ns/activitystreams",
+    "https://w3id.org/security/v1",
+    {
+      "manuallyApprovesFollowers": "as:manuallyApprovesFollowers",
+      "toot": "http://joinmastodon.org/ns#",
+      "featured": {
+        "@id": "toot:featured",
+        "@type": "@id"
+      },
+      "alsoKnownAs": {
+        "@id": "as:alsoKnownAs",
+        "@type": "@id"
+      },
+      "movedTo": {
+        "@id": "as:movedTo",
+        "@type": "@id"
+      },
+      "schema": "http://schema.org#",
+      "PropertyValue": "schema:PropertyValue",
+      "value": "schema:value",
+      "IdentityProof": "toot:IdentityProof",
+      "discoverable": "toot:discoverable"
+    }
+  ],
+  "id": "https://social.e-man.tv/actor",
+  "type": "Application",
+  "inbox": "https://social.e-man.tv/actor/inbox",
+  "preferredUsername": "hq.e-man.tv",
+  "url": "https://social.e-man.tv/about/more?instance_actor=true",
+  "manuallyApprovesFollowers": true,
+  "publicKey": {
+    "id": "https://social.e-man.tv/actor#main-key",
+    "owner": "https://social.e-man.tv/actor",
+    "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzcqMPfzfDPfRquN/TAb1\ndzk6iyAPcUmGeedB2r71MCkH7HQwGXOS+0RG+XNebIQ3ZeoMOhYkHtzjQLVA1oqZ\nDDOZ/c5Bi+c1G+Tc5/D5D491wPf/35e07qzU+T4W0+ONLHxRiVFTvJLT3/s+/7a3\n57JL5k8FNPM5c6Kii8zg8nVX/bz6LmXCwDesThNakdLhkNCthvAOL2WoeBfakiKg\ng8t5RHXcR12jvLdA1lN51tdgLbTxMTINXvXbDnrkMrXi6fatnOzADep6CtrI/+zN\nKHEvCLMPB72Kwypsu8rRQXeeP+RfW0s/os+NxW1zrE9K4Pe/uaVmwHBuhws5aDsy\nHQIDAQAB\n-----END PUBLIC KEY-----\n"
+  },
+  "endpoints": { "sharedInbox": "https://social.e-man.tv/inbox" }
+}
