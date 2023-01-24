@@ -87,6 +87,10 @@ void ExampleXGL::BuildScene() {
 		}
 
 		std::cout << devices[0].getInfo<CL_DEVICE_NAME>() << std::endl;
+		std::cout << devices[0].getInfo<CL_DEVICE_PROFILE>() << std::endl;
+		std::cout << devices[0].getInfo<CL_DEVICE_VENDOR>() << std::endl;
+		std::cout << devices[0].getInfo<CL_DEVICE_VERSION>() << std::endl;
+		std::cout << devices[0].getInfo<CL_DRIVER_VERSION>() << std::endl;
 
 		// Create command queue.
 		cl::CommandQueue queue(context, devices[0]);
