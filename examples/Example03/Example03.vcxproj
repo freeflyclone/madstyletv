@@ -175,7 +175,7 @@
     <ClCompile Include="..\common\ExampleGUI.cpp" />
     <ClCompile Include="..\common\ExampleXGL.cpp" />
     <ClCompile Include="..\common\main.cpp" />
-    <ClCompile Include="..\Example02\Example02.cpp" />
+    <ClCompile Include="Example03.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\shaders\diffuse.frag" />
