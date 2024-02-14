@@ -153,7 +153,7 @@ void ExampleXGL::BuildScene() {
 		//xdb = new Xsqlite(dbPath);
 		xig = new XGLVcrControlsGui();
 		fifoTestControls = new XFifoTestControls();
-		AddShape("shaders/yuv", [&]() { xdecoder = new Xh264Decoder(); return xdecoder; });
+		//AddShape("shaders/yuv", [&]() { xdecoder = new Xh264Decoder(); return xdecoder; });
 		AddShape("shaders/000-simple", [&]() { fifoTester = new XFifoTest::Tester(&xf); return fifoTester; });
 	}
 	catch (std::exception e)
@@ -238,6 +238,7 @@ void ExampleXGL::BuildScene() {
 		if (fifoTestControls)
 		{
 			menuFunctions.push_back(([&]() {
+				ImGui::ShowDemoWindow();
 				if (ImGui::Begin("FIFO Tester Controls", &fifoTestControls->fifoTestWindow))
 				{
 					ImGui::SliderInt("Read Pool Size", &fifoTestControls->readPoolSize, 0, 64);
