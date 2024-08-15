@@ -16,6 +16,7 @@
 #define KKS25 L"Komplete Kontrol - 1"
 #define LAUNCHPAD L"2- Launchpad S"
 #define RIGKONTROL L"Rig Kontrol 3 MIDI In"
+#define LPD8MK2 L"LPD8 mk2"
 #else
 #define KKS25 L"KOMPLETE KONTROL S25"
 #define LAUNCHPAD L"Launchpad S"
@@ -31,12 +32,15 @@ glm::vec3 launchpadTranslate = { 10.0f, 10.0f, 0.0f };
 
 XMidiInput *pRigKontrol;
 
+XMidiInput *pLpd8;
+XGLCube *lpd8Cube;
+
 void ExampleXGL::BuildScene() {
 	XGLShape *shape;
 
 	AddShape("shaders/000-simple", [&](){ shape = new XGLTriangle(); return shape; });
 
-	if (true) {
+	if (false) {
 		AddShape("shaders/specular", [&](){ kontrol25Cube = new XGLCube(); return kontrol25Cube; });
 		pKontrol25 = new XMidiInput(KKS25);
 		pKontrol25->AddKeyFunc(0xB00e, [this](int key, int flags) {
@@ -52,7 +56,7 @@ void ExampleXGL::BuildScene() {
 		}
 	}
 
-	if (true) {
+	if (false) {
 		AddShape("shaders/specular", [&](){ launchpadCube = new XGLCube(); return launchpadCube; });
 		launchpadCube->model = glm::translate(glm::mat4(), launchpadTranslate);
 
@@ -69,13 +73,26 @@ void ExampleXGL::BuildScene() {
 		}
 	}
 
-	if (true){
+	if (false){
 		pRigKontrol = new XMidiInput(RIGKONTROL);
 		pRigKontrol->AddKeyFunc({ 0x8000, 0xE000 }, [this](int key, int flags) {
 			xprintf("Key: %04X: %d\n", key, flags);
 		});
 		try {
 			pRigKontrol->Start();
+		}
+		catch (std::runtime_error e) {
+			xprintf("Open failed: %s\n", e.what());
+		}
+	}
+
+	if (true) {
+		pLpd8 = new XMidiInput(LPD8MK2);
+		pLpd8->AddKeyFunc({ 0x8000, 0xE000 }, [this](int key, int flags) {
+			xprintf("Key: %04X: %d\n", key, flags);
+		});
+		try {
+			pLpd8->Start();
 		}
 		catch (std::runtime_error e) {
 			xprintf("Open failed: %s\n", e.what());

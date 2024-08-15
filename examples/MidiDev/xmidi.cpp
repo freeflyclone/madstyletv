@@ -41,6 +41,8 @@ XMidiInput::XMidiInput(std::wstring devName) : deviceName(devName), XThread("XMi
 		midiInGetDevCaps(i, &caps, sizeof(caps));
 		deviceList[caps.szPname] = { i, caps };
 	}
+
+	return;
 }
 
 XMidiInput::~XMidiInput() {}
